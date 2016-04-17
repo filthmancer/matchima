@@ -1,0 +1,54 @@
+
+//ARMOUR REDUCTION RATE
+	ClassUpgrade armour = new ClassUpgrade((int val) => {InitStats.ArmourReductionRate -= 0.01 * val;});
+	armour.BaseAmount = 1;
+	armour.Rarity = Rarity.Uncommon;
+	armour.Name = "Armour Decay";
+	armour.Prefix = "-";
+	armour.Suffix = "%";
+
+
+//SPELL POWER
+	ClassUpgrade spellpower = new ClassUpgrade((int val) => {InitStats.MagicPower += 1 * val;});
+	spellpower.BaseAmount = 1;
+	spellpower.Name = "Spell Power";
+	spellpower.Prefix = "+";
+	spellpower.Rarity = Rarity.Uncommon;
+
+
+//HEALTH MAX
+	ClassUpgrade hpmax = new ClassUpgrade((int val) => {InitStats._HealthMax += 5 * val;});
+	hpmax.BaseAmount = 5;
+	hpmax.Rarity = Rarity.Common;
+	hpmax.Name = "HP Max";
+	hpmax.Prefix = "+";
+
+//SPIKES
+	ClassUpgrade spike = new ClassUpgrade((int val) => {InitStats.Spikes += 1 * val;});
+	spike.BaseAmount = 1;
+	spike.Rarity = Rarity.Rare;
+	spike.Name = "Spikes";
+	spike.Prefix = "+";
+
+//HP REGEN
+	ClassUpgrade hpregen = new ClassUpgrade((int val) => {InitStats.Regen += 1 * val;});
+	hpregen.BaseAmount = 1;
+	hpregen.Rarity = Rarity.Common;
+	hpregen.Name = "HP Regen";
+	hpregen.Prefix = "+";
+
+
+//TILE CHANCE (BOMB)
+	TileChance bomb2 = new TileChance();
+	bomb2.Genus = GameData.ResourceLong(Genus);
+	bomb2.Type = "bomb";
+	InitStats.TileChances.Add(bomb2);
+
+	ClassUpgrade c = new ClassUpgrade((int val) => {bomb2.Chance += 0.02F * val;});
+	c.Name = GameData.ResourceLong(Genus) + " Bomb Tiles";
+	c.BaseAmount = 2;
+	c.Rarity = Rarity.Uncommon;
+	c.Prefix = "+";
+	c.Suffix = "%";
+
+

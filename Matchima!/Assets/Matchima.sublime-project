@@ -1,0 +1,83 @@
+{
+	"folders":
+	[
+		{
+			"file_exclude_patterns":
+			[
+				"*.dll",
+				"*.meta"
+			],
+			"folder_exclude_patterns":
+			[
+				"Classes",
+				"Items",
+				"Tiles",
+				"UI"
+			],
+			"name": "Mains",
+			"path": "Scripts"
+		},
+		{
+			"file_exclude_patterns":
+			[
+				"*.dll",
+				"*.meta"
+			],
+			"name": "XML",
+			"path": "Resources"
+		},
+		{
+			"file_exclude_patterns":
+			[
+				"*.dll",
+				"*.meta"
+			],
+			"folder_exclude_patterns":
+			[
+				"Abilities"
+			],
+			"name": "Tiles",
+			"path": "Scripts/Tiles"
+		},
+		{
+			"file_exclude_patterns":
+			[
+				"*.dll",
+				"*.meta"
+			],
+			"folder_exclude_patterns":
+			[
+				"Abilities"
+			],
+			"name": "Classes",
+			"path": "Scripts/Classes"
+		},
+		{
+			"file_exclude_patterns":
+			[
+				"*.dll",
+				"*.meta"
+			],
+			"name": "Abilities",
+			"path": "Scripts/Classes/Abilities"
+		},
+		{
+			"file_exclude_patterns":
+			[
+				"*.dll",
+				"*.meta"
+			],
+			"name": "Items",
+			"path": "Scripts/Items"
+		},
+		{
+			"file_exclude_patterns":
+			[
+				"*.dll",
+				"*.meta"
+			],
+			"name": "UI",
+			"path": "Scripts/UI"
+		}
+	]
+}

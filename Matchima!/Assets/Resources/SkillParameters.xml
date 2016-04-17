@@ -1,0 +1,3550 @@
+<Abilities>
+
+    <FreeAbilities>
+                
+        <Ability> <Script>Swap</Script> 
+            <Unlocked>T</Unlocked>
+            <UnlockLvl>100</UnlockLvl>
+            <Name>Swap</Name>
+            <Icon>Swap</Icon>
+            <Chance>1</Chance>
+    
+            <Cooldown>
+                <RangeMin>25</RangeMin>
+                <RangeMax>25</RangeMax>
+            </Cooldown>
+    
+            <CostChance>0.0</CostChance>
+            <CostType>STR</CostType>
+            <Cost>
+                <RangeMin>0</RangeMin>
+                <RangeMax>0</RangeMax>
+            </Cost>
+            <ReduceCooldown>F</ReduceCooldown>
+    
+            <AbilityMod>Output</AbilityMod>
+            <AbilityModMult>150</AbilityModMult>
+    
+            <Inputs>
+                <Input><Title>Touch</Title><Chance>0.6</Chance> <Genus>Red</Genus> <Type></Type>                 </Input>
+                <Input><Title>Touch</Title><Chance>0.6</Chance> <Genus>Blue</Genus> <Type></Type>                </Input> 
+                <Input><Title>Touch</Title><Chance>0.6</Chance> <Genus>Green</Genus> <Type></Type>               </Input>  
+                <Input><Title>Touch</Title><Chance>0.6</Chance> <Genus>Yellow</Genus> <Type></Type>              </Input>   
+                <Input><Title>Touch</Title><Chance>1</Chance>   <Genus>Red</Genus> <Type>Resource</Type>        </Input>         
+                <Input><Title>Touch</Title><Chance>1</Chance>   <Genus>Blue</Genus> <Type>Resource</Type>       </Input>          
+                <Input><Title>Touch</Title><Chance>1</Chance>   <Genus>Yellow</Genus> <Type>Resource</Type>      </Input>           
+                <Input><Title>Touch</Title><Chance>1</Chance>   <Genus>Green</Genus> <Type>Resource</Type>     </Input>            
+            <!--<Input><Title>Touch</Title><Chance>0.3</Chance> <Genus>Red</Genus> <Type>Health</Type>          </Input>-->
+            <!--<Input><Title>Touch</Title><Chance>0.3</Chance> <Genus>Blue</Genus> <Type>Health</Type>         </Input>-->
+            <!--<Input><Title>Touch</Title><Chance>0.3</Chance> <Genus>Green</Genus> <Type>Health</Type>        </Input>-->
+            <!--<Input><Title>Touch</Title><Chance>0.3</Chance> <Genus>Yellow</Genus> <Type>Health</Type>       </Input>--> 
+                <Input><Title>Touch</Title><Chance>0.7</Chance> <Genus></Genus> <Type>Enemy</Type>               </Input>  
+                <Input><Title>Touch</Title><Chance>0.3</Chance> <Genus></Genus> <Type>Altar</Type>               </Input>  
+                <Input><Title>Touch</Title><Chance>0.4</Chance> <Genus></Genus> <Type>Health</Type>              </Input>   
+                <Input><Title>Touch</Title><Chance>0.2</Chance> <Genus></Genus> <Type>Resource</Type>            </Input>     
+            </Inputs>
+    
+            <Outputs>
+                <Output> <Title>Strong</Title>     <Chance>1</Chance> <AbilityMod>0</AbilityMod>  
+                          <Genus>Red</Genus> <Type>Resource</Type>
+                </Output>
+                <Output> <Title>Nimble</Title>    <Chance>1</Chance> <AbilityMod>1</AbilityMod>   
+                          <Genus>Blue</Genus> <Type>Resource</Type>
+                </Output>
+                <Output> <Title>Wise</Title>   <Chance>1</Chance>    <AbilityMod>2</AbilityMod>   
+                          <Genus>Green</Genus> <Type>Resource</Type>
+                </Output>
+                <Output> <Title>Charming</Title>  <Chance>1</Chance> <AbilityMod>3</AbilityMod>   
+                          <Genus>Yellow</Genus> <Type>Resource</Type>
+                </Output>
+
+                <Output> <Title>Healing</Title> <Chance>0.5</Chance>  <AbilityMod>0</AbilityMod> 
+                          <Genus>Red</Genus> <Type>Health</Type>
+                </Output>
+                <Output> <Title>Healing</Title> <Chance>0.5</Chance>  <AbilityMod>1</AbilityMod> 
+                          <Genus>Blue</Genus> <Type>Health</Type>
+                </Output>
+                <Output> <Title>Healing</Title> <Chance>0.5</Chance>  <AbilityMod>2</AbilityMod> 
+                          <Genus>Green</Genus> <Type>Health</Type>
+                </Output>
+                <Output> <Title>Healing</Title> <Chance>0.5</Chance>  <AbilityMod>3</AbilityMod> 
+                          <Genus>Yellow</Genus> <Type>Health</Type>
+                </Output>
+                
+                <Output> <Title>Blade</Title>      <Chance>1</Chance>   <AbilityMod>4</AbilityMod>  
+                          <Genus></Genus> <Type>Sword</Type>
+                </Output>   
+
+                <Output> <Title>Explosive</Title>  <Chance>0.1</Chance> <AbilityMod>4</AbilityMod>  
+                          <Genus></Genus> <Type>Bomb</Type> 
+                </Output>
+                
+                <Output> <Title>Brutish</Title>     <Chance>0.7</Chance> <AbilityMod>0</AbilityMod>   
+                          <Genus>Red</Genus> <Type>Enemy</Type> 
+                </Output>
+                <Output> <Title>Sly</Title>         <Chance>0.7</Chance> <AbilityMod>1</AbilityMod>   
+                          <Genus>Blue</Genus> <Type>Enemy</Type> 
+                </Output>
+                <Output> <Title>Cunning</Title>     <Chance>0.7</Chance> <AbilityMod>2</AbilityMod>   
+                          <Genus>Green</Genus> <Type>Enemy</Type> 
+                </Output>
+                <Output> <Title>Seductive</Title>   <Chance>0.7</Chance> <AbilityMod>3</AbilityMod>   
+                          <Genus>Yellow</Genus> <Type>Enemy</Type> 
+                </Output>   
+            </Outputs>
+        </Ability>
+        
+        <Ability> <Name>King Swap</Name>
+            <Script>Swap</Script>
+            <Unlocked>T</Unlocked>
+            <UnlockLvl>100</UnlockLvl>
+            <Icon>KingSwap</Icon>
+            <Chance>0.75</Chance>
+    
+            <Cooldown>
+                <RangeMin>25</RangeMin>
+                <RangeMax>25</RangeMax>
+            </Cooldown>
+    
+            <CostChance>0.0</CostChance>
+            <CostType>STR</CostType>
+            <Cost>
+                <RangeMin>0</RangeMin>
+                <RangeMax>0</RangeMax>
+            </Cost>
+            <ReduceCooldown>F</ReduceCooldown>
+    
+            <AbilityMod>Output</AbilityMod>
+            <AbilityModMult>150</AbilityModMult>
+    
+            <Inputs>
+                <Input><Title>Touch</Title><Chance>1</Chance> <Genus>Red</Genus> <Type></Type>                 </Input>
+                <Input><Title>Touch</Title><Chance>1</Chance> <Genus>Blue</Genus> <Type></Type>                </Input> 
+                <Input><Title>Touch</Title><Chance>1</Chance> <Genus>Green</Genus> <Type></Type>               </Input>  
+                <Input><Title>Touch</Title><Chance>1</Chance> <Genus>Yellow</Genus> <Type></Type>              </Input>     
+            </Inputs>
+    
+            <Outputs>
+                <Output> <Title>Khan's</Title>     <Chance>1</Chance> <AbilityMod>0</AbilityMod>  
+                          <Genus>Red</Genus> <Type></Type>
+                </Output>
+                <Output> <Title>Wu's</Title>    <Chance>1</Chance> <AbilityMod>1</AbilityMod>   
+                          <Genus>Blue</Genus> <Type></Type>
+                </Output>
+                <Output> <Title>Solomon's</Title>   <Chance>1</Chance>    <AbilityMod>2</AbilityMod>   
+                          <Genus>Green</Genus> <Type></Type>
+                </Output>
+                <Output> <Title>Midas</Title>  <Chance>1</Chance> <AbilityMod>3</AbilityMod>   
+                          <Genus>Yellow</Genus> <Type></Type>
+                </Output>
+            </Outputs>
+        </Ability>
+                
+        <Ability> <Name>Armour Swap</Name>
+            <Script>Swap</Script>
+            <Unlocked>T</Unlocked>
+            <UnlockLvl>100</UnlockLvl>
+            <Icon>Armour</Icon>
+            <Chance>0.75</Chance>
+    
+            <Cooldown>
+                <RangeMin>25</RangeMin>
+                <RangeMax>25</RangeMax>
+            </Cooldown>
+    
+            <CostChance>0.0</CostChance>
+            <CostType>STR</CostType>
+            <Cost>
+                <RangeMin>0</RangeMin>
+                <RangeMax>0</RangeMax>
+            </Cost>
+            <ReduceCooldown>F</ReduceCooldown>
+    
+            <AbilityMod>Output</AbilityMod>
+            <AbilityModMult>150</AbilityModMult>
+    
+            <Inputs>
+                <Input><Title>Armour</Title><Chance>1</Chance> <Genus>Red</Genus> <Type></Type>                 </Input>
+                <Input><Title>Armour</Title><Chance>1</Chance> <Genus>Blue</Genus> <Type></Type>                </Input> 
+                <Input><Title>Armour</Title><Chance>1</Chance> <Genus>Green</Genus> <Type></Type>               </Input>  
+                <Input><Title>Armour</Title><Chance>1</Chance> <Genus>Yellow</Genus> <Type></Type>              </Input>
+                <Input><Title>Armour</Title><Chance>0.1</Chance> <Genus>Purple</Genus> <Type></Type>              </Input>
+            </Inputs>
+    
+            <Outputs>
+                <Output> <Title>Khan's</Title>     <Chance>1</Chance> <AbilityMod>0</AbilityMod>  
+                          <Genus>Red</Genus> <Type>Armour</Type>
+                </Output>
+                <Output> <Title>Wu's</Title>    <Chance>1</Chance> <AbilityMod>1</AbilityMod>   
+                          <Genus>Blue</Genus> <Type>Armour</Type>
+                </Output>
+                <Output> <Title>Solomon's</Title>   <Chance>1</Chance>    <AbilityMod>2</AbilityMod>   
+                          <Genus>Green</Genus> <Type>Armour</Type>
+                </Output>
+                <Output> <Title>Midas</Title>  <Chance>1</Chance> <AbilityMod>3</AbilityMod>   
+                          <Genus>Yellow</Genus> <Type>Armour</Type>
+                </Output>
+                <Output> <Title>Magic</Title>  <Chance>0.5</Chance> <AbilityMod>4</AbilityMod>   
+                          <Genus>Purple</Genus> <Type>Armour</Type>
+                </Output>
+            </Outputs>
+        </Ability>
+            
+        <Ability> <Name>Collect</Name>
+            <Script>Collect</Script>
+            <Icon>Default</Icon>
+            <Unlocked>T</Unlocked>
+            <UnlockLvl>100</UnlockLvl>
+            <Chance>1</Chance>
+    
+            <Cooldown>
+                <RangeMin>30</RangeMin>
+                <RangeMax>30</RangeMax>
+            </Cooldown>
+    
+            <CostChance>0.1</CostChance>
+            <CostType>Random</CostType>
+            <Cost>
+                <RangeMin>30</RangeMin>
+                <RangeMax>30</RangeMax>
+            </Cost>
+            <ReduceCooldown>T</ReduceCooldown>
+    
+            <AbilityMod>Input</AbilityMod>
+            <AbilityModMult>150</AbilityModMult>
+    
+            <Inputs>
+                <Input>
+                    <Title>Red</Title>    <Chance>0.4</Chance> <AbilityMod>0</AbilityMod>  
+                        <Genus>Red</Genus>  <Type></Type>  
+                </Input>
+                <Input>
+                    <Title>Blue</Title>   <Chance>0.4</Chance> <AbilityMod>1</AbilityMod>  
+                        <Genus>Blue</Genus> <Type></Type> 
+                </Input> 
+                <Input>
+                    <Title>Green</Title>  <Chance>0.4</Chance> <AbilityMod>2</AbilityMod>  
+                        <Genus>Green</Genus>    <Type></Type> 
+                </Input>  
+                <Input>
+                    <Title>Yellow</Title> <Chance>0.4</Chance> <AbilityMod>3</AbilityMod>  
+                        <Genus>Yellow</Genus>   <Type></Type>  
+                </Input>   
+                <Input>
+                    <Title>R Res</Title>  <Chance>1</Chance>   <AbilityMod>0</AbilityMod>  
+                        <Genus>Red</Genus>  <Type>Resource</Type> 
+                </Input>
+                <Input>
+                    <Title>B Res</Title>  <Chance>1</Chance>   <AbilityMod>1</AbilityMod>  
+                        <Genus>Blue</Genus>     <Type>Resource</Type>   
+                </Input>
+                <Input>
+                    <Title>G Res</Title>  <Chance>1</Chance>   <AbilityMod>2</AbilityMod>  
+                        <Genus>Green</Genus>    <Type>Resource</Type>  
+                </Input>
+                <Input>
+                    <Title>Y Res</Title>  <Chance>1</Chance>   <AbilityMod>3</AbilityMod>  
+                        <Genus>Yellow</Genus>   <Type>Resource</Type> 
+                </Input>
+                <Input>
+                    <Title>Health</Title> <Chance>0.8</Chance> <AbilityMod>0</AbilityMod>  
+                        <Genus></Genus>     <Type>Health</Type>
+                </Input>         
+                <Input>
+                    <Title>Altar</Title>  <Chance>0.05</Chance><AbilityMod>4</AbilityMod>  
+                        <Genus></Genus>     <Type>Altar</Type> 
+                </Input>  
+                <Input>
+                    <Title>Armour</Title> <Chance>0.4</Chance> <AbilityMod>4</AbilityMod>  
+                        <Genus></Genus>     <Type>Armour</Type> 
+                </Input>   
+                <Input>
+                    <Title>Enemy</Title> <Chance>0.4</Chance> <AbilityMod>4</AbilityMod>   
+                        <Genus></Genus>     <Type>Enemy</Type>  
+                </Input>   
+            </Inputs>
+    
+            <Outputs>
+                <Output><Type></Type>     <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title>Collect</Title> </Output>
+            </Outputs>
+        </Ability>
+       
+        <Ability> <Name>Collect</Name>
+            <Script>Collect</Script>
+            <Icon>Default</Icon>
+            <Unlocked>T</Unlocked>
+            <UnlockLvl>100</UnlockLvl>
+            
+            <Chance>0.7</Chance>
+    
+            <Cooldown>
+                <RangeMin>30</RangeMin>
+                <RangeMax>30</RangeMax>
+            </Cooldown>
+    
+            <CostChance>0.5</CostChance>
+            <CostType>Random</CostType>
+            <Cost>
+                <RangeMin>30</RangeMin>
+                <RangeMax>30</RangeMax>
+            </Cost>
+            <ReduceCooldown>T</ReduceCooldown>
+    
+            <AbilityMod>Input</AbilityMod>
+            <AbilityModMult>150</AbilityModMult>
+    
+            <Inputs>       
+                <Input> <Title>Grey</Title> <Chance>1</Chance> <AbilityMod>4</AbilityMod>  <Genus>Grey</Genus> <Type></Type></Input>    
+            </Inputs>
+    
+            <Outputs>
+                <Output><Type></Type>     <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title>Collect</Title> </Output>
+            </Outputs>
+        </Ability>
+
+        <Ability> <Name>Force</Name>
+            <Script>Force</Script>
+            <Icon>Missile</Icon>
+            <Unlocked>T</Unlocked>
+            <UnlockLvl>100</UnlockLvl>
+            
+            <Chance>1</Chance>
+    
+            <Cooldown>
+                <RangeMin>15</RangeMin>
+                <RangeMax>15</RangeMax>
+            </Cooldown>
+    
+            <CostChance>1</CostChance>
+            <CostType>Input</CostType>
+            <Cost>
+                <RangeMin>30</RangeMin>
+                <RangeMax>40</RangeMax>
+            </Cost>
+            <ReduceCooldown>F</ReduceCooldown>
+    
+            <AbilityMod>Input</AbilityMod>
+            <AbilityModMult>20</AbilityModMult>
+    
+            <Inputs>
+                <Input> <Title>Brute</Title>    <Chance>1</Chance> <AbilityMod>0</AbilityMod> <DamageMin>5</DamageMin> </Input>
+                <Input> <Title>Nimble</Title>   <Chance>1</Chance> <AbilityMod>1</AbilityMod> <DamageMin>5</DamageMin> </Input> 
+                <Input> <Title>Mental</Title>   <Chance>1</Chance> <AbilityMod>2</AbilityMod> <DamageMin>5</DamageMin> </Input>  
+                <Input> <Title>Charming</Title> <Chance>1</Chance> <AbilityMod>3</AbilityMod> <DamageMin>5</DamageMin> </Input>    
+            </Inputs>
+    
+            <Outputs>
+                <Output><Type></Type>    <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title>Collect</Title> </Output>
+            </Outputs>
+        </Ability>
+    
+        <Ability> <Name>Boost</Name>
+            <Script>Boost</Script>
+            <Icon>Boost</Icon>
+            <Unlocked>T</Unlocked>
+            <UnlockLvl>100</UnlockLvl>
+            
+            <Chance>1</Chance>
+    
+            <Cooldown>
+                <RangeMin>20</RangeMin>
+                <RangeMax>20</RangeMax>
+            </Cooldown>
+    
+            <CostChance>0.1</CostChance>
+            <CostType>Random</CostType>
+            <Cost>
+                <RangeMin>10</RangeMin>
+                <RangeMax>20</RangeMax>
+            </Cost>
+            <ReduceCooldown>T</ReduceCooldown>
+    
+            <AbilityMod>Input</AbilityMod>
+            <AbilityModMult>130</AbilityModMult>
+    
+            <Inputs>
+                <Input>
+                    <Title>Red</Title>   <Chance>1</Chance>   <AbilityMod>0</AbilityMod> 
+                    <Genus>Red</Genus> <Species></Species>   <Mult>2</Mult>
+                </Input>
+                <Input>
+                    <Title>Blue</Title>  <Chance>1</Chance>   <AbilityMod>1</AbilityMod> 
+                    <Genus>Blue</Genus> <Species></Species>    <Mult>2</Mult>
+                </Input> 
+                <Input>
+                    <Title>Green</Title> <Chance>1</Chance>   <AbilityMod>2</AbilityMod> 
+                    <Genus>Green</Genus> <Species></Species>   <Mult>2</Mult>
+                </Input>
+                <Input>
+                    <Title>Yellow</Title><Chance>1</Chance>   <AbilityMod>3</AbilityMod> 
+                    <Genus>Yellow</Genus> <Species></Species>  <Mult>2</Mult>
+                </Input>
+                <Input>
+                    <Title>Enemy</Title> <Chance>0.6</Chance> <AbilityMod>4</AbilityMod> 
+                    <Genus></Genus> <Species>Enemy</Species>   <Mult>2</Mult>
+                </Input>
+                <Input>
+                    <Title>Health</Title><Chance>0.8</Chance> <AbilityMod>4</AbilityMod> 
+                    <Genus></Genus> <Species>Health</Species>  <Mult>2</Mult>
+                </Input>
+                <Input>
+                    <Title>Resource</Title><Chance>0.5</Chance> <AbilityMod>4</AbilityMod> 
+                    <Genus></Genus> <Species>Resource</Species><Mult>2</Mult>
+                </Input>     
+            </Inputs>
+    
+            <Outputs>
+                <Output><Type></Type>     <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title>Collect</Title> </Output>
+            </Outputs>
+        </Ability>
+    
+        <Ability>  <Name>Slash</Name>
+            <Script>Slash</Script>
+            <Icon>Slash</Icon>
+            <Unlocked>T</Unlocked>
+            <UnlockLvl>100</UnlockLvl>
+           
+            <Chance>0.6</Chance>
+    
+            <Cooldown>
+                <RangeMin>20</RangeMin>
+                <RangeMax>20</RangeMax>
+            </Cooldown>
+    
+            <CostChance>0.15</CostChance>
+            <CostType>STR</CostType>
+            <Cost>
+                <RangeMin>30</RangeMin>
+                <RangeMax>30</RangeMax>
+            </Cost>
+            <ReduceCooldown>T</ReduceCooldown>
+    
+            <AbilityMod>Input</AbilityMod>
+            <AbilityModMult>130</AbilityModMult>
+    
+            <Inputs>
+                <Input><Title>Slash Y</Title>      <Chance>1</Chance>   <AbilityMod>4</AbilityMod> <Type>X</Type>  </Input>
+                <Input><Title>Slash X</Title>      <Chance>1</Chance>   <AbilityMod>4</AbilityMod> <Type>Y</Type>  </Input>    
+            </Inputs>
+    
+            <Outputs>
+                <Output><Type></Type>     <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title>Collect</Title> <CostType>Random</CostType> </Output>
+            </Outputs>
+        </Ability>
+     
+        <Ability> <Name>Stack</Name>
+            <Script>Stack</Script>
+            <Icon>Stack</Icon>
+            <Unlocked>T</Unlocked>
+            <UnlockLvl>100</UnlockLvl>
+            
+            <Chance>1</Chance>
+    
+            <Cooldown>
+                <RangeMin>20</RangeMin>
+                <RangeMax>30</RangeMax>
+            </Cooldown>
+    
+            <CostChance>0.0</CostChance>
+            <CostType>WIS</CostType>
+            <Cost>
+                <RangeMin>0</RangeMin>
+                <RangeMax>0</RangeMax>
+            </Cost>
+            <ReduceCooldown>F</ReduceCooldown>
+    
+            <AbilityMod>Input</AbilityMod>
+            <AbilityModMult>130</AbilityModMult>
+    
+            <Inputs> 
+                <Input><Title>Chamber of Body</Title> <Chance>1</Chance>     <AbilityMod>0</AbilityMod>  
+                        <Genus>Red</Genus><Type>Resource</Type></Input>
+                <Input><Title>Chamber of Agility</Title> <Chance>1</Chance>     <AbilityMod>1</AbilityMod>  
+                        <Genus>Blue</Genus><Type>Resource</Type></Input>
+                <Input><Title>Chamber of Wisdom</Title> <Chance>1</Chance>     <AbilityMod>2</AbilityMod>  
+                        <Genus>Green</Genus><Type>Resource</Type></Input>
+                <Input><Title>Chamber of Treasure</Title> <Chance>1</Chance> <AbilityMod>3</AbilityMod>        
+                        <Genus>Yellow</Genus><Type>Resource</Type></Input>
+                <Input><Title>Chamber of Healing</Title> <Chance>0.3</Chance>    <AbilityMod>0</AbilityMod> 
+                        <Genus>Red</Genus><Type>Health</Type></Input>
+                <Input><Title>Chamber of Healing</Title> <Chance>0.3</Chance>    <AbilityMod>1</AbilityMod> 
+                        <Genus>Blue</Genus><Type>Health</Type></Input>
+                <Input><Title>Chamber of Healing</Title> <Chance>0.3</Chance>    <AbilityMod>2</AbilityMod> 
+                        <Genus>Green</Genus><Type>Health</Type></Input>
+                <Input><Title>Chamber of Healing</Title> <Chance>0.3</Chance>    <AbilityMod>3</AbilityMod> 
+                        <Genus>Yellow</Genus><Type>Health</Type></Input>
+                <Input><Title>Demon Chamber</Title><Chance>0.3</Chance>    <AbilityMod>0</AbilityMod>   
+                        <Genus>Red</Genus><Type>Enemy</Type></Input>
+                <Input><Title>Demon Chamber</Title><Chance>0.3</Chance>    <AbilityMod>1</AbilityMod>   
+                        <Genus>Blue</Genus><Type>Enemy</Type></Input>
+                <Input><Title>Demon Chamber</Title><Chance>0.3</Chance>    <AbilityMod>2</AbilityMod>   
+                        <Genus>Green</Genus><Type>Enemy</Type></Input>
+                <Input><Title>Demon Chamber</Title><Chance>0.3</Chance>    <AbilityMod>3</AbilityMod>  
+                        <Genus>Yellow</Genus><Type>Enemy</Type></Input>
+                <Input><Title>Hellish Chamber</Title> <Chance>0.4</Chance>   <AbilityMod>4</AbilityMod>
+                        <Genus></Genus><Type>Enemy</Type>    </Input>
+                <Input><Title>Sacred Chamber</Title> <Chance>0.05</Chance>  <AbilityMod>4</AbilityMod>
+                        <Genus></Genus><Type>Altar</Type>    </Input>
+                <Input><Title>Holy Chamber</Title> <Chance>0.4</Chance>   <AbilityMod>4</AbilityMod>
+                        <Genus></Genus><Type>Health</Type>      </Input>
+                <Input><Title>Valued Chamber</Title> <Chance>0.2</Chance>   <AbilityMod>4</AbilityMod>
+                        <Genus></Genus><Type>Resource</Type>   </Input>
+                <Input><Title>Armoured Chamber</Title> <Chance>0.4</Chance>   <AbilityMod>4</AbilityMod>
+                        <Genus></Genus><Type>Armour</Type>   </Input>
+            </Inputs>
+    
+            <Outputs>
+                <Output><Type></Type>     <Chance>1</Chance> <Title>Collect</Title>    <AbilityMod>0</AbilityMod> <CostType>Random</CostType> </Output>
+            </Outputs>
+        </Ability>
+
+        
+        <Ability> <Name>Cross</Name>
+            <Script>Magic Tile</Script>
+            <Icon>Cross</Icon>
+            <Unlocked>T</Unlocked>
+            <UnlockLvl>100</UnlockLvl>
+            
+            <Chance>1</Chance>
+    
+            <Cooldown>
+                <RangeMin>15</RangeMin>
+                <RangeMax>25</RangeMax>
+            </Cooldown>
+    
+            <CostChance>0</CostChance>
+            <CostType>STR</CostType>
+            <Cost>
+                <RangeMin>20</RangeMin>
+                <RangeMax>50</RangeMax>
+            </Cost>
+            <ReduceCooldown>F</ReduceCooldown>
+    
+            <AbilityMod>Input</AbilityMod>
+            <AbilityModMult>130</AbilityModMult>
+    
+            <Inputs>
+                <Input> <Title>Cross</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                        <Type>Yellow</Type> <Title>Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                </Input> 
+                <Input> <Title>Cross</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                        <Type>Red</Type> <Title>Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                </Input>
+                <Input> <Title>Cross</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                        <Type>Blue</Type> <Title>Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                </Input>
+                <Input> <Title>Cross</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                        <Type>Green</Type> <Title>Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                </Input>
+                <Input> <Title>Cross</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                        <Type></Type> <Title>Enemy</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                </Input>
+            </Inputs>
+    
+            <Outputs>
+                <Output><Title>Cross</Title> <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Type>Prism</Type> <Type>Cross</Type> </Output>
+            </Outputs>
+        </Ability>
+
+        
+        <Ability> <Name>Bomb</Name>
+            <Script>Magic Tile</Script>
+            <Icon>Nuke</Icon>
+            <Unlocked>T</Unlocked>
+            <UnlockLvl>100</UnlockLvl>
+            
+            <Chance>1</Chance>
+        
+            <Cooldown>
+                <RangeMin>15</RangeMin>
+                <RangeMax>25</RangeMax>
+            </Cooldown>
+        
+            <CostChance>0</CostChance>
+            <CostType>STR</CostType>
+            <Cost>
+                <RangeMin>20</RangeMin>
+                <RangeMax>50</RangeMax>
+            </Cost>
+            <ReduceCooldown>F</ReduceCooldown>
+        
+            <AbilityMod>Input</AbilityMod>
+            <AbilityModMult>130</AbilityModMult>
+        
+            <Inputs>
+                <Input> <Title>Bomb</Title> <Chance>1</Chance>  <AbilityMod>0</AbilityMod> 
+                        <Type>Yellow</Type> <Title>Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                </Input> 
+                <Input> <Title>Bomb</Title> <Chance>1</Chance>  <AbilityMod>0</AbilityMod> 
+                        <Type>Red</Type> <Title>Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                </Input>
+                <Input> <Title>Bomb</Title> <Chance>1</Chance>  <AbilityMod>0</AbilityMod> 
+                        <Type>Blue</Type> <Title>Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                </Input>
+                <Input> <Title>Bomb</Title> <Chance>1</Chance>  <AbilityMod>0</AbilityMod> 
+                        <Type>Green</Type> <Title>Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                </Input>
+                <Input> <Title>Bomb</Title> <Chance>1</Chance>  <AbilityMod>0</AbilityMod> 
+                        <Type></Type> <Title>Enemy</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                </Input>
+            </Inputs>
+        
+            <Outputs>
+                <Output><Title>Bomb</Title> <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Type>Red</Type> <Type>Bomb</Type> </Output>
+            </Outputs>
+        </Ability>
+
+        <Ability> <Name>Taunt</Name>
+            <Script>Banish</Script>
+            <Icon>Banish</Icon>
+            <Unlocked>T</Unlocked>
+            <UnlockLvl>100</UnlockLvl>
+            
+            <Chance>0.6</Chance>
+            
+            <Cooldown>
+                <RangeMin>30</RangeMin>
+                <RangeMax>45</RangeMax>
+            </Cooldown>
+            
+            <CostChance>0.4</CostChance>
+            <CostType>CHA</CostType>
+            <Cost>
+                <RangeMin>20</RangeMin>
+                <RangeMax>60</RangeMax>
+            </Cost>
+            <ReduceCooldown>T</ReduceCooldown>
+            
+            <AbilityMod>Input</AbilityMod>
+            <AbilityModMult>200</AbilityModMult>
+            
+            <Inputs> 
+                <Input><Type>CHA</Type> <Chance>1</Chance>     <AbilityMod>3</AbilityMod>  <Power>15</Power> <LevelUp>T</LevelUp> </Input>
+                <Input><Type>STR</Type> <Chance>1</Chance>     <AbilityMod>0</AbilityMod>  <Power>15</Power> <LevelUp>T</LevelUp> </Input>
+                <Input><Type>DEX</Type> <Chance>1</Chance>     <AbilityMod>1</AbilityMod>  <Power>15</Power> <LevelUp>T</LevelUp> </Input>
+                <Input><Type>WIS</Type> <Chance>1</Chance>     <AbilityMod>2</AbilityMod>  <Power>15</Power> <LevelUp>T</LevelUp> </Input>
+            </Inputs>
+            
+            <Outputs>
+                <Output><Type></Type>     <Chance>1</Chance> <Title>Collect</Title>    <AbilityMod>0</AbilityMod> <CostType>CHA</CostType> </Output>
+            </Outputs>
+        </Ability>
+
+        <Ability> <Name>Banish</Name>
+            <Script>Banish</Script>
+            <Icon>Banish</Icon>
+            <Unlocked>T</Unlocked>
+            <UnlockLvl>100</UnlockLvl>
+            
+            <Chance>0.3</Chance>
+            
+            <Cooldown>
+                <RangeMin>30</RangeMin>
+                <RangeMax>30</RangeMax>
+            </Cooldown>
+            
+            <CostChance>1</CostChance>
+            <CostType>CHA</CostType>
+            <Cost>
+                <RangeMin>100</RangeMin>
+                <RangeMax>100</RangeMax>
+            </Cost>
+            <ReduceCooldown>F</ReduceCooldown>
+            
+            <AbilityMod>Input</AbilityMod>
+            <AbilityModMult>200</AbilityModMult>
+            
+            <Inputs> 
+                <Input><Type>CHA</Type> <Chance>1</Chance>     <AbilityMod>3</AbilityMod>  <Power>0</Power> <LevelUp>T</LevelUp> </Input>
+                <Input><Type>STR</Type> <Chance>1</Chance>     <AbilityMod>0</AbilityMod>  <Power>0</Power> <LevelUp>T</LevelUp> </Input>
+                <Input><Type>DEX</Type> <Chance>1</Chance>     <AbilityMod>1</AbilityMod>  <Power>0</Power> <LevelUp>T</LevelUp> </Input>
+                <Input><Type>WIS</Type> <Chance>1</Chance>     <AbilityMod>2</AbilityMod>  <Power>0</Power> <LevelUp>T</LevelUp> </Input>
+            </Inputs>
+            
+            <Outputs>
+                <Output><Type></Type>     <Chance>1</Chance> <Title>Collect</Title>    <AbilityMod>0</AbilityMod> <CostType>CHA</CostType> </Output>
+            </Outputs>
+        </Ability>
+
+        <Ability> <Name>Heal</Name>
+            <Script>Heal</Script>
+            <Icon>Heal</Icon>
+            <Unlocked>T</Unlocked>
+            <UnlockLvl>100</UnlockLvl>
+            
+            <Chance>1</Chance>
+            
+            <Cooldown>
+                <RangeMin>35</RangeMin>
+                <RangeMax>35</RangeMax>
+            </Cooldown>
+            
+            <CostChance>0.5</CostChance>
+            <CostType>Random</CostType>
+            <Cost>
+                <RangeMin>15</RangeMin>
+                <RangeMax>15</RangeMax>
+            </Cost>
+            <ReduceCooldown>T</ReduceCooldown>
+            
+            <AbilityMod>Random</AbilityMod>
+            <AbilityModMult>150</AbilityModMult>
+            
+            <Inputs>
+                <Input><Type>Health</Type>      <Chance>1</Chance>  <AbilityMod>0</AbilityMod> <Title>Heal</Title>    <AmountMin>20</AmountMin> <AmountMax>35</AmountMax> </Input>  
+            </Inputs>
+            
+            <Outputs>
+                <Output><Type></Type>     <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title>Collect</Title> </Output>
+            </Outputs>
+        </Ability>
+
+        <Ability> <Name>Change</Name>
+            <Script>Change</Script>
+            <Icon>Raise</Icon>
+            <Unlocked>F</Unlocked>
+            <UnlockLvl>100</UnlockLvl>
+            <Chance>1</Chance>
+            
+            <Cooldown>
+                <RangeMin>20</RangeMin>
+                <RangeMax>25</RangeMax>
+            </Cooldown>
+            
+            <CostChance>0.0</CostChance>
+            <CostType>STR</CostType>
+            <Cost>
+                <RangeMin>0</RangeMin>
+                <RangeMax>0</RangeMax>
+            </Cost>
+            <ReduceCooldown>F</ReduceCooldown>
+            
+            <AbilityMod>WIS</AbilityMod>
+            <AbilityModMult>150</AbilityModMult>
+            
+            <Inputs>
+                <Input><Type>Enemy</Type> <Chance>1</Chance>  <Title></Title>  </Input> 
+            </Inputs>
+            
+            <Outputs>
+                <Output><Type>Scarecrow</Type>     <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title>Raise</Title>  <Value>1</Value>   </Output>
+            </Outputs>
+        </Ability>
+
+        <Ability> <Name>Curse</Name>
+            <Script>ApplyEffectToTile</Script>
+            <Icon>Curse</Icon>
+            <Unlocked>F</Unlocked>
+            <UnlockLvl>100</UnlockLvl>
+            <Chance>1</Chance>
+            
+            <Cooldown>
+                <RangeMin>20</RangeMin>
+                <RangeMax>25</RangeMax>
+            </Cooldown>
+            
+            <CostChance>0.0</CostChance>
+            <CostType>STR</CostType>
+            <Cost>
+                <RangeMin>0</RangeMin>
+                <RangeMax>0</RangeMax>
+            </Cost>
+            <ReduceCooldown>F</ReduceCooldown>
+            
+            <AbilityMod>WIS</AbilityMod>
+            <AbilityModMult>150</AbilityModMult>
+            
+            <Inputs>
+                <Input> 
+                    <Type>Curse</Type> <Chance>1</Chance>  <AbilityMod>2</AbilityMod> 
+                    <ApplyToAll>T</ApplyToAll> <TileNumber>1</TileNumber> 
+                    <Genus></Genus> <Species>Enemy</Species>
+                </Input> 
+            </Inputs>
+            
+            <Outputs>
+                <Output>
+                    <Type>Curse</Type> <Chance>1</Chance> <AbilityMod>2</AbilityMod> <Duration>5</Duration>
+                    <AttackRed>3</AttackRed><HPRed>0</HPRed>
+                </Output>
+            </Outputs>
+        </Ability>
+
+        <Ability> <Name>Alchemy</Name>
+            <Script>Alchemy</Script>
+            <Icon>Alchemy</Icon>
+            <Unlocked>F</Unlocked>
+            <UnlockLvl>3</UnlockLvl>
+            
+            <Chance>1</Chance>
+        
+            <Cooldown>
+                <RangeMin>20</RangeMin>
+                <RangeMax>25</RangeMax>
+            </Cooldown>
+        
+            <CostChance>0.0</CostChance>
+            <CostType>CHA</CostType>
+            <Cost>
+                <RangeMin>0</RangeMin>
+                <RangeMax>0</RangeMax>
+            </Cost>
+            <ReduceCooldown>F</ReduceCooldown>
+        
+            <AbilityMod>Input</AbilityMod>
+            <AbilityModMult>130</AbilityModMult>
+        
+            <Inputs> 
+                <Input><Title>Benefits</Title> <Chance>1</Chance>   <AbilityMod>3</AbilityMod> 
+                        <Genus>Yellow</Genus> <Species>Resource</Species> 
+                </Input>
+                <Input><Title>Benefits</Title> <Chance>1</Chance>   <AbilityMod>0</AbilityMod> 
+                        <Genus>Red</Genus> <Species>Resource</Species> 
+                </Input>
+                <Input><Title>Benefits</Title> <Chance>1</Chance>   <AbilityMod>1</AbilityMod> 
+                        <Genus>Blue</Genus> <Species>Resource</Species> 
+                </Input>
+                <Input><Title>Benefits</Title> <Chance>1</Chance>   <AbilityMod>2</AbilityMod> 
+                        <Genus>Green</Genus> <Species>Resource</Species> 
+                </Input>
+                <Input><Title>Benefits</Title> <Chance>0.2</Chance> <AbilityMod>3</AbilityMod> 
+                        <Genus>Yellow</Genus> <Species>Enemy</Species> 
+                </Input>
+                <Input><Title>Benefits</Title> <Chance>0.2</Chance> <AbilityMod>0</AbilityMod> 
+                        <Genus>Red</Genus> <Species>Enemy</Species> 
+                </Input>
+                <Input><Title>Benefits</Title> <Chance>0.2</Chance> <AbilityMod>1</AbilityMod> 
+                        <Genus>Blue</Genus> <Species>Enemy</Species> 
+                </Input>
+                <Input><Title>Benefits</Title> <Chance>0.2</Chance> <AbilityMod>2</AbilityMod> 
+                        <Genus>Green</Genus> <Species>Enemy</Species> 
+                </Input>
+            </Inputs>
+        
+            <Outputs>
+                <Output><Type></Type>     <Chance>1</Chance> <Title>Collect</Title>    <AbilityMod>0</AbilityMod> <CostType>Random</CostType> </Output>
+            </Outputs>
+        </Ability>
+
+        <Ability> <Name>Berserk</Name>
+            <Script>Berserk</Script>
+            <Icon>Berserk</Icon>
+            <Unlocked>F</Unlocked>
+            <UnlockLvl>1</UnlockLvl>
+            
+            <Chance>1</Chance>
+        
+            <Cooldown>
+                <RangeMin>15</RangeMin>
+                <RangeMax>20</RangeMax>
+            </Cooldown>
+        
+            <CostChance>0.0</CostChance>
+            <CostType>CHA</CostType>
+            <Cost>
+                <RangeMin>0</RangeMin>
+                <RangeMax>0</RangeMax>
+            </Cost>
+            <ReduceCooldown>F</ReduceCooldown>
+        
+            <AbilityMod>CHA</AbilityMod>
+            <AbilityModMult>130</AbilityModMult>
+        
+            <Inputs> 
+                <Input><Title>Berserk</Title> <Chance>1</Chance> <AbilityMod>3</AbilityMod> 
+                        <Genus>Yellow</Genus> <Type>Resource</Type></Input>
+                <Input><Title>Berserk</Title> <Chance>1</Chance> <AbilityMod>0</AbilityMod> 
+                        <Genus>Red</Genus> <Type>Resource</Type></Input>
+                <Input><Title>Berserk</Title> <Chance>1</Chance> <AbilityMod>1</AbilityMod> 
+                        <Genus>Blue</Genus> <Type>Resource</Type></Input>
+                <Input><Title>Berserk</Title> <Chance>1</Chance> <AbilityMod>2</AbilityMod> 
+                        <Genus>Green</Genus> <Type>Resource</Type></Input>
+            </Inputs>
+        
+            <Outputs>
+                <Output><Type></Type>     <Chance>1</Chance> <Title>Collect</Title>    <AbilityMod>0</AbilityMod> <CostType>Random</CostType> </Output>
+            </Outputs>
+        </Ability>
+
+        <Ability> <Name>Anti-Gravity</Name>
+            <Script>ApplyEffectToTile</Script>
+            <Icon>Curse</Icon>
+            <Unlocked>F</Unlocked>
+            <UnlockLvl>100</UnlockLvl>
+            <Chance>1</Chance>
+            
+            <Cooldown>
+                <RangeMin>20</RangeMin>
+                <RangeMax>25</RangeMax>
+            </Cooldown>
+            
+            <CostChance>0.0</CostChance>
+            <CostType>STR</CostType>
+            <Cost>
+                <RangeMin>0</RangeMin>
+                <RangeMax>0</RangeMax>
+            </Cost>
+            <ReduceCooldown>F</ReduceCooldown>
+            
+            <AbilityMod>WIS</AbilityMod>
+            <AbilityModMult>150</AbilityModMult>
+            
+            <Inputs>
+                <Input> 
+                    <Type>Anti-Gravity</Type> <Chance>1</Chance>  <AbilityMod>2</AbilityMod> 
+                    <ApplyToAll>F</ApplyToAll> <TileNumber>1</TileNumber> 
+                    <Genus></Genus> <Species>Enemy</Species>
+                </Input> 
+            </Inputs>
+            
+            <Outputs>
+                <Output>
+                    <Type>AntiGravity</Type> <Chance>1</Chance> <AbilityMod>2</AbilityMod> <Duration>5</Duration>
+                    <Particle>Gravity</Particle> <Shift>4</Shift>
+                </Output>
+            </Outputs>
+        </Ability>
+        
+
+    </FreeAbilities>
+    
+    <ClassAbilities>
+
+        <Class>  <Name>The Beginner</Name>      
+            <Abilities>
+                <Ability> <Name>Collect</Name>
+                    <Script>Collect</Script>
+                    <Icon>Default</Icon>
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+                
+                    <Cooldown>
+                        <RangeMin>30</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cooldown>
+                
+                    <CostChance>0.1</CostChance>
+                    <CostType>Random</CostType>
+                    <Cost>
+                        <RangeMin>30</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>T</ReduceCooldown>
+                
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+                
+                    <Inputs>
+                        <Input>
+                            <Title>Red</Title>    <Chance>0.4</Chance> <AbilityMod>0</AbilityMod>  
+                                <Genus>Red</Genus>  <Type></Type>  
+                        </Input>  
+                        <Input>
+                            <Title>R Res</Title>  <Chance>1</Chance>   <AbilityMod>0</AbilityMod>  
+                                <Genus>Red</Genus>  <Type>Resource</Type> 
+                        </Input>
+                        <Input>
+                            <Title>B Res</Title>  <Chance>1</Chance>   <AbilityMod>1</AbilityMod>  
+                                <Genus>Blue</Genus>     <Type>Resource</Type>   
+                        </Input>
+                        <Input>
+                            <Title>G Res</Title>  <Chance>1</Chance>   <AbilityMod>2</AbilityMod>  
+                                <Genus>Green</Genus>    <Type>Resource</Type>  
+                        </Input>
+                        <Input>
+                            <Title>Y Res</Title>  <Chance>1</Chance>   <AbilityMod>3</AbilityMod>  
+                                <Genus>Yellow</Genus>   <Type>Resource</Type> 
+                        </Input>
+                        <Input>
+                            <Title>Health</Title> <Chance>0.8</Chance> <AbilityMod>0</AbilityMod>  
+                                <Genus></Genus>     <Type>Health</Type>
+                        </Input>          
+                        <Input>
+                            <Title>Armour</Title> <Chance>0.4</Chance> <AbilityMod>4</AbilityMod>  
+                                <Genus></Genus>     <Type>Armour</Type> 
+                        </Input>   
+                    </Inputs>
+                
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title>Collect</Title> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Stack</Name>
+                    <Script>Stack</Script>
+                    <Icon>Stack</Icon>
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+                
+                    <Cooldown>
+                        <RangeMin>20</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cooldown>
+                
+                    <CostChance>0.0</CostChance>
+                    <CostType>WIS</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>130</AbilityModMult>
+                
+                    <Inputs> 
+                        <Input><Title>Chamber of Body</Title> <Chance>1</Chance>     <AbilityMod>0</AbilityMod>  
+                                <Genus>Red</Genus><Type>Resource</Type></Input>
+                        <Input><Title>Chamber of Agility</Title> <Chance>1</Chance>     <AbilityMod>1</AbilityMod>  
+                                <Genus>Blue</Genus><Type>Resource</Type></Input>
+                        <Input><Title>Chamber of Healing</Title> <Chance>0.3</Chance>    <AbilityMod>0</AbilityMod> 
+                                <Genus>Red</Genus><Type>Health</Type></Input>
+                        <Input><Title>Chamber of Healing</Title> <Chance>0.3</Chance>    <AbilityMod>1</AbilityMod> 
+                                <Genus>Blue</Genus><Type>Health</Type></Input>
+                        <Input><Title>Chamber of Healing</Title> <Chance>0.3</Chance>    <AbilityMod>2</AbilityMod> 
+                                <Genus>Green</Genus><Type>Health</Type></Input>
+                        <Input><Title>Chamber of Healing</Title> <Chance>0.3</Chance>    <AbilityMod>3</AbilityMod> 
+                                <Genus>Yellow</Genus><Type>Health</Type></Input>
+                        <Input><Title>Demon Chamber</Title><Chance>0.7</Chance>    <AbilityMod>0</AbilityMod>   
+                                <Genus>Red</Genus><Type>Enemy</Type></Input>
+                        <Input><Title>Holy Chamber</Title> <Chance>0.4</Chance>   <AbilityMod>4</AbilityMod>
+                                <Genus></Genus><Type>Health</Type>      </Input>
+                        <Input><Title>Armoured Chamber</Title> <Chance>0.4</Chance>   <AbilityMod>4</AbilityMod>
+                                <Genus></Genus><Type>Armour</Type>   </Input>
+                    </Inputs>
+                
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <Title>Collect</Title>    <AbilityMod>0</AbilityMod> <CostType>Random</CostType> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Cross</Name>
+                    <Script>Magic Tile</Script>
+                    <Icon>Cross</Icon>
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+                
+                    <Cooldown>
+                        <RangeMin>15</RangeMin>
+                        <RangeMax>25</RangeMax>
+                    </Cooldown>
+                
+                    <CostChance>0</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>20</RangeMin>
+                        <RangeMax>50</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>130</AbilityModMult>
+                
+                    <Inputs>
+                        <Input> <Title>Cross</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                                <Type>Yellow</Type> <Title>Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                        </Input> 
+                        <Input> <Title>Cross</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                                <Type>Red</Type> <Title>Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                        </Input>
+                        <Input> <Title>Cross</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                                <Type>Blue</Type> <Title>Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                        </Input>
+                        <Input> <Title>Cross</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                                <Type>Green</Type> <Title>Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                        </Input>
+                        <Input> <Title>Cross</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                                <Type></Type> <Title>Enemy</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                        </Input>
+                    </Inputs>
+                
+                    <Outputs>
+                        <Output><Title>Cross</Title> <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Type>Prism</Type> <Type>Cross</Type> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Armour Swap</Name>
+                    <Script>Swap</Script>
+                    <Icon>Armour</Icon>
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>0.75</Chance>
+                
+                    <Cooldown>
+                        <RangeMin>25</RangeMin>
+                        <RangeMax>25</RangeMax>
+                    </Cooldown>
+                
+                    <CostChance>0.0</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                
+                    <AbilityMod>Output</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+                
+                    <Inputs>
+                        <Input><Title>Armour</Title><Chance>1</Chance> <Genus>Red</Genus> <Type></Type>                 </Input>
+                        <Input><Title>Armour</Title><Chance>1</Chance> <Genus>Blue</Genus> <Type></Type>                </Input> 
+                        <Input><Title>Armour</Title><Chance>1</Chance> <Genus>Green</Genus> <Type></Type>               </Input>  
+                        <Input><Title>Armour</Title><Chance>1</Chance> <Genus>Yellow</Genus> <Type></Type>              </Input>
+                        <Input><Title>Armour</Title><Chance>0.1</Chance> <Genus>Purple</Genus> <Type></Type>              </Input>
+                    </Inputs>
+                
+                    <Outputs>
+                        <Output> <Title>Khan's</Title>     <Chance>1</Chance> <AbilityMod>0</AbilityMod>  
+                                  <Genus>Red</Genus> <Type>Armour</Type>
+                        </Output>
+                        <Output> <Title>Wu's</Title>    <Chance>1</Chance> <AbilityMod>1</AbilityMod>   
+                                  <Genus>Blue</Genus> <Type>Armour</Type>
+                        </Output>
+                        <Output> <Title>Solomon's</Title>   <Chance>1</Chance>    <AbilityMod>2</AbilityMod>   
+                                  <Genus>Green</Genus> <Type>Armour</Type>
+                        </Output>
+                        <Output> <Title>Midas</Title>  <Chance>1</Chance> <AbilityMod>3</AbilityMod>   
+                                  <Genus>Yellow</Genus> <Type>Armour</Type>
+                        </Output>
+                        <Output> <Title>Magic</Title>  <Chance>0.5</Chance> <AbilityMod>4</AbilityMod>   
+                                  <Genus>Purple</Genus> <Type>Armour</Type>
+                        </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability>  <Name>Slash</Name>
+                    <Script>Slash</Script>
+                    <Icon>Slash</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                   
+                    <Chance>1</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>20</RangeMin>
+                        <RangeMax>20</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>0.15</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>30</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>T</ReduceCooldown>
+            
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>130</AbilityModMult>
+            
+                    <Inputs>
+                        <Input><Title>Slash Y</Title>      <Chance>1</Chance>   <AbilityMod>4</AbilityMod> <Type>X</Type>  </Input>
+                        <Input><Title>Slash X</Title>      <Chance>1</Chance>   <AbilityMod>4</AbilityMod> <Type>Y</Type>  </Input>    
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title>Collect</Title> <CostType>Random</CostType> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>King Swap</Name>
+                    <Script>Swap</Script>
+                    <Icon>KingSwap</Icon>
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>0.75</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>25</RangeMin>
+                        <RangeMax>25</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>0.0</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>Output</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+            
+                    <Inputs>
+                        <Input><Title>Touch</Title><Chance>1</Chance> <Genus>Red</Genus> <Type></Type>                 </Input>
+                        <Input><Title>Touch</Title><Chance>1</Chance> <Genus>Blue</Genus> <Type></Type>                </Input> 
+                        <Input><Title>Touch</Title><Chance>1</Chance> <Genus>Green</Genus> <Type></Type>               </Input>  
+                        <Input><Title>Touch</Title><Chance>1</Chance> <Genus>Yellow</Genus> <Type></Type>              </Input>     
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output> <Title>Khan's</Title>     <Chance>1</Chance> <AbilityMod>0</AbilityMod>  
+                                  <Genus>Red</Genus> <Type></Type>
+                        </Output>
+                        <Output> <Title>Wu's</Title>    <Chance>1</Chance> <AbilityMod>1</AbilityMod>   
+                                  <Genus>Blue</Genus> <Type></Type>
+                        </Output>
+                    </Outputs>
+                </Ability>
+            
+            </Abilities>
+        </Class>
+
+        <Class>  <Name>The Wizard</Name>
+            <Abilities>
+                <Ability> <Name>Research</Name>
+                    <Script>Swap</Script>
+                    <Icon>Research</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>25</RangeMin>
+                        <RangeMax>25</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>1</CostChance>
+                    <CostType>WIS</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>5</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>Output</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+
+                    <Inputs>
+                        <Input><Title>Research</Title><Chance>1</Chance> <Genus>Red</Genus> <Type></Type>    </Input>
+                        <Input><Title>Research</Title><Chance>1</Chance> <Genus>Blue</Genus> <Type></Type>   </Input> 
+                        <Input><Title>Research</Title><Chance>1</Chance> <Genus>Yellow</Genus> <Type></Type> </Input>     
+                    </Inputs>
+                    
+                    <Outputs>
+                        <Output> <Title></Title>   <Chance>1</Chance>    <AbilityMod>2</AbilityMod>   
+                                  <Genus>Green</Genus> <Type></Type>
+                        </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Fireball</Name>
+                    <Script>Fireball</Script>
+                    <Icon>Fireball</Icon>
+                    
+                    <Chance>1</Chance>
+
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>1</UnlockLvl>
+            
+                    <Cooldown>
+                        <RangeMin>15</RangeMin>
+                        <RangeMax>15</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>1</CostChance>
+                    <CostType>WIS</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>WIS</AbilityMod>
+                    <AbilityModMult>500</AbilityModMult>
+            
+                    <Inputs> 
+                        <Input><Type>Range</Type><Range>2</Range></Input>   
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output><Type></Type></Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Mana Shield</Name>
+                    <Script>Shield</Script>
+                    <Icon>ManaShield</Icon>
+
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>2</UnlockLvl>
+
+                    <Chance>1</Chance>
+                    
+                    <Cooldown>
+                        <RangeMin>10</RangeMin>
+                        <RangeMax>10</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>0</CostChance>
+                    <CostType>WIS</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>WIS</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+            
+                    <Inputs> 
+                        <Input><Type>Green</Type>   <Chance>1</Chance> <AbilityMod>2</AbilityMod> <Title>Mana</Title>   <Range>3</Range> </Input>   
+                        <Input><Type>Red</Type>     <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title>Power</Title>  <Range>3</Range> </Input>  
+                        <Input><Type>Blue</Type>    <Chance>1</Chance> <AbilityMod>1</AbilityMod> <Title>Evasive</Title><Range>3</Range> </Input>  
+                        <Input><Type>Yellow</Type>  <Chance>1</Chance> <AbilityMod>3</AbilityMod> <Title>Golden</Title> <Range>3</Range> </Input>  
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output><Type></Type></Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Lightning</Name>
+                    <Script>Lightning</Script>
+                    <Icon>Lightning</Icon>
+
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>3</UnlockLvl>
+
+                    
+                    <Chance>1</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>10</RangeMin>
+                        <RangeMax>10</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>1</CostChance>
+                    <CostType>WIS</CostType>
+                    <Cost>
+                        <RangeMin>20</RangeMin>
+                        <RangeMax>20</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>WIS</AbilityMod>
+                    <AbilityModMult>200</AbilityModMult>
+            
+                    <Inputs>    
+                    </Inputs>
+            
+                    <Outputs>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Vent</Name>
+                    <Script>Refresh</Script>
+                    <Icon>Vent</Icon>
+
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>4</UnlockLvl>
+
+                    
+                    <Chance>1</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>15</RangeMin>
+                        <RangeMax>20</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>1</CostChance>
+                    <CostType>WIS</CostType>
+                    <Cost>
+                        <RangeMin>50</RangeMin>
+                        <RangeMax>50</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>WIS</AbilityMod>
+                    <AbilityModMult>200</AbilityModMult>
+            
+                    <Inputs>    
+                    </Inputs>
+            
+                    <Outputs>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Brilliance</Name>
+                    <Script>Collect</Script>
+                    <Icon>Default</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>15</RangeMin>
+                        <RangeMax>15</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>0</CostChance>
+                    <CostType>WIS</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+            
+                    <Inputs>
+                      <Input><Title>Brilliance</Title> <Chance>1</Chance> <AbilityMod>2</AbilityMod> <Genus>Green</Genus>  <Type></Type> </Input>  
+                      <Input><Title>Brilliance</Title> <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Genus>Red</Genus>  <Type></Type> </Input>  
+                      <Input><Title>Brilliance</Title> <Chance>1</Chance> <AbilityMod>1</AbilityMod> <Genus>Blue</Genus>  <Type></Type> </Input>  
+                      <Input><Title>Brilliance</Title> <Chance>1</Chance> <AbilityMod>3</AbilityMod> <Genus>Yellow</Genus>  <Type></Type> </Input>  
+                      <Input><Title>Brilliance</Title> <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Genus></Genus> <Type>Health</Type> </Input>  
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output><Title></Title> <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Type></Type> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Force</Name>
+                    <Script>Force</Script>
+                    <Icon>Missile</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>15</RangeMin>
+                        <RangeMax>15</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>1</CostChance>
+                    <CostType>Input</CostType>
+                    <Cost>
+                        <RangeMin>20</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>WIS</AbilityMod>
+                    <AbilityModMult>20</AbilityModMult>
+            
+                    <Inputs>
+                        <Input> <Title>Mental</Title>   <Chance>1</Chance> <AbilityMod>2</AbilityMod> <DamageMin>5</DamageMin> </Input>     
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output><Type></Type>    <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title></Title> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Stack</Name>
+                    <Script>Stack</Script>
+                    <Icon>Stack</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>25</RangeMin>
+                        <RangeMax>25</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>0</CostChance>
+                    <CostType>WIS</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>200</AbilityModMult>
+            
+                    <Inputs> 
+                        <Input><Title>Chamber of Body</Title>   <Chance>1</Chance>  <AbilityMod>0</AbilityMod> <Genus>Red</Genus> <Type>Resource</Type>       </Input>
+                        <Input><Title>Chamber of Wisdom</Title> <Chance>1</Chance>  <AbilityMod>2</AbilityMod> <Genus>Green</Genus> <Type>Resource</Type> </Input>
+                        <Input><Title>Chamber of Healing</Title><Chance>0.3</Chance><AbilityMod>0</AbilityMod> <Genus>Red</Genus> <Type>Health</Type>        </Input>
+                        <Input><Title>Chamber of Healing</Title><Chance>0.3</Chance><AbilityMod>2</AbilityMod> <Genus>Green</Genus> <Type>Health</Type> </Input>                      
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <Title>Collect</Title>    <AbilityMod>0</AbilityMod> <CostType>Random</CostType> </Output>
+                    </Outputs>
+                </Ability>
+
+                
+                <Ability> <Name>Cross</Name>
+                    <Script>Magic Tile</Script>
+                    <Icon>Cross</Icon>
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+                
+                    <Cooldown>
+                        <RangeMin>20</RangeMin>
+                        <RangeMax>20</RangeMax>
+                    </Cooldown>
+                
+                    <CostChance>0</CostChance>
+                    <CostType>WIS</CostType>
+                    <Cost>
+                        <RangeMin>40</RangeMin>
+                        <RangeMax>40</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>130</AbilityModMult>
+                
+                    <Inputs>
+                        <Input> <Title>Cross</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                                <Type>Yellow</Type> <Title>Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                        </Input> 
+                        <Input> <Title>Cross</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                                <Type>Red</Type> <Title>Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                        </Input>
+                        <Input> <Title>Cross</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                                <Type>Blue</Type> <Title>Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                        </Input>
+                        <Input> <Title>Cross</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                                <Type>Green</Type> <Title>Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                        </Input>
+                        <Input> <Title>Cross</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                                <Type></Type> <Title>Enemy</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                        </Input>
+                    </Inputs>
+                
+                    <Outputs>
+                        <Output><Title>Cross</Title> <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Type>Prism</Type> <Type>Cross</Type> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Boost</Name>
+                    <Script>Boost</Script>
+                    <Icon>Boost</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>20</RangeMin>
+                        <RangeMax>20</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>0</CostChance>
+                    <CostType>WIS</CostType>
+                    <Cost>
+                        <RangeMin>30</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>130</AbilityModMult>
+            
+                    <Inputs>
+                        <Input><Title>Green</Title>    <Chance>1</Chance>   <AbilityMod>2</AbilityMod> <Genus>Green</Genus> <Type></Type>   <Mult>2</Mult></Input>
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title>Collect</Title> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Heal</Name>
+                    <Script>Heal</Script>
+                    <Icon>Heal</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>15</RangeMin>
+                        <RangeMax>15</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>0</CostChance>
+                    <CostType>WIS</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>WIS</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+            
+                    <Inputs>
+                        <Input><Type>Health</Type>      <Chance>1</Chance>  <AbilityMod>0</AbilityMod> <Title>Heal</Title>    <AmountMin>20</AmountMin> <AmountMax>35</AmountMax> </Input>  
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title>Collect</Title> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Armour Swap</Name>
+                    <Script>Swap</Script>
+                    <Icon>Swap</Icon>
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>0.75</Chance>
+                
+                    <Cooldown>
+                        <RangeMin>20</RangeMin>
+                        <RangeMax>20</RangeMax>
+                    </Cooldown>
+                
+                    <CostChance>0</CostChance>
+                    <CostType>WIS</CostType>
+                    <Cost>
+                        <RangeMin>30</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                
+                    <AbilityMod>Output</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+                
+                    <Inputs>
+                        <Input><Title>Armour</Title><Chance>1</Chance> <Genus>Red</Genus> <Type></Type>                 </Input>
+                        <Input><Title>Armour</Title><Chance>1</Chance> <Genus>Blue</Genus> <Type></Type>                </Input> 
+                        <Input><Title>Armour</Title><Chance>1</Chance> <Genus>Green</Genus> <Type></Type>               </Input>  
+                        <Input><Title>Armour</Title><Chance>1</Chance> <Genus>Yellow</Genus> <Type></Type>              </Input>
+                        <Input><Title>Armour</Title><Chance>0.1</Chance> <Genus>Purple</Genus> <Type></Type>              </Input>
+                    </Inputs>
+                
+                    <Outputs>
+                        <Output> <Title>Khan's</Title>     <Chance>1</Chance> <AbilityMod>0</AbilityMod>  
+                                  <Genus>Red</Genus> <Type>Armour</Type>
+                        </Output>
+                        <Output> <Title>Solomon's</Title>   <Chance>1</Chance>    <AbilityMod>2</AbilityMod>   
+                                  <Genus>Green</Genus> <Type>Armour</Type>
+                        </Output>
+                        <Output> <Title>Magic</Title>  <Chance>0.5</Chance> <AbilityMod>4</AbilityMod>   
+                                  <Genus>Purple</Genus> <Type>Armour</Type>
+                        </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>King Swap</Name>
+                    <Script>Swap</Script>
+                    <Icon>KingSwap</Icon>
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>0.75</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>20</RangeMin>
+                        <RangeMax>20</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>0</CostChance>
+                    <CostType>WIS</CostType>
+                    <Cost>
+                        <RangeMin>30</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>Output</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+            
+                    <Inputs>
+                        <Input><Title>Touch</Title><Chance>1</Chance> <Genus>Red</Genus> <Type></Type>                 </Input>
+                        <Input><Title>Touch</Title><Chance>1</Chance> <Genus>Blue</Genus> <Type></Type>                </Input> 
+                        <Input><Title>Touch</Title><Chance>1</Chance> <Genus>Green</Genus> <Type></Type>               </Input>  
+                        <Input><Title>Touch</Title><Chance>1</Chance> <Genus>Yellow</Genus> <Type></Type>              </Input>     
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output> <Title>Khan's</Title>     <Chance>1</Chance> <AbilityMod>0</AbilityMod>  
+                                  <Genus>Red</Genus> <Type></Type>
+                        </Output>
+                        <Output> <Title>Solomon's</Title>   <Chance>1</Chance>    <AbilityMod>2</AbilityMod>   
+                                  <Genus>Green</Genus> <Type></Type>
+                        </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Curse</Name>
+                    <Script>ApplyEffectToTile</Script>
+                    <Icon>Curse</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    <Chance>1</Chance>
+                    
+                    <Cooldown>
+                        <RangeMin>25</RangeMin>
+                        <RangeMax>25</RangeMax>
+                    </Cooldown>
+                    
+                    <CostChance>0.0</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                    
+                    <AbilityMod>WIS</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+                    
+                    <Inputs>
+                        <Input> 
+                            <Type>Curse</Type> <Chance>1</Chance>  <AbilityMod>2</AbilityMod> 
+                            <ApplyToAll>T</ApplyToAll> <TileNumber>1</TileNumber> 
+                            <Genus></Genus> <Species>Enemy</Species>
+                        </Input> 
+                    </Inputs>
+                    
+                    <Outputs>
+                        <Output>
+                            <Type>Curse</Type> <Chance>1</Chance> <AbilityMod>2</AbilityMod> <Duration>5</Duration>
+                             <AttackRed>3</AttackRed><HPRed>0</HPRed>
+                        </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Anti-Gravity</Name>
+                    <Script>ApplyEffectToTile</Script>
+                    <Icon>Gravity</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    <Chance>1</Chance>
+                    
+                    <Cooldown>
+                        <RangeMin>20</RangeMin>
+                        <RangeMax>20</RangeMax>
+                    </Cooldown>
+                    
+                    <CostChance>0</CostChance>
+                    <CostType>WIS</CostType>
+                    <Cost>
+                        <RangeMin>15</RangeMin>
+                        <RangeMax>15</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                    
+                    <AbilityMod>WIS</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+                    
+                    <Inputs>
+                        <Input> 
+                            <Type>AntiGravity</Type> <Chance>1</Chance>  <AbilityMod>2</AbilityMod> 
+                            <ApplyToAll>T</ApplyToAll> <TileNumber>1</TileNumber> 
+                            <Genus>Red</Genus> <Species></Species>
+                        </Input> 
+                        <Input> 
+                            <Type>AntiGravity</Type> <Chance>1</Chance>  <AbilityMod>2</AbilityMod> 
+                            <ApplyToAll>T</ApplyToAll> <TileNumber>1</TileNumber> 
+                            <Genus>Blue</Genus> <Species></Species>
+                        </Input> 
+                        <Input> 
+                            <Type>AntiGravity</Type> <Chance>1</Chance>  <AbilityMod>2</AbilityMod> 
+                            <ApplyToAll>T</ApplyToAll> <TileNumber>1</TileNumber> 
+                            <Genus>Yellow</Genus> <Species></Species>
+                        </Input> 
+                        <Input> 
+                            <Type>AntiGravity</Type> <Chance>1</Chance>  <AbilityMod>2</AbilityMod> 
+                            <ApplyToAll>T</ApplyToAll> <TileNumber>1</TileNumber> 
+                            <Genus>Green</Genus> <Species></Species>
+                        </Input> 
+
+                    </Inputs>
+                    
+                    <Outputs>
+                        <Output>
+                            <Type>AntiGravity</Type> <Chance>1</Chance> <AbilityMod>2</AbilityMod> <Duration>5</Duration>
+                            <Shift>4</Shift>
+                        </Output>
+                    </Outputs>
+                </Ability>
+
+            </Abilities>
+        </Class>
+
+        <Class>  <Name>The Merchant</Name>
+            <Abilities>
+                <Ability> <Name>Chamber of Treasure</Name>
+                    <Script>Stack</Script>
+                    <Icon>Stack</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>25</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>1</CostChance>
+                    <CostType>CHA</CostType>
+                    <Cost>
+                        <RangeMin>20</RangeMin>
+                        <RangeMax>20</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>130</AbilityModMult>
+            
+                    <Inputs> 
+                        <Input><Title>Chamber of Treasure</Title> <Chance>1</Chance> <AbilityMod>3</AbilityMod>        
+                        <Genus>Yellow</Genus><Type>Resource</Type></Input>      
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <Title>Collect</Title>    <AbilityMod>0</AbilityMod> <CostType>Random</CostType> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Berserk</Name>
+                    <Script>Berserk</Script>
+                    <Icon>Berserk</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>1</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+                
+                    <Cooldown>
+                        <RangeMin>25</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cooldown>
+                
+                    <CostChance>0.0</CostChance>
+                    <CostType>CHA</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                
+                    <AbilityMod>CHA</AbilityMod>
+                    <AbilityModMult>130</AbilityModMult>
+                
+                    <Inputs> 
+                        <Input><Title>Berserk</Title> <Chance>1</Chance> <AbilityMod>3</AbilityMod> 
+                                <Genus>Yellow</Genus> <Type>Resource</Type></Input>
+                    </Inputs>
+                
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <Title>Collect</Title>    <AbilityMod>0</AbilityMod> <CostType>Random</CostType> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Trading</Name>
+                    <Script>Alchemy</Script>
+                    <Icon>Alchemy</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>3</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+                
+                    <Cooldown>
+                        <RangeMin>25</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cooldown>
+                
+                    <CostChance>0.0</CostChance>
+                    <CostType>CHA</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>130</AbilityModMult>
+                
+                    <Inputs> 
+                        <Input><Title>Benefits</Title> <Chance>1</Chance>   <AbilityMod>3</AbilityMod> 
+                                <Genus>Yellow</Genus> <Species>Resource</Species> 
+                        </Input>
+                        <Input><Title>Benefits</Title> <Chance>0.2</Chance> <AbilityMod>3</AbilityMod> 
+                                <Genus>Yellow</Genus> <Species>Enemy</Species> 
+                        </Input>
+                    </Inputs>
+                
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <Title>Collect</Title>    <AbilityMod>0</AbilityMod> <CostType>Random</CostType> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability>  <Name>Goldlust</Name>
+                    <Script>Goldlust</Script>
+                    <Icon>Goldlust</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>5</UnlockLvl>
+                   
+                    <Chance>0.1</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>0.0</CostChance>
+                    <CostType>CHA</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>200</AbilityModMult>
+            
+                    <Inputs> 
+                        <Input><Title>Goldlust</Title>  <Chance>1</Chance> <AbilityMod>3</AbilityMod>   
+                                <Genus>Yellow</Genus> <Species></Species> <CD>3</CD> 
+                        </Input>
+                        <Input><Title>Lifelust</Title>  <Chance>1</Chance> <AbilityMod>0</AbilityMod>   
+                                <Genus>Red</Genus> <Species></Species> <CD>3</CD> 
+                        </Input>
+                        <Input><Title>Powerlust</Title> <Chance>1</Chance> <AbilityMod>1</AbilityMod>   
+                                <Genus>Blue</Genus> <Species></Species> <CD>3</CD> 
+                        </Input>
+                        <Input><Title>Mindlust</Title>  <Chance>1</Chance> <AbilityMod>2</AbilityMod>   
+                                <Genus>Green</Genus> <Species></Species> <CD>3</CD> 
+                        </Input>
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <Title>Collect</Title>    <AbilityMod>0</AbilityMod> <CostType>Random</CostType> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Deep Pockets</Name>
+                    <Script>Banish</Script>
+                    <Icon>Banish</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>4</UnlockLvl>
+                    
+                    <Chance>0.4</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>30</RangeMin>
+                        <RangeMax>40</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>1</CostChance>
+                    <CostType>CHA</CostType>
+                    <Cost>
+                        <RangeMin>150</RangeMin>
+                        <RangeMax>150</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>200</AbilityModMult>
+            
+                    <Inputs> 
+                        <Input><Type>CHA</Type> <Chance>1</Chance>     <AbilityMod>3</AbilityMod>  <Power>0</Power> <LevelUp>T</LevelUp> </Input>
+                        <Input><Type>STR</Type> <Chance>1</Chance>     <AbilityMod>0</AbilityMod>  <Power>0</Power> <LevelUp>T</LevelUp> </Input>
+                        <Input><Type>DEX</Type> <Chance>1</Chance>     <AbilityMod>1</AbilityMod>  <Power>0</Power> <LevelUp>T</LevelUp> </Input>
+                        <Input><Type>WIS</Type> <Chance>1</Chance>     <AbilityMod>2</AbilityMod>  <Power>0</Power> <LevelUp>T</LevelUp> </Input>
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <Title>Collect</Title>    <AbilityMod>0</AbilityMod> <CostType>CHA</CostType> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Collect</Name>
+                    <Script>Collect</Script>
+                    <Icon>Default</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>1.0</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>30</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>0</CostChance>
+                    <CostType>Random</CostType>
+                    <Cost>
+                        <RangeMin>30</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+            
+                    <Inputs>     
+                        <Input>
+                        <Title>Y Res</Title>  <Chance>1</Chance>   <AbilityMod>3</AbilityMod>  
+                            <Genus>Yellow</Genus>   <Type>Resource</Type> 
+                        </Input>  
+                        <Input>
+                            <Title>Yellow</Title>  <Chance>1</Chance>   <AbilityMod>3</AbilityMod>  
+                            <Genus>Yellow</Genus>   <Type></Type> 
+                        </Input>  
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title>Collect</Title> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Force</Name>
+                    <Script>Force</Script>
+                    <Icon>Missile</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>1.4</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>30</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>1</CostChance>
+                    <CostType>Input</CostType>
+                    <Cost>
+                        <RangeMin>30</RangeMin>
+                        <RangeMax>40</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>10</AbilityModMult>
+            
+                    <Inputs> 
+                        <Input> <Title>Charming</Title> <Chance>1</Chance> <AbilityMod>3</AbilityMod> <DamageMin>10</DamageMin> </Input>    
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output><Type></Type>    <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title>Collect</Title> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Force</Name>
+                    <Script>Force</Script>
+                    <Icon>Missile</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>0.5</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>40</RangeMin>
+                        <RangeMax>40</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>1</CostChance>
+                    <CostType>Input</CostType>
+                    <Cost>
+                        <RangeMin>30</RangeMin>
+                        <RangeMax>40</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>4</AbilityModMult>
+            
+                    <Inputs> 
+                        <Input> <Title>Merchant's</Title> <Chance>1</Chance> <AbilityMod>3</AbilityMod> <DamageMin>15</DamageMin> </Input>    
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output><Type></Type>    <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title>Collect</Title> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Script>Swap</Script>
+                    <Icon>Swap</Icon> 
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    <Name>Swap</Name>
+                    <Chance>1</Chance>
+                
+                    <Cooldown>
+                        <RangeMin>30</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cooldown>
+                
+                    <CostChance>0.0</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                
+                    <AbilityMod>Output</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+                
+                    <Inputs>
+                        <Input><Title>Touch</Title><Chance>0.6</Chance> <Genus>Red</Genus> <Type></Type>                 </Input>
+                        <Input><Title>Touch</Title><Chance>0.6</Chance> <Genus>Blue</Genus> <Type></Type>                </Input> 
+                        <Input><Title>Touch</Title><Chance>0.6</Chance> <Genus>Green</Genus> <Type></Type>               </Input>  
+                        <Input><Title>Touch</Title><Chance>0.6</Chance> <Genus>Yellow</Genus> <Type></Type>              </Input>   
+                        <Input><Title>Touch</Title><Chance>1</Chance>   <Genus>Red</Genus> <Type>Resource</Type>        </Input>         
+                        <Input><Title>Touch</Title><Chance>1</Chance>   <Genus>Blue</Genus> <Type>Resource</Type>       </Input>          
+                        <Input><Title>Touch</Title><Chance>1</Chance>   <Genus>Yellow</Genus> <Type>Resource</Type>      </Input>           
+                        <Input><Title>Touch</Title><Chance>1</Chance>   <Genus>Green</Genus> <Type>Resource</Type>     </Input>            
+                    <!--<Input><Title>Touch</Title><Chance>0.3</Chance> <Genus>Red</Genus> <Type>Health</Type>          </Input>-->
+                    <!--<Input><Title>Touch</Title><Chance>0.3</Chance> <Genus>Blue</Genus> <Type>Health</Type>         </Input>-->
+                    <!--<Input><Title>Touch</Title><Chance>0.3</Chance> <Genus>Green</Genus> <Type>Health</Type>        </Input>-->
+                    <!--<Input><Title>Touch</Title><Chance>0.3</Chance> <Genus>Yellow</Genus> <Type>Health</Type>       </Input>--> 
+                        <Input><Title>Touch</Title><Chance>0.7</Chance> <Genus></Genus> <Type>Enemy</Type>               </Input>  
+                        <Input><Title>Touch</Title><Chance>0.3</Chance> <Genus></Genus> <Type>Altar</Type>               </Input>  
+                        <Input><Title>Touch</Title><Chance>0.4</Chance> <Genus></Genus> <Type>Health</Type>              </Input>   
+                        <Input><Title>Touch</Title><Chance>0.2</Chance> <Genus></Genus> <Type>Resource</Type>            </Input>     
+                    </Inputs>
+                
+                    <Outputs>
+                        <Output> <Title>Healing</Title> <Chance>0.5</Chance>  <AbilityMod>3</AbilityMod> 
+                                  <Genus>Yellow</Genus> <Type>Health</Type>
+                        </Output>
+                        
+                        <Output> <Title>Blade</Title>      <Chance>1</Chance>   <AbilityMod>4</AbilityMod>  
+                                  <Genus></Genus> <Type>Sword</Type>
+                        </Output>   
+
+                        <Output> <Title>Explosive</Title>  <Chance>0.1</Chance> <AbilityMod>4</AbilityMod>  
+                                  <Genus></Genus> <Type>Bomb</Type> 
+                        </Output>
+                        
+                        <Output> <Title>Seductive</Title>   <Chance>0.7</Chance> <AbilityMod>3</AbilityMod>   
+                                  <Genus>Yellow</Genus> <Type>Enemy</Type> 
+                        </Output>   
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Boost</Name>
+                    <Script>Boost</Script>
+                    <Icon>Boost</Icon>
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+                
+                    <Cooldown>
+                        <RangeMin>35</RangeMin>
+                        <RangeMax>40</RangeMax>
+                    </Cooldown>
+                
+                    <CostChance>0.1</CostChance>
+                    <CostType>Random</CostType>
+                    <Cost>
+                        <RangeMin>10</RangeMin>
+                        <RangeMax>20</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>T</ReduceCooldown>
+                
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>130</AbilityModMult>
+                
+                    <Inputs>
+                        <Input>
+                            <Title>Red</Title>   <Chance>1</Chance>   <AbilityMod>0</AbilityMod> 
+                            <Genus>Red</Genus> <Species></Species>   <Mult>3</Mult>
+                        </Input>
+                        <Input>
+                            <Title>Blue</Title>  <Chance>1</Chance>   <AbilityMod>1</AbilityMod> 
+                            <Genus>Blue</Genus> <Species></Species>    <Mult>3</Mult>
+                        </Input> 
+                        <Input>
+                            <Title>Green</Title> <Chance>1</Chance>   <AbilityMod>2</AbilityMod> 
+                            <Genus>Green</Genus> <Species></Species>   <Mult>3</Mult>
+                        </Input>
+                        <Input>
+                            <Title>Yellow</Title><Chance>1</Chance>   <AbilityMod>3</AbilityMod> 
+                            <Genus>Yellow</Genus> <Species></Species>  <Mult>3</Mult>
+                        </Input>
+                        <Input>
+                            <Title>Enemy</Title> <Chance>0.6</Chance> <AbilityMod>4</AbilityMod> 
+                            <Genus></Genus> <Species>Enemy</Species>   <Mult>3</Mult>
+                        </Input>
+                        <Input>
+                            <Title>Health</Title><Chance>0.8</Chance> <AbilityMod>4</AbilityMod> 
+                            <Genus></Genus> <Species>Health</Species>  <Mult>3</Mult>
+                        </Input>
+                        <Input>
+                            <Title>Resource</Title><Chance>0.5</Chance> <AbilityMod>4</AbilityMod> 
+                            <Genus></Genus> <Species>Resource</Species><Mult>3</Mult>
+                        </Input>     
+                    </Inputs>
+                
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title>Collect</Title> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability>  <Name>Slash</Name>
+                    <Script>Slash</Script>
+                    <Icon>Slash</Icon>
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                   
+                    <Chance>1.4</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>30</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>0.0</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>30</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>130</AbilityModMult>
+            
+                    <Inputs>
+                        <Input><Title>Slash Y</Title>      <Chance>1</Chance>   <AbilityMod>4</AbilityMod> <Type>X</Type>  </Input>
+                        <Input><Title>Slash X</Title>      <Chance>1</Chance>   <AbilityMod>4</AbilityMod> <Type>Y</Type>  </Input>    
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title>Collect</Title> <CostType>Random</CostType> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Cross</Name>
+                    <Script>Magic Tile</Script>
+                    <Icon>Cross</Icon>
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+                
+                    <Cooldown>
+                        <RangeMin>25</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cooldown>
+                
+                    <CostChance>0</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>20</RangeMin>
+                        <RangeMax>50</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>130</AbilityModMult>
+                
+                    <Inputs>
+                        <Input> <Title>Cross</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                                <Type>Yellow</Type> <Title>Resource</Title> <Number>2</Number> <ValueInc>0</ValueInc>
+                        </Input> 
+                        <Input> <Title>Cross</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                                <Type>Red</Type> <Title>Resource</Title> <Number>2</Number> <ValueInc>0</ValueInc>
+                        </Input>
+                        <Input> <Title>Cross</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                                <Type>Blue</Type> <Title>Resource</Title> <Number>2</Number> <ValueInc>0</ValueInc>
+                        </Input>
+                        <Input> <Title>Cross</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                                <Type>Green</Type> <Title>Resource</Title> <Number>2</Number> <ValueInc>0</ValueInc>
+                        </Input>
+                        <Input> <Title>Cross</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                                <Type></Type> <Title>Enemy</Title> <Number>2</Number> <ValueInc>0</ValueInc>
+                        </Input>
+                    </Inputs>
+                
+                    <Outputs>
+                        <Output><Title>Cross</Title> <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Type>Prism</Type> <Type>Cross</Type> </Output>
+                    </Outputs>
+                </Ability>
+
+                
+                <Ability> <Name>Bomb</Name>
+                    <Script>Magic Tile</Script>
+                    <Icon>Nuke</Icon>
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+                
+                    <Cooldown>
+                        <RangeMin>25</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cooldown>
+                
+                    <CostChance>0</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>20</RangeMin>
+                        <RangeMax>50</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>130</AbilityModMult>
+                
+                    <Inputs>
+                        <Input> <Title>Bomb</Title> <Chance>1</Chance>  <AbilityMod>0</AbilityMod> 
+                                <Type>Yellow</Type> <Title>Resource</Title> <Number>2</Number> <ValueInc>0</ValueInc>
+                        </Input> 
+                        <Input> <Title>Bomb</Title> <Chance>1</Chance>  <AbilityMod>0</AbilityMod> 
+                                <Type>Red</Type> <Title>Resource</Title> <Number>2</Number> <ValueInc>0</ValueInc>
+                        </Input>
+                        <Input> <Title>Bomb</Title> <Chance>1</Chance>  <AbilityMod>0</AbilityMod> 
+                                <Type>Blue</Type> <Title>Resource</Title> <Number>2</Number> <ValueInc>0</ValueInc>
+                        </Input>
+                        <Input> <Title>Bomb</Title> <Chance>1</Chance>  <AbilityMod>0</AbilityMod> 
+                                <Type>Green</Type> <Title>Resource</Title> <Number>2</Number> <ValueInc>0</ValueInc>
+                        </Input>
+                        <Input> <Title>Bomb</Title> <Chance>1</Chance>  <AbilityMod>0</AbilityMod> 
+                                <Type></Type> <Title>Enemy</Title> <Number>2</Number> <ValueInc>0</ValueInc>
+                        </Input>
+                    </Inputs>
+                
+                    <Outputs>
+                        <Output><Title>Bomb</Title> <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Type>Red</Type> <Type>Bomb</Type> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Heal</Name>
+                    <Script>Heal</Script>
+                    <Icon>Heal</Icon>
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+                    
+                    <Cooldown>
+                        <RangeMin>40</RangeMin>
+                        <RangeMax>40</RangeMax>
+                    </Cooldown>
+                    
+                    <CostChance>0.0</CostChance>
+                    <CostType>Random</CostType>
+                    <Cost>
+                        <RangeMin>15</RangeMin>
+                        <RangeMax>15</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>T</ReduceCooldown>
+                    
+                    <AbilityMod>Random</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+                    
+                    <Inputs>
+                        <Input><Type>Health</Type>      <Chance>1</Chance>  <AbilityMod>0</AbilityMod> <Title>Heal</Title>    <AmountMin>35</AmountMin> <AmountMax>35</AmountMax> </Input>  
+                    </Inputs>
+                    
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title>Collect</Title> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Armour Swap</Name>
+                    <Script>Swap</Script>
+                    <Icon>Swap</Icon>
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>0.75</Chance>
+                
+                    <Cooldown>
+                        <RangeMin>30</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cooldown>
+                
+                    <CostChance>0.0</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                
+                    <AbilityMod>Output</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+                
+                    <Inputs>
+                        <Input><Title>Armour</Title><Chance>1</Chance> <Genus>Red</Genus> <Type></Type>                 </Input>
+                        <Input><Title>Armour</Title><Chance>1</Chance> <Genus>Blue</Genus> <Type></Type>                </Input> 
+                        <Input><Title>Armour</Title><Chance>1</Chance> <Genus>Green</Genus> <Type></Type>               </Input>  
+                        <Input><Title>Armour</Title><Chance>1</Chance> <Genus>Yellow</Genus> <Type></Type>              </Input>
+                        <Input><Title>Armour</Title><Chance>0.1</Chance> <Genus>Purple</Genus> <Type></Type>              </Input>
+                    </Inputs>
+                
+                    <Outputs>
+                        <Output> <Title>Khan's</Title>     <Chance>1</Chance> <AbilityMod>0</AbilityMod>  
+                                  <Genus>Red</Genus> <Type>Armour</Type>
+                        </Output>
+                        <Output> <Title>Solomon's</Title>   <Chance>1</Chance>    <AbilityMod>2</AbilityMod>   
+                                  <Genus>Green</Genus> <Type>Armour</Type>
+                        </Output>
+                        <Output> <Title>Magic</Title>  <Chance>0.5</Chance> <AbilityMod>4</AbilityMod>   
+                                  <Genus>Purple</Genus> <Type>Armour</Type>
+                        </Output>
+                    </Outputs>
+                </Ability>
+            </Abilities>
+        </Class>
+
+        <Class> <Name>The Farmer</Name>
+           
+            <Abilities>
+                <Ability> <Name>Sow</Name>
+                    <Script>Maturation</Script>
+                    <Icon>Maturation</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>5</UnlockLvl>
+                    
+                    <Chance>0.1</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>20</RangeMin>
+                        <RangeMax>20</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>0.0</CostChance>
+                    <CostType>CHA</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>CHA</AbilityMod>
+                    <AbilityModMult>200</AbilityModMult>
+            
+                    <Inputs> 
+                        <Input><Type>DefaultRange</Type> <Chance>1</Chance> <AbilityMod>3</AbilityMod> <MatureValue>2</MatureValue> <MatureTime>3</MatureTime> <FieldY>4</FieldY> </Input>
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <Title>Collect</Title>    <AbilityMod>0</AbilityMod> <CostType>Random</CostType> </Output>
+                    </Outputs>
+                </Ability>
+
+                    
+                <Ability> <Name>Pesticide</Name>
+                    <Script>Collect</Script>
+                    <Icon>Default</Icon>
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+                
+                    <Cooldown>
+                        <RangeMin>30</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cooldown>
+                
+                    <CostChance>0.1</CostChance>
+                    <CostType>Random</CostType>
+                    <Cost>
+                        <RangeMin>30</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>T</ReduceCooldown>
+                
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+                
+                    <Inputs>
+                        <Input><Title>Enemy</Title> <Chance>1</Chance> <AbilityMod>3</AbilityMod>  <Genus></Genus> <Type>Enemy</Type>          </Input>   
+                    </Inputs>
+                
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title>Collect</Title> </Output>
+                    </Outputs>
+                </Ability>
+
+                    
+                <Ability> <Name>Reap</Name>
+                    <Script>Collect</Script>
+                    <Icon>Reap</Icon>
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+                
+                    <Cooldown>
+                        <RangeMin>35</RangeMin>
+                        <RangeMax>35</RangeMax>
+                    </Cooldown>
+                
+                    <CostChance>0.1</CostChance>
+                    <CostType>CHA</CostType>
+                    <Cost>
+                        <RangeMin>30</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>T</ReduceCooldown>
+                
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+                
+                    <Inputs>
+                        <Input><Title>Enemy</Title> <Chance>1</Chance> <AbilityMod>3</AbilityMod>  <Genus></Genus> <Type>Resource</Type>          </Input>   
+                    </Inputs>
+                
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title>Collect</Title> </Output>
+                    </Outputs>
+                </Ability>
+
+                
+                <Ability> <Name>Scarecrow</Name>
+                    <Script>Magic Tile</Script>
+                    <Icon>Default</Icon>
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+                
+                    <Cooldown>
+                        <RangeMin>15</RangeMin>
+                        <RangeMax>25</RangeMax>
+                    </Cooldown>
+                
+                    <CostChance>0</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>20</RangeMin>
+                        <RangeMax>50</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>130</AbilityModMult>
+                
+                    <Inputs>
+                        <Input> <Title>Scarecrow</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                                <Type>Yellow</Type> <Title>Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                        </Input> 
+                        <Input> <Title>Scarecrow</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                                <Type>Red</Type> <Title>Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                        </Input>
+                        <Input> <Title>Scarecrow</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                                <Type>Blue</Type> <Title>Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                        </Input>
+                        <Input> <Title>Scarecrow</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                                <Type>Green</Type> <Title>Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                        </Input>
+                        <Input> <Title>Scarecrow</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                                <Type></Type> <Title>Enemy</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                        </Input>
+                    </Inputs>
+                
+                    <Outputs>
+                        <Output><Title>Scarecrow</Title> <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Type>Prism</Type> <Type>Scarecrow</Type> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Concentrate</Name>
+                    <Script>Concentrate</Script>
+                    <Icon>Concentrate</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>4</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>20</RangeMin>
+                        <RangeMax>20</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>0.0</CostChance>
+                    <CostType>CHA</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>CHA</AbilityMod>
+                    <AbilityModMult>130</AbilityModMult>
+            
+                    <Inputs> 
+                        <Input><Type>Yellow Resource</Type> <Chance>1</Chance>     <AbilityMod>3</AbilityMod>  <Title>Benefits</Title></Input>
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <Title>Collect</Title>    <AbilityMod>0</AbilityMod> <CostType>Random</CostType> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Fertilise</Name>
+                    <Script>Boost</Script>
+                    <Icon>Boost</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>20</RangeMin>
+                        <RangeMax>20</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>0.1</CostChance>
+                    <CostType>Random</CostType>
+                    <Cost>
+                        <RangeMin>10</RangeMin>
+                        <RangeMax>20</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>T</ReduceCooldown>
+            
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>130</AbilityModMult>
+            
+                    <Inputs>
+                        <Input><Title></Title>   <Chance>0.8</Chance> <AbilityMod>4</AbilityMod> <Genus></Genus> <Type>Health</Type>  <Mult>2</Mult></Input>
+                        <Input><Title></Title> <Chance>0.5</Chance> <AbilityMod>4</AbilityMod> <Genus></Genus> <Type>Resource</Type><Mult>2</Mult></Input>     
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title>Collect</Title> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Husbandry</Name>
+                    <Script>Swap</Script>
+                    <Icon>Swap</Icon> 
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                   
+                    <Chance>1</Chance>
+                
+                    <Cooldown>
+                        <RangeMin>25</RangeMin>
+                        <RangeMax>25</RangeMax>
+                    </Cooldown>
+                
+                    <CostChance>0.0</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                
+                    <AbilityMod>Output</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+                
+                    <Inputs>
+                        <Input><Title></Title><Chance>1</Chance> <Genus></Genus> <Type>Enemy</Type>               </Input>    
+                    </Inputs>
+                
+                    <Outputs>
+                        <Output> <Title>Husbandry</Title>     <Chance>0.7</Chance> <AbilityMod>0</AbilityMod>   
+                                  <Genus>Red</Genus> <Type>Enemy</Type> 
+                        </Output>
+                        <Output> <Title>Husbandry</Title>         <Chance>0.7</Chance> <AbilityMod>1</AbilityMod>   
+                                  <Genus>Blue</Genus> <Type>Enemy</Type> 
+                        </Output>
+                        <Output> <Title>Husbandry</Title>     <Chance>0.7</Chance> <AbilityMod>2</AbilityMod>   
+                                  <Genus>Green</Genus> <Type>Enemy</Type> 
+                        </Output>
+                        <Output> <Title>Husbandry</Title>   <Chance>0.7</Chance> <AbilityMod>3</AbilityMod>   
+                                  <Genus>Yellow</Genus> <Type>Enemy</Type> 
+                        </Output>   
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Synthesis</Name> 
+                    <Script>Swap</Script>
+                    <Icon>Swap</Icon> 
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+                
+                    <Cooldown>
+                        <RangeMin>25</RangeMin>
+                        <RangeMax>25</RangeMax>
+                    </Cooldown>
+                
+                    <CostChance>0.0</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                
+                    <AbilityMod>Output</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+                
+                    <Inputs>   
+                        <Input><Title></Title><Chance>1</Chance>   <Genus>Red</Genus> <Type>Resource</Type>        </Input>         
+                        <Input><Title></Title><Chance>1</Chance>   <Genus>Blue</Genus> <Type>Resource</Type>       </Input>          
+                        <Input><Title></Title><Chance>1</Chance>   <Genus>Yellow</Genus> <Type>Resource</Type>      </Input>           
+                        <Input><Title></Title><Chance>1</Chance>   <Genus>Green</Genus> <Type>Resource</Type>     </Input>                
+                    </Inputs>
+                
+                    <Outputs>
+                        <Output> <Title>Synthesis</Title>     <Chance>1</Chance> <AbilityMod>0</AbilityMod>  
+                                  <Genus>Red</Genus> <Type>Resource</Type>
+                        </Output>
+                        <Output> <Title>Synthesis</Title>    <Chance>1</Chance> <AbilityMod>1</AbilityMod>   
+                                  <Genus>Blue</Genus> <Type>Resource</Type>
+                        </Output>
+                        <Output> <Title>Synthesis</Title>   <Chance>1</Chance>    <AbilityMod>2</AbilityMod>   
+                                  <Genus>Green</Genus> <Type>Resource</Type>
+                        </Output>
+                        <Output> <Title>Synthesis</Title>  <Chance>1</Chance> <AbilityMod>3</AbilityMod>   
+                                  <Genus>Yellow</Genus> <Type>Resource</Type>
+                        </Output> 
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Heal</Name>
+                    <Script>Heal</Script>
+                    <Icon>Heal</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+                    
+                    <Cooldown>
+                        <RangeMin>35</RangeMin>
+                        <RangeMax>35</RangeMax>
+                    </Cooldown>
+                    
+                    <CostChance>0.5</CostChance>
+                    <CostType>Random</CostType>
+                    <Cost>
+                        <RangeMin>15</RangeMin>
+                        <RangeMax>15</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>T</ReduceCooldown>
+                    
+                    <AbilityMod>Random</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+                    
+                    <Inputs>
+                        <Input><Type>Health</Type>      <Chance>1</Chance>  <AbilityMod>0</AbilityMod> <Title>Heal</Title>    <AmountMin>20</AmountMin> <AmountMax>35</AmountMax> </Input>  
+                    </Inputs>
+                    
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title>Collect</Title> </Output>
+                    </Outputs>
+                </Ability>
+
+            </Abilities>
+        </Class>
+
+        <Class> <Name>The Witch Doctor</Name>
+    
+            <Abilities>
+                <Ability> <Name>Hex</Name>
+                    <Script>Magic Tile</Script>
+                    <Icon>Chicken</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>1</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+                
+                    <Cooldown>
+                        <RangeMin>15</RangeMin>
+                        <RangeMax>25</RangeMax>
+                    </Cooldown>
+                
+                    <CostChance>0</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>20</RangeMin>
+                        <RangeMax>50</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>130</AbilityModMult>
+                
+                    <Inputs>
+                        <Input> <Title>Hex</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                                <Type></Type> <Title>Enemy</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                        </Input> 
+                        
+                    </Inputs>
+                
+                    <Outputs>
+                        <Output><Title>Hex</Title> <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Type>Grey</Type> <Type>Chicken</Type> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Polymorph</Name>
+                    <Script>Swap</Script>
+                    <Icon>Swap</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>4</UnlockLvl>
+                    
+                    <Chance>0.75</Chance>
+                
+                    <Cooldown>
+                        <RangeMin>25</RangeMin>
+                        <RangeMax>25</RangeMax>
+                    </Cooldown>
+                
+                    <CostChance>0.0</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                
+                    <AbilityMod>Output</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+                
+                    <Inputs>
+                        <Input><Title></Title><Chance>1</Chance> <Genus></Genus> <Type>Chicken</Type>                 </Input>
+                    </Inputs>
+                
+                    <Outputs>
+                        <Output> <Title>Polymorph</Title>     <Chance>1</Chance> <AbilityMod>0</AbilityMod>  
+                                  <Genus>Grey</Genus> <Type>Scarecrow</Type>
+                        </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Raise</Name>
+                    <Script>Change</Script>
+                    <Icon>Default</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>2</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>20</RangeMin>
+                        <RangeMax>25</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>0.0</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>WIS</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+            
+                    <Inputs>
+                        <Input><Type>Enemy</Type> <Chance>1</Chance>  <Title></Title>  </Input> 
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output><Type>Scarecrow</Type>     <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title>Raise</Title>  <Value>1</Value>   </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Curse</Name>
+                    <Script>ApplyEffectToTile</Script>
+                    <Icon>Curse</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    <Chance>1</Chance>
+                    
+                    <Cooldown>
+                        <RangeMin>25</RangeMin>
+                        <RangeMax>25</RangeMax>
+                    </Cooldown>
+                    
+                    <CostChance>0.0</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                    
+                    <AbilityMod>WIS</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+                    
+                    <Inputs>
+                        <Input> 
+                            <Type>Curse</Type> <Chance>1</Chance>  <AbilityMod>2</AbilityMod> 
+                            <ApplyToAll>T</ApplyToAll> <TileNumber>1</TileNumber> 
+                            <Genus></Genus> <Species>Enemy</Species>
+                        </Input> 
+                    </Inputs>
+                    
+                    <Outputs>
+                        <Output>
+                            <Type>Curse</Type> <Chance>1</Chance> <AbilityMod>2</AbilityMod> <Duration>5</Duration>
+                             <AttackRed>3</AttackRed><HPRed>0</HPRed>
+                        </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Charm</Name>
+                    <Script>ApplyEffectToTile</Script>
+                    <Icon>Default</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    <Chance>1</Chance>
+                    
+                    <Cooldown>
+                        <RangeMin>20</RangeMin>
+                        <RangeMax>20</RangeMax>
+                    </Cooldown>
+                    
+                    <CostChance>0.0</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                    
+                    <AbilityMod>WIS</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+                    
+                    <Inputs>
+                        <Input> 
+                            <Type>Charm</Type> <Chance>1</Chance>  <AbilityMod>2</AbilityMod> 
+                            <ApplyToAll>F</ApplyToAll> <TileNumber>1</TileNumber> 
+                                <Genus></Genus> <Species>Enemy</Species>
+                        </Input> 
+                    </Inputs>
+                    
+                    <Outputs>
+                        <Output>
+                            <Type>Charm</Type> <Chance>1</Chance> <AbilityMod>2</AbilityMod> <Duration>20</Duration>
+                            <Particle>Charm</Particle>
+                        </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Armour Swap</Name>
+                    <Script>Swap</Script>
+                    <Icon>Armour</Icon>
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>0.75</Chance>
+                
+                    <Cooldown>
+                        <RangeMin>25</RangeMin>
+                        <RangeMax>25</RangeMax>
+                    </Cooldown>
+                
+                    <CostChance>0.0</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                
+                    <AbilityMod>Output</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+                
+                    <Inputs>
+                        <Input><Title>Armour</Title><Chance>1</Chance> <Genus>Red</Genus> <Type></Type>                 </Input>
+                        <Input><Title>Armour</Title><Chance>1</Chance> <Genus>Blue</Genus> <Type></Type>                </Input> 
+                        <Input><Title>Armour</Title><Chance>1</Chance> <Genus>Green</Genus> <Type></Type>               </Input>  
+                        <Input><Title>Armour</Title><Chance>1</Chance> <Genus>Yellow</Genus> <Type></Type>              </Input>
+                        <Input><Title>Armour</Title><Chance>0.1</Chance> <Genus>Purple</Genus> <Type></Type>              </Input>
+                    </Inputs>
+                
+                    <Outputs>
+                        <Output> <Title>Khan's</Title>     <Chance>1</Chance> <AbilityMod>0</AbilityMod>  
+                                  <Genus>Red</Genus> <Type>Armour</Type>
+                        </Output>
+                        <Output> <Title>Wu's</Title>    <Chance>1</Chance> <AbilityMod>1</AbilityMod>   
+                                  <Genus>Blue</Genus> <Type>Armour</Type>
+                        </Output>
+                        <Output> <Title>Solomon's</Title>   <Chance>1</Chance>    <AbilityMod>2</AbilityMod>   
+                                  <Genus>Green</Genus> <Type>Armour</Type>
+                        </Output>
+                        <Output> <Title>Midas</Title>  <Chance>1</Chance> <AbilityMod>3</AbilityMod>   
+                                  <Genus>Yellow</Genus> <Type>Armour</Type>
+                        </Output>
+                        <Output> <Title>Magic</Title>  <Chance>0.5</Chance> <AbilityMod>4</AbilityMod>   
+                                  <Genus>Purple</Genus> <Type>Armour</Type>
+                        </Output>
+                    </Outputs>
+                </Ability>
+                    
+                <Ability> <Name>Cross</Name>
+                    <Script>Magic Tile</Script>
+                    <Icon>Cross</Icon>
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+                
+                    <Cooldown>
+                        <RangeMin>15</RangeMin>
+                        <RangeMax>25</RangeMax>
+                    </Cooldown>
+                
+                    <CostChance>0</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>20</RangeMin>
+                        <RangeMax>50</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>130</AbilityModMult>
+                
+                    <Inputs>
+                        <Input> <Title>Cross</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                                <Type>Yellow</Type> <Title>Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                        </Input> 
+                        <Input> <Title>Cross</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                                <Type>Red</Type> <Title>Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                        </Input>
+                        <Input> <Title>Cross</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                                <Type>Blue</Type> <Title>Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                        </Input>
+                        <Input> <Title>Cross</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                                <Type>Green</Type> <Title>Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                        </Input>
+                        <Input> <Title>Cross</Title> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> 
+                                <Type></Type> <Title>Enemy</Title> <Number>1</Number> <ValueInc>0</ValueInc>
+                        </Input>
+                    </Inputs>
+                
+                    <Outputs>
+                        <Output><Title>Cross</Title> <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Type>Prism</Type> <Type>Cross</Type> </Output>
+                    </Outputs>
+                </Ability>
+                
+                <Ability> <Name>Stack</Name>
+                    <Script>Stack</Script>
+                    <Icon>Stack</Icon>
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+                
+                    <Cooldown>
+                        <RangeMin>20</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cooldown>
+                
+                    <CostChance>0.0</CostChance>
+                    <CostType>WIS</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>130</AbilityModMult>
+                
+                    <Inputs> 
+                        
+                        <Input><Title>Chamber of Agility</Title> <Chance>1</Chance>     <AbilityMod>1</AbilityMod>  
+                                <Genus>Blue</Genus><Type>Resource</Type></Input>
+                        <Input><Title>Chamber of Wisdom</Title> <Chance>1</Chance>     <AbilityMod>2</AbilityMod>  
+                                <Genus>Green</Genus><Type>Resource</Type></Input>
+                                               
+                        <Input><Title>Chamber of Healing</Title> <Chance>0.3</Chance>    <AbilityMod>1</AbilityMod> 
+                                <Genus>Blue</Genus><Type>Health</Type></Input>
+                        <Input><Title>Chamber of Healing</Title> <Chance>0.3</Chance>    <AbilityMod>2</AbilityMod> 
+                                <Genus>Green</Genus><Type>Health</Type></Input>
+                        
+                        <Input><Title>Demon Chamber</Title><Chance>0.3</Chance>    <AbilityMod>0</AbilityMod>   
+                                <Genus>Red</Genus><Type>Enemy</Type></Input>
+                        <Input><Title>Demon Chamber</Title><Chance>0.3</Chance>    <AbilityMod>1</AbilityMod>   
+                                <Genus>Blue</Genus><Type>Enemy</Type></Input>
+                        <Input><Title>Demon Chamber</Title><Chance>0.3</Chance>    <AbilityMod>2</AbilityMod>   
+                                <Genus>Green</Genus><Type>Enemy</Type></Input>
+                        <Input><Title>Demon Chamber</Title><Chance>0.3</Chance>    <AbilityMod>3</AbilityMod>  
+                                <Genus>Yellow</Genus><Type>Enemy</Type></Input>
+                        <Input><Title>Hellish Chamber</Title> <Chance>0.4</Chance>   <AbilityMod>4</AbilityMod>
+                                <Genus></Genus><Type>Enemy</Type>    </Input>
+                        <Input><Title>Sacred Chamber</Title> <Chance>0.05</Chance>  <AbilityMod>4</AbilityMod>
+                                <Genus></Genus><Type>Altar</Type>    </Input>
+                        <Input><Title>Holy Chamber</Title> <Chance>0.4</Chance>   <AbilityMod>4</AbilityMod>
+                                <Genus></Genus><Type>Health</Type>      </Input>
+                        <Input><Title>Valued Chamber</Title> <Chance>0.2</Chance>   <AbilityMod>4</AbilityMod>
+                                <Genus></Genus><Type>Resource</Type>   </Input>
+                        <Input><Title>Armoured Chamber</Title> <Chance>0.4</Chance>   <AbilityMod>4</AbilityMod>
+                                <Genus></Genus><Type>Armour</Type>   </Input>
+                    </Inputs>
+                
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <Title>Collect</Title>    <AbilityMod>0</AbilityMod> <CostType>Random</CostType> </Output>
+                    </Outputs>
+                </Ability>
+                
+                <Ability> <Name>Heal</Name>
+                    <Script>Heal</Script>
+                    <Icon>Heal</Icon>
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+                    
+                    <Cooldown>
+                        <RangeMin>25</RangeMin>
+                        <RangeMax>25</RangeMax>
+                    </Cooldown>
+                    
+                    <CostChance>0.3</CostChance>
+                    <CostType>Random</CostType>
+                    <Cost>
+                        <RangeMin>15</RangeMin>
+                        <RangeMax>15</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>T</ReduceCooldown>
+                    
+                    <AbilityMod>Random</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+                    
+                    <Inputs>
+                        <Input><Type>Health</Type>      <Chance>1</Chance>  <AbilityMod>0</AbilityMod> <Title>Heal</Title>    <AmountMin>20</AmountMin> <AmountMax>35</AmountMax> </Input>  
+                    </Inputs>
+                    
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title>Collect</Title> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>King Swap</Name>
+                    <Script>Swap</Script>
+                    <Icon>KingSwap</Icon>
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>0.75</Chance>
+                
+                    <Cooldown>
+                        <RangeMin>25</RangeMin>
+                        <RangeMax>25</RangeMax>
+                    </Cooldown>
+                
+                    <CostChance>0.0</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                
+                    <AbilityMod>Output</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+                
+                    <Inputs>
+                        <Input><Title>Touch</Title><Chance>1</Chance> <Genus>Red</Genus> <Type></Type>                 </Input>
+                        <Input><Title>Touch</Title><Chance>1</Chance> <Genus>Blue</Genus> <Type></Type>                </Input> 
+                        <Input><Title>Touch</Title><Chance>1</Chance> <Genus>Green</Genus> <Type></Type>               </Input>  
+                        <Input><Title>Touch</Title><Chance>1</Chance> <Genus>Yellow</Genus> <Type></Type>              </Input>     
+                    </Inputs>
+                
+                    <Outputs>
+                        <Output> <Title>Wu's</Title>    <Chance>1</Chance> <AbilityMod>1</AbilityMod>   
+                                  <Genus>Blue</Genus> <Type></Type>
+                        </Output>
+                        <Output> <Title>Solomon's</Title>   <Chance>1</Chance>    <AbilityMod>2</AbilityMod>   
+                                  <Genus>Green</Genus> <Type></Type>
+                        </Output>
+                    </Outputs>
+                </Ability>
+            </Abilities>
+        </Class>
+
+        <Class> <Name>The Thief</Name>
+            <Abilities>
+                <Ability> <Name>Backstab</Name>
+                    <Script>Backstab</Script>
+                    <Icon>Backstab</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>5</UnlockLvl>
+                    
+                    <Chance>0.1</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>0.0</CostChance>
+                    <CostType>CHA</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>DEX</AbilityMod>
+                    <AbilityModMult>200</AbilityModMult>
+            
+                    <Inputs> 
+                        <Input><Type>Damage</Type> <Chance>1</Chance> <AbilityMod>3</AbilityMod> <DMGMult>2</DMGMult> 
+                        <AngleX>0</AngleX> <AngleY>-1</AngleY>
+                        <AngleX>-1</AngleX> <AngleY>-1</AngleY>
+                        <AngleX>1</AngleX> <AngleY>-1</AngleY> </Input>
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <Title>Collect</Title>    <AbilityMod>0</AbilityMod> <CostType>Random</CostType> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Run Away</Name>
+                    <Script>Teleport</Script>
+                    <Icon>Teleport</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>2</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>15</RangeMin>
+                        <RangeMax>15</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>1</CostChance>
+                    <CostType>DEX</CostType>
+                    <Cost>
+                        <RangeMin>30</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>DEX</AbilityMod>
+                    <AbilityModMult>200</AbilityModMult>
+            
+                    <Inputs> 
+                        <Input><Type>Args</Type> <Chance>1</Chance> <AbilityMod>1</AbilityMod> <NoEnemies>T</NoEnemies> </Input>
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output><Type></Type> <Chance>1</Chance> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Knives Out</Name>
+                    <Script>Swap</Script>
+                    <Icon>Swap</Icon>
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>1</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>20</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>0.0</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>Output</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+            
+                    <Inputs>
+                       <Input><Title>Knives Out</Title><Chance>1</Chance>   <Genus>Red</Genus> <Type>Resource</Type>        </Input>
+                       <Input><Title>Knives Out</Title><Chance>1</Chance>   <Genus>Blue</Genus> <Type>Resource</Type>       </Input>
+                       <Input><Title>Knives Out</Title><Chance>1</Chance>   <Genus>Yellow</Genus> <Type>Resource</Type>      </Input>
+                       <Input><Title>Knives Out</Title><Chance>1</Chance>   <Genus>Green</Genus> <Type>Resource</Type>     </Input>
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output> <Title></Title>      <Chance>1</Chance>   <AbilityMod>4</AbilityMod>  
+                          <Genus></Genus> <Type>Sword</Type>
+                        </Output>   
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Trick</Name>
+                    <Script>Banish</Script>
+                    <Icon>Banish</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>3</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>30</RangeMin>
+                        <RangeMax>30</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>0</CostChance>
+                    <CostType>CHA</CostType>
+                    <Cost>
+                        <RangeMin>100</RangeMin>
+                        <RangeMax>150</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>200</AbilityModMult>
+            
+                    <Inputs> 
+                        <Input><Type>DEX</Type> <Chance>1</Chance>     <AbilityMod>1</AbilityMod>  <Power>0</Power> <LevelUp>F</LevelUp> </Input>
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <Title>Collect</Title>    <AbilityMod>0</AbilityMod> <CostType>CHA</CostType> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Cripple</Name>
+                    <Script>ApplyEffectToTile</Script>
+                    <Icon>Curse</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    <Chance>1</Chance>
+                    
+                    <Cooldown>
+                        <RangeMin>15</RangeMin>
+                        <RangeMax>15</RangeMax>
+                    </Cooldown>
+                    
+                    <CostChance>0.0</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                    
+                    <AbilityMod>WIS</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+                    
+                    <Inputs>
+                        <Input> 
+                            <Type>Cripple</Type> <Chance>1</Chance>  <AbilityMod>2</AbilityMod> 
+                            <ApplyToAll>T</ApplyToAll> <TileNumber>1</TileNumber> 
+                            <Genus></Genus> <Species>Enemy</Species>
+                        </Input> 
+                    </Inputs>
+                    
+                    <Outputs>
+                        <Output>
+                            <Type>Curse</Type> <Chance>1</Chance> <AbilityMod>2</AbilityMod> <Duration>-1</Duration>
+                            <AttackRed>1</AttackRed><HPRed>3</HPRed>
+                        </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability>  <Name>Slash</Name>
+                    <Script>Slash</Script>
+                    <Icon>Slash</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                   
+                    <Chance>1</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>5</RangeMin>
+                        <RangeMax>5</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>1</CostChance>
+                    <CostType>DEX</CostType>
+                    <Cost>
+                        <RangeMin>25</RangeMin>
+                        <RangeMax>25</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>250</AbilityModMult>
+            
+                    <Inputs>
+                        <Input><Title>Slash X</Title>      <Chance>1</Chance>   <AbilityMod>4</AbilityMod> <Type>Y</Type>  </Input>    
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title>Collect</Title> <CostType>Random</CostType> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>King Swap</Name>
+                    <Script>Swap</Script>
+                    <Icon>KingSwap</Icon>
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>0.75</Chance>
+                
+                    <Cooldown>
+                        <RangeMin>25</RangeMin>
+                        <RangeMax>25</RangeMax>
+                    </Cooldown>
+                
+                    <CostChance>0.0</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                
+                    <AbilityMod>Output</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+                
+                    <Inputs>
+                        <Input><Title>Touch</Title><Chance>1</Chance> <Genus>Red</Genus> <Type></Type>                 </Input>
+                        <Input><Title>Touch</Title><Chance>1</Chance> <Genus>Blue</Genus> <Type></Type>                </Input> 
+                        <Input><Title>Touch</Title><Chance>1</Chance> <Genus>Green</Genus> <Type></Type>               </Input>  
+                        <Input><Title>Touch</Title><Chance>1</Chance> <Genus>Yellow</Genus> <Type></Type>              </Input>     
+                    </Inputs>
+                
+                    <Outputs>
+                        <Output> <Title>Wu's</Title>    <Chance>1</Chance> <AbilityMod>1</AbilityMod>   
+                                  <Genus>Blue</Genus> <Type></Type>
+                        </Output>
+                        <Output> <Title>Midas</Title>  <Chance>1</Chance> <AbilityMod>3</AbilityMod>   
+                                  <Genus>Yellow</Genus> <Type></Type>
+                        </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>Smoke Bomb</Name>
+                    <Script>ApplyEffectToTile</Script>
+                    <Icon>Default</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    <Chance>1</Chance>
+                    
+                    <Cooldown>
+                        <RangeMin>15</RangeMin>
+                        <RangeMax>15</RangeMax>
+                    </Cooldown>
+                    
+                    <CostChance>0.0</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                    
+                    <AbilityMod>WIS</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+                    
+                    <Inputs>
+                        <Input> 
+                            <Type>Smoke Bomb</Type> <Chance>1</Chance>  <AbilityMod>2</AbilityMod> 
+                            <ApplyToAll>T</ApplyToAll> <TileNumber>1</TileNumber>  
+                            <Genus></Genus> <Species>Enemy</Species>
+                        </Input> 
+                    </Inputs>
+                    
+                    <Outputs>
+                        <Output>
+                            <Type>IgnorePlayer</Type> <Chance>1</Chance> <AbilityMod>2</AbilityMod> <Duration>3</Duration>
+                        </Output>
+                    </Outputs>
+                </Ability>
+                
+            </Abilities>
+        </Class>
+
+        <Class> <Name>The Bard</Name>
+            <Abilities>
+                <Ability> <Name>Lullaby</Name>
+                    <Script>Magic Tile</Script>
+                    <Icon>Lullaby</Icon>
+                    <Unlocked>F</Unlocked>
+                    <UnlockLvl>1</UnlockLvl>
+                    
+                    <Chance>1</Chance>
+            
+                    <Cooldown>
+                        <RangeMin>15</RangeMin>
+                        <RangeMax>25</RangeMax>
+                    </Cooldown>
+            
+                    <CostChance>0</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>20</RangeMin>
+                        <RangeMax>50</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+            
+                    <AbilityMod>Input</AbilityMod>
+                    <AbilityModMult>170</AbilityModMult>
+            
+                    <Inputs>
+                        <Input><Type>Harp</Type> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> <Title>Yellow Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc></Input>   
+                        <Input><Type>Harp</Type> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> <Title>Red Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc></Input>
+                        <Input><Type>Harp</Type> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> <Title>Blue Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc></Input>
+                        <Input><Type>Harp</Type> <Chance>1</Chance>  <AbilityMod>3</AbilityMod> <Title>Green Resource</Title> <Number>1</Number> <ValueInc>0</ValueInc></Input>
+                        <Input><Type>Harp</Type> <Chance>0.4</Chance>  <AbilityMod>3</AbilityMod> <Title>Enemy</Title> <Number>1</Number> <ValueInc>0</ValueInc></Input>
+                    </Inputs>
+            
+                    <Outputs>
+                        <Output><Type></Type>     <Chance>1</Chance> <AbilityMod>0</AbilityMod> <Title>Collect</Title> </Output>
+                    </Outputs>
+                </Ability>
+
+                <Ability> <Name>King Swap</Name>
+                    <Script>Swap</Script>
+                    <Icon>KingSwap</Icon>
+                    <Unlocked>T</Unlocked>
+                    <UnlockLvl>100</UnlockLvl>
+                    
+                    <Chance>0.75</Chance>
+                
+                    <Cooldown>
+                        <RangeMin>25</RangeMin>
+                        <RangeMax>25</RangeMax>
+                    </Cooldown>
+                
+                    <CostChance>0.0</CostChance>
+                    <CostType>STR</CostType>
+                    <Cost>
+                        <RangeMin>0</RangeMin>
+                        <RangeMax>0</RangeMax>
+                    </Cost>
+                    <ReduceCooldown>F</ReduceCooldown>
+                
+                    <AbilityMod>Output</AbilityMod>
+                    <AbilityModMult>150</AbilityModMult>
+                
+                    <Inputs>
+                        <Input><Title>Touch</Title><Chance>1</Chance> <Genus>Red</Genus> <Type></Type>                 </Input>
+                        <Input><Title>Touch</Title><Chance>1</Chance> <Genus>Blue</Genus> <Type></Type>                </Input> 
+                        <Input><Title>Touch</Title><Chance>1</Chance> <Genus>Green</Genus> <Type></Type>               </Input>  
+                        <Input><Title>Touch</Title><Chance>1</Chance> <Genus>Yellow</Genus> <Type></Type>              </Input>     
+                    </Inputs>
+                
+                    <Outputs>
+                        <Output> <Title>Solomon's</Title>   <Chance>1</Chance>    <AbilityMod>2</AbilityMod>   
+                                  <Genus>Green</Genus> <Type></Type>
+                        </Output>
+                        <Output> <Title>Midas</Title>  <Chance>1</Chance> <AbilityMod>3</AbilityMod>   
+                                  <Genus>Yellow</Genus> <Type></Type>
+                        </Output>
+                    </Outputs>
+                </Ability>
+
+
+            </Abilities>
+        </Class>
+    </ClassAbilities>
+</Abilities>
