@@ -66,9 +66,6 @@ public class Class : Unit {
 	public ClassInfo Info;
 	
 	public Stat InitStats;
-	public List<Ability> _Unlocks;
-	[HideInInspector]
-	public float _Unlocks_Chance = 0.0F;
 	public Slot [] _Boons;
 	public Slot [] _Slots = new Slot[1];
 	
@@ -83,8 +80,8 @@ public class Class : Unit {
 	public int LevelPoints = 0;
 
 	[HideInInspector]
-	public int ThisTurn = 0;
-
+	public int ManaThisTurn = 0;
+	public bool CanCollectMana = true;
 
 	[HideInInspector]
 	public bool LevelUpAlert, PulseAlert;
@@ -102,6 +99,13 @@ public class Class : Unit {
 		}
 	}
 	public int Meter, MeterMax;
+
+	public int BonusLevelRate = 0;
+	public int WaveLevelRate = 0;
+	public int TurnLevelRate = 1;
+	public Stat Stats;
+	public List<ClassEffect> _Status = new List<ClassEffect>();
+
 	private int MeterMax_init;
 	private float MeterMax_soft;
 	private float MeterGain = 0.2F;
@@ -117,15 +121,8 @@ public class Class : Unit {
 	};
 	private int combo_biggest = 0;
 
-	public int BonusLevelRate = 0;
-	public int WaveLevelRate = 0;
-	public int TurnLevelRate = 1;
-	public Stat Stats;
-	public int ManaThisTurn = 0;
+	private bool HasLeveled = true;
 
-	bool HasLeveled = true;
-
-	public List<ClassEffect> _Status = new List<ClassEffect>();
 
 
 	// Use this for initialization
@@ -391,19 +388,18 @@ public class Class : Unit {
 	public void Add(int res)
 	{
 		if(isKilled) return;
-		ThisTurn += res;
 	}
 
 	public void Complete()
 	{
-		AddToMeter(ThisTurn);
-		ThisTurn = 0;
+		AddToMeter(ManaThisTurn);
 	}
 
 	public void AddToMeter(int res)
 	{
-		if(isKilled)
+		if(isKilled || !CanCollectMana)
 		{
+			ManaThisTurn = 0;
 			return;
 		}
 		Meter = (int)Mathf.Clamp(Meter + res, 0, Mathf.Infinity);
@@ -839,7 +835,7 @@ public class Class : Unit {
 
 	}
 
-	public void GenerateSlotUpgrades()
+	/*public void GenerateSlotUpgrades()
 	{
 		foreach(Ability child in _Unlocks)
 		{
@@ -852,7 +848,7 @@ public class Class : Unit {
 		}
 	}
 
-	/*public void GenerateSlotUpgrade(Slot s)
+	public void GenerateSlotUpgrade(Slot s)
 	{
 		ClassUpgrade spell = new ClassUpgrade(SlotUpgrade(s));
 
@@ -1100,7 +1096,7 @@ public class QuoteGroup{
 		Quotes = new List<Quote>();
 	}
 
-	public void AddQuote(string _text, Unit c, bool _override = false, float wait = 3.0F, float tick = 0.02F)
+	public void AddQuote(string _text, Unit c, bool _override = false, float wait = 3.0F, float tick = 0.01F)
 	{
 		Quote q = new Quote(_text, _override, wait, c);
 		q.TickTime_init = tick;

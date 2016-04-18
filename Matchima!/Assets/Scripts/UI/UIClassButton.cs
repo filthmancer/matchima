@@ -104,6 +104,7 @@ public class UIClassButton : UIObj {
 			transform.parent.gameObject.SetActive(false);
 			return;
 		}
+		else transform.parent.gameObject.SetActive(true);
 		_class = ab;
 
 		color_default = GameData.instance.GetGENUSColour(_class.Genus);

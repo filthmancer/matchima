@@ -24,6 +24,9 @@ public class GameManager : MonoBehaviour {
 						GrowthRate_Hard = 0.25F;
 
 	public Juice _Juice;
+	public AudioSource AudioObj;
+	public AudioClip MatchA, TouchA;
+	public AudioClip ReleaseA;
 
 	public float Difficulty_Growth{
 		get{
@@ -101,7 +104,7 @@ public class GameManager : MonoBehaviour {
 		//if(Application.isMobilePlatform)
 		//{
 			QualitySettings.vSyncCount = 0;
-			Application.targetFrameRate = 48;
+			Application.targetFrameRate = 60;
 		//}
 		  
 		if(instance == null)
@@ -660,7 +663,7 @@ public class GameManager : MonoBehaviour {
 
 	IEnumerator EnemyTurnRoutine()
 	{
-		float per_column = 0.18F;
+		float per_column = 0.15F;
 		List<Tile> all_attackers = new List<Tile>();
 		List<Tile> column_attackers;
 		int damage = 0;
@@ -689,6 +692,7 @@ public class GameManager : MonoBehaviour {
 				enemy.SetTarget(UIManager.instance.HealthImg.transform, 0.2F, 0.0F);
 				enemy.SetMethod(() =>{
 						Player.Stats.Hit(child.GetAttack(), child);
+						AudioManager.instance.PlayClipOn(Player.instance.transform, "Player", "Hit");
 					});
 				yield return StartCoroutine(child.Animate("Attack", 0.05F));
 			}

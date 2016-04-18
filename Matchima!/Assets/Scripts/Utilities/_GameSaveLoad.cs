@@ -431,14 +431,14 @@ public class _GameSaveLoad: MonoBehaviour {
         if(Player.instance.Equipment.Boots != null)
         	Player.instance.Equipment.Boots.transform.parent = Player.instance.transform;
 
-        for(int i = 0; i < 6; i++)
-        {
-        	if(!myData._iUser.AbilityData[i].hasAbility) continue;
-        	AbilityContainer ab = DataToAbility(myData._iUser.AbilityData[i]);
-        	Ability a = (Ability)Instantiate(GameData.instance.GetAbilityByName(ab.AbilityScript));
-        	a.Setup(ab,0,0);
-        	Player.instance.AddAbility(a, i);
-        }
+       //for(int i = 0; i < 6; i++)
+       //{
+       //	if(!myData._iUser.AbilityData[i].hasAbility) continue;
+       //	AbilityContainer ab = DataToAbility(myData._iUser.AbilityData[i]);
+       //	Ability a = (Ability)Instantiate(GameData.instance.GetAbilityByName(ab.AbilityScript));
+       //	a.Setup(ab,0,0);
+       //	Player.instance.AddAbility(a, i);
+       //}
 
         GridInfo level = new GridInfo();
         Vector2 size = new Vector2(myData._iUser.Rows.Length, myData._iUser.Rows[0].GenusIndex.Length);

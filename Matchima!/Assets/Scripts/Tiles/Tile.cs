@@ -288,6 +288,7 @@ public class Tile : MonoBehaviour {
 						{	
 							SetState(TileState.Selected);
 							PlayerControl.instance.GetSelectedTile(this);
+							AudioManager.instance.PlayClipOn(this.transform, "Player", "Touch");
 						}
 						else SetState(TileState.Idle);	
 					}		
@@ -555,6 +556,7 @@ public class Tile : MonoBehaviour {
 		if(this == null) return false;
 		InitStats.Hits -= 1;
 		CheckStats();
+		AudioManager.instance.PlayClipOn(this.transform, "Player", "Match");
 		if(Stats.Hits <= 0)
 		{
 			isMatching = true;
@@ -619,6 +621,7 @@ public class Tile : MonoBehaviour {
 			TileMaster.instance.AddVelocityToColumn(Point.Base[0], Point.Base[1], 0.2F + Stats.Value * 0.5F);
 			Destroyed = true;
 			GetComponent<SphereCollider>().enabled = false;
+			
 		}
 		
 		TileMaster.instance.CollectTile(this, destroy);

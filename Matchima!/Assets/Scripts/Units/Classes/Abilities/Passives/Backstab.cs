@@ -80,7 +80,7 @@ public class Backstab : Ability {
 		int total_stolen = 0;
 		foreach(Class child in Player.Classes)
 		{
-			if(child == Parent) continue;
+			if(child == Parent || child == null) continue;
 			if(child.ManaThisTurn > 0)
 			{
 				int stolen = (int) ((float) child.ManaThisTurn * finalsteal);

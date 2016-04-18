@@ -411,68 +411,6 @@ public class Player : MonoBehaviour {
 		return bonuses;
 	}
 
-	public void AddAbility(Ability type, int? num = null)
-	{
-		bool upgrade = false;
-
-		if(!upgrade)
-		{
-			GameObject ActiveObj = (type.gameObject);
-			ActiveObj.transform.parent = this.transform;
-
-			if(num.HasValue)
-			{
-				//abilities[(int)num]  = ActiveObj.GetComponent<Ability>();
-				ActiveObj.name = "Ability " + (int) num + ": " + ActiveObj.GetComponent<Ability>().name;
-			}
-			else 
-			{
-				for(int i = 0; i < Stats.AbilitySlots; i++)
-				{
-					//if(abilities[i] == null) 
-					//{
-					//	abilities[i] = ActiveObj.GetComponent<Ability>();
-					//	ActiveObj.name = "Ability " + i + ": " + ActiveObj.GetComponent<Ability>().name;
-					//	UIManager.instance.AddAbility(ActiveObj.GetComponent<Ability>());
-					//	break;
-					//}
-				}
-			}
-			
-			//ActiveObj.GetComponent<Ability>().Init();
-			if(type.passive) ActiveObj.GetComponent<Ability>().Activate();
-			//foreach(Ability child in abilities)
-			//{
-			//	if(child == null) continue;
-			//	child.AfterTurnB();
-			//}
-		}
-		
-	}
-	public int RemoveAbility(Ability type)
-	{
-		//for(int i = 0; i < abilities.Length; i++)
-		//{
-		//	if(abilities[i] == null) continue;
-		//	if(abilities[i] == type)
-		//	{
-		//		UIManager.instance.AbilityButtons[i].Remove();
-		//		abilities[i] = null;
-		//		return i;
-		//	}
-		//}
-		return 100;
-	}
-
-	public bool FreeAbilitySlot()
-	{
-		//for(int i = 0; i < Stats.AbilitySlots; i++)
-		//{ 
-		//	if(abilities[i] == null) return true;
-		//}
-		return false;
-	}
-
 	public void AddStatus(int i, string StatusName, int Duration, params string [] args)
 	{
 		ClassEffect e = (ClassEffect) Instantiate(GameData.instance.GetTileEffectByName(StatusName));
@@ -499,6 +437,19 @@ public class Player : MonoBehaviour {
 		//Stats.ApplyStatInc();
 		//
 		//StartCoroutine(LoadClass(_class));
+	}
+
+	public void AddClassToSlot(int slot, Class c)
+	{
+		Classes[slot] = Instantiate(c);
+		Classes[slot].transform.parent = this.transform;
+		Classes[slot].Genus = (GENUS) slot;
+		Classes[slot].Index = slot;
+		Classes[slot].StartClass();
+
+		ResetStats();
+		//print(UIManager.ClassButtons[slot]);
+		UIManager.ClassButtons[slot].Setup(Classes[slot]);
 	}
 
 	public void Reset()

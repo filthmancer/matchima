@@ -282,6 +282,7 @@ public class PlayerControl : MonoBehaviour {
 			selectedTiles.RemoveRange(point+1, range);
 			PlayerControl.matchingTile = selectedTiles[point];
 
+			AudioManager.instance.PlayClipOn(this.transform, "Player", "Release");
 			for(int i = 0; i < selectedTiles.Count; i++)
 			{
 				if(PlayerControl.matchingTile.Genus == GENUS.ALL)

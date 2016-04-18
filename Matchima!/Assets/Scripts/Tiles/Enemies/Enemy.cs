@@ -129,8 +129,7 @@ public class Enemy : Tile {
 				}
 				else 
 				{
-
-					threat_time = Random.Range(1.6F, 2.4F);
+					threat_time = Random.Range(1.9F, 5.4F);
 					threat_anim = 0.0F;
 				}
 				
@@ -139,6 +138,10 @@ public class Enemy : Tile {
 			{
 				//_anim.SetBool("Threat", false);
 				threat_time -= Time.deltaTime;
+				if(threat_time <= 0.0F) 
+				{
+					AudioManager.instance.PlayClipOn(this.transform, "Enemy", "Threat");
+				}
 			}
 		}
 	}
@@ -241,7 +244,7 @@ public class Enemy : Tile {
 
 		InitStats.Hits -= fullhit;
 		CheckStats();
-
+		AudioManager.instance.PlayClipOn(this.transform, "Enemy", "Hit");
 		Player.instance.OnMatch(this);
 		if(Stats.Hits <= 0)
 		{
@@ -291,6 +294,7 @@ public class Enemy : Tile {
 
 	void SetDamage()
 	{
+		AudioManager.instance.PlayClipOn(this.transform, "Enemy", "Attack");
 		UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), "" + GetAttack(), 85, Color.red, 0.8F,0.02F);
 		//_anim.SetBool("Threat", false);
 		Juice.instance.JuiceIt(Juice._Attack, Params._render.transform, 0.7F, 1.0F);

@@ -8,6 +8,7 @@ public class Mana : Tile {
 		if(this == null) return false;
 		InitStats.Hits -= 1;
 		CheckStats();
+		AudioManager.instance.PlayClipOn(this.transform, "Player", "Match");
 		if(Stats.Hits <= 0)
 		{
 			isMatching = true;
@@ -22,7 +23,6 @@ public class Mana : Tile {
 		{
 			isMatching = false;
 			EffectManager.instance.PlayEffect(this.transform,Effect.Attack);
-			CollectThyself(false);
 			return true;
 		}
 		return false;
