@@ -8,7 +8,7 @@ public class Bomb : Tile {
 		get
 		{
 			CheckStats();
-			return 1 + (Stats.Value/6);
+			return 1 + (Stats.Value/12);
 		}
 	}
 	public GameObject Particles;
@@ -39,30 +39,45 @@ public class Bomb : Tile {
 		
 		List<Tile> to_collect = new List<Tile>();
 		int xx = Point.Base[0], yy = Point.Base[1];
-		for(int x = -radius; x <= radius; x++)
+
+		for(int x = 0; x < TileMaster.Tiles.GetLength(0); x++)
 		{
-			for(int y = -radius; y <= radius; y++)
+			for(int y = 0; y < TileMaster.Tiles.GetLength(1); y++)
 			{
-				if(x != 0 || y != 0)
+				int distX = Mathf.Abs(x - xx);
+				int distY = Mathf.Abs(y - yy);
+				if(distX + distY <= radius)
 				{
-					int [] tile = new int [] {xx + x, yy + y};
-					if(tile[0] >= TileMaster.Tiles.GetLength(0) || tile[0] < 0) continue;
-					if(tile[1] >= TileMaster.Tiles.GetLength(1) || tile[1] < 0) continue;
-					if(TileMaster.Tiles[tile[0], tile[1]]) 
-					{
-						if(TileMaster.Tiles[tile[0],tile[1]].Type.isEnemy) 
-						{
-							TileMaster.Tiles[tile[0],tile[1]].InitStats.TurnDamage += BombDamage;
-						}
-						if(!TileMaster.Tiles[tile[0], tile[1]].isMatching)
-						{
-							TileMaster.Tiles[tile[0], tile[1]].SetState(TileState.Selected,true);
-							to_collect.Add(TileMaster.Tiles[tile[0], tile[1]]);
-						}
-					}	
+					Tile tile = TileMaster.Tiles[x,y];
+					TileMaster.Tiles[x,y].SetState(TileState.Selected, true);
+					to_collect.Add(tile);
 				}
 			}
 		}
+		//for(int x = -radius; x <= radius; x++)
+		//{
+		//	for(int y = -radius; y <= radius; y++)
+		//	{
+		//		if(x != 0 || y != 0)
+		//		{
+		//			int [] tile = new int [] {xx + x, yy + y};
+		//			if(tile[0] >= TileMaster.Tiles.GetLength(0) || tile[0] < 0) continue;
+		//			if(tile[1] >= TileMaster.Tiles.GetLength(1) || tile[1] < 0) continue;
+		//			if(TileMaster.Tiles[tile[0], tile[1]]) 
+		//			{
+		//				if(TileMaster.Tiles[tile[0],tile[1]].Type.isEnemy) 
+		//				{
+		//					TileMaster.Tiles[tile[0],tile[1]].InitStats.TurnDamage += BombDamage;
+		//				}
+		//				if(!TileMaster.Tiles[tile[0], tile[1]].isMatching)
+		//				{
+		//					TileMaster.Tiles[tile[0], tile[1]].SetState(TileState.Selected,true);
+		//					to_collect.Add(TileMaster.Tiles[tile[0], tile[1]]);
+		//				}
+		//			}	
+		//		}
+		//	}
+		//}
 		
 		GameObject p = Instantiate(Particles);
 		p.transform.position = this.transform.position;

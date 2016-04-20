@@ -127,18 +127,7 @@ public class GameManager : MonoBehaviour {
 		GameData.instance.Load();
 		Difficulty = 0;
 		inStartMenu = true;
-		TuteActive = false;
-
-		for(int i = 0; i < _Wave.Length; i++)
-		{
-			if(_Wave[i] != null) 
-			{
-				_Wave[i].Active = false;
-				_Wave[i].ResetChances();
-				Destroy(_Wave[i].gameObject);
-			}
-		}
-		
+		TuteActive = false;		
 	}
 	
 	// Update is called once per frame
@@ -239,10 +228,12 @@ public class GameManager : MonoBehaviour {
 		switch(i)
 		{
 			case 1: //Z
+			GetWave(GameData.instance.GetRandomWave(), 1);
 			Player.Stats._Health = Player.Stats._HealthMax;
 			break;
 			case 2: //X
-			TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["flame"], GENUS.ALL, 1, 50);
+			//GetWave(GameData.instance.GetRandomWave(), 2);
+			TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["chest"], GENUS.DEX, 1, 50);
 			//UIManager.instance.ShowResourceUI();
 			break;
 			case 3: //c
@@ -317,14 +308,22 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-	public void GetWave(Wave w, int slot)
+	public void GetWave(Wave w, int? slot = null)
 	{
-		if(_Wave[slot] != null) Destroy(_Wave[slot].gameObject);
-		_Wave[slot] = Instantiate(w);
-		_Wave[slot].Active = false;
-		_Wave[slot].Timer = 3;
+		int chances = 0;
+		while(!slot.HasValue)
+		{
+			slot = Random.Range(0, _Wave.Length);
+			if(_Wave[slot.Value] != null) slot = null;
+			chances ++;
+			if(chances > 10) return;
+		}
+		if(_Wave[slot.Value] != null) Destroy(_Wave[slot.Value].gameObject);
+		_Wave[slot.Value] = Instantiate(w);
+		_Wave[slot.Value].Active = false;
+		_Wave[slot.Value].Timer = 3;
 
-		if(_Wave[slot].Effects.LevelUpOnEnd) Difficulty += Mathf.Exp(Difficulty_Growth);
+		if(_Wave[slot.Value].Effects.LevelUpOnEnd) Difficulty += Mathf.Exp(Difficulty_Growth);
 		//StartCoroutine(WaveStartRoutine(slot, alert));
 	}
 
@@ -398,6 +397,14 @@ public class GameManager : MonoBehaviour {
 		if(slot == 0)
 		{
 			GetWave(GameData.instance.GetRandomWave(), slot);
+			int max = 0;
+			while(Random.value < Difficulty / 300) 
+			{
+				GetWave(GameData.instance.GetRandomWave(), max);
+				max ++;
+				if(max > 3) break;
+			}
+				
 		}
 		yield return StartCoroutine(CompleteTurnRoutine());
 		yield return null;
@@ -496,7 +503,6 @@ public class GameManager : MonoBehaviour {
 	{
 		UIManager.instance.LoadScreen.SetActive(true);
 		TurnsToWin = targetClass.TurnsToWin;
-		Player.instance.AddClass(targetClass);
 		StartCoroutine(UIManager.instance.LoadUI());
 	}
 
@@ -544,6 +550,7 @@ public class GameManager : MonoBehaviour {
 		{
 			foreach(Tile child in PlayerControl.instance.finalTiles)
 			{
+				if(child == null) continue;
 				//if(child.isMatching) continue;
 
 				int added_res = 0, added_armour = 0;
@@ -613,7 +620,6 @@ public class GameManager : MonoBehaviour {
 				{
 					if(_Wave[i].Effects.HitByPresence) _Wave[i].AddPoints(-Player.Stats.Presence);
 					_Wave[i].AddPoints(-_Wave[i].PointsPerTurn);
-					_Wave[i].WaveCheck();
 					//if(_Wave[i].Complete()) yield return new WaitForSeconds(GameData.GameSpeed(0.25F));
 				}
 				else
@@ -644,7 +650,7 @@ public class GameManager : MonoBehaviour {
 			{
 				if(_Wave[i].Active)
 				{
-					if(_Wave[i].Complete()) yield return new WaitForSeconds(GameData.GameSpeed(0.45F));
+					if(_Wave[i].Complete()) yield return new WaitForSeconds(GameData.GameSpeed(0.15F));
 					if(_Wave[i].Current <= 0 && _Wave[i].Active)
 					{
 						WaveAlert = true;
@@ -653,9 +659,13 @@ public class GameManager : MonoBehaviour {
 				}
 			}
 		}
-		
 		TileMaster.instance.ResetTiles(true);
+		
 		yield return StartCoroutine(Player.instance.BeginTurn());
+		for(int i = 0; i < _Wave.Length; i++)
+		{
+			if(_Wave[i] != null) yield return StartCoroutine(_Wave[i].BeginTurn());
+		}
 		yield return StartCoroutine(CompleteTurnRoutine());
 		yield return null;
 	}
@@ -686,14 +696,15 @@ public class GameManager : MonoBehaviour {
 			foreach(Tile child in column_attackers)
 			{
 				if(child == null) continue;
-				MiniTile enemy = (MiniTile) Instantiate(TileMaster.instance.ResMiniTile);
-				enemy._render.sprite = child.Info.Outer;
-				enemy.transform.position = child.transform.position;
-				enemy.SetTarget(UIManager.instance.HealthImg.transform, 0.2F, 0.0F);
-				enemy.SetMethod(() =>{
+
+				Vector3 pos = child.transform.position + (GameData.RandomVector*1.4F);
+				MoveToPoint mini = TileMaster.instance.CreateMiniTile(pos,UIManager.instance.HealthImg.transform, child.Info.Outer);
+				mini.SetPath(0.3F, 0.5F, 0.0F, 0.08F);
+				mini.SetMethod(() =>{
 						Player.Stats.Hit(child.GetAttack(), child);
 						AudioManager.instance.PlayClipOn(Player.instance.transform, "Player", "Hit");
-					});
+					}
+				);
 				yield return StartCoroutine(child.Animate("Attack", 0.05F));
 			}
 
@@ -724,13 +735,6 @@ public class GameManager : MonoBehaviour {
 		PlayerControl.instance.selectedTiles.Clear();
 		PlayerControl.instance.finalTiles.Clear();
 		PlayerControl.matchingTile = null;
-
-		for(int i = 0; i < _Wave.Length; i++)
-		{
-			if(_Wave[i] != null) _Wave[i].OnTurn();
-		}
-		
-		
 
 		EnemyTurn = false;
 	}

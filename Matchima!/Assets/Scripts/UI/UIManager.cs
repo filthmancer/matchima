@@ -151,10 +151,11 @@ public class UIManager : MonoBehaviour {
 
 	IEnumerator HealLoop()
 	{
+		if(ItemUI_active) yield break;
 		ShowingHealth = true;
 
 		int current_heal = Player.Stats.HealThisTurn;
-		Vector3 tpos = Vector3.up * 0.2F + Vector3.left * 0.3F;
+		Vector3 tpos = Vector3.up * 0.2F + Vector3.left * 0.8F;
 		MiniAlertUI heal = UIManager.instance.MiniAlert(
 			UIManager.instance.Health.transform.position + tpos, 
 			"+" + current_heal, 42, GameData.instance.GoodColour, 1.7F,	0.01F);
@@ -186,10 +187,11 @@ public class UIManager : MonoBehaviour {
 
 	IEnumerator HitLoop()
 	{
+		if(ItemUI_active) yield break;
 		ShowingHit = true;
 
 		int current_hit = Player.Stats.DmgThisTurn;
-		Vector3 tpos = Vector3.up * 0.2F + Vector3.right * 0.3F;
+		Vector3 tpos = Vector3.up * 0.2F + Vector3.left * 0.3F;
 		MiniAlertUI hit = UIManager.instance.MiniAlert(
 			UIManager.instance.Health.transform.position + tpos, 
 			"-" + current_hit, 42, GameData.instance.BadColour, 1.7F, 0.01F);
@@ -218,7 +220,30 @@ public class UIManager : MonoBehaviour {
 
 
 	
+	public void SwapSlotButtons(UISlotButton a, Class c, int slot)
+	{
+		UISlotButton b = ClassButtons[(int)c.Genus].SlotUI[0] as UISlotButton;
 
+		if(a != null && b != null)
+		{
+			Slot slota = a.slot;
+			Slot slotb = b.slot;
+			if(a.Parent != null)
+			{
+				//StartCoroutine(
+					a.Parent.GetSlot(slotb, a.Index);
+			}
+			if(b.Parent != null) 
+			{
+				//StartCoroutine(
+
+					b.Parent.GetSlot(slota, b.Index);
+			}
+
+			b.Setup(slota);
+			a.Setup(slotb);
+		}
+	}
 	public void ShowKillUI(long alltokens, int tens, int hunds, int thous)
 	{
 		KillUI.Activate(alltokens, tens, hunds, thous);
@@ -270,6 +295,10 @@ public class UIManager : MonoBehaviour {
 		bool active = over ?? (current_class != c);
 		current_class = (active ? c : null);
 		targetui_class = (active ? c : null);
+		for(int i = 0; i < ClassButtons.Length; i++)
+		{
+			ClassButtons[i].Setup(ClassButtons[i]._class);
+		}
 	}
 
 	public void ShowItemUI(params Item [] i)
@@ -452,6 +481,7 @@ public class UIManager : MonoBehaviour {
 	{
 		while(isQuoting || InMenu) yield return null;
 		isQuoting = true;
+		Unit curr_parent = null;
 		for(int i = 0; i < q.Length; i++)
 		{
 			current_quote = q[i];
@@ -461,7 +491,11 @@ public class UIManager : MonoBehaviour {
 			{
 				Objects.WaveQuote.SetActive(false);
 				Objects.ClassQuote.SetActive(true);
-				if(i == 0) Objects.ClassQuote.GetComponent<Animator>().SetTrigger("PopIn");
+				if(i == 0 || curr_parent != current_quote.Parent) 
+				{
+					Objects.ClassQuote.GetComponent<Animator>().SetTrigger("PopIn");
+					curr_parent = current_quote.Parent;
+				}
 				targettext = Objects.ClassQuote.Txt[0];
 				//Objects.ClassQuote.Txt[0].text = current_quote.Text;
 
@@ -470,7 +504,7 @@ public class UIManager : MonoBehaviour {
 					Objects.ClassQuote.Img[0].color = GameData.Colour(current_quote.Parent.Genus);
 					for(int t = 1; t < Objects.ClassQuote.Img.Length; t++)
 					{
-						Objects.ClassQuote.Img[t].gameObject.SetActive(t == current_quote.Parent.Index && current_quote.ShowTail);
+						Objects.ClassQuote.Img[t].gameObject.SetActive(t-1 == current_quote.Parent.Index && current_quote.ShowTail);
 					}
 				}
 			}
@@ -478,7 +512,11 @@ public class UIManager : MonoBehaviour {
 			{
 				Objects.ClassQuote.SetActive(false);
 				Objects.WaveQuote.SetActive(true);
-				if(i == 0) Objects.WaveQuote.GetComponent<Animator>().SetTrigger("PopIn");
+				if(i == 0 || curr_parent != current_quote.Parent) 
+				{
+					Objects.WaveQuote.GetComponent<Animator>().SetTrigger("PopIn");
+					curr_parent = current_quote.Parent;
+				}
 				//Objects.WaveQuote.Txt[0].text = current_quote.Text;
 				targettext = Objects.WaveQuote.Txt[0];
 				if(current_quote.Parent != null)
@@ -631,6 +669,13 @@ public class UIManager : MonoBehaviour {
 		ShowSimpleTooltip(active, Objects.WaveSlots[num].Img[1].transform, GameManager.instance._Wave[num].Name, GameManager.instance._Wave[num].Description);
 	}
 
+	public void AddClass(Class c, int slot)
+	{
+		ClassButtons[slot].Setup(c);
+		MiniAlert(Health.transform.position + Vector3.up * 1.3F,
+				  c.Name + " joined the party!", 50, GameData.Colour((GENUS)slot), 1.5F);
+	}
+
 
 	public void Reset()
 	{
@@ -638,11 +683,6 @@ public class UIManager : MonoBehaviour {
 		Player.instance.Reset();
 
 		GameManager.instance.gameStart = false;
-		for(int i = 0; i < GameManager.instance._Wave.Length; i++)
-		{
-			if(GameManager.instance._Wave[i] != null) GameManager.instance._Wave[i].ResetChances();
-		}
-		
 		GameData.instance.Save();
 		Application.LoadLevel(0);
 	}

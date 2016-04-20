@@ -37,7 +37,7 @@ public class TileMaster : MonoBehaviour {
 	public float tileBufferX = 0.2F, tileBufferY = 0.2F;
 	public float YOffset = 1.0F;
 	
-	public MiniTile ResMiniTile;
+	public GameObject ResMiniTile;
 
 	[HideInInspector]
 	public GameObject TileBasic;
@@ -663,8 +663,8 @@ public class TileMaster : MonoBehaviour {
 
 		if(res == null) res = new RectTransform[1]{UIManager.ClassButtons[0].transform as RectTransform};
 
-		List<MiniTile> restiles = new List<MiniTile>();
-
+		List<MoveToPoint> restiles = new List<MoveToPoint>();
+		MoveToPoint mini;
 		if(t.Type.isResource)
 		{
 			for(int rect = 0; rect < res.Length; rect++)
@@ -672,17 +672,16 @@ public class TileMaster : MonoBehaviour {
 				int val = Mathf.Clamp(t.Stats.Value/4, 1, 10);
 				for(int i = 0; i < val; i++)
 				{
-					MiniTile note = (MiniTile) Instantiate(ResMiniTile);
-					note._render.sprite = t.Params._border.sprite;
-					note.transform.position = t.transform.position + (i > 0 ? GameData.RandomVector*1.4F : Vector3.zero);
-					note.SetTarget(res[rect] as Transform, 0.45F);
-					note._Class = rect < c.Length ? c[rect] : null;
-					note.SetMethod(() =>{
-							if(note._Class != null) note._Class.AddToMeter(t.Stats.GetValues()[0]);
+					Vector3 pos = t.transform.position + (i > 0 ? GameData.RandomVector*1.4F : Vector3.zero);
+					mini = CreateMiniTile(pos, res[rect] as Transform,
+														t.Params._border.sprite);
+					mini.Target = rect < c.Length ? c[rect] : null;
+					mini.SetPath(0.3F, 0.5F, 0.0F, 0.08F);
+					mini.SetMethod(() =>{
+							if(mini.Target != null) (mini.Target as Class).AddToMeter(t.Stats.GetValues()[0]);
 						}
-						);
-					note.acc = 0.04F;
-					restiles.Add(note);
+					);
+					restiles.Add(mini);
 				}
 			}
 			
@@ -691,34 +690,31 @@ public class TileMaster : MonoBehaviour {
 		{
 			for(int rect = 0; rect < res.Length; rect++)
 			{
-				MiniTile health = (MiniTile) Instantiate(ResMiniTile);
-				health._render.sprite = t.Params._border.sprite;
-				health.transform.position = t.transform.position;
-				health.SetTarget(UIManager.instance.HealthImg.transform, 0.2F, 0.0F);
-				health._Class = rect < c.Length ? c[rect] : null;
-				health.SetMethod(() =>{
+				Vector3 pos = t.transform.position + (rect > 0 ? GameData.RandomVector*1.4F : Vector3.zero);
+				mini = CreateMiniTile(pos, UIManager.instance.HealthImg.transform,
+													t.Params._border.sprite);
+				mini.SetPath(0.3F, 0.0F, 0.0F, 0.08F);
+				mini.SetMethod(() =>{
 						Player.Stats.Heal(t.Stats.GetValues()[1]);
-						//health._Class.Stats.Heal(t.Stats.Heal);
 					}
-					);
-				restiles.Add(health);
+				);
+				restiles.Add(mini);
 			}
 		}
 		if(t.Type.isArmour)
 		{
 			for(int rect = 0; rect < res.Length; rect++)
 			{
-				MiniTile health = (MiniTile) Instantiate(ResMiniTile);
-				health._render.sprite = t.Params._border.sprite;
-				health.transform.position = t.transform.position;
-				health.SetTarget(UIManager.instance.HealthImg.transform, 0.2F, 0.0F);
-				health._Class = rect < c.Length ? c[rect] : null;
-				health.SetMethod(() =>{
+				Vector3 pos = t.transform.position + (rect > 0 ? GameData.RandomVector*1.4F : Vector3.zero);
+				mini = CreateMiniTile(pos, UIManager.instance.HealthImg.transform,
+													t.Params._border.sprite);
+				mini.SetPath(0.3F, 0.0F, 0.0F, 0.08F);
+				mini.SetMethod(() =>{
 						Player.Stats.AddArmour(t.Stats.GetValues()[2]);
-						//health._Class.Stats.AddArmour(t.Stats.Armour);
 					}
-					);
-				restiles.Add(health);
+				);
+				restiles.Add(mini);
+
 			}
 		}
 		if(t.Type.isEnemy)
@@ -729,16 +725,16 @@ public class TileMaster : MonoBehaviour {
 
 				if(GameManager.instance._Wave[i].PointsPerEnemy > 0)
 				{
+					Vector3 pos = t.transform.position + (i > 0 ? GameData.RandomVector*1.4F : Vector3.zero);
 				 	Wave w = GameManager.instance._Wave[i];
-					MiniTile enemy = (MiniTile) Instantiate(ResMiniTile);
-					enemy._render.sprite = t.Params._border.sprite;
-					enemy.transform.position = t.transform.position;
-					enemy.SetTarget(UIManager.Objects.WaveSlots[i].transform, 0.2F, 0.0F);
-					enemy.SetMethod(() =>{
+					mini = CreateMiniTile( pos, UIManager.Objects.WaveSlots[i].transform, 
+														t.Params._border.sprite);
+					mini.SetPath(0.3F, 0.5F, 0.0F, 0.08F);
+					mini.SetMethod(() =>{
 								if(w != null) w.EnemyKilled(t as Enemy);
 							}
 							);
-					restiles.Add(enemy);
+					restiles.Add(mini);
 				}
 			}
 			
@@ -748,17 +744,15 @@ public class TileMaster : MonoBehaviour {
 				int val = Mathf.Clamp(t.Stats.Value/4, 1, 10);
 				for(int i = 0; i < val; i++)
 				{
-					MiniTile note = (MiniTile) Instantiate(ResMiniTile);
-					note._render.sprite = t.Params._border.sprite;
-					note.transform.position = t.transform.position + (i > 0 ? GameData.RandomVector*1.4F : Vector3.zero);
-					note.SetTarget(res[rect] as Transform, 0.45F);
-					note._Class = rect < c.Length ? c[rect] : null;
-					note.SetMethod(() =>{
-							if(note._Class != null) note._Class.AddToMeter(t.Stats.GetValues()[0]);
+					Vector3 pos = t.transform.position + (i > 0 ? GameData.RandomVector*1.4F : Vector3.zero);
+					mini = CreateMiniTile(pos, res[rect] as Transform, t.Params._border.sprite);
+					mini.Target =  rect < c.Length ? c[rect] : null;
+					mini.SetPath(0.3F, 0.5F, 0.0F, 0.08F);
+					mini.SetMethod(() =>{
+							if(mini.Target != null) (mini.Target as Class).AddToMeter(t.Stats.GetValues()[0]);
 						}
 						);
-					note.acc = 0.04F;
-					restiles.Add(note);
+					restiles.Add(mini);
 				}
 			}
 		}
@@ -766,19 +760,22 @@ public class TileMaster : MonoBehaviour {
 		if(destroy) DestroyTile(t);
 	}
 
-	public MiniTile CreateMiniTile(Vector3 pos, Transform target, Sprite sprite = null, float scale = 0.23F, float speedY = -0.2F)
+	public MoveToPoint CreateMiniTile(Vector3 pos, Transform target, Sprite sprite = null)
 	{
-		MiniTile new_mini = (MiniTile)Instantiate(ResMiniTile);
 		if(sprite == null)
 		{
 			int num = Random.Range(0,4);
 			sprite = Genus.Frame[num];
 		}
-		
-		new_mini._render.sprite = sprite;
+
+		GameObject new_mini = Instantiate(ResMiniTile);
 		new_mini.transform.position = pos;
-		new_mini.SetTarget(target, scale, speedY);
-		return new_mini;
+		new_mini.GetComponent<SpriteRenderer>().sprite = sprite;
+
+		MoveToPoint mover = new_mini.GetComponent<MoveToPoint>();
+		mover.SetTarget(target.position);
+		//mover.SetPath(speed, arc, lerp);
+		return mover;
 	}
 
 	public void QueueTile(SPECIES spec, GENUS g = GENUS.NONE, int value = 0)

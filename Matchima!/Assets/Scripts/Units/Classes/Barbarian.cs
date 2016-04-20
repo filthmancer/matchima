@@ -71,15 +71,11 @@ public class Barbarian : Class {
 		switch(rand)
 		{
 			case 0:
-				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["swapper"], g, 1, points);
-				(TileMaster.Tiles[x,y] as Swapper).SetArgs("", "Enemy", "Genus", "");
-
-				//.OverrideStartGenus("");
-				//(TileMaster.Tiles[x,y] as Swapper).StartSpecies = "Enemy";
-				//(TileMaster.Tiles[x,y] as Swapper).EndGenus = "Genus";
+				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["arcane"], g, 1, points);
+				//(TileMaster.Tiles[x,y] as Swapper).SetArgs("", "Enemy", "Genus", "");
 			break;
 			case 1:
-				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["collector"], GENUS.ALL, 1, points);	
+				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["collector"], g, 1, points);	
 				(TileMaster.Tiles[x,y] as Collector).Type = "Health";
 			break;
 			case 2:	
@@ -87,7 +83,7 @@ public class Barbarian : Class {
 				(TileMaster.Tiles[x,y] as Stacker).Type = "Health";
 			break;
 			case 3:
-				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["armour"], GENUS.RAND, 1, points*2);	
+				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["armour"], g, 1, points*2);	
 			break;
 			case 4:
 

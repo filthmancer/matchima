@@ -2,11 +2,11 @@
 using System.Collections;
 
 public class ClassEffect : Status {
-	public Class _Class;
+	public Unit _Unit;
 
-	public virtual void Setup(Class c)
+	public virtual void Setup(Unit c)
 	{
-		_Class = c;
+		_Unit = c;
 	}
 
 

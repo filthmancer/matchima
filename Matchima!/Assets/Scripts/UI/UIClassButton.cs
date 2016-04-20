@@ -18,6 +18,7 @@ public class UIClassButton : UIObj {
 	public Class _class;
 	public Animator Anim;
 	public EasyTween PartialOpen, FullOpen;
+	public EasyTween ClassInit;
 	bool class_set;
 
 	public string [] input;
@@ -37,19 +38,21 @@ public class UIClassButton : UIObj {
 	
 	// Update is called once per frame
 	public void Update () {
-		if(!class_set && _class != null) AddListener(_class);
+		if(!class_set && _class != null) 
+		{
+			AddListener(_class);
+			if(!ClassInit.IsObjectOpened()) ClassInit.OpenCloseObjectAnimation();
+		}
+		else if(_class == null && ClassInit.IsObjectOpened()) ClassInit.OpenCloseObjectAnimation();
 		if(!Application.isEditor && Input.touches.Length == 0) over = false;
 		if(over && _class != null)
 		{
-			//if(!UIManager.InMenu) 
-			//{
-				if(tooltip_timer > 0.0F)	tooltip_timer -= Time.deltaTime;
-				else 
-				{
-					UIManager.instance.ShowSimpleTooltip(true, this.transform, _class._Name, _class._Desc);
-					over = false;
-				}
-		//	}
+			if(tooltip_timer > 0.0F)	tooltip_timer -= Time.deltaTime;
+			else 
+			{
+				UIManager.instance.ShowSimpleTooltip(true, this.transform, _class._Name, _class._Desc);
+				over = false;
+			}
 		}
 		else tooltip_timer = 0.3F;
 
@@ -59,7 +62,6 @@ public class UIClassButton : UIObj {
 			Banner.SetActive(false);
 			//Banner._Text.text = _class.MeterString;//_class.LevelPoints + "\n" + _class.TurnLevelRate + ":" + _class.BonusLevelRate + ":" + _class.WaveLevelRate;
 			//Banner._Text.color =  GameData.Colour(_class.Genus);
-
 			/*if(_class.Meter > 0)
 			{
 				Banner.SetActive(true);
@@ -77,13 +79,11 @@ public class UIClassButton : UIObj {
 			if(_class.PulseAlert)
 			{
 				_class.PulseAlert = false;
-				//this.GetComponent<Animator>().SetTrigger("Pulse");
 			}
 			GetCooldown();
 		}
 
 		activated = UIManager.instance.current_class == this._class;
-	//	Anim.SetBool("Activate", activated);
 		if(UIManager.instance.current_class != null)
 		{
 			_Sprite.color = (activated ? color_default : color_default * Color.grey);
@@ -118,8 +118,25 @@ public class UIClassButton : UIObj {
 		_Sprite.enabled = true;
 		_SpriteMask.sprite = ab.Icon;
 		_SpriteMask.enabled = false;
-		this.GetComponent<Button>().enabled = true;
+		//this.GetComponent<Button>().enabled = true;
 		_FrameMask.fillAmount = 0.0F;
+
+		for(int i = 0; i < _class._Slots.Length; i++)
+		{
+			if(SlotUI.Length < i - 1) continue;
+			if(_class._Slots[i] == null)
+			{
+				SlotUI[i].SetActive(false);
+			}
+			else 
+			{
+				SlotUI[i].SetActive(true);
+				(SlotUI[i] as UISlotButton).Parent = _class;
+				SlotUI[i].Setup(_class._Slots[i]);
+				SlotUI[i].Txt[0].text = (_class._Slots[i] as Item).ScaleString;
+			}
+			
+		}
 	}
 
 	public void Remove()
@@ -127,7 +144,7 @@ public class UIClassButton : UIObj {
 		_class = null;
 		Name.text = "";
 		_Sprite.enabled = false;
-		this.GetComponent<Button>().enabled = false;
+		//this.GetComponent<Button>().enabled = false;
 	}
 
 	void GetCooldown()
@@ -195,7 +212,7 @@ public class UIClassButton : UIObj {
 
 	void AddListener(Class ab)
 	{
-		GetComponent<Button>().onClick.AddListener(() => Activate(ab));
+		//GetComponent<Button>().onClick.AddListener(() => Activate(ab));
 		class_set = true;
 	}
 

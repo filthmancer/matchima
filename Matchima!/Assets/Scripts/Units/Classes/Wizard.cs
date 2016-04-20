@@ -73,17 +73,16 @@ TileChance wiz_arcane;
 		switch(rand)
 		{
 			case 0:
-				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["arcane"], GENUS.RAND, 1, points);
-				(TileMaster.Tiles[x,y] as Arcane).InputGenus = "Genus";
+				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["bomb"], g, 1, points);
 			break;
 			case 1:
-				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["lightning"], GENUS.RAND, 1, points);	
+				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["lightning"], g, 1, points);	
 			break;
 			case 2:
-				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["lens"], GENUS.ALL, 1, points);	
+				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["flame"], g, 1, points);	
 			break;
 			case 3:
-				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["cross"], GENUS.RAND, 1, points);	
+				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["cross"], g, 1, points);	
 			break;
 			case 4:
 

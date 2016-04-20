@@ -104,14 +104,20 @@ public class Blob : Enemy {
 
 		SetState(TileState.Idle, true);
 
-		TileMaster.instance.CreateMiniTile(this.transform.position, m.transform, Inner, 0.5F);
+		Vector3 pos = transform.position + (GameData.RandomVector*1.4F);
+		MoveToPoint mini = TileMaster.instance.CreateMiniTile(this.transform.position, m.transform, Inner);
+		//mini.Target =  target;
+		mini.SetMethod(() =>{
+				m.AddValue(Stats.Value);
+				m.InitStats.Hits += Stats.Hits;
+				m.InitStats.Attack += Stats.Attack;
+				m.CheckStats();
+			}
+			);
 
 
 		yield return new WaitForSeconds(0.35F);
-		m.AddValue(Stats.Value);
-		m.InitStats.Hits += Stats.Hits;
-		m.InitStats.Attack += Stats.Attack;
-		m.CheckStats();
+		
 		
 		yield return new WaitForSeconds(0.15F);
 		Reset();

@@ -76,11 +76,13 @@ public class Bard : Class {
 				(TileMaster.Tiles[x,y] as Collector).Type = "";
 			break;
 			case 2:
-				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["harp"], GENUS.ALL, 1, points);	
+
+				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["ward"], g, 1, points);	
+				TileMaster.Tiles[x,y].SetArgs("Healing", "1", "2", "5");
 			break;
 			case 3:
-				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["swapper"], GENUS.RAND, 1, points/2);	
-				(TileMaster.Tiles[x,y] as Swapper).SetArgs("Genus", "", "Alpha", "Mana");
+				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["arcane"], g, 1, points/2);	
+				TileMaster.Tiles[x,y].SetArgs("Genus", "resource", "", "Harp");
 			break;
 			case 4:
 

@@ -13,7 +13,7 @@ public class BlackHole : Tile {
 	{
 		get{
 			return new StCon[] {
-				new StCon("Absorbs nearby tiles, adding to its value (" + radius + " RADIUS)", GameData.Colour(Genus))};
+				new StCon("Absorbs tile in " + radius, GameData.Colour(Genus))};
 		}
 	}
 
@@ -89,18 +89,25 @@ public class BlackHole : Tile {
 		for(int i = 0; i < tiles.Count; i++)
 		{
 			tiles[i].isMatching = true;
-			TileMaster.instance.CreateMiniTile(tiles[i].transform.position, this.transform, tiles[i].Inner, 0.2F);
+			Vector3 pos = transform.position + (GameData.RandomVector*1.4F);
+			MoveToPoint mini = TileMaster.instance.CreateMiniTile(tiles[i].transform.position, this.transform, tiles[i].Inner);
+			//mini.Target =  target;
+			mini.SetMethod(() =>{
+					this.AddValue(tiles[i].Stats.Value);
+					tiles[i].DestroyThyself();
+				}
+			);
 		}
 
 		yield return new WaitForSeconds(0.25F);
 
 		val = 0;
-		foreach(Tile child in tiles)
-		{
-			val += child.Stats.Value;
-			child.DestroyThyself();
-		}
-		AddValue(val);
+		//foreach(Tile child in tiles)
+		//{
+		//	val += child.Stats.Value;
+		//	child.DestroyThyself();
+		//}
+		//AddValue(val);
 		yield return new WaitForSeconds(0.2F);
 		Reset();
 

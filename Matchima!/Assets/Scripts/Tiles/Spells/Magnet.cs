@@ -97,12 +97,12 @@ public class Magnet : Tile {
 
 			if(a == null || b == null) continue;
 
-			TileMaster.instance.CreateMiniTile(a.transform.position, b.transform, a.Inner, 0.5F);
-			TileMaster.instance.CreateMiniTile(b.transform.position, a.transform, b.Inner, 0.5F);
+			//TileMaster.instance.CreateMiniTile(a.transform.position, b.transform, a.Inner, 0.5F);
+			//TileMaster.instance.CreateMiniTile(b.transform.position, a.transform, b.Inner, 0.5F);
 			yield return new WaitForSeconds(0.5F);
 
-			TileMaster.instance.ReplaceTile(a.Point.Base[0], a.Point.Base[1], b.Type, b.Genus);
-			TileMaster.instance.ReplaceTile(b.Point.Base[0], b.Point.Base[1], a.Type, a.Genus);
+			//TileMaster.instance.ReplaceTile(a.Point.Base[0], a.Point.Base[1], b.Type, b.Genus);
+			//TileMaster.instance.ReplaceTile(b.Point.Base[0], b.Point.Base[1], a.Type, a.Genus);
 			yield return new WaitForSeconds(0.1F);
 
 			sameGenus.RemoveAt(randG);

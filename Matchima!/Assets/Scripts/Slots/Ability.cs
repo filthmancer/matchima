@@ -3,12 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
+public enum ModType
+{
+	Boon,
+	Curse
+}
 public class Ability : Slot {
 
 	public int Damage = 0;
 	protected int final_damage = 0;
 	public int _Level = 1;
 
+	public ModType Type;
 	Ability_UpgradeInfo CostUp, CoolUp;
 
 	public override StCon [] BaseDescription
@@ -349,11 +355,6 @@ public class Ability : Slot {
 		
 	}
 
-	public virtual void DamageIndicator(ref List<int> damage, List<Tile> selected)
-	{
-		damage = damage;
-		//return damage;
-	}
 
 	protected bool CanAfford()
 	{

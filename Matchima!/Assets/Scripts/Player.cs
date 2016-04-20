@@ -37,14 +37,16 @@ public class Player : MonoBehaviour {
 			return final.ToArray();
 		}
 	}
+
 	public static Ability [] Abilities
 	{
-		get{
+		get
+		{
 			List<Ability> final = new List<Ability>();
 			foreach(Class child in Classes)
 			{
 				if(child == null) continue;
-				foreach(Slot sl in child._Slots)
+				foreach(Slot sl in child._Boons)
 				{
 					if(sl is Ability) final.Add(sl as Ability);
 				}
@@ -67,29 +69,6 @@ public class Player : MonoBehaviour {
 				}
 			}
 			return final.ToArray();
-		}
-	}
-	public int AbilityCount
-	{
-		get{
-			int a = 0;
-			for(int i = 0; i < Abilities.Length; i++)
-			{
-				if(Abilities[i] != null) a++;
-			}
-			return a;
-		}
-	}
-
-	public int BoughtAbilityCount
-	{
-		get{
-			int a = 0;
-			for(int i = 0; i < Stats.AbilitySlots; i++)
-			{
-				//if(abilities[i] != null) a++;
-			}
-			return a;
 		}
 	}
 
@@ -153,35 +132,11 @@ public class Player : MonoBehaviour {
 		return null;
 	}
 
-	public void OnTileDestroy(Tile t)
-	{
-		foreach(Ability child in Abilities)
-		{
-			if(child == null) continue;
-			child.OnTileDestroy(t);
-		}
-	}
-
-	public void OnTileCollect(Tile t)
-	{
-		foreach(Ability child in Abilities)
-		{
-			if(child == null) continue;
-			child.OnTileCollect(t);
-		}
-	}
 
 	public IEnumerator BeforeMatch(List<Tile> tiles)
 	{
 		//bool match = true;
 		QueuedSpells.Clear();
-		foreach(Ability child in Abilities)
-		{
-			if(child == null || !child.BeforeMatchEffect) continue;
-			yield return StartCoroutine(child.BeforeMatch(tiles));
-			//if(!child.BeforeMatch(tiles)) match = false;
-		}
-		
 		for(int i = 0; i < tiles.Count; i++)
 		{
 			if(tiles[i] == null || !tiles[i].BeforeMatchEffect) continue;
@@ -198,12 +153,22 @@ public class Player : MonoBehaviour {
 		ResetStats();
 	}
 
-	public void OnMatch(Tile t)
+	public void OnTileMatch(Tile t)
 	{
 		if(t is Enemy)
 		{
 			Enemy e = t as Enemy;
 		}
+	}
+
+	public void OnTileDestroy(Tile t)
+	{
+
+	}
+
+	public void OnTileCollect(Tile t)
+	{
+
 	}
 
 	public int CompleteClasses()
@@ -218,15 +183,7 @@ public class Player : MonoBehaviour {
 
 	public IEnumerator AfterMatch()
 	{
-		float time = 0.0F;
-		foreach(Ability child in Abilities)
-		{
-			if(child == null) continue;
-			yield return StartCoroutine(child.AfterMatch());
-			//time += child.AfterMatch();
-		}
 		yield break;
-		//yield return new WaitForSeconds(time);
 	}
 
 
@@ -330,8 +287,6 @@ public class Player : MonoBehaviour {
 		InitStats.PrevTurnKills = 0;
 		CompleteMatch = true;
 
-
-
 		yield return null;
 	}
 
@@ -396,12 +351,6 @@ public class Player : MonoBehaviour {
 	public List<Bonus> CheckForBonus(GENUS g)
 	{
 		List<Bonus> bonuses = new List<Bonus>();
-		foreach(Ability child in Abilities)
-		{
-			if(child == null) continue;
-			Bonus b = child.CheckBonus(g);
-			if(b != null) bonuses.Add(b);
-		}
 		for(int i = 0; i < Equipment.Length; i++)
 		{
 			if(Equipment[i] == null) continue;
@@ -417,26 +366,33 @@ public class Player : MonoBehaviour {
 		e.GetArgs(Duration, args);
 		if(i == -1) 
 		{
+			foreach(ClassEffect child in _Status)
+			{
+				if(child.Name == e.Name)
+				{
+					child.Duration += e.Duration;
+					Destroy(e.gameObject);
+					return;
+				}
+			}
 			_Status.Add(e);
 			e.transform.parent = this.transform;
 		}
 		else 
 		{
+			foreach(ClassEffect child in Classes[i]._Status)
+			{
+				if(child.Name == e.Name)
+				{
+					child.Duration += e.Duration;
+					Destroy(e.gameObject);
+					return;
+				}
+			}
 			Classes[i]._Status.Add(e);
+			e.Setup(Classes[i]);
 			e.transform.parent = Classes[i].transform;
 		}
-	}
-
-	public void AddClass(ClassContainer con)
-	{
-		//_container = con;
-		//_class = (Class) Instantiate(con.Prefab);
-		//_class.transform.parent = this.transform;
-		//InitStats = new Stat(_class.Stats);
-		//Stats = new Stat(_class.Stats);
-		//Stats.ApplyStatInc();
-		//
-		//StartCoroutine(LoadClass(_class));
 	}
 
 	public void AddClassToSlot(int slot, Class c)
@@ -449,7 +405,8 @@ public class Player : MonoBehaviour {
 
 		ResetStats();
 		//print(UIManager.ClassButtons[slot]);
-		UIManager.ClassButtons[slot].Setup(Classes[slot]);
+		//UIManager.ClassButtons[slot].Setup(Classes[slot]);
+		UIManager.instance.AddClass(Classes[slot], slot);
 	}
 
 	public void Reset()
@@ -585,18 +542,9 @@ public class Player : MonoBehaviour {
 
 		for(int i = 0; i < GameManager.instance._Wave.Length; i++)
 		{
-			if(GameManager.instance._Wave[i] != null)
+			if(GameManager.instance._Wave[i] != null && GameManager.instance._Wave[i].Active)
 			{
-				foreach(WaveTile w in GameManager.instance._Wave[i].Tiles)
-				{
-					TileMaster.instance.IncreaseChance(w.Genus, w.Species, w.Chance);
-					if(w.Value.y > 0)
-					{
-						SPECIES s = TileMaster.Types[w.Species];
-						GenusInfo g = s[w.Genus];
-						g.ValueAdded.Add(w.Value);
-					}
-				}
+				GameManager.instance._Wave[i].GetChances();
 			}
 			
 		}
@@ -612,11 +560,16 @@ public class Player : MonoBehaviour {
 			indiv_damage.Add(damage);
 		}
 
-			foreach(Ability child in Abilities)
-			{
-				if(child == null) continue;
-				child.DamageIndicator(ref indiv_damage, selected);
-			}
+		foreach(Ability child in Abilities)
+		{
+			if(child == null) continue;
+			child.DamageIndicator(ref indiv_damage, selected);
+		}
+
+		foreach(Item child in Items){
+			if(child == null) continue;
+			child.DamageIndicator(ref indiv_damage, selected);
+		}
 
 		return indiv_damage;
 	}

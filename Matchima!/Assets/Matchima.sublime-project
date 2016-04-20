@@ -9,7 +9,10 @@
 			],
 			"folder_exclude_patterns":
 			[
-				"Classes",
+				"Units",
+				"Slots",
+				"Status",
+				"Utilities",
 				"Items",
 				"Tiles",
 				"UI"
@@ -23,8 +26,26 @@
 				"*.dll",
 				"*.meta"
 			],
-			"name": "XML",
-			"path": "Resources"
+			"name": "Utilities",
+			"path": "Scripts/Utilities"
+		},
+		{
+			"file_exclude_patterns":
+			[
+				"*.dll",
+				"*.meta"
+			],
+			"name": "Slots",
+			"path": "Scripts/Slots"
+		},
+		{
+			"file_exclude_patterns":
+			[
+				"*.dll",
+				"*.meta"
+			],
+			"name": "Status",
+			"path": "Scripts/Status"
 		},
 		{
 			"file_exclude_patterns":
@@ -49,26 +70,8 @@
 			[
 				"Abilities"
 			],
-			"name": "Classes",
-			"path": "Scripts/Classes"
-		},
-		{
-			"file_exclude_patterns":
-			[
-				"*.dll",
-				"*.meta"
-			],
-			"name": "Abilities",
-			"path": "Scripts/Classes/Abilities"
-		},
-		{
-			"file_exclude_patterns":
-			[
-				"*.dll",
-				"*.meta"
-			],
-			"name": "Items",
-			"path": "Scripts/Items"
+			"name": "Units",
+			"path": "Scripts/Units"
 		},
 		{
 			"file_exclude_patterns":

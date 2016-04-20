@@ -131,7 +131,7 @@ public class Tile : MonoBehaviour {
 		{
 			return new TileUpgrade []
 			{
-				new TileUpgrade(0.05F, 3, () => {InitStats.Hits += 1;}),
+				new TileUpgrade(0.05F, 5, () => {InitStats.Hits += 1;}),
 				new TileUpgrade(1.0F, 1, () => {InitStats.Value += 1;}),
 				new TileUpgrade(0.1F, 2, () => {InitStats.Resource +=1;})
 			};
@@ -960,7 +960,7 @@ public class Tile : MonoBehaviour {
 
 		MoveToPoint mp = this.gameObject.AddComponent<MoveToPoint>();
 		mp.SetTarget(newpoint);
-		mp.SetPath(0.01F, true, false, arc);
+		mp.SetPath(0.01F, arc);
 		mp.SetThreshold(0.1F);
 		mp.DontDestroy = true;
 

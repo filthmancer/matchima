@@ -55,7 +55,7 @@ public class Force : Tile {
 			MoveToPoint mp = part.GetComponent<MoveToPoint>();
 			mp.enabled = true;
 			mp.SetTarget(child.transform.position);
-			mp.SetPath(0.1F, true);
+			mp.SetPath(0.3F, 0.02F);
 			mp.SetMethod(() => {
 					EffectManager.instance.PlayEffect(child.transform,Effect.Attack);
 				});

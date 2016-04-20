@@ -76,11 +76,13 @@ public class Mimic : Enemy {
 
 			if(originalMatch)
 			{
-				Player.Stats.Hit(GetAttack()*2);
-				MiniTile enemy = (MiniTile) Instantiate(TileMaster.instance.ResMiniTile);
-				enemy._render.sprite = Info.Outer;
-				enemy.transform.position = transform.position;
-				enemy.SetTarget(UIManager.instance.HealthImg.transform, 0.2F, 0.0F);
+				Vector3 pos = transform.position + (GameData.RandomVector*1.4F);
+				MoveToPoint mini = TileMaster.instance.CreateMiniTile(transform.position, UIManager.instance.HealthImg.transform, Info.Outer);
+				//mini.Target =  target;
+				mini.SetMethod(() =>{
+						Player.Stats.Hit(GetAttack()*2);
+					}
+				);
 				StartCoroutine(Animate("Attack", 0.05F));
 				HasAttackedThisTurn = true;
 				Player.Stats.CompleteHealth();
@@ -102,7 +104,7 @@ public class Mimic : Enemy {
 			InitStats.Hits -= fullhit;
 			CheckStats();
 
-			Player.instance.OnMatch(this);
+			Player.instance.OnTileMatch(this);
 			if(Stats.Hits <= 0)
 			{
 				isMatching = true;

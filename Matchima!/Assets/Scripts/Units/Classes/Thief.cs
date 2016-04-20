@@ -64,31 +64,27 @@ public class Thief : Class {
 			//barb_disgust.Unlocked = () => {foreach(Class child in Player.Classes){if(child.Name == "Barbarian") return true;} return false;};
 			Quotes.StartQuotes.Add(barb_disgust);
 		}
-
-
-
 		base.StartClass();
 	}
 
 
 	public override void GetSpellTile(int x, int y, GENUS g, int points)
 	{
-		int rand = Random.Range(0,4);
+		int rand = 1;//Random.Range(0,4);
 		switch(rand)
 		{
 			case 0:
 				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["force"], g, 1, points);
 			break;
 			case 1:
-				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["collector"], g, 1, points);	
-				(TileMaster.Grid.Tiles[x,y] as Collector).Type = "";
+				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["bomb"], g, 1, points);	
 			break;
 			case 2:
-				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["sword"], GENUS.ALL, 1, points*2);	
+				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["sword"], GENUS.ALL, 1, points);	
 			break;
 			case 3:
-				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["swapper"], GENUS.RAND, 1, points);
-				(TileMaster.Tiles[x,y] as Swapper).SetArgs("Genus", "", "Genus", "Sword");
+				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["arcane"], g, 1, points);
+				(TileMaster.Tiles[x,y] as Arcane).SetArgs("Genus", "", "", "Sword");
 			break;
 			case 4:
 

@@ -10,6 +10,9 @@ public class MoveToPoint : MonoBehaviour {
 	public bool LerpingMovement = true;
 	public bool DontDestroy = false;
 
+	[HideInInspector]
+	public Unit Target;
+
 	private float LerpingSpeed = 1.0F;
 
 	private float arc_power = 0.5F;
@@ -19,12 +22,15 @@ public class MoveToPoint : MonoBehaviour {
 
 	private float delay = 0.0F;
 	private float threshold = 0.2F;
+	private float final_scale = 1.0F;
 	Action method;
 
 	// Update is called once per frame
 	void Update () {
 		if(Point != Vector3.zero)
 		{
+			if(transform.localScale != Vector3.one * final_scale) 
+				transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one*final_scale, Time.deltaTime * 7);
 			if(LerpingMovement) transform.position = Vector3.Lerp(transform.position, Point, Speed * LerpingSpeed);
 			else 
 			{
@@ -67,24 +73,26 @@ public class MoveToPoint : MonoBehaviour {
 		threshold = thresh;
 	}
 
-	public void SetPath(float speed = 0.5F, bool? Arc = null, bool? Lerp = null, float _arc = 0.3F, float _lerp = 1.0F)
+	public void SetPath(float speed = 0.1F, float _arc = 0.0F, float _lerp = 0.0F, float scale = 1.0F)
 	{
-		if(Arc.HasValue)
+		Speed = speed;
+		if(_arc != 0.0F)
 		{
-			ArcingMovement = (bool) Arc;
-			if(ArcingMovement)
-			{
-				arc_velocity = Vector3.Cross(Vector3.forward, velocity);
-				if(UnityEngine.Random.value > 0.5F) arc_velocity = -arc_velocity;
-				arc_power = Speed * _arc;
-				arc_decay = arc_power * 0.04F;
-			}
+			ArcingMovement = true;
+			arc_velocity = Vector3.Cross(Vector3.forward, velocity);
+			if(UnityEngine.Random.value > 0.5F) arc_velocity = -arc_velocity;
+			arc_power = Speed * _arc;
+			arc_decay = arc_power * 0.04F;
 		}
-		if(Lerp.HasValue) 
+		else ArcingMovement = false;
+		if(_lerp != 0.0F) 
 		{
-			LerpingMovement = (bool)Lerp;
+			LerpingMovement = true;
 			LerpingSpeed = _lerp;
 		}
+		else LerpingMovement = false;
+
+		final_scale = scale;
 	}
 
 	public void SetDelay(float f)

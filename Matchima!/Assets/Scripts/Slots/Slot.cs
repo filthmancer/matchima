@@ -55,6 +55,12 @@ public class Slot : MonoBehaviour {
 		}
 	}
 
+	public virtual void DamageIndicator(ref List<int> damage, List<Tile> selected)
+	{
+		damage = damage;
+		//return damage;
+	}
+
 	public virtual string Level
 	{
 		get{return "";}

@@ -16,6 +16,8 @@ public class MiniTile : MonoBehaviour {
 
 	Action method;
 	public Class _Class;
+
+	public MoveToPoint Mover;
 	// Use this for initialization
 	void Start () {
 	
@@ -59,7 +61,6 @@ public class MiniTile : MonoBehaviour {
 		transform.position += offset;
 		speedX = 0.2F;//Random.value > 0.5F ? 0.2F : -0.2F;
 		_render.sortingOrder = 3;
-
 	}
 
 	public void SetMethod(Action a)

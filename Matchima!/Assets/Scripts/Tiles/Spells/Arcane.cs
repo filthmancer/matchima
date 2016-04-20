@@ -6,25 +6,25 @@ public class Arcane : Tile {
 
 	public string InputGenus, InputType;
 
-	public string EndGenus
-	{
-		get
-		{
-			if(InputGenus == "Random") return GameData.ResourceLong((GENUS)Random.Range(0,4));
-			else if(InputGenus == "RandomAll") return GameData.ResourceLong((GENUS)Random.Range(0,7));
-			else if(InputGenus == "Genus") return GameData.ResourceLong(Genus);
-			else return InputGenus;
-		}
-	}
+	public string EndGenus;
+	//{
+	//	get
+	//	{
+	//		if(InputGenus == "Random") return GameData.ResourceLong((GENUS)Random.Range(0,4));
+	//		else if(InputGenus == "RandomAll") return GameData.ResourceLong((GENUS)Random.Range(0,7));
+	//		else if(InputGenus == "Genus") return GameData.ResourceLong(Genus);
+	//		else return InputGenus;
+	//	}
+	//}
 
-	public string EndType
-	{
-		get
-		{
-			if(InputType == "Random") return "Resource";
-			else return InputType;
-		}
-	}
+	public string EndType;
+	//{
+	//	get
+	//	{
+	//		if(InputType == "Random") return "Resource";
+	//		else return InputType;
+	//	}
+	//}
 	public int EndValueAdded = 0;
 	public int TilesCollected
 	{
@@ -45,9 +45,23 @@ public class Arcane : Tile {
 	}
 	public override void Setup(int x, int y, int scale, TileInfo inf, int value_inc)
 	{
-		base.Setup(x, y, scale, inf, value_inc);
-		
+		base.Setup(x, y, scale, inf, value_inc);	
 	}
+
+	public override void SetArgs(params string [] args)
+	{
+		InputGenus = args[0];
+		InputType = args[1];
+		EndGenus = args[2];
+		EndType = args[3];
+
+		if(InputGenus == "Random") InputGenus = GameData.ResourceLong((GENUS)Random.Range(0,4));
+		else if(InputGenus == "RandomAll") InputGenus = GameData.ResourceLong((GENUS)Random.Range(0,6));
+
+		if(EndGenus == "Random") EndGenus = GameData.ResourceLong((GENUS)Random.Range(0,4));
+		else if(EndGenus == "RandomAll") EndGenus = GameData.ResourceLong((GENUS)Random.Range(0,6));
+	}
+
 
 	public override IEnumerator BeforeMatch()
 	{
@@ -75,11 +89,12 @@ public class Arcane : Tile {
 		foreach(Tile child in to_collect)
 		{
 			child.SetState(TileState.Selected, true);
+			PlayerControl.instance.RemoveTileToMatch(child);
 
 			GameObject part = Instantiate(ArcaneParticle);
 			part.transform.position = this.transform.position;
 			part.GetComponent<MoveToPoint>().SetTarget(child.transform.position);
-			part.GetComponent<MoveToPoint>().SetPath(0.5F, true);
+			part.GetComponent<MoveToPoint>().SetPath(0.5F, 0.2F);
 			part.GetComponent<ParticleSystem>().startColor = GameData.Colour(Genus);
 
 			float dist = Vector3.Distance(child.transform.position, this.transform.position);
@@ -107,15 +122,16 @@ public class Arcane : Tile {
 		while(to_collect.Count < TilesCollected)
 		{
 			Tile c = TileMaster.Tiles[Utility.RandomInt(x), Utility.RandomInt(y)];
-			if(c.Genus != Genus)
+			if(c != this && ((EndGenus != string.Empty && c.Genus != Genus) || (EndType != string.Empty && !c.IsType(EndType))))
 			{
 				c.SetState(TileState.Selected, true);
 				to_collect.Add(c);	
+				PlayerControl.instance.RemoveTileToMatch(c);
 
 				GameObject part = Instantiate(ArcaneParticle);
 				part.transform.position = this.transform.position;
 				part.GetComponent<MoveToPoint>().SetTarget(c.transform.position);
-				part.GetComponent<MoveToPoint>().SetPath(0.5F, true);
+				part.GetComponent<MoveToPoint>().SetPath(0.5F, 0.2F);
 				part.GetComponent<ParticleSystem>().startColor = GameData.Colour(Genus);
 
 				float dist = Vector3.Distance(c.transform.position, this.transform.position);
@@ -145,11 +161,6 @@ public class Arcane : Tile {
 			check++;
 		}
 		
-		yield return new WaitForSeconds(Time.deltaTime * 5);
-		foreach(Tile child in to_collect)
-		{
-			child.Reset(true);
-		}
 		yield return null;
 	}
 

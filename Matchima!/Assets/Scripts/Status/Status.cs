@@ -21,7 +21,7 @@ public class Status : MonoBehaviour {
 	}
 	public string DurationString
 	{
-		get{return (Duration <= -1 ? "" : "(" + Duration + " TURNS)");}
+		get{return (Duration <= -1 ? "" : "(" + Duration + (Duration > 1 ? " TURNS)" : " TURN)"));}
 	}
 	public string FX;
 	// Use this for initialization

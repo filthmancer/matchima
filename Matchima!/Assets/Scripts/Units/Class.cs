@@ -27,20 +27,22 @@ public class Class : Unit {
 			final.Add(new StCon("+" + Stats.HealthMax + " HP  ", Color.white, false));
 			final.Add(new StCon("+" + Stats.Attack + " ATK", Color.white, true));
 
-			for(int i = 0; i < Upgrades.Length; i++)
+			foreach(Slot child in AllMods)
 			{
-				bool newline = i % 2 == 0;
-				final.Add(new StCon(Upgrades[i], newline));
+				final.AddRange(child.Description_Tooltip);
 			}
+
+			//for(int i = 0; i < Upgrades.Length; i++)
+			//{
+			//	bool newline = i % 2 == 0;
+			//	final.Add(new StCon(Upgrades[i], newline));
+			//}
 			
 			foreach(ClassEffect child in _Status)
 			{
 				final.AddRange(child.Description);
 			}
-			//if(Stats.Regen > 0) final.Add(new StCon("+" + Stats.Regen + " HP Regen", Color.white, false));
-			//if(Stats.Spikes > 0) final.Add(new StCon("+" + Stats.Spikes + " Spikes", Color.white, false));
-
-			//final.AddRange(Upgrades);			
+				
 			return final.ToArray();
 		}
 	}
@@ -66,7 +68,32 @@ public class Class : Unit {
 	public ClassInfo Info;
 	
 	public Stat InitStats;
-	public Slot [] _Boons;
+	public Slot [] AllMods;
+
+	public Slot [] _Boons
+	{
+		get
+		{
+			List<Slot> final = new List<Slot>();
+			foreach(Slot child in AllMods)
+			{
+				if((child is Ability) && (child as Ability).Type == ModType.Boon) final.Add(child);
+			}
+			return final.ToArray();
+		}
+	}
+	public Slot [] _Curses
+	{
+		get
+		{
+			List<Slot> final = new List<Slot>();
+			foreach(Slot child in AllMods)
+			{
+				if((child is Ability) && (child as Ability).Type == ModType.Curse) final.Add(child);
+			}
+			return final.ToArray();
+		}
+	}
 	public Slot [] _Slots = new Slot[1];
 	
 	public ClassQuotes Quotes; 
@@ -104,7 +131,7 @@ public class Class : Unit {
 	public int WaveLevelRate = 0;
 	public int TurnLevelRate = 1;
 	public Stat Stats;
-	public List<ClassEffect> _Status = new List<ClassEffect>();
+
 
 	private int MeterMax_init;
 	private float MeterMax_soft;
@@ -141,7 +168,7 @@ public class Class : Unit {
 			child.Init(i);
 			i++;
 		}
-		foreach(Slot child in _Boons)
+		foreach(Slot child in AllMods)
 		{
 			if(child == null) continue;
 			child.Parent = this;
@@ -225,7 +252,7 @@ public class Class : Unit {
 			if(child is Item) child.Drag = DragType.None;
 			if(child.GetStats() != null) Stats.AddStats(child.GetStats());
 		}
-		foreach(Slot child in _Boons)
+		foreach(Slot child in AllMods)
 		{
 			if(child == null) continue;
 			if(child.GetStats() != null) Stats.AddStats(child.GetStats());
@@ -267,12 +294,12 @@ public class Class : Unit {
 			child.AfterTurnB();
 		}
 
-		foreach(Slot child in _Boons)
+		foreach(Slot child in AllMods)
 		{
 			if(child == null) continue;
 			child.AfterTurnA();
 		}
-		foreach(Slot child in _Boons)
+		foreach(Slot child in AllMods)
 		{
 			if(child == null) continue;
 			child.AfterTurnB();
@@ -288,16 +315,16 @@ public class Class : Unit {
 		if(!LevelUp) yield break;
 
 		int x = Utility.RandomInt(TileMaster.Tiles.GetLength(0));
-		int y = Utility.RandomInt(TileMaster.Tiles.GetLength(1));
+		int y = Utility.RandomInt(TileMaster.Tiles.GetLength(1));	
 
 		//while(TileMaster.Tiles[x,y].Info._TypeName == "boon" || 
 		//	  TileMaster.Tiles[x,y].Info._TypeName == "curse" || 
 		//	  TileMaster.Tiles[x,y].Info._TypeName == "cocoon"||
 		//	  TileMaster.Tiles[x,y].Info._TypeName == "chest")
-		while((TileMaster.Tiles[x,y].Info._TypeName != "resource" && TileMaster.Tiles[x,y].Point.Scale > 1)  && Player.QueuedSpell(x,y))
+		while(!TileMaster.Tiles[x,y].IsType("resource") && TileMaster.Tiles[x,y].Point.Scale > 1  && Player.QueuedSpell(x,y))
 		{
 			x = Utility.RandomInt(TileMaster.Tiles.GetLength(0));
-			y = Utility.RandomInt(TileMaster.Tiles.GetLength(1));				
+			y = Utility.RandomInt(TileMaster.Tiles.GetLength(1));
 		}
 
 		Player.QueueSpell(x,y);
@@ -308,11 +335,10 @@ public class Class : Unit {
 		MoveToPoint move = part.GetComponent<MoveToPoint>();
 		move.enabled = true;
 		move.SetTarget(TileMaster.Tiles[x,y].transform.position);
-		move.SetPath(0.9F, true, false, 0.25F);
+		move.SetPath(0.3F, 0.25F);
 		move.SetMethod( () => {
 			if(UnityEngine.Random.value < 0.95F) GetSpellTile(x,y,Genus,LevelPoints);
 			else GetSpellFizzle(x,y,Genus, LevelPoints);
-			
 			LevelPoints = 0;
 		});
 		
@@ -360,7 +386,7 @@ public class Class : Unit {
 			if(child == null) continue;
 			child.CheckHealth();
 		}
-		foreach(Slot child in _Boons)
+		foreach(Slot child in AllMods)
 		{
 			if(child == null) continue;
 			child.CheckHealth();
@@ -468,6 +494,7 @@ public class Class : Unit {
 
 	public void GetSlot(Slot s, int? num = null)
 	{
+		print(s + ":" + num);
 		if(s == null) return;
 
 		if(!num.HasValue)
@@ -488,13 +515,14 @@ public class Class : Unit {
 		}
 		else
 		{
+
 			s.transform.parent = this.transform;
 			_Slots[num.Value] = s;
 			s.Parent = this;
 			s.Init(num.Value);
 			string type = (s is Ability ? " learned " : " equipped ");
 			if(s is Item) s.Drag = DragType.None;
-			Quote abalert = new Quote(Name + type + s.Name.Value, false, 0.6F);
+			Quote abalert = new Quote(Name + type + s.Name.Value, false, 1.5F);
 			abalert.Parent = this;
 			abalert.ShowTail = false;
 			Reset();
@@ -529,7 +557,8 @@ public class Class : Unit {
 			s.Parent = this;
 			s.Init(num.Value);
 			string type = (s is Ability ? " learned " : " equipped ");
-			Quote abalert = new Quote(Name + type + s.Name.Value, false, 0.6F);
+			Quote abalert = new Quote(Name + type + s.Name.Value, false, 1.5F);
+			print(abalert.WaitTime);
 			abalert.Parent = this;
 			abalert.ShowTail = false;
 			Reset();

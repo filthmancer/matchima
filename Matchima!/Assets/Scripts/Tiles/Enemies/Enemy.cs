@@ -148,6 +148,7 @@ public class Enemy : Tile {
 
 	public override bool CanAttack()
 	{
+		CheckStats();
 		return !Stats.isNew && !Stats.isFrozen && Stats.isAlerted && !Stats.isAlly && !HasAttackedThisTurn;
 	}
 
@@ -217,21 +218,23 @@ public class Enemy : Tile {
 
 	protected IEnumerator AllyAttack(Tile target)
 	{
-		MiniTile enemy = (MiniTile) Instantiate(TileMaster.instance.ResMiniTile);
-		enemy._render.sprite = Info.Outer;
-		enemy.transform.position = transform.position;
-		enemy.SetTarget(target.transform, 0.2F, 0.0F);
+		Vector3 pos = transform.position + (GameData.RandomVector*1.4F);
+		MoveToPoint mini = TileMaster.instance.CreateMiniTile(pos,target.transform, Info.Outer);
+		//mini.Target =  target;
+		mini.SetMethod(() =>{
+				target.Stats.TurnDamage += Stats.Attack;
+				target.Match(0);
+			}
+			);
 
 		yield return StartCoroutine(Animate("Attack", 0.05F));
-		yield return new WaitForSeconds(0.4F);
-		target.Stats.TurnDamage += Stats.Attack;
-		target.Match(0);
+		
 		yield return null;
 	}
 
 	public override bool Match(int resource) {
 
-		if(isMatching) return false;
+		if(isMatching || this == null) return false;
 
 		CheckStats();
 		int fullhit = 0;
@@ -245,7 +248,7 @@ public class Enemy : Tile {
 		InitStats.Hits -= fullhit;
 		CheckStats();
 		AudioManager.instance.PlayClipOn(this.transform, "Enemy", "Hit");
-		Player.instance.OnMatch(this);
+		Player.instance.OnTileMatch(this);
 		if(Stats.Hits <= 0)
 		{
 			isMatching = true;

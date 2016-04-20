@@ -63,7 +63,7 @@ public class UITooltip : MonoBehaviour {
 
 		Transform TopParent = ContentParent.transform;
 		Transform ParentObj = (Transform) Instantiate(HorizontalParent);
-		ParentObj.transform.parent = TopParent;
+		ParentObj.transform.SetParent(TopParent);
 		ParentObj.transform.position = Vector3.zero;
 		ParentObj.transform.localScale = Vector3.one;
 		allObj.Add(ParentObj.gameObject);
@@ -71,7 +71,7 @@ public class UITooltip : MonoBehaviour {
 		for(int i = 0; i < desc.Length; i++)
 		{
 			GameObject new_desc = (GameObject) Instantiate(TextObj);
-			new_desc.transform.parent = ParentObj;
+			new_desc.transform.SetParent(ParentObj);
 			new_desc.transform.position = Vector3.zero;
 			new_desc.transform.localScale = Vector3.one;
 			TextMeshProUGUI d = new_desc.GetComponent<TextMeshProUGUI>();
@@ -83,7 +83,7 @@ public class UITooltip : MonoBehaviour {
 			if(desc[i].NewLine && i < desc.Length-1)
 			{
 				ParentObj =(Transform) Instantiate(HorizontalParent);
-				ParentObj.transform.parent = TopParent;
+				ParentObj.transform.SetParent(TopParent);
 				ParentObj.transform.position = Vector3.zero;
 				ParentObj.transform.localScale = Vector3.one;
 				allObj.Add(ParentObj.gameObject);
@@ -150,7 +150,7 @@ public class UITooltip : MonoBehaviour {
 
 				Transform TopParent = ContentParent.transform;
 				Transform ParentObj = (Transform) Instantiate(HorizontalParent);
-				ParentObj.transform.parent = TopParent;
+				ParentObj.transform.SetParent(TopParent);
 				ParentObj.transform.position = Vector3.zero;
 				ParentObj.transform.localScale = Vector3.one;
 				allObj.Add(ParentObj.gameObject);
@@ -180,7 +180,7 @@ public class UITooltip : MonoBehaviour {
 						if(child.NewLine && i < Description.Length-1)
 						{
 							ParentObj = (Transform) Instantiate(HorizontalParent);
-							ParentObj.transform.parent = TopParent;
+							ParentObj.transform.SetParent(TopParent);
 							ParentObj.transform.position = Vector3.zero;
 							ParentObj.transform.localScale = Vector3.one;
 							allObj.Add(ParentObj.gameObject);
@@ -199,7 +199,7 @@ public class UITooltip : MonoBehaviour {
 						if(child.NewLine && i < Description.Length-1)
 						{
 							ParentObj = (Transform) Instantiate(HorizontalParent);
-							ParentObj.transform.parent = TopParent;
+							ParentObj.transform.SetParent(TopParent);
 							ParentObj.transform.position = Vector3.zero;
 							ParentObj.transform.localScale = Vector3.one;
 							allObj.Add(ParentObj.gameObject);
@@ -359,25 +359,25 @@ public class UITooltip : MonoBehaviour {
        	Vector3 dpos = canvas.transform.TransformPoint(pos) + 
        	new Vector3((Input.mousePosition.x > Screen.width*0.8F) ? -1f : (Input.mousePosition.x < Screen.width*0.2F) ? 1F : 0.0F, 1.5F, 0.0F);
 
-        Damage.transform.position = Vector3.Lerp(Damage.transform.position, dpos, Time.deltaTime * 15);
+       // Damage.transform.position = Vector3.Lerp(Damage.transform.position, dpos, Time.deltaTime * 15);
        	// Determine which corner of the screen is closest to the mouse position
 		
-        if(GameManager.instance.isPaused || Player.Stats.isKilled || GameManager.instance.EnemyTurn || GameManager.instance.WaveAlert || UIManager.InMenu) 
-        {
-        	Damage.Txt[0].text = "";
-        	Damage.SetActive(false);
-        }
-        else if(PlayerControl.instance.AttackMatch)
-        {
-        	Damage.Txt[0].text = PlayerControl.instance.AttackValue + "";
-        	Damage.SetActive(true);
-        }
-        else
-        {
-        	Damage.Txt[0].text = "";
-        	Damage.SetActive(false);
+       //if(GameManager.instance.isPaused || Player.Stats.isKilled || GameManager.instance.EnemyTurn || GameManager.instance.WaveAlert || UIManager.InMenu) 
+       //{
+       //	Damage.Txt[0].text = "";
+       //	Damage.SetActive(false);
+       //}
+       //else if(PlayerControl.instance.AttackMatch)
+       //{
+       //	Damage.Txt[0].text = PlayerControl.instance.AttackValue + "";
+       //	Damage.SetActive(true);
+       //}
+       //else
+       //{
+       //	Damage.Txt[0].text = "";
+       //	Damage.SetActive(false);
 
-        }
+       //}
 	}
 
 	public void GetPosition(Transform obj)

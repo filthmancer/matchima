@@ -400,6 +400,11 @@ public class GameData : MonoBehaviour {
 		return null;
 	}
 
+	public Wave GetWave(params string [] s)
+	{
+		return GetWaveByName(s[0]);
+	}
+
 	public Wave GetWaveByName(string s)
 	{
 		foreach(Wave child in _Waves)

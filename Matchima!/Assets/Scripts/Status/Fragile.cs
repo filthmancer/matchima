@@ -4,6 +4,7 @@ using System.Collections;
 public class Fragile : TileEffect {
 
 	public int [] initial_point;
+	bool after_first = false;
 	public override StCon [] Description
 	{ 
 		get{
@@ -27,16 +28,22 @@ public class Fragile : TileEffect {
 		Duration -= 1;
 		if(Duration != 0)
 		{
-			if(_Tile.Point.Base[0] != initial_point[0] || _Tile.Point.Base[1] != initial_point[1])
+			if(!after_first)
+			{
+				after_first = true;
+			}
+			else if(_Tile.Point.Base[0] != initial_point[0] || _Tile.Point.Base[1] != initial_point[1])
 			{
 				_Tile.DestroyThyself();
 			}
+
 		}
 		return Duration == 0;
 	}
 
 	public override void StatusEffect()
 	{
+		if(!after_first) return;
 		if(_Tile.Point.Base != initial_point)
 		{
 			_Tile.DestroyThyself();

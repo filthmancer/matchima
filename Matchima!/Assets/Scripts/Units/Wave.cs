@@ -3,7 +3,6 @@ using System.Collections;
 
 public class Wave : Unit {
 
-
 	public string Description
 	{
 		get
@@ -41,15 +40,14 @@ public class Wave : Unit {
 
 	public int Required = 60;
 	public int PointsPerTurn = 3, PointsPerEnemy = 1;
-	public Vector2 PointfieldAddedPerDifficulty = new Vector2(0, 5);
+	public Vector2 DiffScale = new Vector2(0, 5);
 
 	public int Current;
 	public bool Active;
 	public WaveTile [] Tiles;
-	public WaveTile [] TilesOnStart;
 	public int Timer;
 
-	public Vector2 PointfieldEndTime = new Vector2(2,5);
+	public Vector2 PrepTime = new Vector2(2,5);
 
 	public string [] _Quotes;
 	public bool Ignore = false;
@@ -74,30 +72,25 @@ public class Wave : Unit {
 		}
 	}
 
-	public void IncreaseChances()
+	public void GetChances()
 	{
-		foreach(WaveTile child in Tiles)
+		foreach(WaveTile w in Tiles)
 		{
-			SPECIES s = TileMaster.Types[child.Species];
-			GenusInfo g = s[child.Genus];
-			//s.ChanceAdded += child.Chance;
-			g.ChanceAdded += (child.Chance * TileMaster.ChanceRatio);
-			g.Value.Add(child.Value);
-			//s.LockValue = child.LockValue;
+			if(w.SpawnType != WaveTileSpawn.XChance) continue;
+			TileMaster.instance.IncreaseChance(w.Genus, w.Species, w.SpawnFactor);
+			if(w.Value.y > 0)
+			{
+				SPECIES s = TileMaster.Types[w.Species];
+				GenusInfo g = s[w.Genus];
+				g.ValueAdded.Add(w.Value);
+			}
 		}
 	}
 
-	public void ResetChances()
+
+	public void AddPoints(int p)
 	{
-		foreach(WaveTile child in Tiles)
-		{
-			SPECIES s = TileMaster.Types[child.Species];
-			GenusInfo g = s[child.Genus];
-			if(g.ChanceAdded == 0.0F) continue;
-			//s.ChanceAdded -= child.Chance;
-			g.ChanceAdded -= (child.Chance * TileMaster.ChanceRatio);
-			g.Value.Sub(child.Value);
-		}
+		PointsThisTurn += p;
 	}
 
 	public void EnemyKilled(Enemy e)
@@ -108,7 +101,6 @@ public class Wave : Unit {
 		{
 			StartCoroutine(ShowHealthRoutine());
 		}
-		
 	}
 
 	IEnumerator ShowHealthRoutine()
@@ -146,42 +138,24 @@ public class Wave : Unit {
 		yield return null;
 	}
 
-	public void AddPoints(int p)
-	{
-		PointsThisTurn += p;
-	}
 
-	public void WaveCheck()
+	public virtual IEnumerator BeginTurn()
 	{
-		if(Effects.TileRegen)
+		for(int i = 0; i < _Status.Count; i++)
 		{
-			Tile [,] tiles = TileMaster.Tiles;
-			for(int xx = 0; xx < tiles.GetLength(0); xx++)
+			if(_Status[i].CheckDuration()) 
 			{
-				for(int yy = 0; yy < tiles.GetLength(1); yy++)
-				{
-					if(tiles[xx,yy].Type.isEnemy) (tiles[xx,yy] as Enemy).Stats.Hits += Effects.TileRegen_amount;
-				}
+				Destroy(_Status[i].gameObject);
+				_Status.RemoveAt(i);
 			}
 		}
-		if(Effects.WaveRegen)
-		{
-			AddPoints(Effects.WaveRegen_amount);
-		}
-		if(Effects.WaveDamage)
-		{
-			Player.Stats.Hit(Effects.WaveDamage_amount);
-		}
-	}
 
-	public virtual void OnStart(int _index)
-	{
-		Index = _index;
-		Active = true;
 		bool [,] replacedtile = new bool [(int)TileMaster.instance.MapSize.x, (int)TileMaster.instance.MapSize.y];
-		for(int i = 0; i < TilesOnStart.Length; i++)
+		for(int i = 0; i < Tiles.Length; i++)
 		{
-			for(int x = 0; x < TilesOnStart[i].NumToSpawn; x++)
+			if(Tiles[i].SpawnType != WaveTileSpawn.XPerTurn) continue;
+
+			for(int x = 0; x < (int)Tiles[i].SpawnFactor; x++)
 			{
 				int randx = (int)Random.Range(0, TileMaster.instance.MapSize.x);
 				int randy = (int)Random.Range(0, TileMaster.instance.MapSize.y);
@@ -191,14 +165,41 @@ public class Wave : Unit {
 					randy = (int)Random.Range(0, TileMaster.instance.MapSize.y);
 				}
 				replacedtile[randx,randy] = true;
-				TileMaster.instance.ReplaceTile(randx, randy, TileMaster.Types[TilesOnStart[i].Species], TileMaster.Genus[TilesOnStart[i].Genus], TilesOnStart[i].Scale, TilesOnStart[i].FinalValue);
+				TileMaster.instance.ReplaceTile(randx, randy, TileMaster.Types[Tiles[i].Species], TileMaster.Genus[Tiles[i].Genus], Tiles[i].Scale, Tiles[i].FinalValue);
 			}
+		}
+		yield return null;
+	}
+
+	public void Reset()
+	{
+		for(int i = 0; i < _Status.Count; i++)
+		{
+			_Status[i].StatusEffect();
 		}
 	}
 
-	public virtual void OnTurn()
+	public virtual void OnStart(int _index)
 	{
-
+		Index = _index;
+		Active = true;
+		bool [,] replacedtile = new bool [(int)TileMaster.instance.MapSize.x, (int)TileMaster.instance.MapSize.y];
+		for(int i = 0; i < Tiles.Length; i++)
+		{
+			if(Tiles[i].SpawnType != WaveTileSpawn.XAtStart) continue;
+			for(int x = 0; x < (int)Tiles[i].SpawnFactor; x++)
+			{
+				int randx = (int)Random.Range(0, TileMaster.instance.MapSize.x);
+				int randy = (int)Random.Range(0, TileMaster.instance.MapSize.y);
+				while(replacedtile[randx, randy])
+				{
+					randx = (int)Random.Range(0, TileMaster.instance.MapSize.x);
+					randy = (int)Random.Range(0, TileMaster.instance.MapSize.y);
+				}
+				replacedtile[randx,randy] = true;
+				TileMaster.instance.ReplaceTile(randx, randy, TileMaster.Types[Tiles[i].Species], TileMaster.Genus[Tiles[i].Genus], Tiles[i].Scale, Tiles[i].FinalValue);
+			}
+		}
 	}
 
 	public bool Complete()
@@ -233,7 +234,7 @@ public class Wave : Unit {
 
 	public void Randomise()
 	{
-		Required += (int)Random.Range(PointfieldAddedPerDifficulty.x * GameManager.Difficulty, PointfieldAddedPerDifficulty.y * GameManager.Difficulty);
+		Required += (int)Random.Range(DiffScale.x * GameManager.Difficulty, DiffScale.y * GameManager.Difficulty);
 		if(Random.value < Effects.TileRegenChance) 
 		{
 			Effects.TileRegen = true;
@@ -252,12 +253,23 @@ public class Wave : Unit {
 	}
 }
 
+public enum WaveTileSpawn
+{
+	XAtStart,
+	XPerTurn,
+	XChance,
+	XOnScreen
+}
+
 [System.Serializable]
 public class WaveTile
 {
 	public string Genus;
 	public string Species;
-	public float Chance;
+	public WaveTileSpawn SpawnType;
+	public int TotalToSpawn = -1;
+
+	public float SpawnFactor;
 	public IntVector Value;
 	public int FinalValue
 	{
@@ -266,8 +278,6 @@ public class WaveTile
 			return Random.Range(Value.x, Value.y);
 		}
 	}
-	public bool LockValue = false;
-	public int NumToSpawn;
 	public int Scale = 1;
 }
 

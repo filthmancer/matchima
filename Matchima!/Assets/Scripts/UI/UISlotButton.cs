@@ -119,17 +119,34 @@ public class UISlotButton : UIButton {
 				Class c = UIManager.instance.current_class;
 				if(c != null)
 				{
-					for(int i = 0; i < c._Slots.Length; i++)
+					if(c._Slots.Length > 1)
 					{
-						if(c._Slots[i] == null)
+						for(int i = 0; i < c._Slots.Length; i++)
 						{
-							UIManager.instance.HideBoonUI();
-							c.GetSlot(slot, i);
-							Destroy(this.gameObject);//Setup(null);
-							UIManager.instance.ShowClassAbilities(c);
-							break;
+							if(c._Slots[i] == null)
+							{
+								c.GetSlot(slot, i);
+								Destroy(this.gameObject);//Setup(null);
+								UIManager.instance.ShowClassAbilities(c);
+								break;
+							}
 						}
 					}
+					else 
+					{
+						if(c._Slots[0] == null)
+						{
+							c.GetSlot(slot, 0);
+							Destroy(this.gameObject);//Setup(null);
+							UIManager.instance.ShowClassAbilities(c);
+							
+						}
+						else 
+						{
+							UIManager.instance.SwapSlotButtons(this, c, 0);
+						}
+					}
+					
 				}
 			}
 		}
@@ -143,8 +160,6 @@ public class UISlotButton : UIButton {
 		PlayerControl.HoldingSlot = false;
 		PlayerControl.HeldButton = null;
 		PlayerControl.SwapButton = null;
-		
-
 	}
 
 	/*public override void MouseDown()

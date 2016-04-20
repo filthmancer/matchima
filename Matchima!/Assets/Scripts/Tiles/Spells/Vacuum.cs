@@ -63,9 +63,9 @@ public class Vacuum : Tile {
 		{
 			int val = child.Stats.Value;
 			child.isMatching = true;
-			//child.SetState(TileState.Selected, true);
-			MiniTile t = TileMaster.instance.CreateMiniTile(child.transform.position, target.transform, child.Inner, 0.5F);
-			t.SetMethod(() => 
+
+			MoveToPoint mini = TileMaster.instance.CreateMiniTile(child.transform.position, target.transform,child.Inner);
+			mini.SetMethod(() => 
 			{
 				if(undead_attack) target.InitStats.TurnDamage += val;
 				else target.AddValue(val);
