@@ -18,9 +18,14 @@ public class Slot : MonoBehaviour {
 	public Color Colour;
 	public bool initialized = false;
 	public bool activated;
+	[HideInInspector]
+	public bool ManaPowerMod;
 
 	public DragType Drag;
 	public string IconString;
+
+	public bool BeforeMatchEffect = false, AfterMatchEffect = false;
+	public bool BeforeTurnEffect = false, AfterTurnEffectA = false, AfterTurnEffectB = false;
 
 	public virtual bool IsDraggable
 	{
@@ -138,13 +143,27 @@ public class Slot : MonoBehaviour {
 	
 	}
 
-	public virtual void AfterTurnB ()
-	{
 
+	public virtual IEnumerator BeforeMatch(List<Tile> tiles)
+	{
+		yield break;
 	}
-	public virtual void AfterTurnA()
-	{
 
+	public virtual IEnumerator AfterMatch()
+	{
+		yield break;
+		//return 0.0F;
+	}
+
+	public virtual IEnumerator BeforeTurn()
+	{
+		yield break;
+	}
+
+
+	public virtual IEnumerator AfterTurn ()
+	{
+		yield break;
 	}
 
 	public virtual void Activate()
@@ -157,6 +176,11 @@ public class Slot : MonoBehaviour {
 		
 	}
 
+	public virtual int OnHit(int initial_hit, params Tile[] attackers)
+	{
+		return initial_hit;
+	}
+
 	public virtual void Init(int i, int lvl = 1)
 	{
 		Setup();
@@ -166,6 +190,11 @@ public class Slot : MonoBehaviour {
 	protected virtual void Setup()
 	{
 		initialized = true;
+	}
+
+	public virtual void SetArgs(params string [] args)
+	{
+		
 	}
 
 

@@ -88,7 +88,7 @@ public class Swapper : Tile {
 		if(Params._render != null) Params._render.color = Color.Lerp(Params._render.color, GameData.Colour(Genus), 0.6F);
 	}
 
-	public override IEnumerator BeforeMatch()
+	public override IEnumerator BeforeMatch(bool original)
 	{		
 		Tile [,] _tiles = TileMaster.Tiles;
 		string init = StartGenus;
@@ -128,7 +128,7 @@ public class Swapper : Tile {
 							PlayerControl.instance.RemoveTileToMatch(TileMaster.Tiles[x,y]);
 							} 
 						TileMaster.instance.ReplaceTile(x,y, sp, g, 1, final_value);
-						if(add) PlayerControl.instance.AddTilesToMatch(TileMaster.Tiles[x,y]);
+						if(add) PlayerControl.instance.AddTilesToSelected(TileMaster.Tiles[x,y]);
 					}
 				}
 			}

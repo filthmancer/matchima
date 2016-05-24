@@ -43,7 +43,7 @@ public class ClassUpgradeUI : MonoBehaviour {
 
 		Level.text = "LVL: " + c.Level;
 		LevelPoints.text = c.LevelPoints+"";
-		Meter.text = c.Meter + "/" + c.MeterMax;
+		Meter.text = c.Meter + "/" + c.MeterTop;
 
 		STR.Txt[1].text = "" + c.Stats.Strength;
 		DEX.Txt[1].text = "" + c.Stats.Dexterity;
@@ -64,14 +64,9 @@ public class ClassUpgradeUI : MonoBehaviour {
 
 	public void StatButton(int i)
 	{
-		_class.UpgradeStat(i);
+		//_class.UpgradeStat(i);
 		
 		GetInfo(_class);
 	}
 
-	public void BonusButton(int i)
-	{
-		_class.UpgradeBonus(i);
-		GetInfo(_class);
-	}
 }

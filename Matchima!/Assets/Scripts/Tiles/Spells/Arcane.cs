@@ -46,6 +46,7 @@ public class Arcane : Tile {
 	public override void Setup(int x, int y, int scale, TileInfo inf, int value_inc)
 	{
 		base.Setup(x, y, scale, inf, value_inc);	
+		EndGenus = GameData.ResourceLong(Genus);
 	}
 
 	public override void SetArgs(params string [] args)
@@ -63,11 +64,12 @@ public class Arcane : Tile {
 	}
 
 
-	public override IEnumerator BeforeMatch()
+	public override IEnumerator BeforeMatch(bool original)
 	{
 		float part_time = 0.6F;
 		if(isMatching) yield break;
 
+		isMatching = true;
 		List<Tile> to_collect = new List<Tile>();
 		int x = TileMaster.Tiles.GetLength(0);
 		int y = TileMaster.Tiles.GetLength(1);

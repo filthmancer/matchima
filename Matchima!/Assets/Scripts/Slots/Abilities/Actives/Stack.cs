@@ -69,9 +69,9 @@ public class Stack : Ability {
 		yield break;
 	}
 
-	public override void AfterTurnA()
+	public override IEnumerator AfterTurn()
 	{
-		base.AfterTurnA();
+		base.AfterTurn();
 		if(activated)
 		{
 			if(extra_turns > 0)
@@ -85,6 +85,7 @@ public class Stack : Ability {
 				if(Random.value > upgrade_ignore_cd) cooldown_time = cooldown;
 			}
 		}
+		yield break;
 	}
 
 	public override void Setup(Ability new_ab)

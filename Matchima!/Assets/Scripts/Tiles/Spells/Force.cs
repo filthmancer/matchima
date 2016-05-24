@@ -23,7 +23,7 @@ public class Force : Tile {
 		}
 	}
 
-	public override IEnumerator BeforeMatch()
+	public override IEnumerator BeforeMatch(bool original)
 	{
 		CheckStats();
 		float part_time = 0.2F;
@@ -70,7 +70,7 @@ public class Force : Tile {
 		{
 			child.InitStats.TurnDamage += final_damage;
 		}
-		PlayerControl.instance.AddTilesToMatch(to_collect.ToArray());
+		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
 		
 		//cooldown_time = cooldown;
 		//activated = false;

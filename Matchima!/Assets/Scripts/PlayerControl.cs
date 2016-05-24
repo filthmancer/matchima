@@ -22,6 +22,8 @@ public class PlayerControl : MonoBehaviour {
 	public float currentCombo;
 	public List<Tile> selectedTiles = new List<Tile>();
 	public List<Tile> finalTiles = new List<Tile>();
+	[HideInInspector]
+	public List<Tile> newTiles = new List<Tile>();
 
 	public bool isMatching = false;
 	public bool canMatch = true;
@@ -32,6 +34,13 @@ public class PlayerControl : MonoBehaviour {
 	public int AttackValue = 0;
 
 	public Line _Line;
+
+	public static int MatchCount
+	{
+		get{
+			return PlayerControl.instance.selectedTiles.Count;
+		}
+	}
 
 	private float tooltip_time = 0.78F, tooltip_current = 0.0F;
 	private bool tooltip_showing = false;
@@ -60,10 +69,8 @@ public class PlayerControl : MonoBehaviour {
 	}
 
 	void Update () {
-	
-
 		if(GameManager.instance.isPaused) return;
-		if(GameManager.instance.EnemyTurn || GameManager.instance.WaveAlert) return;
+		if(GameManager.instance.EnemyTurn) return;
 
 		if(TimeSinceLastMatch < 30.0F) TimeSinceLastMatch += Time.deltaTime;
 		if(TimeWithoutInput < 30.0F) TimeWithoutInput += Time.deltaTime;
@@ -83,7 +90,6 @@ public class PlayerControl : MonoBehaviour {
 
 			CheckCheats();
 		}
-		
 
 		if(!canMatch) return;
 
@@ -107,7 +113,7 @@ public class PlayerControl : MonoBehaviour {
 				//Sword Damage
 				if(!child.Type.isEnemy) 
 				{
-					AttackValue += child.Stats.Attack;
+					AttackValue += Player.Stats._Attack * child.Stats.Attack;
 				}
 			}
 			//Adding Combo bonus multiplier to damage
@@ -156,6 +162,7 @@ public class PlayerControl : MonoBehaviour {
 		{
 			Slot a = Held.slot;
 			Slot b = Swap.slot;
+			print(a);
 			if(Held.Parent != null)
 			{
 				StartCoroutine(Held.Parent.GetSlotRoutine(b, Held.Index));
@@ -167,6 +174,8 @@ public class PlayerControl : MonoBehaviour {
 
 			Swap.Setup(a);
 			Held.Setup(b);
+			b.Drag = DragType.None;
+			a.Drag = DragType.Hold;
 		}
 		
 		//if(a != null) a.Drag = DragType.None;
@@ -305,6 +314,7 @@ public class PlayerControl : MonoBehaviour {
 	{
 		if(focusTile == null) return;
 		bool match = true;
+
 		if(selectedTiles == null || selectedTiles.Count < Player.RequiredMatchNumber) match = false;
 		
 		if(selectedTiles!= null && selectedTiles.Count > 0)
@@ -317,10 +327,9 @@ public class PlayerControl : MonoBehaviour {
 				child.originalMatch = true;
 			}
 		}
-
 		if(match)
 		{
-			finalTiles.AddRange(selectedTiles);
+			//finalTiles.AddRange(selectedTiles);
 			GameManager.instance.GetTurn();
 			TimeSinceLastMatch = 0.0F;
 		}
@@ -389,9 +398,29 @@ public class PlayerControl : MonoBehaviour {
 		return false;
 	}
 
-	public void AddTilesToMatch(params Tile [] newtiles)
+
+	public void AddTilesToSelected(params Tile [] _newtiles)
 	{
-		foreach(Tile child in newtiles)
+		foreach(Tile child in _newtiles)
+		{
+			bool add = true;
+			foreach(Tile tile in selectedTiles)
+			{
+				if(child == tile) 
+				{
+					add = false;
+					break;
+				}
+			}
+			if(!add) continue;
+			selectedTiles.Add(child);
+			//finalTiles.Add(child);
+		}
+	}
+
+	public void AddTilesToFinal(params Tile [] _newtiles)
+	{
+		foreach(Tile child in _newtiles)
 		{
 			bool add = true;
 			foreach(Tile tile in finalTiles)
@@ -404,6 +433,7 @@ public class PlayerControl : MonoBehaviour {
 			}
 			if(!add) continue;
 			finalTiles.Add(child);
+			//finalTiles.Add(child);
 		}
 	}
 
@@ -423,11 +453,11 @@ public class PlayerControl : MonoBehaviour {
 	public void RemoveTileToMatch(Tile child)
 	{
 		for(int i = 0; i < finalTiles.Count; i++){
-				if(finalTiles[i] == child)
-				{
-					finalTiles.RemoveAt(i);
-				}
+			if(finalTiles[i] == child)
+			{
+				finalTiles.RemoveAt(i);
 			}
+		}
 	}
 
 	public void ResetSelected()

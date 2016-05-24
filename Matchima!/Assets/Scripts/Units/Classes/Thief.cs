@@ -3,56 +3,26 @@ using System.Collections;
 
 public class Thief : Class {
 
-	TileChance attack, enemy;
+	TileChance attack;
+	private Slot manapower;
+	private int _currentmanapower = 100;
 	public override void StartClass () {
 		
-		ClassUpgrade atk = new ClassUpgrade((int val) => {InitStats._Attack += (int) (1.0F * val);});
-		atk.Name = "Attack";
-		atk.ShortName = "ATK";
-		atk.Description = " Attack";
-		atk.BaseAmount = 1;
-		atk.BaseRate = 0.3F;
-		atk.Prefix = "+";
-		atk.Rarity = Rarity.Uncommon;
-
-		ClassUpgrade leech = new ClassUpgrade((int val) => {InitStats.Leech += 1 + (1 * (val/2));});
-		leech.BaseAmount = 1;
-		leech.Rarity = Rarity.Uncommon;
-		leech.Name = "Health Leech";
-		leech.ShortName = "HP LCH";
-		leech.Description = " HP gained from\nattacking an enemy";
-		leech.Prefix = "+";
-
-
 		attack = new TileChance();
 		attack.Genus = "Alpha";
 		attack.Type = "sword";
+		attack.Chance = 0.15F;
 		InitStats.TileChances.Add(attack);
 
-		ClassUpgrade b = new ClassUpgrade((int val) => {attack.Chance += 0.02F * val;});
+	/*	ClassUpgrade b = new ClassUpgrade((int val) => {attack.Chance += 0.02F * val;});
 		b.BaseAmount = 2;
-		b.Name = "Alpha Sword Tiles";
+		b.Name = "Sword Tiles";
 		b.ShortName = "SWRD";
-		b.Description = " chance of Alpha Sword Tiles";
+		b.Description = " chance of Sword Tiles";
 		b.Prefix = "+";
 		b.Suffix = "%";	
 		b.Rarity = Rarity.Uncommon;
-
-		enemy = new TileChance();
-		enemy.Type = "minion";
-		InitStats.TileChances.Add(enemy);
-
-		ClassUpgrade en = new ClassUpgrade((int val) => {enemy.Chance += 0.05F * val;});
-		en.BaseAmount = 5;
-		en.Name = " Minion Tiles";
-		en.ShortName = "NMY";
-		en.Description = " chance of Minion Tiles";
-		en.Prefix = "+";
-		en.Suffix = "%";	
-		en.Rarity = Rarity.Rare;
-
-		AddUpgrades(new ClassUpgrade[] {atk, b, leech, en});
-
+		AddUpgrades(new ClassUpgrade[] {b});*/
 
 		Barbarian barb = null;
 		foreach(Class child in Player.Classes) {if(child is Barbarian) barb = child as Barbarian;}
@@ -92,4 +62,29 @@ public class Thief : Class {
 		}
 		
 	}
+
+	public override void ManaPower(int lvl)
+	{
+		if(manapower != null)
+		{
+			Destroy(manapower.gameObject);
+			AllMods.Remove(manapower);
+			//_currentmanapower = lvl;
+		}
+		switch(lvl)
+		{
+			case 1:
+				manapower = AddMod("Slash", "1", "X");
+				
+			break;
+			case 2:
+				manapower = AddMod("Backstab", "1.5");
+			//	manapower[1] = AddMod("Slash", "1", "X");
+			break;
+			case 3:
+			//	manapower[2] = AddMod("Shield", "0.2");
+			break;
+		}
+	}
+
 }

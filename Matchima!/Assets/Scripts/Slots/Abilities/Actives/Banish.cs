@@ -34,12 +34,12 @@ public class Banish : Ability {
 
 		activated = true;
 
-		if(BanishPower == 0) GameManager.instance._Wave[0].InstaKill();
-		else 
-		{
-			int damage = BanishPower + (int)StatBonus() + upgrade_power;
-			GameManager.instance._Wave[0].AddPoints(-damage);
-		}
+		//if(BanishPower == 0) GameManager.instance._Wave.InstaKill();
+		//else 
+		//{
+		//	int damage = BanishPower + (int)StatBonus() + upgrade_power;
+		//	GameManager.instance._Wave.AddPoints(-damage);
+		//}
 
 		activated = false;
 		if(Random.value > upgrade_ignorecooldown)	cooldown_time = cooldown;

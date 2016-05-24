@@ -20,7 +20,6 @@ public class Enemy : Tile {
 	protected int Rank = 1;
 	private float threat_time = 0.0F;
 
-	protected GameObject sleep_part;
 	protected bool HasAttackedThisTurn;
 
 	private float threat_anim, threat_anim_init = 0.4F;
@@ -36,6 +35,18 @@ public class Enemy : Tile {
 		}
 	}
 
+	protected override TileUpgrade [] BaseUpgrades
+	{
+		get
+		{
+			return new TileUpgrade []
+			{
+				new TileUpgrade(1.0F, 1, () => {InitStats.Value += 1;})
+				//new TileUpgrade(0.1F, 2, () => {InitStats.Resource +=1;})
+			};
+		}
+	}
+
 
 
 	public override void Start()
@@ -45,14 +56,10 @@ public class Enemy : Tile {
 
 	public sealed override void Setup(int x, int y, int scale, TileInfo sp, int value_inc = 0)
 	{
-		base.Setup(x,y,scale, sp, value_inc);
-		
-		SetupEnemy();
+		base.Setup(x,y, scale, sp, value_inc);
 		_Effect = Params._effect;
-		TileEffect sleep = (TileEffect) Instantiate(GameData.instance.GetTileEffectByName("Sleep"));
-		sleep.Duration = 1;
-		AddEffect(sleep);
-
+		_Effect.enabled = false;
+		SetupEnemy();
 	}
 
 	protected virtual void SetupEnemy()
@@ -69,7 +76,7 @@ public class Enemy : Tile {
 		SetSprite();
 		if(Stats.isNew)
 		{
-			sleep_part = EffectManager.instance.PlayEffect(this.transform, Effect.Sleep);
+			AddEffect("Sleep", 1);
 		}
 	}
 
@@ -91,7 +98,7 @@ public class Enemy : Tile {
 	public override void Update () {
 		base.Update();
 
-		float hp = Mathf.Ceil(Player._Options.HPBasedOnHits ? ((float)Stats.Hits/(float)Player.Stats._Attack) : (Stats.Hits));
+		float hp = Mathf.Ceil(Player.Options.RealHP ? ((float)Stats.Hits/(float)Player.Stats._Attack) : (Stats.Hits));
 		
 
 		if(Params.HitCounter != null) Params.HitCounter.SetActive(hp > 1);
@@ -102,46 +109,32 @@ public class Enemy : Tile {
 			else Params.HitCounterText.text = "" + (int)(hp);	
 		}
 
-		if(!Stats.isAlerted) 
-		{
-			//_anim.SetBool("Sleep",true);
-		}
-		else
-		{
-			if(Stats.isFrozen) 
-			{
-				//_anim.SetBool("Sleep",true);
-				//_anim.SetBool("Threat", false);
-				return;
-			}
-			
-			//Species.isAlly = Stats.isAlly;
-			//Type.isEnemy = !Stats.isAlly;
+		if(!Stats.isAlerted) return;
+		if(Stats.isFrozen) return;
 
-			if(threat_time <= 0.0F)
+		if(threat_time <= 0.0F)
+		{
+			if(threat_anim < threat_anim_init)
 			{
-				if(threat_anim < threat_anim_init)
-				{
-					Vector3 final_rot = Juice.instance.Twitch.Rotation.Evaluate(threat_anim/threat_anim_init);
-					Params._render.transform.rotation *= Quaternion.Euler(final_rot);
-					threat_anim += Time.deltaTime;
-					if(threat_anim > threat_anim_init) Params._render.transform.rotation = Quaternion.identity;
-				}
-				else 
-				{
-					threat_time = Random.Range(1.9F, 5.4F);
-					threat_anim = 0.0F;
-				}
-				
+				Vector3 final_rot = Juice.instance.Twitch.Rotation.Evaluate(threat_anim/threat_anim_init);
+				Params._render.transform.rotation *= Quaternion.Euler(final_rot);
+				threat_anim += Time.deltaTime;
+				if(threat_anim > threat_anim_init) Params._render.transform.rotation = Quaternion.identity;
 			}
 			else 
 			{
-				//_anim.SetBool("Threat", false);
-				threat_time -= Time.deltaTime;
-				if(threat_time <= 0.0F) 
-				{
-					AudioManager.instance.PlayClipOn(this.transform, "Enemy", "Threat");
-				}
+				threat_time = Random.Range(1.9F, 5.4F);
+				threat_anim = 0.0F;
+			}
+			
+		}
+		else 
+		{
+			//_anim.SetBool("Threat", false);
+			threat_time -= Time.deltaTime;
+			if(threat_time <= 0.0F) 
+			{
+				AudioManager.instance.PlayClipOn(this.transform, "Enemy", "Threat");
 			}
 		}
 	}
@@ -149,46 +142,35 @@ public class Enemy : Tile {
 	public override bool CanAttack()
 	{
 		CheckStats();
-		return !Stats.isNew && !Stats.isFrozen && Stats.isAlerted && !Stats.isAlly && !HasAttackedThisTurn;
+		return !Stats.isNew && !Stats.isFrozen && Stats.isAlerted && !HasAttackedThisTurn;
 	}
 
-	public override void AfterTurn(){
+	public override IEnumerator BeforeMatch(bool original)
+	{
+		if(isMatching) yield break;
+		isMatching = true;
 
-		Reset();
-		InitStats.TurnDamage = 0;
+		if(!original) yield break;
+		InitStats.TurnDamage += PlayerControl.instance.AttackValue;
+		AudioManager.instance.PlayClipOn(this.transform, "Enemy", "Hit");
+		EffectManager.instance.PlayEffect(this.transform,Effect.Attack);
+
+		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+	}
+
+	public override IEnumerator AfterTurnRoutine(){
+		yield return StartCoroutine(base.AfterTurnRoutine());
+		
 		HasAttackedThisTurn = false;
-		InitStats.Lifetime ++;
-		if(InitStats.Lifetime >= 1) 
-		{
-			InitStats.isNew = false;
-		}
 
-		//if(InitStats.Lifetime > 1 && !InitStats.isAlerted)
-		//{
-		//	InitStats.isAlerted = true;
-		//}
-
-		for(int i = 0; i < Effects.Count; i++)
-		{
-			if(Effects[i] == null) Effects.RemoveAt(i);
-			else if(Effects[i].CheckDuration()) 
-			{
-				GameObject old = Effects[i].gameObject;
-				Effects.RemoveAt(i);
-				Destroy(old);
-			}
-		}
-
-		Stats = new TileStat(InitStats);
 		if(Stats.isAlerted)
 		{
 			SetState(TileState.Idle, true);
-			_anim.SetBool("Sleep",false);
-			//Destroy(sleep_part);
+			if(_anim != null) _anim.SetBool("Sleep",false);
 		}
 
-
-		if(Stats.isAlly)
+		/*bool attack = !Stats.isNew && !Stats.isFrozen && Stats.isAlerted && !HasAttackedThisTurn;
+		if(Stats.isAlly && attack)
 		{
 			Tile target = null;
 			for(int x = 0; x < TileMaster.Tiles.GetLength(0); x++)
@@ -213,19 +195,21 @@ public class Enemy : Tile {
 			{
 				StartCoroutine(AllyAttack(target));
 			}
-		}
+		}*/
 	}
 
 	protected IEnumerator AllyAttack(Tile target)
 	{
 		Vector3 pos = transform.position + (GameData.RandomVector*1.4F);
 		MoveToPoint mini = TileMaster.instance.CreateMiniTile(pos,target.transform, Info.Outer);
-		//mini.Target =  target;
+		mini.SetPath(0.3F, 0.5F, 0.0F, 0.08F);
 		mini.SetMethod(() =>{
-				target.Stats.TurnDamage += Stats.Attack;
+			if(target == null) return;
+			if(target != null) AudioManager.instance.PlayClipOn(target.transform, "Enemy", "Hit");
+				target.InitStats.TurnDamage += Stats.Attack;
 				target.Match(0);
-			}
-			);
+				
+			});
 
 		yield return StartCoroutine(Animate("Attack", 0.05F));
 		
@@ -234,20 +218,17 @@ public class Enemy : Tile {
 
 	public override bool Match(int resource) {
 
-		if(isMatching || this == null) return false;
+		//if(isMatching || this == null) return false;
 
 		CheckStats();
 		int fullhit = 0;
-		if(originalMatch) 
-		{
-			fullhit += resource;
-		}
-		fullhit += Stats.TurnDamage;
-		InitStats.TurnDamage = 0;
 
+		fullhit += Stats.TurnDamage;
+
+		InitStats.TurnDamage = 0;
 		InitStats.Hits -= fullhit;
 		CheckStats();
-		AudioManager.instance.PlayClipOn(this.transform, "Enemy", "Hit");
+		
 		Player.instance.OnTileMatch(this);
 		if(Stats.Hits <= 0)
 		{
@@ -265,7 +246,7 @@ public class Enemy : Tile {
 				GENUS g = Genus;
 				float randg = Random.value;
 				if(Random.value < 0.4F) g = (GENUS) Random.Range(0,4);
-				if(Random.value < 0.9F) TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["chest"], g,  Point.Scale);
+				if(Random.value < 0.95F) TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["chest"], g,  Point.Scale);
 				else TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["mimic"], g, Point.Scale);
 			}
 			else TileMaster.Tiles[Point.Base[0], Point.Base[1]] = null;
@@ -274,7 +255,6 @@ public class Enemy : Tile {
 		else 
 		{
 			isMatching = false;
-			EffectManager.instance.PlayEffect(this.transform,Effect.Attack);
 		}
 		return false;
 	}
@@ -283,6 +263,7 @@ public class Enemy : Tile {
 	{
 		HasAttackedThisTurn = true;
 	}
+
 
 
 	public override IEnumerator Animate(string type, float time = 0.0F)

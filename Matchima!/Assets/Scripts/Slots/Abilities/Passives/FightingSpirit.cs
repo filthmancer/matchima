@@ -37,12 +37,13 @@ public class FightingSpirit : Ability {
 	{
 		base.Update();
 	}
-	public override void AfterTurnA()
+	public override IEnumerator AfterTurn()
 	{
-		base.AfterTurnA();
+		base.AfterTurn();
 
 		AttackFinal = (int) (TileMaster.instance.EnemiesOnScreen * AttackPerEnemy * DexterityFactor);
 		HealthFinal = (int) (TileMaster.instance.EnemiesOnScreen * HealthPerEnemy * StrengthFactor);
+		yield return null;
 	//ADD VISUAL CUE FOR ATTACK BONUS
 	}
 
@@ -53,6 +54,13 @@ public class FightingSpirit : Ability {
 		s._Attack = AttackFinal;
 		s._HealthMax = HealthFinal;
 		return s;
+	}
+
+	public override void SetArgs(params string [] args)
+	{
+		initialized = true;
+		HealthPerEnemy = GameData.StringToInt(args[0]);
+		AttackPerEnemy = GameData.StringToInt(args[1]);
 	}
 
 }

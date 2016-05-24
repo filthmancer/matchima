@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 //using UnityEditor;
+using System;
 
 public enum GENUS 
 {
@@ -39,13 +40,14 @@ public class GenusTypes
 
 	public GENUS GenusOf(string name)
 	{
-		if(name == "Red" || name == "STR") return GENUS.STR;
-		if(name == "Green"  || name == "WIS") return GENUS.WIS;
-		if(name == "Blue"  || name == "DEX") return GENUS.DEX;
-		if(name == "Yellow"  || name == "CHA") return GENUS.CHA;
-		if(name == "Purple") return GENUS.PRP;
-		if(name == "Grey" || name == "Omega") return GENUS.OMG;
-		if(name == "AllCol" || name == "All" || name == "Prism" || name == "Alpha") return GENUS.ALL;
+		string fin = name.ToLower();
+		if(fin == "red" || fin == "str") return GENUS.STR;
+		if(fin == "green"  || fin == "wis") return GENUS.WIS;
+		if(fin == "blue"  || fin == "dex") return GENUS.DEX;
+		if(fin == "yellow"  || fin == "cha") return GENUS.CHA;
+		if(fin == "purple") return GENUS.PRP;
+		if(fin == "grey" || fin == "omega") return GENUS.OMG;
+		if(fin == "allcol" || fin == "all" || fin == "prism" || fin == "alpha") return GENUS.ALL;
 
 		return GENUS.NONE;
 	}
@@ -78,10 +80,12 @@ public class TileTypes : MonoBehaviour {
 		get
 		{
 			if(s == string.Empty) return SPECIES.None;
+			if(s.ToLower() == "mana") return this["resource"];
 			foreach(SPECIES child in Species)
 			{
 				if(child.Name == s.ToLower()) return child;
 			}
+
 			return null;
 		}
 	}
@@ -101,6 +105,18 @@ public class TileTypes : MonoBehaviour {
 			final.AddRange(Base);
 			final.AddRange(Spells);
 			final.AddRange(Enemies);
+			final.AddRange(Other);
+			return final;
+		}
+	}
+
+	public List<SPECIES> SpeciesNoEnemies
+	{
+		get
+		{
+			List <SPECIES> final = new List<SPECIES>();
+			final.AddRange(Base);
+			final.AddRange(Spells);
 			final.AddRange(Other);
 			return final;
 		}
@@ -142,6 +158,23 @@ public class TileTypes : MonoBehaviour {
 		}
 		yield return null;
 	}
+
+
+	int prefabs_per_spec = 0;
+	public IEnumerator LoadPrefabs()
+	{
+		GameObject poolpar = new GameObject("Pooled Tiles");
+		poolpar.transform.SetParent(this.transform);
+		foreach(SPECIES child in Species)
+		{
+			GameObject par = new GameObject(child.Name);
+			par.transform.SetParent(poolpar.transform);
+			child.TilePool = new ObjectPool(child.Prefab, prefabs_per_spec, par.transform);
+			yield return null;
+		}
+
+		yield return null;
+	}
 	
 	// Update is called once per frame
 	void Update () {
@@ -166,6 +199,8 @@ public class TileTypes : MonoBehaviour {
 			}
 		}
 	}
+
+
 
 	public TileInfo RandomType(GENUS type = GENUS.NONE)
 	{
@@ -265,7 +300,7 @@ public class TileTypes : MonoBehaviour {
 		}
 
 		if(choice.Count == 0) return null;
-		int rand = Random.Range(0, choice.Count);
+		int rand = UnityEngine.Random.Range(0, choice.Count);
 		return choice[rand];
 	}
 
@@ -362,6 +397,7 @@ public class GenusInfo
 	public GENUS Genus;
 	
 	public Sprite [] Sprites;
+	public List<TileEffectInfo> Effects;
 
 	public GenusInfo(GENUS g)
 	{
@@ -389,6 +425,8 @@ public class SPECIES
 					 All = new GenusInfo(GENUS.ALL),
 					 Grey = new GenusInfo(GENUS.OMG);
 
+	public ObjectPool TilePool;
+
 	public GenusInfo [] AllGenus
 	{
 		get{return new GenusInfo[] {Red, Blue, Green, Yellow, Purple, All, Grey};}
@@ -404,7 +442,9 @@ public class SPECIES
 
 	public GenusInfo this[string s]
 	{
-		get{return AllGenus[(int)TileMaster.Genus[s]];}
+		get{
+			return AllGenus[(int)TileMaster.Genus[s]];
+		}
 	}
 
 	public int Length {get{return AllGenus.Length;}}
@@ -438,12 +478,12 @@ public class SPECIES
 	{
 		ChanceAdded = 0.0F;
 		_ValueAdded = new IntVector(0,0);
+		Effects = new List<TileEffectInfo>();
 		foreach(GenusInfo child in AllGenus)
 		{
 			child.ChanceAdded = 0.0F;
-			//Debug.Log(child.ValueAdded.x);
 			child.ValueAdded = new IntVector(0,0);
-			//Debug.Log(child.ValueAdded.x);
+			child.Effects = new List<TileEffectInfo>();
 		}
 	}
 
@@ -466,6 +506,8 @@ public class SPECIES
 	{
 		return _ValueAdded.ToInt;
 	}
+
+	public List<TileEffectInfo> Effects;
 
 	public bool IsType(string species)
 	{		
@@ -527,16 +569,19 @@ public class TileInfo
 
 	public float FinalChance;
 	public IntVector FinalValue;
+	public int Scale = 1;
+
+	public List<TileEffectInfo> FinalEffects;
 
 	public TileInfo(SPECIES s, GENUS g)
 	{
 		if(g == GENUS.NONE)
 		{
-			g = (GENUS) Random.Range(0, s.AllGenus.Length-1);
+			g = (GENUS) UnityEngine.Random.Range(0, s.AllGenus.Length-1);
 		}
 		if(g == GENUS.RAND)
 		{
-			g = (GENUS) Random.Range(0,4);
+			g = (GENUS) UnityEngine.Random.Range(0,4);
 		}
 		int i = (int) g;
 
@@ -552,8 +597,18 @@ public class TileInfo
 		
 		Shift = s.Shift;
 		FinalChance = s[i].Chance * s.Chance + TileMaster.Genus.ChancesAdded[i];	
-		FinalValue = new IntVector(s._ValueAdded);
+		FinalValue = new IntVector(1,1);
+		FinalValue.Add(s._ValueAdded);
 		FinalValue.Add(s[g].Value);
+
+		FinalEffects = new List<TileEffectInfo>();
+		FinalEffects.AddRange(s.Effects);
+		FinalEffects.AddRange(s[g].Effects);
+		
+		if(!s.isEnemy) 
+		{
+			FinalValue.Mult(1 + GameManager.Difficulty/10);
+		}
 	}
 
 	public TileInfo(TileInfo t)
@@ -568,6 +623,7 @@ public class TileInfo
 		Shift = t.Shift;
 		FinalChance = t.FinalChance;
 		FinalValue = t.FinalValue;
+		FinalEffects = t.FinalEffects;
 	}
 
 	public int Value
@@ -624,6 +680,12 @@ public class IntVector
 		y = a.y;
 	}
 
+	public IntVector(int a)
+	{
+		x = a;
+		y = a;
+	}
+
 	public Vector2 ToVector2
 	{
 		get{
@@ -649,6 +711,99 @@ public class IntVector
 		x -= a.x;
 		y -= a.y;
 	}
+
+	public void Mult(float m)
+	{
+		x = (int)((float)x*m);
+		y = (int)((float)y*m);
+	}
+}
+
+public class ObjectPool
+{
+	Tile Object;
+	Transform Parent;
+	public int Count;
+
+	public Stack<Tile> Available;
+	public ArrayList All;
+
+	public Vector3 PoolPos = new Vector3(0, -100, 0);
+
+	public ObjectPool(Tile t, int num, Transform _parent)
+	{
+		Object = t;
+		Parent = _parent;
+		Available = new Stack<Tile>();
+		All = new ArrayList(num);
+		for(int i = 0; i < num; i++)
+		{
+			Tile Obj = InstantiateTileObj();
+			Available.Push(Obj);
+			All.Add(Obj);
+
+			Obj.gameObject.SetActive(false);
+		}
+	}
+
+	public ObjectPool(GameObject t, int num, Transform _parent)
+	{
+		Object = t.GetComponent<Tile>();
+		Parent = _parent;
+		Available = new Stack<Tile>();
+		All = new ArrayList(num);
+		for(int i = 0; i < num; i++)
+		{
+			Tile Obj =  InstantiateTileObj();
+			Available.Push(Obj);
+			All.Add(Obj);
+			Obj.gameObject.SetActive(false);
+		}
+	}
+
+	public Tile Spawn()
+	{
+		Tile result;
+		if(Available.Count == 0)
+		{
+			result =  InstantiateTileObj();
+			All.Add(result);
+		}
+		else
+		{
+			result = Available.Pop();
+		}
+		result.gameObject.SetActive(true);
+		return result;
+	}
+
+	public bool Unspawn(Tile t)
+	{
+		if(!Available.Contains(t))
+		{
+			Available.Push(t);
+			t.transform.position = PoolPos;
+			t.transform.parent = Parent;
+			t.gameObject.SetActive(false);
+			return true;
+		}
+		return false;
+	}
+
+	public Tile InstantiateTileObj()
+	{
+		Tile Obj = (Tile) GameObject.Instantiate(Object);
+
+		GameObject newmodel = GameObject.Instantiate(GameData.TileModel);
+		newmodel.transform.SetParent(Obj.transform);
+		newmodel.transform.position = Obj.transform.position;
+		Obj.Params = newmodel.GetComponent<TileParamContainer>();
+
+		Obj.transform.position = PoolPos;
+		Obj.transform.SetParent(Parent);
+		return Obj;
+	}
+
 }
 
 //[CustomPropertyDrawer (typeof (IntVector))]

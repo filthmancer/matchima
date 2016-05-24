@@ -16,28 +16,28 @@ public class UIManager : MonoBehaviour {
 	public LoadScreen LoadScreen;
 
 	public TextMeshProUGUI Health, Armour;
-	public TextMeshProUGUI [] WaveTimer;
-
-	//public UIClassButton [] ClassButtons;
+	public TextMeshProUGUI WaveTimer;
 
 	public UITooltip Tooltip;
 
 	public UIKillScreen KillUI;
-	public UIObj WaveAlert;
+	public UIObjTweener WaveAlert;
+	//public Color WaveAlert_ActiveCol, WaveAlert_InactiveCol;
 
 	public ClassUpgradeUI ClassUI;
 	public ClassAbilityUI ClassAbUI;
-	//public ClassHealthUI ClassHPUI;
-	public Image HealthImg;
+
+	public Image HealthImgLeft, HealthImgRight;
 	public ClassSlotsUI _ClassButtons;
 	public static ClassSlotsUI ClassButtons{get{return UIManager.instance._ClassButtons;}}
+	public static UIObj [] WaveButtons{get{return Objects.WaveSlots;}}
 	public ItemUI ItemUI;
 
 	[HideInInspector]
 	public Class current_class, targetui_class;
 	[HideInInspector]
 	public Quote current_quote;
-	//[HideInInspector]
+	[HideInInspector]
 	public Item current_item;
 
 	public static bool InMenu;
@@ -63,29 +63,32 @@ public class UIManager : MonoBehaviour {
 	}
 
 	void Start () {
-		Menu.gameObject.SetActive(true);
+		//Menu.gameObject.SetActive(true);
 		
 		//Objects.ShowObj(Objects.MenuUI, true);
 		//Objects.ShowObj(Objects.StatsbarUI, false);
 		Objects.MainUI.SetActive(false);	
 		//UpdatePlayerUI();
+		for(int i = 0; i < ClassButtons.Length; i++)
+		{
+			ClassButtons[i]._Frame.sprite = TileMaster.Genus.Frame[i];
+			ClassButtons[i]._FrameMask.sprite = TileMaster.Genus.Frame[i];
+		}
 	}
 
 	void Update () {
+
 		if(!GameManager.instance.gameStart) return;
-		//print(PlayerControl.HoldingSlot + ":" + PlayerControl.HeldButton);
-		//InMenu = (Objects.BigUI.activeSelf);
 
-		if(Application.isEditor)
-		{
-
-		}
-		else 
+		if(!Application.isEditor)
 		{
 			if(Input.touches.Length == 0) ShowTooltip(false);
 		}
 
-		HealthImg.fillAmount = Mathf.Lerp(HealthImg.fillAmount, Player.Stats.GetHealthRatio(), Time.deltaTime * 15);
+		HealthImgLeft.fillAmount = Mathf.Lerp(HealthImgLeft.fillAmount, Player.Stats.GetHealthRatio() * 0.82F, Time.deltaTime * 15);
+		HealthImgRight.fillAmount = Mathf.Lerp(HealthImgRight.fillAmount, Player.Stats.GetHealthRatio() * 0.82F, Time.deltaTime * 15);
+		HealthImgRight.color = Color.Lerp(GameData.instance.ShieldEmpty, GameData.instance.ShieldFull, Player.Stats.GetHealthRatio());
+		HealthImgLeft.color = Color.Lerp(GameData.instance.ShieldEmpty, GameData.instance.ShieldFull, Player.Stats.GetHealthRatio());
 		Health.text = Player.Stats.Health + "/" + Player.Stats.HealthMax;
 
 		Objects.ArmourParent.Txt[0].text = Player.Stats.Armour;
@@ -93,18 +96,24 @@ public class UIManager : MonoBehaviour {
 
 		for(int i = 0; i < GameManager.instance._Wave.Length; i++)
 		{
-			if(GameManager.instance._Wave[i] != null && GameManager.instance._Wave[i].Active)
+			if(GameManager.instance._Wave[i] != null && GameManager.instance._Wave[i].Active && Objects.WaveSlots.Length > i)
 			{
-				Objects.WaveSlots[i].Txt[1].text = "";
-				Objects.WaveSlots[i].Img[0].transform.gameObject.SetActive(true);
-	
+				Objects.WaveSlots[i].Txt[0].text = "";
+				//WaveTimer.text = "";
+		
 				Objects.WaveSlots[i].Img[1].enabled = true;
 				Objects.WaveSlots[i].Img[1].sprite = GameManager.instance._Wave[i].Inner;
 				Objects.WaveSlots[i].Img[1].color = Color.white;
 				Objects.WaveSlots[i].Img[2].enabled = true;
-				Objects.WaveSlots[i].Img[2].sprite = GameManager.instance._Wave[i].Border;
+				Objects.WaveSlots[i].Img[2].sprite = GameManager.instance._Wave[i].Outer;
 				Objects.WaveSlots[i].Img[2].color = Color.white;
-				Objects.WaveSlots[i].Txt[0].text = GameManager.instance._Wave[i].Current+"";
+
+				if(GameManager.instance._Wave[i].Current > -1)
+				{
+					Objects.WaveSlots[i].Img[0].transform.gameObject.SetActive(true);
+					Objects.WaveSlots[i].Txt[0].text = GameManager.instance._Wave[i].Current+"";
+				}
+				
 			}
 			else 
 			{
@@ -114,13 +123,12 @@ public class UIManager : MonoBehaviour {
 					Objects.WaveSlots[i].Img[s].enabled = false;
 				}
 				Objects.WaveSlots[i].Txt[0].text = "";
-				if(GameManager.instance._Wave[i] != null) Objects.WaveSlots[i].Txt[1].text = "" + GameManager.instance._Wave[i].Timer;
-				else Objects.WaveSlots[i].Txt[1].text = "";
+				//if(GameManager.instance._Wave[i] != null && GameManager.instance._Wave[i].Timer > 0) 
+				//	WaveTimer.text = "" + GameManager.instance._Wave[i].Timer;
+				//else WaveTimer.text = "";
 			}
 		}
-			
-	
-
+					
 		if(!ShowingHealth && Player.Stats.HealThisTurn > 0)
 		{
 			StartCoroutine(HealLoop());
@@ -155,10 +163,10 @@ public class UIManager : MonoBehaviour {
 		ShowingHealth = true;
 
 		int current_heal = Player.Stats.HealThisTurn;
-		Vector3 tpos = Vector3.up * 0.2F + Vector3.left * 0.8F;
+		Vector3 tpos = Vector3.up * 0.2F + Vector3.left * 1.2F;
 		MiniAlertUI heal = UIManager.instance.MiniAlert(
 			UIManager.instance.Health.transform.position + tpos, 
-			"+" + current_heal, 42, GameData.instance.GoodColour, 1.7F,	0.01F);
+			" +" + current_heal, 42, GameData.instance.GoodColour, 1.7F,	0.01F);
 
 		while(heal.lifetime > 0.0F)
 		{
@@ -175,8 +183,6 @@ public class UIManager : MonoBehaviour {
 				current_heal = Player.Stats.HealThisTurn;
 				heal.text = "+" + current_heal;
 			}
-			
-
 			yield return null;
 		}
 
@@ -194,7 +200,7 @@ public class UIManager : MonoBehaviour {
 		Vector3 tpos = Vector3.up * 0.2F + Vector3.left * 0.3F;
 		MiniAlertUI hit = UIManager.instance.MiniAlert(
 			UIManager.instance.Health.transform.position + tpos, 
-			"-" + current_hit, 42, GameData.instance.BadColour, 1.7F, 0.01F);
+			" -" + current_hit, 42, GameData.instance.BadColour, 1.7F, 0.01F);
 
 		while(hit.lifetime > 0.0F)
 		{
@@ -217,12 +223,11 @@ public class UIManager : MonoBehaviour {
 		ShowingHit = false;
 		yield return null;
 	}
-
-
 	
 	public void SwapSlotButtons(UISlotButton a, Class c, int slot)
 	{
-		UISlotButton b = ClassButtons[(int)c.Genus].SlotUI[0] as UISlotButton;
+		UIClassButton _class = ClassButtons[(int)c.Genus];
+		UISlotButton b = _class.SlotUI[0] as UISlotButton;
 
 		if(a != null && b != null)
 		{
@@ -239,9 +244,13 @@ public class UIManager : MonoBehaviour {
 
 					b.Parent.GetSlot(slota, b.Index);
 			}
-
+			
 			b.Setup(slota);
 			a.Setup(slotb);
+			b.Drag = DragType.None;
+			a.Drag = DragType.Hold;
+
+			_class.Setup(c);
 		}
 	}
 	public void ShowKillUI(long alltokens, int tens, int hunds, int thous)
@@ -284,10 +293,52 @@ public class UIManager : MonoBehaviour {
 
 	public void ShowClassUI(bool active)
 	{
-		Menu._Text.enabled = active;
-		Menu.Tokens.enabled = active;
 		Menu.ClassMenu.SetActive(active);
 		Objects.ShowObj(Objects.MainUI, !active);
+	}
+
+	public static void ShowClassButtons(bool? active = null)
+	{
+		foreach(UIObj child in ClassButtons.Child)
+		{
+			child.SetActive(active);
+		}
+	}
+
+	public void SetClassButtons(bool open)
+	{
+		foreach(UIClassButton child in ClassButtons.Class)
+		{
+			if(child.PartialOpen.IsObjectOpened() != open)
+			{
+			 child.PartialOpen.OpenCloseObjectAnimation();
+			}
+		}
+	}
+
+	
+	public static void ShowWaveButtons(bool? active = null)
+	{
+		foreach(UIObj child in WaveButtons)
+		{
+			child.SetActive(active);
+		}
+	}
+
+	public void WaveButton(int i)
+	{
+		//if(GameManager.inStartMenu)
+		//{
+		//}
+		//else
+		//{
+		//	//ShowTooltip()
+		//}
+	}
+
+	public void ClassButton(int i )
+	{
+
 	}
 
 	public void ShowClassAbilities(Class c, bool? over = null)
@@ -305,7 +356,7 @@ public class UIManager : MonoBehaviour {
 	{
 		current_class = null;
 		//Objects.ShowObj(Objects.BigUI,true);
-		Objects.ShowObj(Objects.ClassUpgradeUI,false);
+		//Objects.ShowObj(Objects.ClassUpgradeUI,false);
 		ItemUI.gameObject.SetActive(true);
 		ItemUI_active = true;
 		Objects.ShowObj(Objects.ItemUI, true);
@@ -316,25 +367,27 @@ public class UIManager : MonoBehaviour {
 
 	public void HideItemUI()
 	{
-		Objects.ShowObj(Objects.BigUI,false);
 		ItemUI.gameObject.SetActive(false);
 		ItemUI_active = false;
 		ItemUI.DestroySlots();
 		ShowClassAbilities(null, false);
 		current_class = null;
 		targetui_class = null;
+		UIManager.instance.SetClassButtons(false);
 	}
 
-	public void SetClassButtons(bool open)
+	public void BotGearTween(bool? open = null)
 	{
-		foreach(UIClassButton child in ClassButtons.Class)
-		{
-			if(child.PartialOpen.IsObjectOpened() != open)
-			{
-			 child.PartialOpen.OpenCloseObjectAnimation();
-			}
-		}
+		Objects.ClassUI.SetActive(open);
 	}
+
+	public void TopGearTween(bool? open = null)
+	{
+		Objects.WaveUI.SetActive(open);
+	}
+
+
+
 
 
 	//public void ItemConfirm(Class c)
@@ -350,7 +403,6 @@ public class UIManager : MonoBehaviour {
 	public void ItemDestroy()
 	{
 		Destroy(current_item.gameObject);
-		if(!InMenu) Objects.ShowObj(Objects.BigUI, false);
 		ItemUI.gameObject.SetActive(false);
 		current_item = null;
 	}
@@ -358,8 +410,6 @@ public class UIManager : MonoBehaviour {
 
 	public void ShowMenu(bool active)
 	{
-		Menu._Text.enabled = active;
-		Menu.Tokens.enabled = active;
 		Menu.PauseMenu.SetActive(active);
 		Objects.ShowObj(Objects.MainUI, !active);
 	}
@@ -368,8 +418,6 @@ public class UIManager : MonoBehaviour {
 	{
 		InMenu = true;
 		ResUIOpen = true;
-		Objects.ShowObj(Objects.BigUI, true);
-		Objects.ShowObj(Objects.ClassUpgradeUI,true);
 		Objects.ShowObj(Objects.ItemUI, false);
 		Objects.GetScoreWindow().gameObject.SetActive(false);
 
@@ -388,10 +436,6 @@ public class UIManager : MonoBehaviour {
 	{
 		LevelChoice = null;
 		InMenu = true;
-		Objects.BigUI.SetActive(true);
-		Objects.LevelUpMenu.SetActive(true);
-		//Objects.LevelUpMenu.Setup(c, ups);
-
 		while(LevelChoice == null)
 		{
 			yield return null;
@@ -413,16 +457,12 @@ public class UIManager : MonoBehaviour {
 		ShowClassAbilities(current_class, true);
 		InMenu = true;
 		BoonUI_active = true;
-		Objects.BigUI.SetActive(true);
-		Objects.LevelUpMenu.SetActive(true);
-		Objects.LevelUpMenu.Setup(group);
 		LevelChoice = null;
 	}
 
 	public void HideBoonUI()
 	{
 		BoonUI_active = false;
-		Objects.LevelUpMenu.Destroy();
 		//LevelChoice = 1;
 		PlayerControl.HeldButton = null;
 		PlayerControl.HoldingSlot = false;
@@ -432,7 +472,7 @@ public class UIManager : MonoBehaviour {
 
 	public void HideResourceUI()
 	{
-		Objects.ShowObj(Objects.BigUI, false);
+		//Objects.ShowObj(Objects.BigUI, false);
 		//Objects.ShowObj(Objects.BigUIShopAlert, false);
 		//Objects.ShowObj(Objects.BigUIShopButtons, false);
 		Objects.GetScoreWindow().gameObject.SetActive(true);
@@ -456,14 +496,8 @@ public class UIManager : MonoBehaviour {
 	{
 		yield return new WaitForSeconds(0.2F);
 		Menu.ClassMenu.SetActive(false);
-		Menu._Text.enabled = false;
-		Menu.Tokens.enabled = false;
-
 		Objects.ShowObj(Objects.Options, false);
 		Objects.ShowObj(Objects.MainUI, true);
-
-
-		//Objects.ShowObj(Objects.ClassTopUI, false);
 
 		loaded  = true;
 		int i =0;
@@ -553,12 +587,12 @@ public class UIManager : MonoBehaviour {
 	{
 		//while(isQuoting || InMenu) yield return null;
 		//yield return null;
-		UIManager.Objects.LevelUpMenu.SetActive(false);
+		//UIManager.Objects.LevelUpMenu.SetActive(false);
 		isQuoting = true;
 		for(int i = 0; i < q.Length; i++)
 		{
 			current_quote = q[i];
-			Objects.ShowObj(Objects.BigUI, true);
+			//Objects.ShowObj(Objects.BigUI, true);
 			Objects.ShowObj(Objects.AlertBubble.gameObject, true);
 			if(i == 0) Objects.AlertBubble.GetComponent<Animator>().SetTrigger("PopIn");
 			for(int old = 0; old < Objects.Alert_ButtonParent.transform.childCount; old++)
@@ -573,16 +607,13 @@ public class UIManager : MonoBehaviour {
 				for(int s = 0; s < _class._Slots.Length; s++)
 				{
 					UIObj new_button = (UIObj) Instantiate(Objects.Alert_Button);
-					new_button._Text.text = _class._Slots[s].name;
-					new_button._Image.color = _class._Slots[s].Colour * Color.grey;
 					new_button.transform.parent = Objects.Alert_ButtonParent.transform;
 					new_button.transform.position = Vector3.zero;
 					new_button.transform.localScale = Vector3.one;
 					AddConfirmListener(new_button, s);
 				}
+				
 				UIObj no = (UIObj) Instantiate(Objects.Alert_Button);
-				no._Text.text = "NO";
-				no._Image.color =  GameData.Colour(GENUS.STR) *  Color.grey;
 				no.transform.parent = Objects.Alert_ButtonParent.transform;
 				no.transform.position = Vector3.zero;
 				no.transform.localScale = Vector3.one;
@@ -592,16 +623,12 @@ public class UIManager : MonoBehaviour {
 			{
 				Objects.Alert_ButtonParent.SetActive(true);
 				UIObj yes = (UIObj) Instantiate(Objects.Alert_Button);
-				yes._Text.text = "YES";
-				yes._Image.color =  GameData.Colour(GENUS.WIS) *  Color.grey;
 				yes.transform.parent = Objects.Alert_ButtonParent.transform;
 				yes.transform.position = Vector3.zero;
 				yes.transform.localScale = Vector3.one;
 				AddConfirmListener(yes, 0);
 
 				UIObj no = (UIObj) Instantiate(Objects.Alert_Button);
-				no._Text.text = "NO";
-				no._Image.color =  GameData.Colour(GENUS.STR) * Color.grey;
 				no.transform.parent = Objects.Alert_ButtonParent.transform;
 				no.transform.position = Vector3.zero;
 				no.transform.localScale = Vector3.one;

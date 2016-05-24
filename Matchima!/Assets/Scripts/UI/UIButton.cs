@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+
 using UnityEngine.UI;
+
 
 public class UIButton : UIObj {
 
@@ -11,7 +13,6 @@ public class UIButton : UIObj {
 	protected bool dragging;
 	protected float drag_distance = 1.2F;
 	protected bool activated = false;
-	public bool shop_activated = false;
 	protected bool prepare_to_swap;
 	public DragType Drag;
 
@@ -94,9 +95,13 @@ public class UIButton : UIObj {
 
 	public virtual void Setup(Slot s)
 	{
-		dragging = false;
-		init_pos = transform.position;
-		drag_distance = GetComponent<LayoutElement>().preferredWidth/200;
+		if(Drag != DragType.None)
+		{
+			dragging = false;
+			init_pos = transform.position;
+			drag_distance = GetComponent<LayoutElement>().preferredWidth/200;
+		}
+		
 	}
 
 	public virtual void MouseDown()
@@ -122,12 +127,16 @@ public class UIButton : UIObj {
 			}
 		}
 		
-		dragging = false;
-		activated = false;
-		PlayerControl.HoldingSlot = false;
-		if(PlayerControl.TouchParticle != null) Destroy(PlayerControl.TouchParticle.gameObject);
-		GetComponent<LayoutElement>().ignoreLayout = false;
-		GetComponent<CanvasGroup>().blocksRaycasts = true;
+		if(Drag != DragType.None)
+		{
+			dragging = false;
+			activated = false;
+			PlayerControl.HoldingSlot = false;
+			if(PlayerControl.TouchParticle != null) Destroy(PlayerControl.TouchParticle.gameObject);
+			GetComponent<LayoutElement>().ignoreLayout = false;
+			GetComponent<CanvasGroup>().blocksRaycasts = true;
+		}
+		
 	}
 
 	public virtual void MouseOver()
@@ -140,4 +149,7 @@ public class UIButton : UIObj {
 		over = false;
 		UIManager.instance.ShowTooltip(false);
 	}
+
 }
+
+

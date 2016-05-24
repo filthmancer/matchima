@@ -32,7 +32,7 @@ public class Thievery : Ability {
 		Parent.Quotes.Special.Add(steal);
 	}
 
-	public override void AfterTurnB()
+	public override IEnumerator AfterTurn()
 	{
 		int total_stolen = 0;
 		foreach(Class child in Player.Classes)
@@ -72,5 +72,6 @@ public class Thievery : Ability {
 			UIManager.instance.MiniAlert(UIManager.ClassButtons[Parent.Index].transform.position + Vector3.up*0.6F, "Stole " + total_stolen + " Mana!", 40, GameData.Colour(Parent.Genus), 0.8F, 0.1F, true);
 			if(Random.value < 0.15F) StartCoroutine(UIManager.instance.Quote(Parent.Quotes.GetSpecial("Stealing Mana").RandomQuote));
 		}		
+		yield return null;
 	}
 }

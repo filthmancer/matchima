@@ -10,7 +10,7 @@ public class TileEffect : Status {
 		_Tile = t;
 		if(FX != string.Empty)
 		{
-			GameObject part = EffectManager.instance.PlayEffect(this.transform, Effect.STRING, FX, GameData.Colour(_Tile.Genus));
+			GameObject part = EffectManager.instance.PlayEffect(this.transform, Effect.STRING, FX);
 			part.transform.parent = this.transform;
 		}
 	}
@@ -18,6 +18,11 @@ public class TileEffect : Status {
 	public virtual TileStat CheckStats()
 	{
 		return null;
+	}
+
+	public virtual IEnumerator StatusEffectRoutine()
+	{
+		yield break;
 	}
 
 }

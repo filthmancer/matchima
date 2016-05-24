@@ -28,12 +28,12 @@ public class Maturation : Ability {
 		Description_Basic += "value of tiles in bottom " + fieldY + " rows";
 	}
 
-	public override void BeforeTurn()
+	public override IEnumerator BeforeTurn()
 	{
 		base.BeforeTurn();
-		if(cooldown_time > 0) return;
+		if(cooldown_time > 0) yield break;
 		Tile [,] _tiles = TileMaster.Tiles;
-		if(_tiles == null || _tiles.GetLength(0) == 0) return;
+		if(_tiles == null || _tiles.GetLength(0) == 0) yield break;
 		
 		for(int x = 0; x < _tiles.GetLength(0); x++)
 		{
@@ -69,6 +69,7 @@ public class Maturation : Ability {
 			}
 		}
 		cooldown_time = cooldown;
+		yield return null;
 	}
 
 	public override void Setup(AbilityContainer con, int? _in = null, int? _out = null)

@@ -12,7 +12,7 @@ public class Bomb : Tile {
 		}
 	}
 	public GameObject Particles;
-	public int BombDamage = 10;
+	private int BombDamage = 10;
 
 	public override StCon [] Description
 	{
@@ -32,7 +32,7 @@ public class Bomb : Tile {
 	}
 
 
-	public override IEnumerator BeforeMatch()
+	public override IEnumerator BeforeMatch(bool original)
 	{
 		if(isMatching) yield break;
 		isMatching = true;		
@@ -54,31 +54,7 @@ public class Bomb : Tile {
 				}
 			}
 		}
-		//for(int x = -radius; x <= radius; x++)
-		//{
-		//	for(int y = -radius; y <= radius; y++)
-		//	{
-		//		if(x != 0 || y != 0)
-		//		{
-		//			int [] tile = new int [] {xx + x, yy + y};
-		//			if(tile[0] >= TileMaster.Tiles.GetLength(0) || tile[0] < 0) continue;
-		//			if(tile[1] >= TileMaster.Tiles.GetLength(1) || tile[1] < 0) continue;
-		//			if(TileMaster.Tiles[tile[0], tile[1]]) 
-		//			{
-		//				if(TileMaster.Tiles[tile[0],tile[1]].Type.isEnemy) 
-		//				{
-		//					TileMaster.Tiles[tile[0],tile[1]].InitStats.TurnDamage += BombDamage;
-		//				}
-		//				if(!TileMaster.Tiles[tile[0], tile[1]].isMatching)
-		//				{
-		//					TileMaster.Tiles[tile[0], tile[1]].SetState(TileState.Selected,true);
-		//					to_collect.Add(TileMaster.Tiles[tile[0], tile[1]]);
-		//				}
-		//			}	
-		//		}
-		//	}
-		//}
-		
+
 		GameObject p = Instantiate(Particles);
 		p.transform.position = this.transform.position;
 		p.GetComponent<MoveToPoint>().enabled = false;
@@ -89,9 +65,10 @@ public class Bomb : Tile {
 			p.GetComponent<MoveToPoint>().enabled = false;
 		}
 
-		yield return new WaitForSeconds(0.5F);
+		CameraUtility.instance.ScreenShake((float)Stats.Value/5,  GameData.GameSpeed(0.4F));
+		yield return new WaitForSeconds( GameData.GameSpeed(0.4F));
 
-		yield return StartCoroutine(Player.instance.BeforeMatch(to_collect));
+		//yield return StartCoroutine(Player.instance.BeforeMatch(to_collect));
 		PlayerControl.instance.RemoveTileToMatch(this);
 		to_collect.Add(this);
 		for(int i = 0; i < to_collect.Count; i++)
@@ -102,82 +79,13 @@ public class Bomb : Tile {
 				TileMaster.Tiles[to_collect[i].Point.Base[0], to_collect[i].Point.Base[1]].AddValue(to_collect[i].Stats.Value * 10);
 				to_collect.RemoveAt(i);
 			}
+			if(to_collect[i].IsType("Enemy")) 
+			{
+				to_collect[i].InitStats.TurnDamage += BombDamage;
+				AudioManager.instance.PlayClipOn(to_collect[i].transform, "Enemy", "Hit");
+				EffectManager.instance.PlayEffect(to_collect[i].transform,Effect.Attack);
+			}
 		}
-		PlayerControl.instance.AddTilesToMatch(to_collect.ToArray());
+		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
 	}
-
-	//public override IEnumerator AfterTurnRoutine()
-	//{
-	//	Reset();
-	//	InitStats.Lifetime ++;
-	//	if(InitStats.Lifetime >= 1) 
-	//	{
-	//		Stats.isNew = false;
-	//	}
-
-	//	yield break;
-
-	//	//TRYING TO MAKE BOMBS MATCH IF THEY HAVE 2 BOMB NEIGHBOURS
-	//	
-	//	int exp = 0;
-	//	Tile [] nb = new Tile[4];
-	//	nb[0] = TileMaster.instance.GetTile(num[0], num[1]-1);
-	//	nb[1] = TileMaster.instance.GetTile(num[0], num[1]+1);
-	//	nb[2] = TileMaster.instance.GetTile(num[0]-1, num[1]);
-	//	nb[3] = TileMaster.instance.GetTile(num[0]+1, num[1]);
-	//	for(int i = 0; i < nb.Length; i++)
-	//	{
-	//		if(nb[i] == null) continue;
-	//		if(nb[i].IsType("Bomb")) exp++;
-	//	}
-	//	if(exp >= 2)
-	//	{
-	//		Match(1);
-	//		//StartCoroutine(BeforeMatch());
-	//	}
-
-	//}
-
-//	public override bool Match(int resource) 
-//	{
-//		if(isMatching) return false;
-//		isMatching = true;
-//
-//		GameObject p = Instantiate(Particles);
-//		p.transform.position = this.transform.position;
-//
-//		int xx = num[0], yy = num[1];
-//		for(int x = -radius; x <= radius; x++)
-//		{
-//			for(int y = -radius; y <= radius; y++)
-//			{
-				//
-//				if(x != 0 || y != 0)
-//				{
-//					int [] tile = new int [] {xx + x, yy + y};
-//					if(tile[0] >= TileMaster.Tiles.GetLength(0) || tile[0] < 0) continue;
-//					if(tile[1] >= TileMaster.Tiles.GetLength(1) || tile[1] < 0) continue;
-//					if(TileMaster.Tiles[tile[0], tile[1]]) 
-//					{
-//						if(!TileMaster.Tiles[tile[0], tile[1]].isMatching)
-//						{
-//							GameObject part = Instantiate(Particles);
-//							part.transform.position = TileMaster.Tiles[tile[0], tile[1]].transform.position;
-//							//part.transform.SetParent(TileMaster.Tiles[tile[0],tile[1]].transform);
-//							TileMaster.Tiles[tile[0], tile[1]].SetState(TileState.Selected);
-//							TileMaster.Tiles[tile[0], tile[1]].DestroyThyself(false);
-//						}
-//					}	
-//				}
-//			}
-//		}
-//		base.DestroyThyself(false);
-//		return true;
-//	}
-
-	//public override void DestroyThyself(bool collect, bool collapse = false)
-//	{
-//		if(!collapse) Match(1);
-//		else base.DestroyThyself(collect,false);
-//	}
 }

@@ -4,6 +4,14 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 
+public enum MenuState
+{
+	StartScreen,
+	MainMenu,
+	Options,
+	Character
+}
+
 public class UIMenu : UIObj {
 
 	public UIObj ClassMenu;
@@ -15,25 +23,26 @@ public class UIMenu : UIObj {
 	public UIObj ClassButton;
 	public UIObj ResumeGame;
 	public UIObj NewGame;
-	public UIObj ClassLeft, ClassRight;
+	public UIObj ModeButton;
 
 	public UIObj Difficulty;
-	public UIObj StartGame;
 	public UIObj LevelUp;
 	public UIObj AlertObj;
 	public UIObj PipObj;
 	public UIObj HealthPipParent, AttackPipParent, MagicPipParent;
+	public UIObj HelpBasic, HelpMana, HelpItems;
+
+	public UIClassSelect ClassPrefab;
+	public List<UIClassSelect> ClassObjects;
 
 	public RectTransform ClassParent;
 
-	public TextMeshProUGUI ClassName, ClassDescription;
-	public TextMeshProUGUI Tokens, LevelUpCost;
 	public TextMeshProUGUI ResumeGameInfo;
 
 	public string [] DiffText;
 
 	public UIObj [] SlotButtons;
-	public int? TargetSlot;
+	public int? TargetSlot = null;
 
 	private List<UIObj> class_buttons = new List<UIObj>();
 	private List<string> class_names = new List<string>();
@@ -47,33 +56,48 @@ public class UIMenu : UIObj {
 	private float time_to_tile = 0.6F;
 	private float time = 0.0F;
 
+
+
+	public MenuState State = MenuState.StartScreen;
+
 	void Start () {
-		_Text.gameObject.SetActive(true);
-		Difficulty._Text.text = DiffText[(int)GameManager.instance.DifficultyMode];
-		DefaultMenu.SetActive(true);
-		ClassParent_pos = ClassParent.transform.position;
+		UIManager.ShowClassButtons(false);
+		UIManager.ShowWaveButtons(false);
+		UIManager.Objects.MiddleGear.SetActive(false);
+		(UIManager.Objects.TopGear as UIObjTweener).SetTween(1,true);
+		(UIManager.Objects.BotGear as UIObjTweener).SetTween(1,true);
+		UIManager.Objects.BotGear.Child[0].SetActive(false);
+		UIManager.Objects.TopGear.SetRotate(true, Vector3.forward * Time.deltaTime * 4);
+		UIManager.Objects.BotGear.SetRotate(true, Vector3.back * Time.deltaTime * 4);
+		UIManager.ShowWaveButtons(false);
+
+		
+		int wedge_num = 8;
+		for(int i = 0; i < wedge_num; i++)
+		{
+			Class child = GameData.instance.Classes[i];
+			UIClassSelect obj = (UIClassSelect) Instantiate(ClassPrefab);
+			obj.transform.SetParent(UIManager.Objects.BotGear[3][0].transform);
+			
+			UIManager.Objects.BotGear[3][0].AddChild(obj);
+			obj.Setup(child);
+			obj.transform.rotation = Quaternion.Euler(0,0,360/wedge_num * i);
+
+		}
+		UIManager.Objects.BotGear[3][0].SetActive(false);
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		Tokens.text = PlayerPrefs.GetInt("AllTokens") + " Tokens";
-
-		ClassParent.transform.position = Vector3.Lerp(ClassParent.transform.position, ClassParent_pos, Time.deltaTime * 15);
-
-		for(int i = 0; i < SlotButtons.Length; i++)
+		if(State == MenuState.StartScreen)
 		{
-			if(TargetSlot.HasValue)
+			if(Input.GetMouseButtonDown(0))
 			{
-				SlotButtons[i].transform.localScale = Vector3.one * (i==TargetSlot.Value ? 1.3F : 1.15F);
-				SlotButtons[i].Img[1].color = (i == TargetSlot.Value ? Color.white : Color.grey);
+				MainMenu();
 			}
-			else
-			{
-				SlotButtons[i].transform.localScale = Vector3.one * 1.15F;
-				SlotButtons[i].Img[1].color =  Color.grey;
-			}
-			
 		}
+		
+		//Tokens.text = PlayerPrefs.GetInt("AllTokens") + " Tokens";
 
 		if(GameManager.inStartMenu)
 		{
@@ -95,174 +119,171 @@ public class UIMenu : UIObj {
 		}
 	}
 
-
-	public void SetupClass()
+	public void Reset()
 	{
+		for(int i = 0; i < UIManager.ClassButtons.Length; i++)
+		{
+			UIManager.ClassButtons[i].TweenClass(false);
+		}
+		
+		(UIManager.Objects.BotGear as UIObjTweener).SetTween(2, false);
+		UIManager.Objects.BotGear[3][0].SetActive(false);
+		UIManager.Objects.MiddleGear.SetActive(true);
+	}
+	
+	public void MainMenu()
+	{
+		State = MenuState.MainMenu;
+
+		Reset();
+		UIManager.Objects.TopGear.SetRotate(true, Vector3.forward * Time.deltaTime * 2);
+		UIManager.Objects.BotGear.SetRotate(true, Vector3.forward * Time.deltaTime * 2);
+	
+		(UIManager.Objects.TopGear as UIObjTweener).SetTween(1, false);
+		(UIManager.Objects.BotGear as UIObjTweener).SetTween(1, false);
+		UIManager.ShowClassButtons(true);
+		UIManager.WaveButtons[0].SetActive(true);
+		UIManager.WaveButtons[0].Txt[0].text = "New";
+		UIManager.WaveButtons[0].Img[1].color = GameData.Colour(GENUS.STR);
 		if(PlayerPrefs.GetInt("Resume") == 1) 
 		{
-			ResumeGame.transform.gameObject.SetActive(true);
-			ResumeGameInfo.text = PlayerPrefs.GetString("Name") + "\nTurn: " + PlayerPrefs.GetInt("Turns");
+			UIManager.WaveButtons[1].SetActive(true);
+			UIManager.WaveButtons[1].Txt[0].text = "Resume";
+			UIManager.WaveButtons[1].Img[1].color = GameData.Colour(GENUS.DEX);
+			//ResumeGameInfo.text = PlayerPrefs.GetString("Name") + "\nTurn: " + PlayerPrefs.GetInt("Turns");
 		}
-		else ResumeGame.transform.gameObject.SetActive(false);
-
-		for(int i = 0; i < GameData.instance.ClassesTest.Length; i++)
-		{
-			Class child = GameData.instance.ClassesTest[i];
-			//if(child.NoAccess) continue;
-			UIObj newclass = (UIObj)Instantiate(ClassButton);
-
-			newclass._Image.color = 
-				GameData.instance.GetGENUSColour(child != null ? child.Stats.Class_Type : GENUS.NONE);
-			newclass._Image.sprite = child.Icon;
-
-
-			//if(!child.Unlocked)
-			//{
-			//	newclass._Text.text = "???";
-			//	newclass.GetComponent<Image>().color *= 0.5F;
-			//}
-
-			newclass.GetComponent<Button>().onClick.AddListener(() => SetClass(newclass));
-			
-			newclass.transform.SetParent(ClassParent.transform);
-			newclass.transform.localScale = Vector3.one;
-			newclass.Index = i;
-			class_buttons.Add(newclass);
-			class_names.Add(child.Info.Name);
-			class_short_names.Add(child.Info.ShortName);
-		}
-		return;
+		else UIManager.WaveButtons[1].SetActive(false);
 		
-		//Button endless = (Button)Instantiate(ClassButton);
-		//endless.GetComponent<Image>().color = GameData.instance.GetGENUSColour(GENUS.PRP);
-		//UIObj endlessObj = endless.GetComponent<UIObj>();
-		//endlessObj._Text.text = "Endless";
-		//endless.GetComponent<Button>().onClick.AddListener(() => SetClass(endlessObj));
-		//endless.transform.SetParent(ClassParent.transform);
-		//endless.transform.localScale = Vector3.one;
-		//endlessObj.Index = GameData.instance.Classes.Length;
-		//class_buttons.Add(endlessObj);
-		//class_names.Add("The Endless");
-		//class_short_names.Add("Endless");
-
+		UIManager.Objects.TopGear.Txt[0].text = "";
+		UIManager.Objects.BotGear.Txt[0].text = "";
+		UIManager.Objects.MiddleGear[0].GetChild(0).ClearActions(UIAction.MouseUp);
+		UIManager.Objects.MiddleGear[0].GetChild(0).AddAction(UIAction.MouseUp,
+		() => {StartGame();});
+		UIManager.Objects.MiddleGear[0].GetChild(1).AddAction(UIAction.MouseUp,
+		() => {ChangeMode();});
+		UIManager.Objects.MiddleGear[0].GetChild(2).AddAction(UIAction.MouseUp,
+		() => {ChangeDifficulty();});
 	}
 
-	Class targetClass;
-
-	public void SetClass(UIObj button)
+	public void HeroMenu(int x)
 	{
-
-		if(target_obj != button)
+		if(State != MenuState.Character)
 		{
-			if(target_obj != null) 
-			{
-				target_obj._Text.text = (targetClass.Unlocked ?  class_short_names[target_obj.Index] : "???");
-			}
+			State = MenuState.Character;
+			(UIManager.Objects.BotGear as UIObjTweener).SetTween(2, true);
+			UIManager.Objects.BotGear[3][0].SetActive(true);
+			UIManager.Objects.TopGear[1][0].SetActive(true);
+			UIManager.Objects.TopGear[1][0].Txt[0].text = "Exit";
+			UIManager.Objects.TopGear[1][0].ClearActions();
+			UIManager.Objects.TopGear[1][0].AddAction(UIAction.MouseUp,
+			() =>{
+				MainMenu();
+				});
+			UIManager.Objects.TopGear[1][1].SetActive(false);
+			UIManager.Objects.TopGear[1][2].SetActive(false);
 			
-			target_obj = button;
-			button._Text.text = "OK?";
-
-			targetClass =  GameData.instance.ClassesTest[button.Index];//GameManager.instance.CheckForClass(class_names[button.Index]);
-
-			GetPips(targetClass.Info);
-			ClassName.text = (targetClass.Unlocked ?  targetClass.Info.Name : "???");
-			ClassDescription.text = (targetClass.Unlocked ?  targetClass.Info.Description : "???");
-			//LevelUp.SetActive(targetClass.Unlocked && targetClass.Level < targetClass.MaxLevel);
-			//LevelUp._Text.text = targetClass.LevelUpCost + " Tokens";
-			StartGame._Text.text = "START";//(targetClass.Unlocked ? "START" : "UNLOCK");
+			int wedge_num = 8;
+			for(int i = 0; i < UIManager.Objects.BotGear[3][0].Length; i++)
+			{
+				Class child = GameData.instance.Classes[i];
+				(UIManager.Objects.BotGear[3][0].GetChild(i) as UIClassSelect).ClearActions();
+				(UIManager.Objects.BotGear[3][0].GetChild(i) as UIClassSelect).Setup(child); 
+			}
 		}
 		else
 		{
-			ConfirmClass();
+			if(x == 100) return;
+			SetTargetSlot(x);
 		}
 	}
 
-	public void SetClass(int i)
+
+	public void StartGame()
 	{
-		target_obj = class_buttons[i];
-		targetClass = GameData.instance.ClassesTest[i];
-
-		ClassName.text = (targetClass.Unlocked ?  targetClass.Info.Name : "???");
-		ClassDescription.text = (targetClass.Unlocked ?  targetClass.Info.Description : "???");
-		//LevelUp.SetActive(targetClass.Unlocked && targetClass.Level < targetClass.MaxLevel);
-		//LevelUp._Text.text = targetClass.LevelUpCost + " Tokens";
-		StartGame._Text.text = "START";//(targetClass.Unlocked ? "START" : "UNLOCK");
-	}
-
-
-	public void ConfirmClass()
-	{
-		if(targetClass == null) return;
-		if(!targetClass.Unlocked) 
+		switch(GameManager.instance.Mode)
 		{
-			//if(PlayerPrefs.GetInt("AllTokens") >= targetClass.UnlockPoints)
-			//{
-			//	int newpoints = PlayerPrefs.GetInt("AllTokens") - targetClass.UnlockPoints;
-			//	PlayerPrefs.SetInt("AllTokens", newpoints);
-			//	targetClass.Unlocked = true;
-			//	targetClass.Level = 1;
-			//	class_buttons[selected_class]._Image.color *= 2.0F;
-			//	class_buttons[selected_class]._Text.text = class_short_names[selected_class];
-			//	SetClass(selected_class);
-			//	//class_buttons[selected_class] = null;
-			//}
+			case GameMode.Endless:
+	
+			break;
+			case GameMode.Story:
+			Player.instance._Classes[0] = GameData.instance.GetClass("Barbarian");
+			Player.instance._Classes[1] = GameData.instance.GetClass("Rogue");
+			Player.instance._Classes[2] = GameData.instance.GetClass("Wizard");
+			Player.instance._Classes[3] = GameData.instance.GetClass("Bard");
+			break;
 		}
-		else
-		{
-			//GameManager.instance.DifficultyMode = targetClass.Difficulty;
-			//GameManager.instance.LoadClass(targetClass);
-			Player.instance._Classes[TargetSlot.Value] = targetClass;
-			SlotButtons[TargetSlot.Value]._Image.enabled = true;
-			SlotButtons[TargetSlot.Value]._Image.sprite = targetClass.Icon;
-			TargetSlot = null;
-		}
+
+		NewGameActivate();
 	}
 
-	public void LevelUpClass()
-	{
-		//if(targetClass == null) return;
-		//if(!targetClass.Unlocked) return;
-		//if(PlayerPrefs.GetInt("AllTokens") < targetClass.LevelUpCost) return;
-		//int cost = targetClass.LevelUpCost;
-		//if(!targetClass.LevelUp()) return;
-		//int newpoints = PlayerPrefs.GetInt("AllTokens") - cost;
-		//PlayerPrefs.SetInt("AllTokens", newpoints);
-		//GameData.instance.LoadAbilities();
-		//ClassName.text = (targetClass.Unlocked ?  targetClass.Name + (targetClass.MaxLevel != 0 ? (" : Lvl " + //targetClass.Level) : " ") : "???");
-		//LevelUp.SetActive(targetClass.Unlocked && targetClass.Level < 5);
-		//LevelUpCost.text = targetClass.LevelUpCost + " Tokens";
-	}
 
-	public void CheckClassButtons()
-	{
-		for(int i = 0; i < GameData.instance.Classes.Length; i++)
-		{
-			if(class_buttons.Count <= i) continue;
-			ClassContainer c = GameData.instance.Classes[i];
-			class_buttons[i]._Image.color =	GameData.instance.GetGENUSColour(c.Prefab != null ? c.Prefab.Stats.Class_Type : GENUS.NONE);
-			if(c.Unlocked)
-			{
-				class_buttons[i]._Text.text = c.ShortName;
-			}
-			else
-			{
-				class_buttons[i]._Image.color *= 0.5F;
-				class_buttons[i]._Text.text = "???";
-			}
-		}
-	}
 
 	public void SetTargetSlot(int i)
 	{
-		TargetSlot = i;
+		if(TargetSlot == i)
+		{
+			UIManager.ClassButtons[TargetSlot.Value].TweenClass(false);
+			TargetSlot = null;
+			return;
+		}
+		else
+		{
+			if(TargetSlot != null) UIManager.ClassButtons[TargetSlot.Value].TweenClass(false);
+			TargetSlot = i;
+			if(TargetSlot != null) UIManager.ClassButtons[TargetSlot.Value].TweenClass(true);
+		} 
+		
+	}
+
+	public void SetTargetClass(UIClassSelect c)
+	{
+		//If targetslot is null, get the first empty slot
+		bool set_from_null = false;
+		if(TargetSlot == null)
+		{
+			for(int i = 0; i < Player.instance._Classes.Length; i++)
+			{
+				if(Player.instance._Classes[i] == null)
+				{
+					TargetSlot = i;
+					set_from_null = true;
+					break;
+				}
+			}
+			if(TargetSlot == null) return;
+		}
+		
+		//Set the targeted slot class
+		Player.instance._Classes[TargetSlot.Value] = c._class;
+		(UIManager.Objects.BotGear[1][TargetSlot.Value][0] as UIClassButton).Setup(c._class);
+
+		ChangeMode(GameMode.Endless);
+		//If targetslot was initally null, set back to null
+		if(set_from_null) TargetSlot = null;
 	}
 
 	public void ChangeDifficulty()
 	{
 		GameManager.instance.DifficultyMode = GameManager.instance.DifficultyMode + 1;
 		if(GameManager.instance.DifficultyMode > (DiffMode)2) GameManager.instance.DifficultyMode = 0;
-		Difficulty._Text.text = DiffText[(int)GameManager.instance.DifficultyMode];
+		UIManager.Objects.MiddleGear[0].GetChild(2).Txt[0].text = "" + GameManager.instance.DifficultyMode;
 	}
+
+	public void ChangeMode(GameMode m = GameMode.None)
+	{
+		if(m == GameMode.None)
+		{
+			m = GameManager.instance.Mode;
+			if(m == GameMode.Story) m = GameMode.Endless;
+			else if(m == GameMode.Endless) m = GameMode.Story;
+		}
+
+		GameManager.instance.Mode = m;
+
+		UIManager.Objects.MiddleGear[0].GetChild(1).Txt[0].text = "" + GameManager.instance.Mode;
+		UIManager.Objects.MiddleGear[0].GetChild(0).BooleanObjColor(m == GameMode.Story);
+	}
+
 
 	public void BackToDefault()
 	{
@@ -274,6 +295,10 @@ public class UIMenu : UIObj {
 
 	public void NewGameActivate()
 	{
+		UIManager.Objects.TopGear.SetRotate(false);
+		UIManager.Objects.BotGear.SetRotate(false);
+		UIManager.Objects.MiddleGear.SetActive(false);
+		UIManager.Objects.BotGear.Child[0].SetActive(true);
 		bool alert = false;
 		for(int i = 0; i < Player.instance._Classes.Length; i++)
 		{
@@ -290,36 +315,37 @@ public class UIMenu : UIObj {
 		}
 		DefaultMenu.SetActive(false);
 		ClassMenu.SetActive(false);
-		GameManager.instance.LoadGame();
-	}
-
-	public void QuickStartActivate()
-	{
-		DefaultMenu.SetActive(false);
-		Player.instance._Classes[0] = GameData.instance.GetClass("Barbarian");
-		Player.instance._Classes[1] = GameData.instance.GetClass("Rogue");
-		Player.instance._Classes[2] = GameData.instance.GetClass("Wizard");
-		Player.instance._Classes[3] = GameData.instance.GetClass("Bard");
-		
-		NewGameActivate();
+		GameManager.instance.LoadGame(false);
 	}
 
 	public void CustomStartActivate()
 	{
-		SetupClass();
+		//HeroMenu();
 		ClassMenu.SetActive(true);
 		DefaultMenu.SetActive(false);
 	}
 
+
+
 	public void ResumeGameActivate()
 	{
 		DefaultMenu.SetActive(false);
+		GameManager.instance.LoadGame(true);
 	}
 
 	public void OptionsActivate()
 	{
 		OptionsMenu.SetActive(true);
+		ResetOptions();
 		DefaultMenu.SetActive(false);
+	}
+
+	public void ResetOptions()
+	{
+		OptionsMenu["RealNumbers"].BooleanObjColor(Player.Options.ShowNumbers);
+		OptionsMenu["RealHP"].BooleanObjColor(Player.Options.RealHP);
+		OptionsMenu["Intros"].BooleanObjColor(Player.Options.ShowIntroWaves);
+		OptionsMenu["Story"].BooleanObjColor(!Player.Options.SkipAllStory);
 	}
 
 	public void HelpActivate()
@@ -338,18 +364,7 @@ public class UIMenu : UIObj {
 		GameManager.TuteActive = true;
 		DefaultMenu.SetActive(false);
 		ClassMenu.SetActive(false);
-		GameManager.instance.LoadGame();
-	}
-
-	public void RotateClass(int i)
-	{
-		selected_class = Mathf.Clamp(selected_class + i, 0, class_buttons.Count-1);
-		ClassLeft.SetActive(selected_class != 0);
-		ClassRight.SetActive(selected_class != class_buttons.Count - 1);
-
-		ClassParent_pos.x = -2.45F * selected_class;
-		SetClass(selected_class);
-		
+		GameManager.instance.LoadGame(false);
 	}
 
 	public IEnumerator SetAlert()
@@ -395,6 +410,42 @@ public class UIMenu : UIObj {
 			newpip.transform.parent = MagicPipParent.transform;
 			newpip.transform.localScale = Vector3.one;
 			newpip._Image.color = GameData.Colour(GENUS.WIS);
+		}
+	}
+
+	public void SetOption(string s)
+	{
+		switch(s)
+		{
+			case "RealHP":
+			Player.Options.RealHP = !Player.Options.RealHP;
+			break;
+			case "RealNumbers":
+			Player.Options.ShowNumbers = !Player.Options.ShowNumbers;
+			break;
+			case "Intros":
+			Player.Options.ShowIntroWaves = !Player.Options.ShowIntroWaves;
+			break;
+			case "Story":
+			Player.Options.SkipAllStory = !Player.Options.SkipAllStory;
+			break;
+		}
+		ResetOptions();
+	}
+
+	public void ShowHelp(int i)
+	{
+		switch(i)
+		{
+			case 0:
+				HelpBasic.SetActive(null);
+			break;
+			case 1:
+				HelpMana.SetActive(null);
+			break;
+			case 2:
+				HelpItems.SetActive(null);
+			break;
 		}
 	}
 

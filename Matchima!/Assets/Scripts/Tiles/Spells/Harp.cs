@@ -14,6 +14,14 @@ public class Harp : Tile {
 		}
 	}
 
+	public int Radius
+	{
+		get{
+			CheckStats();
+			return 2 + (Stats.Value/20);
+		}
+	}
+
 	public override StCon [] Description
 	{
 		get{
@@ -21,7 +29,7 @@ public class Harp : Tile {
 		}
 	}
 
-	public override IEnumerator BeforeMatch()
+	public override IEnumerator BeforeMatch(bool original)
 	{
 		if(isMatching) yield break;
 		isMatching = true;
@@ -29,17 +37,19 @@ public class Harp : Tile {
 		GameObject p = Instantiate(Particles);
 		p.transform.position = this.transform.position;
 
-		float part_time = 0.6F;
 		List<Tile> to_collect = new List<Tile>();
-		Tile [,] _tiles = TileMaster.Tiles;
-		for(int x = 0; x < _tiles.GetLength(0); x++)
+		int xx = Point.Base[0], yy = Point.Base[1];
+		for(int x = 0; x < TileMaster.Tiles.GetLength(0); x++)
 		{
-			for(int y = 0; y < _tiles.GetLength(1); y++)
+			for(int y = 0; y < TileMaster.Tiles.GetLength(1); y++)
 			{
-				if(_tiles[x,y] == null) continue;
-				if(_tiles[x,y].Type.isEnemy) 
+				if(TileMaster.Tiles[x,y] == null) continue;
+				
+				int distX = Mathf.Abs(x - xx);
+				int distY = Mathf.Abs(y - yy);
+				if(distX + distY <= Radius)
 				{
-					to_collect.Add(_tiles[x,y]);
+					to_collect.Add(TileMaster.Tiles[x,y]);
 				}
 			}
 		}
@@ -48,17 +58,21 @@ public class Harp : Tile {
 		new_part.transform.position = transform.position;
 		new_part.transform.parent = transform;
 
-		yield return new WaitForSeconds(GameData.GameSpeed(part_time));
+		TileMaster.instance.Ripple(this, to_collect, 2.4F*Stats.Value, GameData.GameSpeed(0.5F), 0.2F);
+		yield return new WaitForSeconds(GameData.GameSpeed(0.45F));
 		if(to_collect.Count > 0)
 		{
 			foreach(Tile child in to_collect)
 			{
 				if(child != null)
 				{
-					child.SetState(TileState.Selected, true);
-					TileEffect eff = (TileEffect) Instantiate(GameData.instance.GetTileEffectByName("Sleep"));
-					eff.GetArgs(StunDuration);
-					child.AddEffect(eff);
+					if(child.Type.isEnemy) 
+					{					
+						child.SetState(TileState.Selected, true);
+						MiniAlertUI m = UIManager.instance.MiniAlert(child.Point.targetPos, "Sleep", 55, GameData.Colour(child.Genus), 1.2F, 0.1F);
+						child.AddEffect("Sleep", StunDuration);
+					}
+					
 				}
 			}
 		}

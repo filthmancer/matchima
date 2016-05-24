@@ -37,14 +37,26 @@ public class Stat
 	}
 
 	public int _Health = 0, _HealthMax = 0;
+	public int MeterMax = 0;
+	public float MeterDecay_Global = 0;
+	public float [] MeterDecay = new float[4];
+
 	public int _Armour = 0;
-	private int _ArmourMax = 999999;
-	public float ArmourReductionRate = 0.0F;
+	[HideInInspector]
+	public int _ArmourMax = 999999;
+	[HideInInspector]
+	public float ArmourReductionRate = 0.005F;
 	public StatContainer _Strength;
 	public StatContainer _Dexterity;
 	public StatContainer _Charisma;
 	public StatContainer _Wisdom;
 
+	public int Length
+	{
+		get{
+			return 4;
+		}
+	}
 	public StatContainer this[int value]
 	{
 		get{
@@ -67,9 +79,6 @@ public class Stat
 	public ShiftType Shift;
 	public Vector2 MapSize = new Vector2(0,0);
 
-	public int TurnsPerDifficulty = 0;
-	public int TurnsToWave = 0;
-
 	public int ComboCounter = 0;
 	public float ComboBonus = 0.0F;
 	public int MatchNumberModifier = 0;
@@ -79,24 +88,22 @@ public class Stat
 
 	public int MagicPower = 0;
 
-	public int Regen = 0;
-	public int Leech = 0;
-	public int Spikes = 0;
-	public int Poison = 0;
+	public int HealthRegen = 0;
+	public int HealthLeech = 0;
+	public int MeterRegen = 0;
+	public int MeterLeech = 0;
 
-	public int PoisonTime = 0;
+	public int Spikes = 0;
 
 	public float CooldownDecrease = 0.0F;
 	public float CostDecrease = 0.0F;
-	public int BoonIncrease = 0;
+	public int ValueInc = 0;
 
 	public int Presence = 0;
 
 	public float OverflowMulti = 0.0F;//0.4F;
 	public float AllColourMulti = 0.0F;//1.2F;
 
-	public int MeterMax = 0;
-	public int ManaRegen = 0;
 
 	[HideInInspector]
 	public bool isKilled;
@@ -154,9 +161,9 @@ public class Stat
 		//if(GENUSs)
 		//{
 			Stat_HealthInc = prev.Stat_HealthInc;
-			Stat_CoolInc = prev.Stat_CoolInc;
+			Stat_MeterInc = prev.Stat_MeterInc;
 			Stat_AtkInc = prev.Stat_AtkInc;
-			Stat_BoonInc = prev.Stat_BoonInc;
+			Stat_MeterInc = prev.Stat_MeterInc;
 		//}
 
 		_Strength          = new StatContainer(prev._Strength, GENUSs);
@@ -168,26 +175,24 @@ public class Stat
 		Shift        = prev.Shift;
 		MapSize 		  = prev.MapSize;
 
-		TurnsPerDifficulty  = prev.TurnsPerDifficulty;
-		TurnsToWave  		= prev.TurnsToWave;
 		
 		ComboCounter     = prev.ComboCounter;
 		ComboBonus       = prev.ComboBonus;
 		_Attack           = prev._Attack;
 		AttackRate       = prev.AttackRate;
-		Regen            = prev.Regen;
-		Leech            = prev.Leech;
+		HealthRegen            = prev.HealthRegen;
+		HealthLeech            = prev.HealthLeech;
 		
 		Spikes           = prev.Spikes;
-		Poison           = prev.Poison;
+
 		CooldownDecrease = prev.CooldownDecrease;
 		CostDecrease     = prev.CostDecrease;
-		BoonIncrease     = prev.BoonIncrease;
+		ValueInc         = prev.ValueInc;
 		Presence         = prev.Presence;
 		
 		_HealthMax        = prev._HealthMax;
 		MeterMax 		 = prev.MeterMax;
-		ManaRegen 		= prev.ManaRegen;
+		MeterRegen 		= prev.MeterRegen;
 
 		_Armour = prev._Armour;
 		ArmourReductionRate = prev.ArmourReductionRate;
@@ -212,9 +217,9 @@ public class Stat
 	public void AddStats(Stat other)
 	{
 		Stat_HealthInc += other.Stat_HealthInc;
-		Stat_CoolInc += other.Stat_CoolInc;
+		Stat_MeterInc += other.Stat_MeterInc;
 		Stat_AtkInc += other.Stat_AtkInc;
-		Stat_BoonInc += other.Stat_BoonInc;
+		Stat_MeterInc += other.Stat_MeterInc;
 
 		_Strength.AddValues(other._Strength);
 		_Dexterity.AddValues(other._Dexterity);
@@ -227,20 +232,20 @@ public class Stat
 
 		_Attack            += other._Attack;
 		AttackRate        += other.AttackRate;
-		Regen 			  += other.Regen;
-		Leech 			  += other.Leech;
+		HealthRegen 			  += other.HealthRegen;
+		HealthLeech 			  += other.HealthLeech;
 		_Health 			  += other._Health;
 		_HealthMax 		  += other._HealthMax;
 		MeterMax 		  += other.MeterMax;
-		ManaRegen 		+= other.ManaRegen;
+		MeterRegen 		+= other.MeterRegen;
 
 		ArmourReductionRate += other.ArmourReductionRate;
 
 		Spikes += other.Spikes;
-		Poison += other.Poison;
+
 		CooldownDecrease += other.CooldownDecrease;
 		CostDecrease += other.CostDecrease;
-		BoonIncrease += other.BoonIncrease;
+		ValueInc += other.ValueInc;
 		Presence += other.Presence;
 
 		MapSize += other.MapSize;
@@ -253,20 +258,20 @@ public class Stat
 		//DmgThisTurn += other.DmgThisTurn;
 	}	
 
-	public float Stat_HealthInc = 0, Stat_CoolInc = 0, Stat_AtkInc = 0, Stat_BoonInc = 0;
+	public float Stat_HealthInc = 0, Stat_MeterInc = 0, Stat_AtkInc = 0, Stat_ValueInc = 0;
 	public void ApplyStatInc()
 	{
-		BoonIncrease       += (int) Stat_BoonInc;
-		_Attack           += (int)Stat_AtkInc;
-		CooldownDecrease += Stat_CoolInc;
-		_HealthMax        += (int)Stat_HealthInc;
+		ValueInc      += (int)Stat_ValueInc;
+		_Attack       += (int)Stat_AtkInc;
+		MeterMax 	  += (int)Stat_MeterInc;
+		_HealthMax    += (int)Stat_HealthInc;
 	}
 
 	public void CheckStatInc() {
-		Stat_HealthInc = (float)Strength;
-		Stat_CoolInc = (float)Wisdom / 300.0F;
-		Stat_AtkInc = (float)Dexterity / 20.0F;
-		Stat_BoonInc = (float)Charisma/30.0F;
+		Stat_HealthInc = (float)Strength*3;
+		Stat_MeterInc = (float)Wisdom/4.0F;
+		Stat_AtkInc = (float)Dexterity / 10.0F;
+		Stat_ValueInc = (float)Charisma/30.0F;
 	}
 	
 	public int GetGENUSStat(GENUS ab) {
@@ -349,6 +354,7 @@ public class Stat
 		int healperc = (int) (_HealthMax * ((float)heal/100.0F));
 		HealThisTurn = Mathf.Clamp(HealThisTurn + healperc, 0, 1000000);
 		_Health = Mathf.Clamp(_Health + healperc, 0, _HealthMax);
+		GameData.Log("Healed " + heal + "% HP (" + healperc+")");
 	}
 
 	public void AddArmour(int _armour)
@@ -357,54 +363,59 @@ public class Stat
 		//UIManager.instance.UpdatePlayerUI();
 	}
 
-	public void Hit(int TurnHit, params Tile[] attackers)
+	public void Hit(int hit_initial, params Tile[] attackers)
 	{
-		GameData.Log("Incoming " + TurnHit + " damage");
+		GameData.Log("Incoming " + hit_initial + " damage");
 
 		foreach(Ability child in Player.Abilities)
 		{
 			if(child == null) continue;
-		 	TurnHit = child.OnHit(TurnHit, attackers);
+		 	hit_initial = child.OnHit(hit_initial, attackers);
 		}
 
-		float hit = (float) TurnHit;
+		//Armour reduction is calculated after other reductions... could be good to keep the game harder?
 		float armour = (float) _Armour;
+		float armour_res = armour/(armour + 100 * hit_initial);
+		float armour_decay = 0.0F;
 
-		float armour_res = armour/(armour + 100 * hit);
-		float final_hit = hit - (float) ( hit * armour_res);
-
-		//Debug.Log(hit + " : " + final_hit + " -- " + armour_res);
-		float armour_reduction = 0.0F;
-		int total_attack = 0;
+		float hit_resistance = (float) (hit_initial * armour_res);
+		int hit_post_armour = (int) ((float)hit_initial - hit_resistance);
 
 		if(attackers != null)
 		{	
 			foreach(Tile child in attackers)
 			{
+				if(child == null) continue;
 				if(Spikes > 0)
 				{
-					UIManager.instance.MiniAlert(child.transform.position, "SPIKES \n" + Spikes);
+					UIManager.instance.MiniAlert(child.transform.position, "SPIKE \n" + Spikes);
 					child.InitStats.TurnDamage += Spikes;
 					if(child.Match(0))
 					{
 						GameData.Log("Spiked enemy to death");
 					}
 				}
-				total_attack += child.Stats.Attack;
-				armour_reduction += (child.Stats.Attack * ArmourReductionRate)/100;
+
+			//new version reduces per enemy
+				armour_decay += (ArmourReductionRate);
+
+			//OLD VERSION REDUCES PER ENEMY ATTACK
+				//armour_decay += ((float)child.Stats.Attack * ArmourReductionRate);
 			}
 		}
 
-	//Armour reduction is calculated after other reductions... could be good to keep the game harder?
-		//Debug.Log("ARMOUR BLOCK %: " + armour_res + ":" + final_hit + " - " + TurnHit +  "(DECAY: " + armour_reduction + ":" + total_attack + ")");
-		if(_Armour > 0) _Armour = (int)Mathf.Clamp(_Armour - 1, 0, _ArmourMax);
-		//if(_Armour > 0) _Armour = (int)Mathf.Clamp(_Armour - ((float)_Armour * armour_reduction), 0, _ArmourMax);
 
-		if(final_hit <= 0)
-		{
-			final_hit = 1;
-			//return;
-		}
+
+		int final_hit = hit_post_armour;
+
+		GameData.Log(armour_res + "% blocked by armour (" + hit_resistance + ") reduced to " + final_hit);
+
+		GameData.Log("(Armour Decay: " + armour_decay + "%");
+
+		if(_Armour > 0) _Armour = (int)Mathf.Clamp(_Armour - ((float)_Armour * armour_decay), 0, _ArmourMax);
+
+		if(final_hit <= 0) final_hit = 1;
+
 		_Health -= (int) final_hit;
 		_Health = Mathf.Clamp(_Health, 0, _HealthMax);
 		DmgThisTurn += (int) final_hit;
@@ -420,8 +431,8 @@ public class Stat
 	public void CompleteRegen()
 	{
 		//Debug.Log(Regen);
-		GameData.Log("Regen'd " + Regen + " health");
-		HealThisTurn += Regen;
+		GameData.Log("Regen'd " + HealthRegen + " health");
+		HealThisTurn += HealthRegen;
 		foreach(StatContainer child in AllStats)
 		{
 			child.Regen();
@@ -431,11 +442,11 @@ public class Stat
 
 	public void CompleteLeech(int num)
 	{ 
-		//Debug.Log(num + ":" + num * Leech);
+		//Debug.Log(num + ":" + num * HealthLeech);
 		if(num == 0) return;
-		GameData.Log("Leeched " + num * Leech + " health");
+		GameData.Log("Leeched " + num * HealthLeech + " health");
 
-		HealThisTurn += (Leech * num);
+		HealThisTurn += (HealthLeech * num);
 		foreach(StatContainer child in AllStats)
 		{
 			child.Leech(num);
@@ -493,9 +504,9 @@ public class Stat
 			case GENUS.DEX:
 			return "+" + (int)Stat_AtkInc + " ATK";
 			case GENUS.WIS:
-			return "+" + (Stat_CoolInc*100).ToString("0") + "% CD";
+			return "+" + (Stat_MeterInc*100).ToString("0") + "% CD";
 			case GENUS.CHA:
-			return "+" + Stat_BoonInc.ToString("0.0") + " COMBO";
+			return "+" + Stat_MeterInc.ToString("0.0") + " COMBO";
 		}
 		return "ERROR";
 	}
@@ -523,7 +534,7 @@ public class StatContainer
 
 	private int ToMult = 65;
 	private int ToMeter = 8;
-	public int MeterInc = 0;
+	//public int MeterInc = 0;
 
 	//public float ResMax_soft;
 
@@ -539,7 +550,7 @@ public class StatContainer
 			StatRegen = prev.StatRegen;
 
 			ResMultiplier = prev.ResMultiplier;
-			MeterInc = prev.MeterInc;
+			//MeterInc = prev.MeterInc;
 
 			if(mult)
 			{
@@ -553,7 +564,7 @@ public class StatContainer
 			StatGain = 0;
 			StatLeech = 0;
 			StatRegen = 0;
-			MeterInc = 0;
+			//MeterInc = 0;
 			ResMultiplier = 0;
 		}	
 	}
@@ -570,9 +581,11 @@ public class StatContainer
 
 	public void LevelUp()
 	{
+		ToMeter = 8;
+		ToMult = 65;
 		StatCurrent += StatGain;
 
-		MeterInc = StatCurrent / ToMeter;
+		//MeterInc = StatCurrent / ToMeter;
 		ResMultiplier =  1.0F + (float)StatCurrent/(float)ToMult;
 	}
 
@@ -581,7 +594,7 @@ public class StatContainer
 		ToMeter = 8;
 		ToMult = 65;
 
-		MeterInc = StatCurrent / ToMeter;
+		//MeterInc = StatCurrent / ToMeter;
 		ResMultiplier = 1.0F +(float)StatCurrent/(float)ToMult;
 	}
 

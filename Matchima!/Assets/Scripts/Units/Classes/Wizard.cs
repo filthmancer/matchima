@@ -3,12 +3,14 @@ using System.Collections;
 
 public class Wizard : Class {
 
-TileChance wiz_cross;
-TileChance wiz_arcane;
+TileChance lightning;
+private Slot manapower;
+private int _currentmanapower = 100;
+
 	// Use this for initialization
 	public override void StartClass () {
 		
-		ClassUpgrade a = new ClassUpgrade((int val) => {InitStats.CooldownDecrease += 0.01F * val;});
+		/*ClassUpgrade a = new ClassUpgrade((int val) => {InitStats.CooldownDecrease += 0.01F * val;});
 		a.Name = "Cooldowns";
 		a.ShortName = "CD%";
 		a.Description = " spell cooldowns";
@@ -60,9 +62,14 @@ TileChance wiz_arcane;
 		manamax.BaseAmount = 5;
 		manamax.Prefix = "+";
 		manamax.Rarity = Rarity.Common;
+		AddUpgrades(new ClassUpgrade[] {a,b,c, wiz_arcane_up, manamax});*/
 
+		lightning = new TileChance();
+		lightning.Genus = GameData.ResourceLong(Genus);
+		lightning.Type = "lightning";
+		lightning.Chance = 0.1F;
+		InitStats.TileChances.Add(lightning);
 
-		AddUpgrades(new ClassUpgrade[] {a,b,c, wiz_arcane_up, manamax});
 		base.StartClass();	
 	}
 
@@ -88,7 +95,37 @@ TileChance wiz_arcane;
 
 			break;
 		}
-		
+	}
+
+	public override void ManaPower(int lvl)
+	{
+		if(manapower != null)
+		{
+			Destroy(manapower.gameObject);
+			AllMods.Remove(manapower);
+		//	_currentmanapower = lvl;
+		}
+		//for(int i = 0; i < manapower.Length; i++)
+		//{	
+		//	if(i+1 != lvl && manapower[i] != null){
+		//		AllMods.Remove(manapower[i]);
+		//		Destroy(manapower[i].gameObject);
+		//	}
+		//}
+		switch(lvl)
+		{
+			case 1:
+				manapower =  AddMod("Fireball", "1");
+			break;
+			case 2:
+				manapower =  AddMod("Fireball", "2");
+			//	manapower[1] = AddMod("Slash", "1", "X");
+			break;
+			case 3:
+				manapower =  AddMod("Fireball", "3");
+			//	manapower[2] = AddMod("Shield", "0.2");
+			break;
+		}
 	}
 
 }

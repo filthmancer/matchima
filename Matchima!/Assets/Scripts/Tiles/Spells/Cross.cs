@@ -3,7 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Cross : Tile {
-	
+	public int CrossSize{
+		get{
+			return Stats.Value/2 + 2;
+		}
+	}
 	public GameObject CrossParts;
 	public ParticleSystem [] Particles;
 	int[] UpLeft = new int[] {-1, 1};
@@ -43,12 +47,10 @@ public class Cross : Tile {
 		}
 	}
 
-	public override IEnumerator BeforeMatch()
+	public override IEnumerator BeforeMatch(bool original)
 	{
 		if(isMatching) yield break;
 		isMatching = true;
-
-
 		for(int i = 0; i < Particles.Length; i++)
 		{
 			Particles[i].startSize = 2 * _Scale;
@@ -72,10 +74,12 @@ public class Cross : Tile {
 					{
 						int dist = 1;
 						Point.Closest(x,y, out dist);
-						if(dist > Stats.Value) continue;
+						if(dist > CrossSize) continue;
 						if(_tiles[x,y].Type.isEnemy) 
 						{
 							_tiles[x,y].InitStats.TurnDamage += CrossDamage;
+							AudioManager.instance.PlayClipOn(_tiles[x,y].transform, "Enemy", "Hit");
+							EffectManager.instance.PlayEffect(_tiles[x,y].transform,Effect.Attack);
 						}
 						if(!_tiles[x,y].isMatching)
 						{
@@ -86,7 +90,9 @@ public class Cross : Tile {
 				} 
 			}
 		}
-		yield return new WaitForSeconds(0.5F);
+		//CameraUtility.instance.ScreenShake((float)Stats.Value/25, Time.deltaTime*15);
+		TileMaster.instance.Ripple(this, to_collect, 1.2F*Stats.Value, GameData.GameSpeed(0.35F), 0.5F);
+		yield return new WaitForSeconds(GameData.GameSpeed(0.4F));
 
 		for(int i = 0; i < Particles.Length; i++)
 		{
@@ -94,10 +100,7 @@ public class Cross : Tile {
 			Particles[i].enableEmission = false;
 		}
 
-		yield return StartCoroutine(Player.instance.BeforeMatch(to_collect));
-		PlayerControl.instance.RemoveTileToMatch(this);
-		to_collect.Add(this);
-		PlayerControl.instance.AddTilesToMatch(to_collect.ToArray());
+		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
 		
 		yield break;
 	}

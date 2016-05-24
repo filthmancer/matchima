@@ -5,11 +5,9 @@ using UnityEngine.UI;
 
 public class UIClassButton : UIObj {
 
-	public TextMeshProUGUI Name;
 	public TextMeshProUGUI LevelUp;
 	public Image Back, _Frame, _FrameMask, _Sprite, _SpriteMask;
 	public Image Target, Death;
-	public int index;
 	public UIObj Banner;
 	public UIObj Health;
 
@@ -31,20 +29,17 @@ public class UIClassButton : UIObj {
 	bool activated = false;
 	public bool shop_activated = false;
 	float tooltip_timer = 0.3F;
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
+
 	// Update is called once per frame
 	public void Update () {
 		if(!class_set && _class != null) 
 		{
 			AddListener(_class);
-			if(!ClassInit.IsObjectOpened()) ClassInit.OpenCloseObjectAnimation();
+			if(ClassInit.IsObjectOpened()) ClassInit.OpenCloseObjectAnimation();
 		}
 		else if(_class == null && ClassInit.IsObjectOpened()) ClassInit.OpenCloseObjectAnimation();
 		if(!Application.isEditor && Input.touches.Length == 0) over = false;
+		
 		if(over && _class != null)
 		{
 			if(tooltip_timer > 0.0F)	tooltip_timer -= Time.deltaTime;
@@ -76,10 +71,6 @@ public class UIClassButton : UIObj {
 											 "LVL UP!", 50, GameData.Colour(_class.Genus));
 				_class.LevelUpAlert = false;
 			}
-			if(_class.PulseAlert)
-			{
-				_class.PulseAlert = false;
-			}
 			GetCooldown();
 		}
 
@@ -105,11 +96,11 @@ public class UIClassButton : UIObj {
 			return;
 		}
 		else transform.parent.gameObject.SetActive(true);
-		_class = ab;
 
+		_class = ab;
+	
 		color_default = GameData.instance.GetGENUSColour(_class.Genus);
-		_Frame.sprite = TileMaster.Genus.Frame[(int)_class.Genus];
-		_FrameMask.sprite = TileMaster.Genus.Frame[(int)_class.Genus];
+		
 
 		LevelUp.color = color_default;
 		
@@ -118,7 +109,6 @@ public class UIClassButton : UIObj {
 		_Sprite.enabled = true;
 		_SpriteMask.sprite = ab.Icon;
 		_SpriteMask.enabled = false;
-		//this.GetComponent<Button>().enabled = true;
 		_FrameMask.fillAmount = 0.0F;
 
 		for(int i = 0; i < _class._Slots.Length; i++)
@@ -142,7 +132,6 @@ public class UIClassButton : UIObj {
 	public void Remove()
 	{
 		_class = null;
-		Name.text = "";
 		_Sprite.enabled = false;
 		//this.GetComponent<Button>().enabled = false;
 	}
@@ -163,7 +152,15 @@ public class UIClassButton : UIObj {
 
 	public void ButtonHit()
 	{
-		_class.activated = !_class.activated;
+		if(GameManager.inStartMenu)  UIManager.Menu.HeroMenu(ParentObj.Index);
+		else ShowClass();
+	}
+
+	public void ShowClass(bool? active = null)
+	{
+		//UIManager.WaveButtons[0].Txt[1].text = "Back";
+		bool actual = active ?? !_class.activated;
+		_class.activated = actual;
 
 		for(int i = 0; i < _class._Slots.Length; i++)
 		{
@@ -180,7 +177,13 @@ public class UIClassButton : UIObj {
 			}
 			
 		}
-		if(_class.activated != PartialOpen.IsObjectOpened())
+		TweenClass(active);
+	}
+
+	public void TweenClass(bool? active = null)
+	{
+		bool actual = active ?? !_class.activated;
+		if(actual != PartialOpen.IsObjectOpened())
 		{
 		 PartialOpen.OpenCloseObjectAnimation();
 		}
@@ -191,13 +194,16 @@ public class UIClassButton : UIObj {
 		over = true;
 		if(PlayerControl.HoldingSlot)
 		{
-			if(UIManager.ItemUI_active) UIManager.instance.ShowClassAbilities(_class);
+			if(UIManager.ItemUI_active) 
+			{
+				UIManager.instance.ShowClassAbilities(_class);
+				if(!PartialOpen.IsObjectOpened())
+				{
+				 PartialOpen.OpenCloseObjectAnimation();
+				}
+			}
 			else if(UIManager.BoonUI_active && UIManager.instance.current_class == _class) UIManager.instance.ShowClassAbilities(_class, true);
 		}
-		//if(!PartialOpen.IsObjectOpened())
-		//{
-		// PartialOpen.OpenCloseObjectAnimation();
-		//}
 	}
 
 	public void MouseOut()

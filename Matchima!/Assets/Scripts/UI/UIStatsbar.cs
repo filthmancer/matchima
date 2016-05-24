@@ -48,8 +48,8 @@ public class UIStatsbar : MonoBehaviour {
 		GoldMult.text = Player.Stats.Yellow.ResMultiplier.ToString("0.0");
 		ExpMult.text = Player.Stats.Green.ResMultiplier.ToString("0.0");
 
-		Leech.text = Player.Stats.Leech.ToString();
-		Regen.text = Player.Stats.Regen.ToString();
+		//Leech.text = Player.Stats.Leech.ToString();
+		//Regen.text = Player.Stats.Regen.ToString();
 		CoolDec.text = Player.Stats.CooldownDecrease.ToString();
 		CostDec.text = Player.Stats.CostDecrease.ToString();
 		Spikes.text = Player.Stats.Spikes.ToString();

@@ -40,6 +40,7 @@ public class AudioManager : MonoBehaviour {
 
 	public void PlayClipOn(Transform t, string group, string clip)
 	{
+		return;
 		AudioClipProperties prop = GetGroup(group).GetClip(clip);
 		if(prop == null) return;
 		AudioSource aud = (AudioSource) Instantiate(AudioObj);

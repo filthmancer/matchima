@@ -16,14 +16,13 @@ public class Vacuum : Tile {
 		}
 	}
 
-
 	public override void Update()
 	{
 		base.Update();
 		if(Params._render != null) Params._render.color = Color.Lerp(Params._render.color, GameData.Colour(Genus), 0.6F);
 	}
 
-	public override IEnumerator BeforeMatch()
+	public override IEnumerator BeforeMatch(bool original)
 	{
 		List<Tile> to_collect = new List<Tile>();
 		Tile target = null;

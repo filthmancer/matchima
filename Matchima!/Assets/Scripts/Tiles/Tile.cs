@@ -46,6 +46,9 @@ public class Tile : MonoBehaviour {
 		}
 	}
 
+	[HideInInspector]
+	public string DescriptionOverride;
+
 	public TileStat InitStats;
 	public TileStat Stats;
 
@@ -69,12 +72,12 @@ public class Tile : MonoBehaviour {
 		get{return Params._border.sprite;}
 	}
 	public TileState state;
-	//[HideInInspector]
+	[HideInInspector]
 	public TilePointContainer Point;
 
 	[HideInInspector]
 	public bool isMatching;
-	//[HideInInspector]
+	[HideInInspector]
 	public bool isFalling;
 	public bool BeforeMatchEffect;
 	public bool BeforeTurnEffect, AfterTurnEffect;
@@ -93,7 +96,7 @@ public class Tile : MonoBehaviour {
 	private float land_time = 0.0F, land_time_end = 0.8F;
 
 	protected Color def;
-	protected Color targetColor;
+	public Color targetColor;
 	private float gravity = 0.95F;
 	protected Animator _anim;
 
@@ -107,11 +110,12 @@ public class Tile : MonoBehaviour {
 
 
 	Vector3 rotation = Vector3.zero;
-	[HideInInspector]
+	//[HideInInspector]
 	public bool marked = false;
 
-	[HideInInspector]
+	//[HideInInspector]
 	public bool Destroyed = false;
+	public bool UnlockedFromGrid = false;
 	private Vector3 linepos;
 	[HideInInspector]
 	public bool state_override = false;
@@ -161,20 +165,12 @@ public class Tile : MonoBehaviour {
 	}
 
 	protected int _Scale = 1;
+	protected Tile LineTarget;
+	protected float LineTimer = 0.1F;
 
 	// Use this for initialization
 	public virtual void Start () {
-		if(Params == null) Params = GetComponent<TileParamContainer>();
-		def = Params._render.material.color;
-		targetColor = def;
-		_anim = GetComponent<Animator>();
-		Params.lineIn.sortingLayerID = Params._render.sortingLayerID;
-		Params.lineOut.sortingLayerID = Params._render.sortingLayerID;
-		Params.lineIn.sortingOrder = 1;
-        Params.lineOut.sortingOrder = 1;
 
-        Params.lineIn.SetWidth(0.3F, 0.3F);
-        Params.lineOut.SetWidth(0.1F, 0.1F);
        
 	}
 
@@ -192,50 +188,83 @@ public class Tile : MonoBehaviour {
 
 	public virtual void Setup(int x, int y, int scale, TileInfo inf, int value_inc = 0)
 	{
-		if(Params == null) 
-		{
-			GameObject newmodel = Instantiate(GameData.TileModel);
-			newmodel.transform.parent = this.transform;
-			newmodel.transform.position = this.transform.position;
-			Params = newmodel.GetComponent<TileParamContainer>();
-		}
 		Point = new TilePointContainer(x,y,scale, this);
 
 		Info = new TileInfo(inf);
 
+		if(Params != null)
+		{
+			def = Params._render.material.color;
+			targetColor = def;
+			//_anim = GetComponent<Animator>();
+			Params.lineIn.sortingLayerID = Params._render.sortingLayerID;
+			Params.lineOut.sortingLayerID = Params._render.sortingLayerID;
+			Params.lineIn.sortingOrder = 1;
+			Params.lineOut.sortingOrder = 1;
+			Params.lineIn.SetWidth(0.3F, 0.3F);
+			Params.lineOut.SetWidth(0.1F, 0.1F);
+		}
+		
+
+		UnlockedFromGrid = false;
+		isMatching = false;
+		Destroyed = false;
+		marked = false;
+		originalMatch = false;
+		state_override = false;
+		GetComponent<SphereCollider>().enabled = true;
+		for(int i = 0; i < Effects.Count; i++)
+		{
+			TileEffect t = Effects[i];
+			Effects.RemoveAt(i);
+			Destroy(t.gameObject);
+		}
+
 		defaultScale = 1.1F * scale;
 		targetScale = defaultScale;
 		_Scale = scale;
+
 		Name = Info.Name;
 		if(!Info.ShiftOverride) InitStats.Shift = Player.Stats.Shift;
 		else InitStats.Shift = Info.Shift;
 		transform.name = Info.Name + " | " + Point.Base[0] + ":" + Point.Base[1];
 
-		int val = inf.Value + value_inc;
+		int val = value_inc;
 		for(int i = 1; i < scale; i++)
 		{
 			val *= 2;
 		}
-		InitStats.Value = 1;
+		InitStats.Value = Info.Value;
 		if(InitStats.Hits == 0) InitStats.Hits = 1;
-		AddUpgrades(val-1);
+		AddUpgrades(val);
 		
 		InitStats.isNew = true;
-		InitStats.value_soft = InitStats.Value;
+		InitStats.value_soft = (float) InitStats.Value;
+
+		if(Info.FinalEffects != null)
+		{
+			for(int i = 0; i < Info.FinalEffects.Count; i++)
+			{
+				AddEffect(Info.FinalEffects[i]);
+			}
+		}
 
 		CheckStats();
 		SetSprite();
+
+		if(GameManager.instance.EnemyTurn) SetState(TileState.Locked);
+		else SetState(TileState.Idle);
 	}
 
 
 	// Update is called once per frame
 	public virtual void Update () {
-		if(Destroyed) return;
+		if(Destroyed || UnlockedFromGrid) return;
 		if(Stats.Shift != ShiftType.None && !Destroyed)
 		{
 			Velocity();
 		}
-
+		transform.name = Info.Name + " | " + Point.Base[0] + ":" + Point.Base[1];
 		if(GameManager.inStartMenu) 
 		{
 			if(Player.loaded && UIManager.loaded) Destroy(this.gameObject); 
@@ -245,24 +274,26 @@ public class Tile : MonoBehaviour {
 		if(TileMaster.Tiles.GetLength(0) <= Point.Base[0] || TileMaster.Tiles.GetLength(1) <= Point.Base[1]) return;
 		if(TileMaster.Tiles[Point.Base[0], Point.Base[1]] != this && TileMaster.Tiles[Point.Base[0], Point.Base[1]] != null && !Destroyed) 
 		{
-			TileMaster.instance.SetFillGrid(true);
-			DestroyThyself();
+			//TileMaster.instance.SetFillGrid(true);
+			//DestroyThyself();
 		}
+
+		if(GameManager.instance.EnemyTurn && !IsState(TileState.Selected)) SetState(TileState.Locked);
 		if(Params._render != null) Params._render.color = Color.Lerp(Params._render.color, targetColor, 0.6F);
 		if(Params._border != null) Params._border.color = Color.Lerp(Params._border.color, targetColor, 0.6F);
 		if(Params.HitCounter != null) Params.HitCounter.SetActive(Stats.Hits > 1);
 		if(Params.HitCounterText != null) Params.HitCounterText.text = "" + Stats.Hits;
 			
-		if(GameManager.instance.EnemyTurn && !IsState(TileState.Selected)) SetState(TileState.Locked);
-
 		if(!isMatching) transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one * targetScale, Time.deltaTime * 5);
 		Params._shiny.enabled = IsState(TileState.Selected);
 
 		
 		if(!IsState(TileState.Selected))
 		{
+			Params.lineIn.enabled = false;
+			Params.lineOut.enabled = false;	
 			linepos = PlayerControl.InputPos;
-			if(Player.instance.Options.ViewTileStats) SetCounter("" + Stats.Value);
+			if(Player.Options.ViewTileStats) SetCounter("" + Stats.Value);
 			else if(!GameManager.instance.EnemyTurn) SetCounter("");
 
 			if(GameManager.instance.EnemyTurn) return;
@@ -319,7 +350,13 @@ public class Tile : MonoBehaviour {
 		{
 			if(PlayerControl.instance.focusTile == this && PlayerControl.instance.SecondLastSelected() == this)	
 			{
-				PlayerControl.instance.BackTo(this);			
+				PlayerControl.instance.BackTo(this);
+				Params.lineIn.enabled = false;
+				Params.lineOut.enabled = false;			
+			}
+			else if(PlayerControl.instance.SecondLastSelected() == this && PlayerControl.instance.LastSelected() != null)
+			{
+				LineTarget = PlayerControl.instance.LastSelected();
 			}
 			if(PlayerControl.instance.LastSelected() == this && PlayerControl.instance.focusTile != null && !GameManager.instance.EnemyTurn && !UIManager.InMenu)
 			{
@@ -342,27 +379,46 @@ public class Tile : MonoBehaviour {
 					linepos = PlayerControl.InputPos;
 					//Params._render.transform.position = Vector3.Lerp(Point.targetPos, transform.position + vel, 0.02F);
 				}
-				
-				
+				Vector3 [] points = LightningLine(this.transform.position, linepos, 5, 0.01F + PlayerControl.MatchCount * 0.005F);
+				for(int i = 0; i < points.Length; i++)
+				{
+					Params.lineIn.SetPosition(i, points[i]);
+					Params.lineOut.SetPosition(i, points[i] + Vector3.back);
+				}
+
 				Params.lineIn.enabled = true;
-				Params.lineIn.SetPosition(0, this.transform.position);
-				Params.lineIn.SetPosition(1, linepos);
 				Params.lineIn.SetColors(GameData.instance.GetGENUSColour(Genus) * 0.9F, GameData.instance.GetGENUSColour(Genus) * 0.9F);
 
 				Params.lineOut.enabled = true;
-				Params.lineOut.SetPosition(0, this.transform.position + Vector3.back);
-				Params.lineOut.SetPosition(1,  linepos);
 				Params.lineOut.SetColors(Color.white, Color.white);
+				
 			}
 			else if(GameManager.instance.EnemyTurn || UIManager.InMenu)
 			{
 				Params.lineIn.enabled = false;
 				Params.lineOut.enabled = false;
 			}
-			else if(PlayerControl.HoldingSlot)
+			else 
 			{
-				if(!PlayerControl.instance.IsSelected(this) && 
-					PlayerControl.instance.focusTile != this) SetState(TileState.Idle);
+				if(LineTarget == null) 
+				{
+					Params.lineIn.enabled = false;
+					Params.lineOut.enabled = false;
+					return;
+				}
+
+				Vector3 [] points = LightningLine(this.transform.position, LineTarget.transform.position, 5, 0.01F + PlayerControl.MatchCount * 0.005F);
+				for(int i = 0; i < points.Length; i++)
+				{
+					Params.lineIn.SetPosition(i, points[i]);
+					Params.lineOut.SetPosition(i, points[i] + Vector3.back);
+				}
+
+				Params.lineIn.enabled = true;
+				Params.lineIn.SetColors(GameData.instance.GetGENUSColour(Genus) * 0.9F, GameData.instance.GetGENUSColour(Genus) * 0.9F);
+
+				Params.lineOut.enabled = true;
+				Params.lineOut.SetColors(Color.white, Color.white);
 			}
 		}		
 	}
@@ -381,22 +437,22 @@ public class Tile : MonoBehaviour {
 		if(Stats.Shift == ShiftType.Up) 		
 		{
 			velocity = new Vector3(0, -1, 0);
-			rotation = new Vector3 (0,0,180);
+			//rotation = new Vector3 (0,0,180);
 		}
 		else if(Stats.Shift == ShiftType.Down)
 		{
 		 	velocity = new Vector3(0, 1, 0);
-		 	rotation = new Vector3 (0,0,0);
+		 	//rotation = new Vector3 (0,0,0);
 		 }
 		else if(Stats.Shift == ShiftType.Left)
 		{
 			velocity = new Vector3(1, 0, 0);
-			rotation = new Vector3 (0,0,-90);
+			//rotation = new Vector3 (0,0,-90);
 		}
 		else if(Stats.Shift == ShiftType.Right)
 		{
 		 	velocity = new Vector3(-1, 0, 0);
-		 	rotation = new Vector3 (0,0,90);
+		 	//rotation = new Vector3 (0,0,90);
 		}
 		else if(Stats.Shift == ShiftType.None)
 		{
@@ -408,6 +464,7 @@ public class Tile : MonoBehaviour {
 
 		Ray velRay = new Ray(transform.position, velocity);
 		RaycastHit hit;
+
 		if(Physics.Raycast(transform.position, -velocity, out hit, (speed + collide_radius) * Time.deltaTime * 80))
 		{
 			Tile hit_tile = hit.transform.gameObject.GetComponent<Tile>();
@@ -440,19 +497,17 @@ public class Tile : MonoBehaviour {
 				speed = Mathf.Clamp(finalspeed, speed_max_falling, speed_max_rising);
 			}
 		}
-		else 
+		else
 		{
 			float finalspeed = speed - gravity;
 			speed = Mathf.Clamp(finalspeed, speed_max_falling, speed_max_rising);
 		}
-
 		if(!GameManager.inStartMenu && TileMaster.Grid != null)
 		{
 			if(Stats.Shift == ShiftType.Down && transform.position.y <= Point.targetPos.y - (speed*Time.deltaTime)) 
 			{
 				velocity = Vector3.zero;
 				speed = 0.0F;
-				
 				transform.position = new Vector3(Point.targetPos.x, Point.targetPos.y, transform.position.z);
 				OnLand();
 			}
@@ -460,6 +515,7 @@ public class Tile : MonoBehaviour {
 			{
 				velocity = Vector3.zero;
 				speed = 0.0F;
+				
 				transform.position = new Vector3(transform.position.x, Point.targetPos.y, transform.position.z);
 				OnLand();
 			}
@@ -467,6 +523,7 @@ public class Tile : MonoBehaviour {
 			{
 				velocity = Vector3.zero;
 				speed = 0.0F;
+				
 				transform.position = new Vector3(Point.targetPos.x, transform.position.y, transform.position.z);
 				OnLand();
 			}
@@ -474,6 +531,7 @@ public class Tile : MonoBehaviour {
 			{
 				velocity = Vector3.zero;
 				speed = 0.0F;
+				
 				transform.position = new Vector3(Point.targetPos.x, transform.position.y, transform.position.z);
 				OnLand();
 			}
@@ -523,9 +581,8 @@ public class Tile : MonoBehaviour {
 		return state == _state;
 	}
 
-	public virtual IEnumerator BeforeMatch()
+	public virtual IEnumerator BeforeMatch(bool original)
 	{
-		
 		yield break;
 	}
 
@@ -640,7 +697,6 @@ public class Tile : MonoBehaviour {
 
 	private IEnumerator Destroy_Thyself(bool collapse)
 	{
-		
 		if(collapse)
 		{
 			bool dest = true;
@@ -649,7 +705,7 @@ public class Tile : MonoBehaviour {
 			float life = 1.0F;
 	
 			float sidevel = UnityEngine.Random.value > 0.5F ? UnityEngine.Random.value * 0.1F : -UnityEngine.Random.value * 0.1F;
-			TileMaster.Grid[Point.Base[0], Point.Base[1]]._Tile = null;
+			
 			while(dest)
 			{
 				transform.position += (Vector3.left * sidevel) + Vector3.down * vel;
@@ -682,6 +738,7 @@ public class Tile : MonoBehaviour {
 
 	public void SetArrow(Tile nextTile = null, Tile prevTile = null, bool Active = true)
 	{
+		return;
 		Params.lineOut.enabled = (Active && nextTile != null);
 		Params.lineIn.enabled = (Active && nextTile != null);
 		if(!Active)
@@ -693,16 +750,37 @@ public class Tile : MonoBehaviour {
 			float dist = Vector3.Distance(nextTile.transform.position, transform.position);
 			Vector3 vel = nextTile.transform.position - transform.position;
 
-				//Params._render.transform.position = Vector3.Lerp(transform.position, transform.position + vel, 0.02F);
-				Params.lineIn.SetPosition(0, this.transform.position);
-				Params.lineIn.SetPosition(1, nextTile.transform.position);
-				Params.lineOut.SetColors(Color.white, Color.white);
-				Params.lineOut.SetPosition(0, this.transform.position + Vector3.back);
-				Params.lineOut.SetPosition(1, nextTile.transform.position + Vector3.back);
-				Params.lineIn.SetColors(GameData.instance.GetGENUSColour(Genus), GameData.instance.GetGENUSColour(nextTile.Genus));
-		}
+			Vector3 [] points = LightningLine(this.transform.position, nextTile.transform.position, 4, 0.1F);
 
-	
+			for(int i = 0; i < points.Length; i++)
+			{
+				Params.lineIn.SetPosition(i, points[i]);
+				Params.lineOut.SetPosition(i, points[i] + Vector3.back);
+			}
+			//Params.lineIn.SetPosition(0, this.transform.position);
+			//Params.lineIn.SetPosition(1, nextTile.transform.position);
+			Params.lineIn.SetColors(GameData.instance.GetGENUSColour(Genus), GameData.instance.GetGENUSColour(nextTile.Genus));
+
+			Params.lineOut.SetColors(Color.white, Color.white);
+			//Params.lineOut.SetPosition(0, this.transform.position + Vector3.back);
+			//Params.lineOut.SetPosition(1, nextTile.transform.position + Vector3.back);
+		}
+	}
+
+	public Vector3 [] LightningLine(Vector3 start, Vector3 end, int segments, float power)
+	{
+		Vector3 [] final = new Vector3[segments];
+		Vector3 velocity = start - end;
+		velocity.Normalize();
+		Vector3 last = start;
+		for(int i = 0; i < segments; i++)
+		{
+			final[i] = Vector3.Lerp(last, end, (float)i/segments);
+			final[i] += Utility.RandomVectorInclusive(1, 1, 0) * power;
+
+			last = final[i];
+		}
+		return final;
 	}
 
 	public virtual bool IsGenus(Tile t)
@@ -712,10 +790,10 @@ public class Tile : MonoBehaviour {
 		return Genus == t.Genus || Genus == GENUS.ALL || t.Genus == GENUS.ALL;
 	}
 
-	public virtual bool IsGenus(GENUS g, bool collect_all = true)
+	public virtual bool IsGenus(GENUS g, bool collect_all = true, bool allow_alpha = true)
 	{
 		if(Genus == GENUS.NONE || (Genus == GENUS.OMG && g != GENUS.OMG)) return false;
-		return Genus == g || (collect_all && Genus == GENUS.ALL) || g == GENUS.ALL;
+		return Genus == g || (collect_all && Genus == GENUS.ALL) || (allow_alpha && g == GENUS.ALL);
 	}
 
 	public bool IsType(Tile t)
@@ -774,7 +852,6 @@ public class Tile : MonoBehaviour {
 		state_override = false;
 		originalMatch = false;
 		if(idle) SetState(TileState.Idle);
-		
 	}
 
 	//For enemies to show possible damage inflicted
@@ -883,9 +960,6 @@ public class Tile : MonoBehaviour {
 		{
 			InitStats.isNew = false;
 		}
-
-		CheckStats();
-
 		for(int i = 0; i < Effects.Count; i++)
 		{
 			if(Effects[i] == null) Effects.RemoveAt(i);
@@ -896,11 +970,41 @@ public class Tile : MonoBehaviour {
 				Destroy(old);
 			}
 		}
-
+		CheckStats();
 	}
 
 	public virtual IEnumerator AfterTurnRoutine()
 	{
+		Reset();
+		InitStats.TurnDamage = 0;
+		InitStats.Lifetime ++;
+		if(InitStats.Lifetime >= 1) 
+		{
+			InitStats.isNew = false;
+		}
+		for(int i = 0; i < Effects.Count; i++)
+		{
+			bool destroy = false;
+			if(Effects[i] == null) Effects.RemoveAt(i);
+			else if(Effects[i].CheckDuration()) 
+			{
+				destroy = true;
+			}
+			if(Effects[i] != null)
+			{
+				yield return StartCoroutine(Effects[i].StatusEffectRoutine());
+				if(i < Effects.Count-1)	yield return new WaitForSeconds(Time.deltaTime * 15);
+			}
+			if(destroy)
+			{
+				GameObject old = Effects[i].gameObject;
+				Effects.RemoveAt(i);
+				Destroy(old);
+			}
+
+		}
+		CheckStats();
+		
 		yield break;
 	}
 
@@ -928,22 +1032,58 @@ public class Tile : MonoBehaviour {
 		if(Params._render!= null) Params._render.sprite = render;
 	}
 
-	public virtual bool AddEffect(TileEffect e)
+	public virtual TileEffect AddEffect(TileEffect init)
 	{
 		foreach(TileEffect child in Effects)
 		{
-			if(child.Name == e.Name)
+			if(child.Name == init.Name)
 			{
-				child.Duration += e.Duration;
-				if(e != null) Destroy(e.gameObject);
-				return false;
+				child.Duration += init.Duration;
+				return child;
 			}
 		}
+
+		TileEffect e = init;
 		e.Setup(this);
 		e.transform.position = this.transform.position;
 		e.transform.parent = this.transform;
 		Effects.Add(e);
-		return true;
+		CheckStats();
+		return e;
+	}
+
+	public virtual TileEffect AddEffect(string name, int duration, params string [] args)
+	{
+		foreach(TileEffect child in Effects)
+		{
+			if(child.Name == name)
+			{
+				child.Duration += duration;
+				return child;
+			}
+		}
+		TileEffect e = (Status) (Instantiate(GameData.instance.GetTileEffectByName(name))) as TileEffect;
+		e.GetArgs(duration, args);
+		e.Setup(this);
+		e.transform.position = this.transform.position;
+		e.transform.parent = this.transform;
+		Effects.Add(e);
+		CheckStats();
+		return e;
+	}
+
+	public virtual TileEffect AddEffect(TileEffectInfo inf)
+	{
+		return AddEffect(inf.Name, inf.Duration, inf.Args);
+	}
+
+	public bool HasEffect(string name)
+	{
+		foreach(TileEffect child in Effects)
+		{
+			if(child.Name == name)return true;
+		}
+		return false;
 	}
 
 	
@@ -956,16 +1096,17 @@ public class Tile : MonoBehaviour {
 	public void MoveToGridPoint(int x, int y, float arc = 0.0F)
 	{
 		Vector3 newpoint = TileMaster.Grid[x,y].position;
-		Destroyed = true;
+		UnlockedFromGrid = true;
 
 		MoveToPoint mp = this.gameObject.AddComponent<MoveToPoint>();
 		mp.SetTarget(newpoint);
-		mp.SetPath(0.01F, arc);
+		mp.SetPath(0.13F, arc);
 		mp.SetThreshold(0.1F);
 		mp.DontDestroy = true;
 
 		mp.SetMethod(() => {
-			Destroyed = false;
+			UnlockedFromGrid = false;
+			transform.position = new Vector3(Point.targetPos.x, Point.targetPos.y, transform.position.z);
 		});
 		TileMaster.Grid[x, y]._Tile = this;
 		Setup(x,y);
@@ -1038,7 +1179,7 @@ public class TileStat
 		{
 			if(t.isFrozen) isFrozen    = true;
 			if(t.isBroken) isBroken    = true;
-			if(!t.isAlerted) isAlerted = false;
+			//if(!t.isAlerted) isAlerted = false;
 			if(t.isAlly)	
 			{
 				isAlly = true;
@@ -1085,6 +1226,7 @@ public class TilePointContainer
 	public int BaseX, BaseY;
 	public List<int> AllX, AllY;
 	public int Scale;
+
 
 	public Vector3 targetPos;
 	public Tile parent;
@@ -1231,6 +1373,11 @@ public class TilePointContainer
 					Tile f = TileMaster.instance.GetTile(AllX[xx]-1, AllY[yy]-1);
 					if(e != null && !final.Contains(e) && e != parent) final.Add(e);
 					if(f != null && !final.Contains(f) && f != parent) final.Add(f);
+
+					Tile g = TileMaster.instance.GetTile(AllX[xx]+1, AllY[yy]-1);
+					Tile h = TileMaster.instance.GetTile(AllX[xx]-1, AllY[yy]+1);
+					if(g != null && !final.Contains(g) && g != parent) final.Add(g);
+					if(h != null && !final.Contains(h) && h != parent) final.Add(h);
 				}
 				
 			}

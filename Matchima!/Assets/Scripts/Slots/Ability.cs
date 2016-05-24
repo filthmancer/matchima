@@ -100,9 +100,8 @@ public class Ability : Slot {
 
 	public bool RelativeStats;
 	public bool passive;
-	
-	
 
+	
 	[HideInInspector]
 	public GENUS GENUS;
 	[HideInInspector]
@@ -138,7 +137,7 @@ public class Ability : Slot {
 	[HideInInspector]
 	public ContainerData _input, _output;
 
-	public bool BeforeMatchEffect = false, AfterMatchEffect = false;
+
 
 	public virtual float StrengthFactor	 	{get{return 1 + (float)Parent.Stats.Strength / 100.0F;}}
 	public virtual float DexterityFactor	{get{return 1 + (float)Parent.Stats.Dexterity / 100.0F;}}
@@ -191,29 +190,18 @@ public class Ability : Slot {
 	}
 
 
-	public virtual void BeforeTurn()
-	{
-
-	}
-
-	public override void AfterTurnB ()
-	{
-
-	}
-	public override void AfterTurnA()
+	public override IEnumerator AfterTurn()
 	{
 		addedCooldownPercent = 0.0F;
 		addedCostPercent = new float [4];
 		addedCost = new int[4];
 		addedCooldown = 0;
-		if(passive) return;
+		if(passive) yield break;
 		if(cooldown_time > 0) cooldown_time -= 1;
+		yield return null;
 	}
 
-	public virtual IEnumerator BeforeMatch(List<Tile> tiles)
-	{
-		yield break;
-	}
+
 
 	public virtual void OnTileCollect(Tile t)
 	{
@@ -222,17 +210,6 @@ public class Ability : Slot {
 	public virtual void OnTileDestroy(Tile t)
 	{
 
-	}
-
-	public virtual IEnumerator AfterMatch()
-	{
-		yield break;
-		//return 0.0F;
-	}
-
-	public virtual int OnHit(int Hit, params Tile [] attackers)
-	{
-		return Hit;
 	}
 
 	public virtual Bonus CheckBonus(GENUS g)

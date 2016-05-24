@@ -14,6 +14,18 @@ public class ItemTile : Tile {
 		}
 	}
 
+
+	protected override TileUpgrade [] BaseUpgrades
+	{
+		get
+		{
+			return new TileUpgrade []
+			{
+				new TileUpgrade(1.0F, 1, () => {InitStats.Value += 1;})
+			};
+		}
+	}
+
 	public override bool Match(int resource)
 	{
 		if(isMatching) return true;

@@ -27,7 +27,7 @@ public class Flame : Tile {
 	}
 
 
-	public override IEnumerator BeforeMatch()
+	public override IEnumerator BeforeMatch(bool original)
 	{
 		if(isMatching) yield break;
 		isMatching = true;
@@ -102,7 +102,7 @@ public class Flame : Tile {
 			}
 		}
 
-		PlayerControl.instance.AddTilesToMatch(to_collect.ToArray());
+		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
 
 		yield return null;
 	}

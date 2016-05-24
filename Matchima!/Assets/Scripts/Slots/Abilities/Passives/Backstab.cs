@@ -7,26 +7,35 @@ public class Backstab : Ability {
 	public Vector2 [] stabAngle;
 	public float extraDamage = 2;
 
+	public string RandAlert
+	{
+		get
+		{
+			int rand = Random.Range(0,4);
+			string [] alerts = new string [] {"STAB!", "POKE!", "GUT!", "SLASH!"};
+			return alerts[rand];
+		}
+	
+	}
+
 	float finalsteal;
-	float finalDamage;
+	float finalDamage
+	{
+		get
+		{
+			return extraDamage * DexterityFactor;
+		}
+	}
 
 	public override StCon [] Description_Tooltip
 	{
 		get{
 			return new StCon [] {
-				new StCon("Attacks from above deals", Color.white, true),
+				new StCon("Attacks deal", Color.white, true),
 				new StCon((finalDamage*100).ToString("0") + "% extra damage", GameData.Colour(GENUS.DEX)),
 			};
 		}
 	}
-
-	public override void Update()
-	{
-		base.Update();
-		finalDamage = extraDamage * DexterityFactor;
-		//Description_Basic = "Spell cooldowns lowered by " + (finalcd*100).ToString("0") + "%, but " + Parent.Name + " steals " + finalsteal + "% of other heros mana gains";
-	}
-
 	
 	public override void DamageIndicator(ref List<int> damage, List<Tile> selected)
 	{
@@ -44,7 +53,7 @@ public class Backstab : Ability {
 				{
 					if(diff == stabAngle[s]) 
 					{
-						selected[i].SetOtherWarning("STAB");
+						selected[i].SetOtherWarning("2X");
 						damage[i] = damage[i] + (int) ((float)damage[i] * finalDamage);
 						break;
 					}	
@@ -59,8 +68,9 @@ public class Backstab : Ability {
 
 	public override IEnumerator BeforeMatch(List<Tile> _tiles)
 	{
-		bool has_stabbed = false;
 		
+		List<Tile> to_collect = new List<Tile>();
+
 		for(int i = 0; i < _tiles.Count; i++)
 		{
 			if(i == 0 || _tiles[i] == null) continue;
@@ -75,39 +85,27 @@ public class Backstab : Ability {
 				{
 					if(diff == stabAngle[s]) 
 					{
-						_tiles[i].InitStats.TurnDamage += (int) ((float)PlayerControl.instance.AttackValue * finalDamage);
-						_tiles[i].SetOtherWarning("STAB");
-						has_stabbed = true;
+						to_collect.Add(_tiles[i]);
 						break;
 					}	
 				}
-				
-			}
+			}		
+		}
+
+		float stabtime = 0.25F;
+		foreach(Tile child in to_collect)
+		{
+			child.SetOtherWarning("");
+			child.InitStats.TurnDamage += (int) ((float)PlayerControl.instance.AttackValue * finalDamage);
+			UIManager.instance.MiniAlert(child.transform.position, RandAlert, 75, GameData.Colour(Parent.Genus));
+			yield return new WaitForSeconds(stabtime);
 		}
 		yield break;
 	}
 
-	public override void Setup(AbilityContainer con, int? _in = null, int? _out = null)
+	public override void SetArgs(params string [] args)
 	{
-		base.Setup(con, _in, _out);
-
-		_input = null;
-		if(_in.HasValue)
-		{
-			_input = con.Input[(int)_in];
-		} 
-		else
-		{
-			_input = GetContainerData(con);
-		}
-		extraDamage = GameData.StringToInt(_input.args[3]);
-		List<Vector2> angles = new List<Vector2>();
-		for(int i = 4; i < _input.args.Length; i+=2)
-		{
-			int x = GameData.StringToInt(_input.args[i]);
-			int y = GameData.StringToInt(_input.args[i+1]);
-			angles.Add(new Vector2(x,y)); 
-		}
-		stabAngle = angles.ToArray();
+		initialized = true;
+		extraDamage = GameData.StringToFloat(args[0]);
 	}
 }

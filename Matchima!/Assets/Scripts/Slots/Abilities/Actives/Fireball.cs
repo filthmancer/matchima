@@ -34,22 +34,23 @@ public class Fireball : Ability {
 	{
 		base.Start();
 		Description_Basic = "Collects all tiles in a " + radius + " tile radius around the target.";
-
 	}
 
-	public override void Activate()
+	public override void SetArgs(params string [] args)
 	{
-		if(cooldown_time > 0) return;
-		if(!CanAfford()) return;
-		if(activated) return;
+		radius = GameData.StringToInt(args[0]);
+	}
 
-		activated = true;
+	public override IEnumerator BeforeTurn()
+	{
+		//if(activated) return;
+		//activated = true;
 
-		Tile target = PlayerControl.instance.LastSelected();
-		if(Application.isMobilePlatform) target = PlayerControl.instance.focusTile;
-		StartCoroutine(CollectTiles(target));
-		cooldown_time = cooldown;
-		activated = false;
+		int x = Random.Range(0, TileMaster.Grid.Size[0]);
+		int y = Random.Range(0, TileMaster.Grid.Size[1]);
+		Tile target = TileMaster.Tiles[x,y];
+		yield return StartCoroutine(CollectTiles(target));
+		//activated = false;
 	}
 
 	public override void Update()
@@ -58,45 +59,29 @@ public class Fireball : Ability {
 		Description_Basic = "Collects all tiles in a " + radius + " tile radius around the target.";
 	}
 
-	public string OLDUPGRADE
-	{
-		get
-		{
-			string s = UpgradeInfoColoured(1, "Dec. cooldown by 2") + "\n";
-				s+= UpgradeInfoColoured(2, "Inc. radius by 1") + "\n";
-				s+= UpgradeInfoColoured(3,  "Inc. radius by 1") + "\n";
-				return s;
-		}
-	}
-
 	public IEnumerator CollectTiles(Tile target)
 	{
+		UIManager.ClassButtons[Parent.Index].ShowClass(true);
+		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons[Parent.Index].transform.position + Vector3.up, 
+													"Fireball", 55, GameData.Colour(Parent.Genus), 1.2F, 0.25F);
 		int targX = target.Point.Base[0];
 		int targY = target.Point.Base[1];
-		int [] resource = new int [6];
-		int [] heal = new int [6];
-		int [] armour = new int [6];
 
-		float particle_time = 0.3F;
+		float particle_time = 0.7F;
 
 		int final_radius =  (radius + upgrade_radius + (int) StatBonus());
 
 		if(target == null) yield break;
 
-		yield return new WaitForSeconds(0.1F);
-
 		TileMaster.instance.SetAllTileStates(TileState.Locked, true);
 		Tile [,] _tiles = TileMaster.Tiles;
 		List<Tile> to_collect = new List<Tile>();
 
-		GameObject initpart = Instantiate(Particle);
-		initpart.transform.position = UIManager.ClassButtons[Parent.Index].transform.position;
+		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[(int)Parent.Genus].transform, Effect.Force);
 		initpart.GetComponent<MoveToPoint>().SetTarget(target.transform.position);
+		yield return new WaitForSeconds(Time.deltaTime * 20);
 
 		List<GameObject> particles = new List<GameObject>();
-
-		//yield return new WaitForSeconds(0.5F);
-
 		for(int x = 0; x < _tiles.GetLength(0); x++)
 		{
 			for(int y = 0; y < _tiles.GetLength(1); y++)
@@ -111,6 +96,7 @@ public class Fireball : Ability {
 						_tiles[x,y].SetState(TileState.Selected, true);
 						to_collect.Add(tile);
 						GameObject new_part = Instantiate(Particle);
+
 						new_part.transform.position = tile.transform.position;
 						//new_part.transform.localScale *= 0.2F;
 						particles.Add(new_part);
@@ -123,6 +109,7 @@ public class Fireball : Ability {
 						Tile tile = _tiles[x,y];
 						_tiles[x,y].SetState(TileState.Selected, true);
 						to_collect.Add(tile);
+
 						GameObject new_part = Instantiate(Particle);
 						new_part.transform.position = tile.transform.position;
 						//new_part.transform.localScale *= 0.2F;
@@ -132,9 +119,7 @@ public class Fireball : Ability {
 			}
 		}
 
-		yield return new WaitForSeconds(particle_time);
-
-		yield return StartCoroutine(Player.instance.BeforeMatch(to_collect));
+		yield return new WaitForSeconds(Time.deltaTime * 10);
 
 		for(int i = 0; i < to_collect.Count; i++)
 		{
@@ -149,35 +134,13 @@ public class Fireball : Ability {
 				to_collect.RemoveAt(i);
 			}
 		}
-		PlayerControl.instance.AddTilesToMatch(to_collect.ToArray());
-		if(Player.instance.CompleteMatch)
-		{
-				foreach(Tile child in PlayerControl.instance.finalTiles)
-				{
-					//if(child.isMatching) continue;
 
-					int [] values = child.Stats.GetValues();
-					int added_res = 0, added_health = 0, added_armour = 0;
-					
-					if(child.Match(1))
-					{
-						resource[(int)child.Genus] += values[0] + added_res;
-						heal[(int)child.Genus]   += values[1] + added_health;
-						armour[(int)child.Genus]   += values[2] + added_armour;
-					}
-				}
-			}
-			
+		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
+		yield return StartCoroutine(GameManager.instance.BeforeMatchRoutine());
+		yield return StartCoroutine(GameManager.instance.MatchRoutine(PlayerControl.instance.finalTiles));
 		yield return StartCoroutine(Player.instance.AfterMatch());
 
-		List<Bonus> bonuses = new List<Bonus>();
-		bonuses.Add(new Bonus(1 + StatBonus(), "ABL", "Bonus from " + name + " ability", GameData.instance.GetGENUSColour(GENUS.PRP)));
-
-
-		GameManager.instance.CollectResources(resource, heal, armour, bonuses.ToArray());
-		yield return StartCoroutine(GameManager.instance.CompleteTurnRoutine());
-
-		TileMaster.instance.ResetTiles();
+		TileMaster.instance.ResetTiles(true);
 		TileMaster.instance.SetFillGrid(true);
 
 		for(int i = 0; i < particles.Count; i++)
@@ -188,35 +151,5 @@ public class Fireball : Ability {
 
 
 		yield break;
-	}
-
-
-	public override void Setup(Ability new_ab)
-	{
-		base.Setup(new_ab);
-
-		Fireball new_fireball = (Fireball) new_ab;
-		radius = new_fireball.radius;
-		Start();
-	}
-
-	public override void Setup(AbilityContainer con, int? _in = null, int? _out = null)
-	{
-		base.Setup(con, _in, _out);
-		
-		_input = null;
-		if(_in.HasValue)
-		{
-			_input = con.Input[(int)_in];
-		} 
-		else
-		{
-			_input = GetContainerData(con);
-		}
-
-		radius = GameData.StringToInt(_input.args[1]);
-		name = "Fireball";
-		Radius = new Ability_UpgradeInfo(0, 1, "+", " Radius", Color.green, () => {upgrade_radius += 1;});
-		Upgrades.Add(Radius);
 	}
 }

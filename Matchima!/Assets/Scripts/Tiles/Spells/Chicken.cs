@@ -18,12 +18,12 @@ public class Chicken : Tile {
 	public override void Update()
 	{
 		base.Update();
-		if(GameManager.inStartMenu) return;
-		if(Point.Base[1] == 0 && !isleaving && !IsState(TileState.Falling))
-		{
-			StartCoroutine(GoAway());
-			isleaving = true;
-		}
+		//if(GameManager.inStartMenu) return;
+		//if(Point.Base[1] == 0 && !isleaving && !IsState(TileState.Falling))
+		//{
+		//	StartCoroutine(GoAway());
+		//	isleaving = true;
+		//}
 	}
 
 	public void SetScare(bool _scared)
@@ -33,6 +33,7 @@ public class Chicken : Tile {
 
 	public override IEnumerator AfterTurnRoutine()
 	{
+		yield return StartCoroutine(base.AfterTurnRoutine());
 		Reset();
 		if(scared)
 		{
@@ -71,9 +72,11 @@ public class Chicken : Tile {
 
 	IEnumerator GoAway()
 	{
-		yield return new WaitForSeconds(0.05F);
-		Animate("Attack");
 		yield return new WaitForSeconds(0.2F);
+		while(Destroyed) yield return null;
+		//yield return new WaitForSeconds(0.05F);
+		//Animate("Attack");
+		
 		DestroyThyself();
 		yield return null;
 	}

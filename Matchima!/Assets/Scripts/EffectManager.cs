@@ -15,6 +15,13 @@ public enum Effect
 	Shiny,
 	Sleep,
 	Spell,
+
+
+	ManaPowerUp,
+	ManaPowerDown,
+	ManaPowerLvl1,
+	ManaPowerLvl2,
+	ManaPowerLvl3,
 	STRING
 }
 
@@ -33,6 +40,8 @@ public class ParticleContainer
 	public ParticleSystem _Force;
 	public ParticleSystem _Lightning;
 
+	public ParticleSystem _ManaPowerUp, _ManaPowerDown;
+	public ParticleSystem _ManaPowerLvl1,_ManaPowerLvl2,_ManaPowerLvl3;
 	public ParticleSystem TouchParticle;
 	public ParticleSystem SpellParticle;
 }
@@ -63,6 +72,11 @@ public class EffectManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	
+	}
+
+	public static GameObject _PlayEffect(Transform t, Effect e, string s = "", Color? col = null)
+	{
+		return EffectManager.instance.PlayEffect(t,e,s,col);
 	}
 
 
@@ -135,8 +149,35 @@ public class EffectManager : MonoBehaviour {
 				part.transform.position = t.position;
 				part.transform.parent = t;
 			break;
+			case Effect.ManaPowerUp:
+				part = (ParticleSystem) Instantiate(Particles._ManaPowerUp);
+				part.transform.position = t.position;
+				part.transform.parent = t;
+			break;
+			case Effect.ManaPowerDown:
+				part = (ParticleSystem) Instantiate(Particles._ManaPowerDown);
+				part.transform.position = t.position;
+				part.transform.parent = t;
+			break;
+			case Effect.ManaPowerLvl1:
+				part = (ParticleSystem) Instantiate(Particles._ManaPowerLvl1);
+				part.transform.position = t.position;
+				part.transform.parent = t;
+			break;
+			case Effect.ManaPowerLvl2:
+				part = (ParticleSystem) Instantiate(Particles._ManaPowerLvl2);
+				part.transform.position = t.position;
+				part.transform.parent = t;
+			break;
+			case Effect.ManaPowerLvl3:
+				part = (ParticleSystem) Instantiate(Particles._ManaPowerLvl3);
+				part.transform.position = t.position;
+				part.transform.parent = t;
+			break;
+
 		}
 
+		if(part == null) return null;
 		if(col.HasValue) part.startColor = col.Value;
 
 		return part.gameObject;

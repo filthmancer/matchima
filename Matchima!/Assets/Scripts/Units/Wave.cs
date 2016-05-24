@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Wave : Unit {
 
@@ -8,249 +9,372 @@ public class Wave : Unit {
 		get
 		{
 			string d = "";
-			if(DescriptionOverride != "") 
-			{
-				d += DescriptionOverride;
-			}
-			else
-			{
-				d = "Spawning ";
-				for(int i = 0; i < Tiles.Length; i++)
-				{
-					d += Tiles[i].Genus + " " + Tiles[i].Species;
-					if(i < Tiles.Length-1) d += ", ";
-				}
-				d += " tiles.";
-			}
-			d += "\n";
-			if(!Effects.LevelUpOnEnd) d += "\nWill not level up on wave end.";
-			if(Effects.TileRegen) d += "\nEnemies gain health each turn.";
-			if(Effects.WaveRegen) d += "\nWave gains health each turn.";
-			if(Effects.WaveDamage) d += "\nWave damages player each turn.";
-				
 			return d;
 		}
 	}
 
-	public string DescriptionOverride;
-	public Sprite Inner, Border;
+	public WaveUnit this [int i]
+	{
+		get{
+			return AllSlots[i];
+		}
+	}
 
-	public float Chance = 1.0F;
-	public int RequiredDifficulty = 1;
-
-	public int Required = 60;
-	public int PointsPerTurn = 3, PointsPerEnemy = 1;
-	public Vector2 DiffScale = new Vector2(0, 5);
-
-	public int Current;
-	public bool Active;
-	public WaveTile [] Tiles;
-	public int Timer;
-
-	public Vector2 PrepTime = new Vector2(2,5);
-
-	public string [] _Quotes;
-	public bool Ignore = false;
-	private int PointsThisTurn = 0;
-
-	private bool ShowingHealth;
-
-
-	public float HealthRatio{
-		get{ return (float)Current/(float)Required;}
+	public int Length
+	{
+		get{
+			return AllSlots.Length;
+		}
 	}
 
 
-	public WaveEffects Effects;
+	public bool Active;
+	public float Chance = 1.0F;
+	public int RequiredDifficulty = 1;
 
-	public string Quote
+	public WaveUnit Slot1, Slot2, Slot3;
+	public bool HasDialogue;
+	public Quote [] Quotes;
+	public WaveUnit [] AllSlots
+	{
+		get{return new WaveUnit [] {Slot1, Slot2, Slot3};}
+	}
+
+	public bool IntroAlert = false, EnterAlert = false;
+
+	public virtual string IntroText
 	{
 		get{
-			if(_Quotes.Length == 0) return null;
-			int r = UnityEngine.Random.Range(0, _Quotes.Length);
-			return _Quotes[r];
+			return "Wave Approaching!";
 		}
+	} 
+	public virtual string EnterText 
+	{
+		get {
+			return "Wave Arrived!";
+		}
+	}
+	public virtual string ExitText 
+	{
+		get {
+			return "Wave Defeated!";
+		}
+	}
+
+	public bool AllEnded
+	{
+		get
+		{
+			bool ended = true;
+			for(int i = 0; i < AllSlots.Length; i++)
+			{
+				if(AllSlots[i] == null) continue;
+				if(AllSlots[i] is WaveEffect) continue;
+				if(!AllSlots[i].Ended) ended = false;
+			}
+			return ended;
+		}
+	}
+	
+	public IEnumerator Setup()
+	{
+		for(int i = 0; i < AllSlots.Length; i++)
+		{
+			if(AllSlots[i] == null) continue;
+			AllSlots[i].Setup(this,i);
+		}
+
+		yield return StartCoroutine(OnStart());
+
+		yield return StartCoroutine(WaveStartRoutine());
+
+
+		//OLD FORMAT FOR GETTING MODS (RANDOM)
+		/*
+			//Get a list of possible mods
+				List<WaveUnit> allmodwaves = new List<WaveUnit>();
+				allmodwaves.AddRange(ModWaveUnits);
+
+			//While a random roll is greater than the chance of X number of mods
+				int curr = 0;
+				while(Random.value < ModChance[curr])
+				{
+			//Roll chances of each individual mod
+					List<float> mod_chances = new List<float>();
+					List<WaveUnit> mod_waves = new List<WaveUnit>();
+					for(int i = 0; i < ModWaveUnits.Length; i++)
+					{
+						float c = ModWaveUnits[i].Chance;
+						if(c > 0.0F)
+						{
+							mod_chances.Add(c);
+							mod_waves.Add(ModWaveUnits[i]);
+						}
+					}
+
+			//Roll the index of selected mod and add mod
+					int index = ChanceEngine.Index(mod_chances.ToArray());
+					WaveUnit mod = mod_waves[index];
+					AddWaveUnit(mod);
+					curr++;
+
+			// Check if all slots are full
+					bool allfull = true;
+					for(int i = 0; i < AllSlots.Length; i++)
+					{
+						if(AllSlots[i] == null) allfull = false;
+					}
+					if(allfull) break;
+				}
+		*/
+
+	}
+
+	public virtual IEnumerator OnStart()
+	{
+		yield break;
+	}
+
+	public virtual IEnumerator BeginTurn()
+	{
+		for(int i = 0; i < AllSlots.Length; i++)
+		{
+			if(AllSlots[i] == null) continue;
+		
+			AllSlots[i].Timer --;
+			if(AllSlots[i].Timer == 0) 
+			{
+				AllSlots[i].Activate();
+				yield return new WaitForSeconds(Time.deltaTime * 10);
+				if(i == 0) yield return StartCoroutine(WaveActivateRoutine());
+			}
+		}		
+		for(int i = 0; i < AllSlots.Length; i++)
+		{
+			if(AllSlots[i] == null) continue;
+			if(AllSlots[i].Active)
+			{
+				if(AllSlots[i].Timer < 0) yield return StartCoroutine(AllSlots[i].BeginTurn());
+				else yield return StartCoroutine(AllSlots[i].OnStart());
+			}
+		}
+
+
+		yield return null;
+	}
+
+
+	public virtual IEnumerator AfterTurn()
+	{
+		for(int i = 0; i < AllSlots.Length; i++)
+		{
+			if(AllSlots[i] == null) continue;
+			if(AllSlots[i].Active)
+			{
+				yield return StartCoroutine(AllSlots[i].AfterTurn());
+				AllSlots[i].Complete();
+				if(AllSlots[i].Current == 0 && AllSlots[i].Active)
+				{
+					AllSlots[i].OnEnd();
+					GameManager.instance.paused = true;
+					yield return StartCoroutine(WaveEndRoutine());
+					GameManager.instance.paused = false;
+				}
+			}
+		}
+		yield return null;
+	}
+
+	public void AddWaveUnit(WaveUnit wavetile)
+	{
+		WaveUnit w = (WaveUnit) Instantiate(wavetile);
+		w.transform.parent = this.transform;
+		bool added = false;
+		int slot = 0;
+		for(int i = 0; i < AllSlots.Length; i++)
+		{
+			if(AllSlots[i] != null) continue;
+			else 
+			{
+				LinkWaveUnit(w, i);
+				added = true;
+				slot = i;
+				break;
+			}
+		}
+		if(!added) Debug.LogError("COULD NOT ADD MOD WAVE");
+		w.Setup(this, slot);
+	}
+
+	public void LinkWaveUnit(WaveUnit w, int i)
+	{
+		switch(i)
+		{
+			case 0:
+			Slot1 = w;
+			break;
+			case 1:
+			Slot2 = w;
+			break;
+			case 2:
+			Slot3 = w;
+			break;
+		}
+	}
+
+	public virtual void EnemyKilled(Enemy e)
+	{
+		for(int i = 0; i < AllSlots.Length; i++)
+		{
+			if(AllSlots[i] == null) continue;
+			AllSlots[i].EnemyKilled(e);
+		}
+	}
+
+	public List<TileEffectInfo> GetEffects()
+	{
+		List<TileEffectInfo> Effects = new List<TileEffectInfo>();
+		for(int i = 0; i < AllSlots.Length; i++)
+		{
+			if(AllSlots[i] == null) continue;
+			if(AllSlots[i].GetEffects() != null) Effects.AddRange(AllSlots[i].GetEffects());
+		}
+		return Effects;
 	}
 
 	public void GetChances()
 	{
-		foreach(WaveTile w in Tiles)
+		//List<TileEffectInfo> Effects = GetEffects();
+		for(int i = 0; i < AllSlots.Length; i++)
 		{
-			if(w.SpawnType != WaveTileSpawn.XChance) continue;
-			TileMaster.instance.IncreaseChance(w.Genus, w.Species, w.SpawnFactor);
-			if(w.Value.y > 0)
-			{
-				SPECIES s = TileMaster.Types[w.Species];
-				GenusInfo g = s[w.Genus];
-				g.ValueAdded.Add(w.Value);
-			}
+			if(AllSlots[i] == null) continue;
+			AllSlots[i].GetChances();
 		}
 	}
 
-
-	public void AddPoints(int p)
+	protected virtual IEnumerator WaveStartRoutine()
 	{
-		PointsThisTurn += p;
-	}
 
-	public void EnemyKilled(Enemy e)
-	{
-		PointsThisTurn -= PointsPerEnemy * e.Stats.Value;	
-		Current -= PointsPerEnemy * e.Stats.Value;
-		if(!ShowingHealth)
+		PlayerControl.instance.ResetSelected();
+		if(IntroAlert)
 		{
-			StartCoroutine(ShowHealthRoutine());
-		}
-	}
-
-	IEnumerator ShowHealthRoutine()
-	{
-		ShowingHealth = true;
-
-		int current_heal = PointsThisTurn;
-		Vector3 tpos = Vector3.right * 0.4F;
-		MiniAlertUI heal = UIManager.instance.MiniAlert(
-			UIManager.Objects.WaveSlots[Index].Txt[0].transform.position + tpos, 
-			"-" + current_heal, 42, GameData.instance.BadColour, 1.7F,	0.01F);
-
-		while(heal.lifetime > 0.0F)
-		{
-			if(PointsThisTurn == 0)
-			{
-				heal.lifetime = 0.0F;
-				heal.text = "";
-				break;
-			}
-			else if(PointsThisTurn != current_heal)
-			{
-				heal.lifetime += 0.2F;
-				heal.size = 42 + current_heal * 0.75F;
-				current_heal = PointsThisTurn;
-				heal.text = "+" + current_heal;
-			}
 			
+			GameManager.instance.paused = true;
 
-			yield return null;
-		}
+			UIManager.instance.WaveAlert.SetTween(0,true);
+			UIManager.instance.WaveAlert.Img[0].gameObject.SetActive(true);
+			UIManager.instance.WaveAlert.Txt[0].text = IntroText;
 
-		ShowingHealth = false;
+			yield return new WaitForSeconds(1.25F);
+			
+			UIManager.instance.WaveAlert.SetTween(0,false);
+			UIManager.instance.WaveAlert.Img[0].gameObject.SetActive(false);
+			UIManager.instance.WaveAlert.Txt[0].text = "";
 
-		yield return null;
-	}
-
-
-	public virtual IEnumerator BeginTurn()
-	{
-		for(int i = 0; i < _Status.Count; i++)
-		{
-			if(_Status[i].CheckDuration()) 
-			{
-				Destroy(_Status[i].gameObject);
-				_Status.RemoveAt(i);
-			}
-		}
-
-		bool [,] replacedtile = new bool [(int)TileMaster.instance.MapSize.x, (int)TileMaster.instance.MapSize.y];
-		for(int i = 0; i < Tiles.Length; i++)
-		{
-			if(Tiles[i].SpawnType != WaveTileSpawn.XPerTurn) continue;
-
-			for(int x = 0; x < (int)Tiles[i].SpawnFactor; x++)
-			{
-				int randx = (int)Random.Range(0, TileMaster.instance.MapSize.x);
-				int randy = (int)Random.Range(0, TileMaster.instance.MapSize.y);
-				while(replacedtile[randx, randy])
-				{
-					randx = (int)Random.Range(0, TileMaster.instance.MapSize.x);
-					randy = (int)Random.Range(0, TileMaster.instance.MapSize.y);
-				}
-				replacedtile[randx,randy] = true;
-				TileMaster.instance.ReplaceTile(randx, randy, TileMaster.Types[Tiles[i].Species], TileMaster.Genus[Tiles[i].Genus], Tiles[i].Scale, Tiles[i].FinalValue);
-			}
+			PlayerControl.instance.ResetSelected();
+			GameManager.instance.paused = false;
+			
 		}
 		yield return null;
+		Player.instance.ResetStats();
 	}
 
-	public void Reset()
+	protected virtual IEnumerator WaveActivateRoutine()
 	{
-		for(int i = 0; i < _Status.Count; i++)
-		{
-			_Status[i].StatusEffect();
-		}
-	}
+		UIManager.Objects.BotGear.SetTween(0, false);
+		UIManager.Objects.TopGear.SetTween(0, true);
+		//CameraUtility.SetTurnOffset(true);
 
-	public virtual void OnStart(int _index)
-	{
-		Index = _index;
-		Active = true;
-		bool [,] replacedtile = new bool [(int)TileMaster.instance.MapSize.x, (int)TileMaster.instance.MapSize.y];
-		for(int i = 0; i < Tiles.Length; i++)
-		{
-			if(Tiles[i].SpawnType != WaveTileSpawn.XAtStart) continue;
-			for(int x = 0; x < (int)Tiles[i].SpawnFactor; x++)
-			{
-				int randx = (int)Random.Range(0, TileMaster.instance.MapSize.x);
-				int randy = (int)Random.Range(0, TileMaster.instance.MapSize.y);
-				while(replacedtile[randx, randy])
-				{
-					randx = (int)Random.Range(0, TileMaster.instance.MapSize.x);
-					randy = (int)Random.Range(0, TileMaster.instance.MapSize.y);
-				}
-				replacedtile[randx,randy] = true;
-				TileMaster.instance.ReplaceTile(randx, randy, TileMaster.Types[Tiles[i].Species], TileMaster.Genus[Tiles[i].Genus], Tiles[i].Scale, Tiles[i].FinalValue);
-			}
-		}
-	}
+		PlayerControl.instance.ResetSelected();
+		GameManager.instance.paused = true;
+		UIManager.instance.WaveAlert.SetTween(0,true);
+		UIManager.instance.WaveAlert.Img[0].gameObject.SetActive(true);
+		UIManager.instance.WaveAlert.Txt[0].text = EnterText;
+		UIManager.instance.WaveAlert.Img[2].gameObject.SetActive(true);
+		UIManager.instance.WaveAlert.Txt[2].text = Name;
 
-	public bool Complete()
-	{
-		if(PointsThisTurn == 0) return false;
-		//Vector3 wpos = Vector3.right * 0.5F;
-		//UIManager.instance.MiniAlert(UIManager.instance.WavePoints.transform.position + wpos, "" + PointsThisTurn, 55, PointsThisTurn > 0 ? Color.green : Color.red, 1.0F, PointsThisTurn > 0 ? 0.02F : -0.02F);
+		yield return new WaitForSeconds(1.25F);
 		
-		Current += PointsThisTurn;
-		if(Current < 0) Current = 0;
-		if(Current > Required) Current = Required;
-		PointsThisTurn = 0;
-		return true;
+		UIManager.instance.WaveAlert.SetTween(0,false);
+		UIManager.instance.WaveAlert.Img[0].gameObject.SetActive(false);
+		UIManager.instance.WaveAlert.Txt[0].text = "";
+		UIManager.instance.WaveAlert.Img[2].gameObject.SetActive(false);
+		UIManager.instance.WaveAlert.Txt[2].text = "";
+		PlayerControl.instance.ResetSelected();
+		GameManager.instance.paused = false;
+		UIManager.Objects.BotGear.SetTween(0, true);
+		UIManager.Objects.TopGear.SetTween(0, false);
+		//CameraUtility.SetTurnOffset(false);
+		yield return null;
 	}
 
-	public void InstaKill()
+	protected virtual IEnumerator WaveEndRoutine()
 	{
-		PointsThisTurn = -Current;
-		Complete();
-		GameManager.instance.WaveEnd(Index);
+		//WaveReward reward = GenerateWaveReward();
+		UIManager.instance.WaveAlert.SetTween(0,true);
+		UIManager.instance.WaveAlert.Img[0].gameObject.SetActive(true);
+		UIManager.instance.WaveAlert.Txt[0].text = ExitText;
+		//if(reward != null)
+		//{
+		//	UIManager.instance.WaveAlert.Img[2].gameObject.SetActive(true);
+		//	UIManager.instance.WaveAlert.Txt[0].text = reward.Title;
+		//}
+		yield return new WaitForSeconds(1.3F);
+
+		UIManager.instance.WaveAlert.SetTween(0,false);
+		UIManager.instance.WaveAlert.Img[0].gameObject.SetActive(false);
+		UIManager.instance.WaveAlert.Img[2].gameObject.SetActive(false);
+
+		//yield return StartCoroutine(GameManager.instance.CompleteTurnRoutine());
+		yield return null;
 	}
 
-	public void GetEffects(bool [] fx, int [] amt)
-	{
-		Effects.TileRegen = fx[0];
-		Effects.TileRegen_amount = amt[0];
-		Effects.WaveRegen = fx[1];
-		Effects.WaveRegen_amount = amt[1];
-		Effects.WaveDamage = fx[2];
-		Effects.WaveDamage_amount = amt[2];
+	public WaveReward GenerateWaveReward()
+	{	
+		if(Random.value > 1.0F) return null;
+
+		WaveReward reward = new WaveReward();
+		reward.value = GameManager.Difficulty;
+		float val = Random.value;
+		if(val < 0.25F)
+		{
+			reward.value = (reward.value * 2);
+			reward.Title = "+" + (int)reward.value + " mana";
+			foreach(Class child in Player.Classes)
+			{
+				child.AddToMeter((int)reward.value);
+			}
+		}
+		else if(val < 0.5F)
+		{
+			reward.value = 1.0F + reward.value / 100;
+			reward.Title = "+" + reward.value.ToString("0.00") + "x mana values";
+		}
+		else if(val < 0.75F)
+		{
+			reward.value = Mathf.Clamp(reward.value / 3, 1, Mathf.Infinity);
+			reward.Title = "+" + (int)reward.value + " Upgrade Value!";
+			foreach(Class child in Player.Classes)
+			{
+				child.WaveLevelRate += (int) reward.value;
+			}
+		}
+		else
+		{
+			reward.value = Mathf.Clamp(reward.value * 5, 1, Player.Stats._HealthMax);
+			reward.Title = (int)reward.value + " HP HEAL";
+			Player.Stats.Heal((int) reward.value);
+		}
+		return reward;
 	}
 
-	public void Randomise()
+	public class WaveReward
 	{
-		Required += (int)Random.Range(DiffScale.x * GameManager.Difficulty, DiffScale.y * GameManager.Difficulty);
-		if(Random.value < Effects.TileRegenChance) 
-		{
-			Effects.TileRegen = true;
-			Effects.TileRegen_amount += (int)GameManager.Difficulty/2;
-		}
-		if(Random.value < Effects.WaveRegenChance) 
-		{
-			Effects.WaveRegen = true;
-			Effects.WaveRegen_amount += (int)GameManager.Difficulty/5;
-		}
-		if(Random.value < Effects.WaveDamageChance)
-		{
-		 Effects.WaveDamage = true;
-		  Effects.WaveDamage_amount += (int)GameManager.Difficulty/2;
-		}
+		public string Title;
+		public float value;
 	}
+
+
 }
 
 public enum WaveTileSpawn
@@ -260,69 +384,3 @@ public enum WaveTileSpawn
 	XChance,
 	XOnScreen
 }
-
-[System.Serializable]
-public class WaveTile
-{
-	public string Genus;
-	public string Species;
-	public WaveTileSpawn SpawnType;
-	public int TotalToSpawn = -1;
-
-	public float SpawnFactor;
-	public IntVector Value;
-	public int FinalValue
-	{
-		get
-		{
-			return Random.Range(Value.x, Value.y);
-		}
-	}
-	public int Scale = 1;
-}
-
-
-[System.Serializable]
-public class WaveEffects
-{
-	public bool LevelUpOnEnd = true;
-	public bool HitByPresence = false;
-
-	public float TileRegenChance = 0.0F;
-	[HideInInspector]
-	public bool TileRegen = false;
-	[HideInInspector]
-	public int TileRegen_amount = 1;
-
-	public float WaveRegenChance = 0.0F;
-	[HideInInspector]
-	public bool WaveRegen = false;
-	[HideInInspector]
-	public int WaveRegen_amount = 1;
-
-	public float WaveDamageChance = 0.0F;
-	[HideInInspector]
-	public bool WaveDamage = false;
-	[HideInInspector]
-	public int WaveDamage_amount = 2;
-
-	public bool [] FXActive 
-	{
-		get{
-			return new bool [] {TileRegen,
-								WaveRegen,
-								WaveDamage};
-		}
-	}
-
-	public int [] FXAmount
-	{
-		get
-		{
-			return new int [] { TileRegen_amount,
-								WaveRegen_amount,
-								WaveDamage_amount};
-		}
-	}
-}
-

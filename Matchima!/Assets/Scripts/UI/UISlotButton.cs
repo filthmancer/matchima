@@ -50,22 +50,22 @@ public class UISlotButton : UIButton {
 		}
 		else
 		{
-			if(s is Item) 
+			if(slot is Item) 
 			{
-				Img[0].color = s.Colour;
+				Img[0].color = slot.Colour;
 				Img[1].color = Color.black;
 			}
 			else 
 			{
 				Img[0].color = color_default;
-				Img[1].color = s.Colour;
+				Img[1].color = slot.Colour;
 			}
-			Img[1].sprite = s.Icon;
+			Img[1].sprite = slot.Icon;
 			Img[1].enabled = true;
 			this.GetComponent<Button>().enabled = true;
 			Img[2].fillAmount = 0.0F;
 
-			Drag = s.Drag;
+			Drag = slot.Drag;
 		}
 		init_pos = transform.position;
 	}
@@ -105,14 +105,12 @@ public class UISlotButton : UIButton {
 		dragging = false;
 		if(PlayerControl.HeldButton != null)
 		{
-			if(PlayerControl.SwapButton != null)
+			if(PlayerControl.HeldButton != this)
 			{
-				PlayerControl.instance.SwapSlots();
-				UIManager.instance.HideBoonUI();
-			}
-			else if(PlayerControl.HeldButton == this && Drag == DragType.Cast)
-			{
-				if(PlayerControl.instance.focusTile != null && activated) slot.Activate();
+				print("HIT");
+				UIManager.instance.SwapSlotButtons(this, (PlayerControl.HeldButton as UISlotButton).Parent, 0);
+				//PlayerControl.instance.SwapSlots();
+				//UIManager.instance.HideBoonUI();
 			}
 			else if(PlayerControl.HeldButton == this && Drag == DragType.Hold)
 			{

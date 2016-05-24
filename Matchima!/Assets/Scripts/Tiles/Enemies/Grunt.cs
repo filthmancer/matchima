@@ -4,17 +4,17 @@ using System.Collections;
 public class Grunt : Enemy {
 
 
-	private int GruntHPFactor = 4, GruntHPAdded = 1;
-	private int GruntATKFactor = 5, GruntATKAdded = 1;
+	private int GruntHPFactor = 11, GruntHPAdded = 1;
+	private int GruntATKFactor = 20, GruntATKAdded = 1;
 
-	private int CaptainHPFactor = 2, CaptainHPAdded = 1;
-	private int CaptainATKFactor = 3, CaptainATKAdded = 1;
+	private int CaptainHPFactor = 8, CaptainHPAdded = 1;
+	private int CaptainATKFactor = 20, CaptainATKAdded = 1;
 
-	private int ChiefHPFactor = 2, ChiefHPAdded = 2;
-	private int ChiefATKFactor = 3, ChiefATKAdded = 1;
+	private int ChiefHPFactor = 13, ChiefHPAdded = 2;
+	private int ChiefATKFactor = 19, ChiefATKAdded = 1;
 
-	private int TerrorHPFactor = 1, TerrorHPAdded = 3;
-	private int TerrorATKFactor = 1, TerrorATKAdded = 2;
+	private int TerrorHPFactor = 13, TerrorHPAdded = 5;
+	private int TerrorATKFactor = 18, TerrorATKAdded = 1;
 
 	public override StCon [] Description
 	{
@@ -64,6 +64,8 @@ public class Grunt : Enemy {
 			return new StCon(d, GameData.Colour(Genus));}
 	}
 
+
+
 	protected sealed override void SetupEnemy()
 	{
 		float factor = GameManager.Difficulty;
@@ -71,9 +73,8 @@ public class Grunt : Enemy {
 		float atkfactor = Random.Range(ATKRange.x, ATKRange.y);
 
 		factor *= Random.Range(0.8F, 1.1F);
-		factor += factor * InitStats.Value / 50;
+		factor = factor * (InitStats.Value);
 		Rank = 1;
-
 		if(InitStats.Value > 10) Rank = 4;
 		else 
 		{
@@ -137,9 +138,7 @@ public class Grunt : Enemy {
 
 		if(Stats.isNew)
 		{
-			TileEffect sleep = (TileEffect) Instantiate(GameData.instance.GetTileEffectByName("Sleep"));
-			sleep.Duration = 1;
-			AddEffect(sleep);
+			AddEffect("Sleep", 1);
 			//sleep_part = EffectManager.instance.PlayEffect(this.transform, Effect.Sleep);
 		}
 	}

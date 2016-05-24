@@ -27,7 +27,7 @@ public class Mimic : Enemy {
 	{
 		base.Update();
 
-		float hp = Mathf.Ceil(Player._Options.HPBasedOnHits ? ((float)Stats.Hits/(float)Player.Stats._Attack) : (Stats.Hits));
+		float hp = Mathf.Ceil(Player.Options.RealHP ? ((float)Stats.Hits/(float)Player.Stats._Attack) : (Stats.Hits));
 		if(Params.HitCounter != null) Params.HitCounter.SetActive(hp > 1 && revealed);
 		if(Params.HitCounterText != null)
 		{
@@ -59,12 +59,7 @@ public class Mimic : Enemy {
 		{
 			Params.HitCounter.SetActive(false);	
 		}
-		else
-		{
-			TileEffect sleep = (TileEffect) Instantiate(GameData.instance.GetTileEffectByName("Sleep"));
-			sleep.Duration = 1;
-			AddEffect(sleep);
-		}
+		else AddEffect("Sleep", 1);
 		
 	}
 
@@ -76,9 +71,10 @@ public class Mimic : Enemy {
 
 			if(originalMatch)
 			{
+				UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), "MIMIC!", 62, Color.white, 0.8F,0.15F);
 				Vector3 pos = transform.position + (GameData.RandomVector*1.4F);
-				MoveToPoint mini = TileMaster.instance.CreateMiniTile(transform.position, UIManager.instance.HealthImg.transform, Info.Outer);
-				//mini.Target =  target;
+				MoveToPoint mini = TileMaster.instance.CreateMiniTile(transform.position, UIManager.instance.Health.transform, Info.Outer);
+				mini.SetPath(0.3F, 0.5F, 0.0F, 0.08F);
 				mini.SetMethod(() =>{
 						Player.Stats.Hit(GetAttack()*2);
 					}
@@ -113,7 +109,7 @@ public class Mimic : Enemy {
 
 				float item_chance = (float)Stats.Value/32.0F;
 				if(Stats.Value > 10) item_chance += 0.4F;
-				if(Random.value < 1.0F)//item_chance) 
+				if(Random.value < 0.99F)//item_chance) 
 				{
 					for(int reward = 0; reward < Point.Scale; reward++)
 					{
@@ -121,12 +117,14 @@ public class Mimic : Enemy {
 						int y = Random.Range(Point.BaseY, Point.BaseY + Point.Scale);
 
 						TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["chest"], Genus);
-						//TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["mimic"], Genus);
 						TileMaster.Tiles[x,y].AddValue(Stats.Value);
 					}
-					
 				}
-				else TileMaster.Tiles[Point.Base[0], Point.Base[1]] = null;
+				else
+				{
+					TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["mimic"], Genus);
+					TileMaster.Tiles[x,y].AddValue(Stats.Value);
+				}
 				return true;
 			}
 			else 
@@ -164,7 +162,7 @@ public class Mimic : Enemy {
 		Params.HitCounter.SetActive(true);
 	}
 
-	public override bool AddEffect(TileEffect e)
+	public override TileEffect AddEffect(TileEffect e)
 	{
 		foreach(TileEffect child in Effects)
 		{
@@ -172,45 +170,28 @@ public class Mimic : Enemy {
 			{
 				child.Duration += e.Duration;
 				if(e != null) Destroy(e.gameObject);
-				return false;
+				return child;
 			}
 		}
 		Reveal();
-		
 		e.Setup(this);
 		e.transform.position = this.transform.position;
 		e.transform.parent = this.transform;
 		Effects.Add(e);
-
-
-		return true;
+		CheckStats();
+		return e;
 	}
 
-	public override void AfterTurn(){
+	public override IEnumerator AfterTurnRoutine(){
 
-		Reset();
-		InitStats.TurnDamage = 0;
-		HasAttackedThisTurn = false;
-		InitStats.Lifetime ++;
-		if(InitStats.Lifetime >= 1) 
-		{
-			InitStats.isNew = false;
-		}
 
-		Stats = new TileStat(InitStats);
-		for(int i = 0; i < Effects.Count; i++)
-		{
-			if(Effects[i].CheckDuration()) 
-			{
-				Destroy(Effects[i].gameObject);
-				Effects.RemoveAt(i);
-			}
-		}
+		yield return StartCoroutine(base.AfterTurnRoutine());
+
 
 		if(Stats.isAlerted)
 		{
 			SetState(TileState.Idle, true);
-			_anim.SetBool("Sleep",false);
+			//_anim.SetBool("Sleep",false);
 			//if(sleep_part)Destroy(sleep_part);
 		}
 

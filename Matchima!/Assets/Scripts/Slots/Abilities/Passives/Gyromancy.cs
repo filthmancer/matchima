@@ -36,22 +36,22 @@ public class Gyromancy : Ability {
 		}
 		else 
 		{
-			if(Input.GetKeyDown(Player.instance.Options.GravityUp)) 
+			if(Input.GetKeyDown(Player.Options.GravityUp)) 
 			{
 				//TileMaster.instance.SetGroundBlocks(2);
 				Player.Stats.Shift = ShiftType.Up;
 			}
-			else if(Input.GetKeyDown(Player.instance.Options.GravityDown)) 
+			else if(Input.GetKeyDown(Player.Options.GravityDown)) 
 			{
 				//TileMaster.instance.SetGroundBlocks(0);
 				Player.Stats.Shift = ShiftType.Down;
 			}
-			else if(Input.GetKeyDown(Player.instance.Options.GravityRight)) 
+			else if(Input.GetKeyDown(Player.Options.GravityRight)) 
 			{
 				//TileMaster.instance.SetGroundBlocks(3);
 				Player.Stats.Shift = ShiftType.Right;
 			}
-			else if(Input.GetKeyDown(Player.instance.Options.GravityLeft)) 
+			else if(Input.GetKeyDown(Player.Options.GravityLeft)) 
 			{
 				//TileMaster.instance.SetGroundBlocks(1);
 				Player.Stats.Shift = ShiftType.Left;

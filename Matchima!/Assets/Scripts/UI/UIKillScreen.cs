@@ -8,7 +8,7 @@ public class UIKillScreen : MonoBehaviour {
 	public GameObject KillBox;
 	public TextMeshProUGUI Turns;
 	public Image PointsImg;
-	public TextMeshProUGUI Tens, Hunds, Thous, AllTokens;
+	public TextMeshProUGUI AllTokens;
 	public TextMeshProUGUI Defeat;
 	public TextMeshProUGUI KillerInfo, BestCombo, NextSpecial;
 
@@ -26,11 +26,11 @@ public class UIKillScreen : MonoBehaviour {
 
 	public void Activate(long alltokens, int tens, int hunds, int thous)
 	{
-		StartCoroutine(CheckPoints(alltokens, tens, hunds, thous));
+		StartCoroutine(CheckPoints(alltokens));
 		
 	}
 
-	IEnumerator CheckPoints(long currenttokens, int tens, int hunds, int thous)
+	IEnumerator CheckPoints(long currenttokens)
 	{
 		yield return new WaitForSeconds(1.0F);
 
@@ -42,88 +42,12 @@ public class UIKillScreen : MonoBehaviour {
 		//Class.text = Player.instance.Class.Name + " : " + Player.instance.Class.Level;
 		StartCoroutine(CycleInfo());
 
-		long finalPoints = currenttokens + tens + (hunds * 50) + (thous * 500);
 		int speed = 1;
 		bool isIncreasing = true;
 		
 		//float ratio = (float)(Player.instance.Class.PointsCurrent % 1000) / Player.instance.Class.PointsToLevel;
 		//PointsImg.transform.localScale = new Vector3(ratio, 1,1);
 		AllTokens.text = currenttokens + " Tokens";
-		Tens.text = tens + "";
-		Hunds.text = hunds + "";
-		Thous.text = thous + "";
-
-		
-		yield return new WaitForSeconds(0.6F);
-
-		while(isIncreasing)
-		{
-			if(tens > 0)
-			{
-				tens -= speed;
-				currenttokens += speed;
-				speed = (int) (speed * 2.0F);
-				if(tens <= speed)
-				{
-					currenttokens += tens;
-					tens = 0;
-					speed = 1;
-				}
-				Vector3 tokenpos = Tens.transform.position + Vector3.down + Vector3.left * (Random.value - Random.value);
-				TileMaster.instance.CreateMiniTile(tokenpos, AllTokens.transform);
-			}
-			else if(hunds > 0)
-			{
-				hunds -= speed;
-				currenttokens += speed*10;
-				speed = (int) (speed * 2.0F);
-				if(hunds <= speed)
-				{
-					currenttokens += hunds*50;
-					hunds = 0;
-					speed = 1;
-				}
-				for(int i = 0; i < 10; i++)
-				{
-				Vector3 tokenpos = Hunds.transform.position + Vector3.down + Vector3.left * (Random.value - Random.value);
-				TileMaster.instance.CreateMiniTile(tokenpos, AllTokens.transform);
-				}
-			}
-			else if(thous > 0)
-			{
-				thous -= speed;
-				currenttokens += speed*100;
-				speed = (int) (speed * 2.0F);
-				if(thous <= speed)
-				{
-					currenttokens += thous*500;
-					thous = 0;
-					speed = 1;
-				}
-				for(int i = 0; i < 50; i++)
-				{
-					Vector3 tokenpos = Thous.transform.position + Vector3.down + Vector3.left * (Random.value - Random.value);
-					TileMaster.instance.CreateMiniTile(tokenpos, AllTokens.transform);
-				}
-			}
-			
-			if(currenttokens > finalPoints - 10)
-			{
-				currenttokens = finalPoints;
-				tens = 0;
-				hunds = 0;
-				thous = 0;
-				isIncreasing = false;
-			}
-
-			AllTokens.text = currenttokens + " Tokens";
-			Tens.text = tens + "";
-			Hunds.text = hunds + "";
-			Thous.text = thous + "";
-
-			yield return new WaitForSeconds(0.1F);
-		}	
-
 		
 		yield return null;
 	}

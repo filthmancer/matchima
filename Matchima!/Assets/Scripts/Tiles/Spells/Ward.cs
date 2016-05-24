@@ -28,7 +28,8 @@ public class Ward : Tile {
 	public override StCon [] Description
 	{
 		get{
-			return new StCon[]{
+			if(DescriptionOverride != string.Empty) return new StCon [] {new StCon(DescriptionOverride, Color.white)};
+			else return new StCon[]{
 				new StCon("Casts ", Color.white, false),
 				new StCon(Buff, GameData.Colour(Genus), false),
 				new StCon(" on " + target_name)
@@ -56,13 +57,10 @@ public class Ward : Tile {
  
 	public override IEnumerator AfterTurnRoutine()
 	{
-		if(Destroyed) yield break;
+		if(Destroyed || Buff == string.Empty) yield break;
 		timer_current -= 1;
 		if(timer_current > 0) yield break;
 		else timer_current = Timer;
-		SetState(TileState.Selected, true);
-		yield return new WaitForSeconds(0.3F);
-		SetState(TileState.Idle, true);
 		int num = (int)Genus;
 		if(num > 3)
 		{
@@ -70,6 +68,11 @@ public class Ward : Tile {
 		}
 		else 
 		{
+			SetState(TileState.Selected, true);
+			yield return new WaitForSeconds(0.3F);
+			SetState(TileState.Idle, true);
+			
+
 			GameObject part = EffectManager.instance.PlayEffect(this.transform, Effect.Force, "", GameData.instance.GetGENUSColour(Genus));
 			MoveToPoint mp = part.GetComponent<MoveToPoint>();
 			mp.enabled = true;

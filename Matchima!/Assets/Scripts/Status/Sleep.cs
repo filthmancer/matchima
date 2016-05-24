@@ -13,15 +13,20 @@ public class Sleep : TileEffect {
 		}
 	}
 
-	public override bool CheckDuration()
+
+	public override IEnumerator StatusEffectRoutine()
 	{
-		Duration -= 1;
 		if(Duration != 0)
 		{
 			_Tile.InitStats.isAlerted = false;
 		}
-		else _Tile.InitStats.isAlerted = true;
-		return Duration == 0;
+		else 
+		{
+			_Tile.InitStats.isAlerted = true;
+			MiniAlertUI m = UIManager.instance.MiniAlert(_Tile.transform.position, " !", 150, GameData.instance.BadColour);
+
+			yield return new WaitForSeconds(GameData.GameSpeed(0.05F));
+		}
 	}
 
 

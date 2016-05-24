@@ -152,9 +152,7 @@ public class ApplyEffectToTile : Ability {
 		foreach(Tile child in to_apply)
 		{
 			child.SetState(TileState.Selected, true);
-			TileEffect effect = (TileEffect) Instantiate(GameData.instance.GetTileEffectByName(EffectName));
-			effect.GetArgs(Duration, args.ToArray());
-			child.AddEffect(effect);
+			child.AddEffect(EffectName, Duration, args.ToArray());
 		}
 		
 		yield return new WaitForSeconds(GameData.GameSpeed(0.35F));

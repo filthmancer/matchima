@@ -4,15 +4,11 @@ using System.Collections.Generic;
 
 public class Slash : Ability{
 
-	Ability_UpgradeInfo DamageUp, ExtraRows;
-	public int upgrade_extra_rows = 0;
-	public int upgrade_damage = 0;
-	public override StCon [] Description
+	int init_slashes = 0;
+	int total_slashes
 	{
-		get
-		{
-			return new StCon[] {new StCon(DamageUp.Info, GameData.Colour(GENUS.WIS)),
-								new StCon(ExtraRows.Info, GameData.Colour(GENUS.WIS))};
+		get{
+			return (int) ((float)init_slashes * StrengthFactor);
 		}
 	}
 
@@ -37,16 +33,25 @@ public class Slash : Ability{
 
 
 	public bool SlashX, SlashY;
-	public override void Activate()
+
+	public override IEnumerator BeforeTurn()
+	{	
+		yield return StartCoroutine(SlashRoutine());
+	}
+
+	public override void SetArgs(params string [] args)
 	{
-		if(cooldown_time > 0) return;
-		if(!CanAfford()) return;
-		activated = true;
-		StartCoroutine(SlashRoutine());
+		init_slashes = GameData.StringToInt(args[0]);
+		SlashX = args[1].Contains("X");
+		SlashY = args[1].Contains("Y");
 	}
 
 	public IEnumerator SlashRoutine()
 	{
+		UIManager.ClassButtons[Parent.Index].ShowClass(true);
+		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons[Parent.Index].transform.position + Vector3.up, 
+													"Slash", 55, GameData.Colour(Parent.Genus), 1.2F, 0.25F);
+		yield return new WaitForSeconds(Time.deltaTime * 15);
 		TileMaster.instance.SetAllTileStates(TileState.Locked, true);
 		Tile [,] _tiles = TileMaster.Tiles;
 		List<Tile> to_collect = new List<Tile>();
@@ -59,14 +64,14 @@ public class Slash : Ability{
 
 		if(SlashX)
 		{
-			part_x = new GameObject[1 + upgrade_extra_rows];
+			part_x = new GameObject[total_slashes];
 			List<int> poss_y = new List<int>();
 			for(int i = 0; i < _tiles.GetLength(1); i++)
 			{
 				poss_y.Add(i);
 			}
 
-			for(int i = 0; i < 1 + upgrade_extra_rows; i++)
+			for(int i = 0; i < total_slashes; i++)
 			{
 				int rand_y = Random.Range(0, poss_y.Count);
 				int y = poss_y[rand_y];
@@ -86,13 +91,13 @@ public class Slash : Ability{
 
 		if(SlashY)
 		{
-			part_y = new GameObject[1 + upgrade_extra_rows];
+			part_y = new GameObject[total_slashes];
 			List<int> poss_x = new List<int>();
 			for(int i = 0; i < _tiles.GetLength(0); i++)
 			{
 				poss_x.Add(i);
 			}
-			for(int i = 0; i < 1 + upgrade_extra_rows; i++)
+			for(int i = 0; i < total_slashes; i++)
 			{
 				int rand_x = Random.Range(0, poss_x.Count);
 				int x = poss_x[rand_x];
@@ -112,7 +117,7 @@ public class Slash : Ability{
 			}
 		}
 
-		for(int i = 0; i < 1 + upgrade_extra_rows; i++)
+		for(int i = 0; i < total_slashes; i++)
 		{
 			bool movingParticles = true;
 			bool xfin = false, yfin = false;
@@ -153,73 +158,45 @@ public class Slash : Ability{
 		}
 		yield return new WaitForSeconds(0.2F);
 		
-		yield return StartCoroutine(Player.instance.BeforeMatch(to_collect));
-		PlayerControl.instance.AddTilesToMatch(to_collect.ToArray());
-		if(Player.instance.CompleteMatch)
-		{
-			foreach(Tile child in PlayerControl.instance.finalTiles)
-			{
-				int v = 1;
-				if(child.Type.isEnemy) 
-				{
-					child.InitStats.TurnDamage += Damage;
-				}
-
-				if(child.IsType("","Altar"))
-				{
-					break;
-				}
-				else if(child.Match(v))
-				{
-					int [] values = child.Stats.GetValues();
-					resource[(int)child.Genus] += values[0];
-					heal[(int)child.Genus]   += values[1];
-					armour[(int)child.Genus]   += values[2];
-				}
-			}
-		}
+		
+		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
+		yield return StartCoroutine(GameManager.instance.BeforeMatchRoutine());
+		yield return StartCoroutine(GameManager.instance.MatchRoutine(PlayerControl.instance.finalTiles));
 		yield return StartCoroutine(Player.instance.AfterMatch());
+		
+		//if(Player.instance.CompleteMatch)
+		//{
+			//foreach(Tile child in PlayerControl.instance.finalTiles)
+			//{
+			//	int v = 1;
+			//	if(child.Type.isEnemy) 
+			//	{
+			//		child.InitStats.TurnDamage += Damage;
+			//	}
+			//	if(child.IsGenus(GENUS.OMG))
+			//	{
+			//		continue;
+			//	}
+			//	else if(child.Match(v))
+			//	{
+			//		int [] values = child.Stats.GetValues();
+			//		resource[(int)child.Genus] += values[0];
+			//		heal[(int)child.Genus]   += values[1];
+			//		armour[(int)child.Genus]   += values[2];
+			//	}
+			//}
 
-		cooldown_time = cooldown;
-		activated = false;
-		GameManager.instance.CollectResources(resource, heal, armour);
-		yield return StartCoroutine(GameManager.instance.CompleteTurnRoutine());
+		
+		//}
+		
+
+		//cooldown_time = cooldown;
+		//activated = false;
+		//GameManager.instance.CollectResources(resource, heal, armour);
+		//yield return StartCoroutine(GameManager.instance.CompleteTurnRoutine());
 		TileMaster.instance.ResetTiles();
-		TileMaster.instance.SetFillGrid(true);
+		//TileMaster.instance.SetFillGrid(true);
 
 		yield break;
-	}
-
-
-	public override void Setup(Ability new_ab)
-	{
-		base.Setup(new_ab);
-		Slash stack = (Slash) new_ab;
-		SlashY = stack.SlashY;
-		SlashX = stack.SlashX;
-		Start();
-	}
-
-	public override void Setup(AbilityContainer con, int? _in, int? _out)
-	{
-		base.Setup(con, _in, _out);
-		_input = null;
-		if(_in.HasValue) _input = con.Input[(int)_in];
-		else
-		{
-			_input = GetContainerData(con);
-		}
-		GENUS = (GENUS) GameData.StringToInt(_input.args[2]);
-		SlashY = _input.args[3].Contains("Y");
-		SlashX = _input.args[3].Contains("X");
-
-		if(SlashX && !SlashY) name = "Slash";
-		else if(SlashY && !SlashX) name = "Swipe";
-		else name = "Swing";
-
-		ExtraRows = new Ability_UpgradeInfo(0,1, "", "extra slashes", Color.green, () => {upgrade_extra_rows += 1;});
-		Upgrades.Add(ExtraRows);
-		DamageUp = new Ability_UpgradeInfo(0, 2, "+", " Damage", Color.green, () => {upgrade_damage += 2;});
-		Upgrades.Add(DamageUp);
 	}
 }

@@ -3,13 +3,19 @@ using System.Collections;
 
 public class IgnorePlayer : TileEffect {
 
-	// Use this for initialization
-	void Start () {
-	
+	public override StCon [] Description
+	{ 
+		get{
+			return new StCon [] {
+				new StCon("Ignored", GameData.Colour(GENUS.OMG), false),
+				new StCon(DurationString)
+			};
+		}
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
+
+	public override bool CheckDuration()
+	{
+		Duration -= 1;
+		return Duration == 0;
 	}
 }

@@ -52,15 +52,16 @@ public class Wizardry : Ability {
 		Description_Basic = "Spell cooldowns lowered by " + (finalcd*100).ToString("0") + "%";
 	}
 
-	public override void AfterTurnB()
+	public override IEnumerator AfterTurn()
 	{
-		base.AfterTurnB();
+		base.AfterTurn();
 		foreach(Ability child in Player.Abilities)
 		{
 			if(child == null) continue;
 			if(child == this) continue;
 			child.addedCooldownPercent += -finalcd;
 		}		
+		yield return null;
 	}
 
 	public override void Setup(AbilityContainer con, int? _in = null, int? _out = null)

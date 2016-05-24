@@ -12,6 +12,8 @@ public class MoveToPoint : MonoBehaviour {
 
 	[HideInInspector]
 	public Unit Target;
+	[HideInInspector]
+	public Tile Target_Tile;
 
 	private float LerpingSpeed = 1.0F;
 
@@ -21,7 +23,7 @@ public class MoveToPoint : MonoBehaviour {
 	private Vector3 velocity;
 
 	private float delay = 0.0F;
-	private float threshold = 0.2F;
+	private float threshold = 0.17F;
 	private float final_scale = 1.0F;
 	Action method;
 
@@ -45,9 +47,8 @@ public class MoveToPoint : MonoBehaviour {
 				arc_power -= arc_decay;
 			} 
 
-			if(Vector3.Distance(transform.position,Point) < threshold) 
+			if(Vector3.Distance(transform.position,Point) < threshold + Speed) 
 			{
-				
 				if(delay <= 0.0F)
 				{
 					if(method != null) method();

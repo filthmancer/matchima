@@ -17,7 +17,7 @@ public class BlackHole : Tile {
 		}
 	}
 
-	public override IEnumerator BeforeMatch()
+	public override IEnumerator BeforeMatch(bool original)
 	{
 		if(isMatching) yield break;
 		isMatching = true;
@@ -71,9 +71,7 @@ public class BlackHole : Tile {
 							PlayerControl.instance.RemoveTileToMatch(TileMaster.Tiles[tile[0], tile[1]]);
 							if(TileMaster.Tiles[tile[0],tile[1]].IsType("blackhole"))
 							{
-								TileEffect effect = (TileEffect) Instantiate(GameData.instance.GetTileEffectByName("AntiGravity"));
-								effect.GetArgs(-1, "4");
-								AddEffect(effect);
+								AddEffect("AntiGravity", -1, "4");
 								antigrav= true;
 								PlayerControl.instance.RemoveTileToMatch(this);
 							}

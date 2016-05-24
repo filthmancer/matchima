@@ -47,7 +47,7 @@ public class Alchemy : Ability {
 		Description_Basic = "Next match type changed to " + Genus + " " + Species;
 	}
 
-	public override void BeforeTurn()
+	public override IEnumerator BeforeTurn()
 	{
 		if(activated)
 		{
@@ -69,6 +69,7 @@ public class Alchemy : Ability {
 			cooldown_time = cooldown;
 			activated = false;
 		}
+		yield return null;
 	}
 
 

@@ -31,10 +31,11 @@ public class GameData : MonoBehaviour {
 	public Color Combo;
 	public ItemColours _ItemColours;
 	public Color GoodColour, BadColour;
+	public Color ShieldFull, ShieldEmpty;
 
-	public ClassContainer [] Classes;
-	public Class [] ClassesTest;
-	public ClassContainer EndlessMode;
+	//public ClassContainer [] Classes;
+	public Class [] Classes;
+	//public ClassContainer EndlessMode;
 
 	public AbilityContainer [] Abilities, ClassAbilities;
 
@@ -57,7 +58,7 @@ public class GameData : MonoBehaviour {
 	public static bool loading_assets = false;
 	public static bool loaded_assets = false;
 
-
+	public bool PrintLogs;
 
 	// Use this for initialization
 	void Start () {
@@ -85,13 +86,14 @@ public class GameData : MonoBehaviour {
 
 	public static void Log(string s, Type t = null)
 	{
+		if(!GameData.instance.PrintLogs) return;
 		if(t != null) Debug.Log(t + " : " + s);
-		//else Debug.Log(s);
+		else Debug.Log(s);
 	}
 
 	public static float GameSpeed(float f)
 	{
-		return f * Player.instance.Options.GameSpeed * Time.deltaTime * 60;
+		return f * Player.Options.GameSpeed * Time.deltaTime * 60;
 	}
 
 	public Sprite [] GetTileSprite(string s)
@@ -138,16 +140,27 @@ public class GameData : MonoBehaviour {
 	{
 		switch(t)
 		{
-			case ItemType.Basic:
+			case ItemType.Basic: 
 			return _ItemColours.Basic;
-			case ItemType.Masterwork:
-			return _ItemColours.Masterwork;
-			case ItemType.Crude:
-			return _ItemColours.Crude;
+			break;
+			case ItemType.Generator: 
+			return _ItemColours.Generator;
+			break;
+			case ItemType.Shift: 
+			return _ItemColours.Shift;
+			break;
+			case ItemType.Unstable:
+			return _ItemColours.Unstable;
+			break;
+			case ItemType.Primal:
+			return _ItemColours.Primal;
+			break;
+			case ItemType.Elegant:
+			return _ItemColours.Elegant;
+			break;
 			case ItemType.Developers:
 			return _ItemColours.Developers;
-			case ItemType.Unique:
-			return _ItemColours.Unique;
+			break;
 		}
 		return Color.white;
 	}
@@ -181,6 +194,15 @@ public class GameData : MonoBehaviour {
 			if(_Status[i].Name == name) return _Status[i];
 		}
 
+		return null;
+	}
+
+	public Slot GetMod(string name)
+	{
+		for(int i = 0; i < _Abilities.Length; i++)
+		{
+			if(_Abilities[i].name == name) return _Abilities[i] as Slot;
+		}
 		return null;
 	}
 
@@ -379,7 +401,7 @@ public class GameData : MonoBehaviour {
 		List<Wave> r_waves = new List<Wave>();
 		foreach(Wave child in _Waves)
 		{
-			if(child.RequiredDifficulty <= GameManager.Difficulty && !child.Ignore)
+			if(child.RequiredDifficulty <= GameManager.Difficulty)
 			{
 				allchance += child.Chance;
 				r_waves.Add(child);
@@ -390,7 +412,7 @@ public class GameData : MonoBehaviour {
 
 		foreach(Wave child in r_waves)
 		{
-			if(child.RequiredDifficulty > GameManager.Difficulty || child.Ignore) continue;
+			if(child.RequiredDifficulty > GameManager.Difficulty) continue;
 			if(rand > currchance && rand <= currchance + child.Chance)
 			{
 				return child;
@@ -438,7 +460,7 @@ public class GameData : MonoBehaviour {
 		build.InnerText = "" + AppVersion;
 
 		XmlElement classes = (XmlElement) data.AppendChild(file.CreateElement("Classes"));
-		foreach(ClassContainer child in Classes)
+		/*foreach(ClassContainer child in Classes)
 		{
 			XmlElement title = (XmlElement) classes.AppendChild(file.CreateElement("Class"));
 
@@ -450,7 +472,7 @@ public class GameData : MonoBehaviour {
 			level.InnerText =  "" + child.Level;
 			XmlElement ptl = (XmlElement) title.AppendChild(file.CreateElement("LevelUpCost"));
 			ptl.InnerText =  "" + child.LevelUpCost;
-		}
+		}*/
 
 
 		XmlSerializer SerializerObj = new XmlSerializer(typeof(PlayerData));
@@ -497,17 +519,17 @@ public class GameData : MonoBehaviour {
 			}
 			
 		//Class Data
-			XmlNode classroot = root.ChildNodes[1];
-			for(int i = 0; i < classroot.SelectNodes("//Class").Count; i++)
-			{
-				XmlNode c = classroot.SelectNodes("//Class")[i];
-				string name = c.SelectNodes("Name")[0].InnerText;
-				bool unlocked = c.SelectNodes("Unlocked")[0].InnerText == "T";
-				int level = StringToInt(c.SelectNodes("Level")[0].InnerText);
-				LoadClass(i, name, unlocked, level);
-				
-			}
-			UIManager.Menu.CheckClassButtons();
+		//XmlNode classroot = root.ChildNodes[1];
+		//for(int i = 0; i < classroot.SelectNodes("//Class").Count; i++)
+		//{
+		//	XmlNode c = classroot.SelectNodes("//Class")[i];
+		//	string name = c.SelectNodes("Name")[0].InnerText;
+		//	bool unlocked = c.SelectNodes("Unlocked")[0].InnerText == "T";
+		//	int level = StringToInt(c.SelectNodes("Level")[0].InnerText);
+		//	LoadClass(i, name, unlocked, level);
+		//	
+		//}
+			//UIManager.Menu.CheckClassButtons();
 			
 		}
 		else Save();
@@ -636,14 +658,13 @@ public class GameData : MonoBehaviour {
 
 	public void LoadClass(int num, string name, bool un, int lvl)
 	{
-		if(Classes[num].Name != name) 
-		{
-			Debug.LogError("LOADED INTO WRONG CLASS");
-			return;
-		}
-
-		Classes[num].Unlocked = un;
-		Classes[num].Level = lvl;
+		//if(Classes[num].Name != name) 
+		//{
+		//	Debug.LogError("LOADED INTO WRONG CLASS");
+		//	return;
+		//}
+		//Classes[num].Unlocked = un;
+		//Classes[num].Level = lvl;
 	}
 
 	public void LoadClassAbilities(Class c)
@@ -718,28 +739,34 @@ public class GameData : MonoBehaviour {
 	{
 		int num = 0;
 		UnityEngine.Object [] classes = Resources.LoadAll("Classes");
-		ClassesTest = new Class[classes.Length];
+		Classes = new Class[classes.Length];
 		for(int i = 0; i < classes.Length; i++)
 		{
 			GameObject cobj = classes[i] as GameObject;
-			ClassesTest[i] = cobj.GetComponent<Class>();
-			if(ClassesTest[i]) num++;
+			Classes[i] = cobj.GetComponent<Class>();
+			if(Classes[i]) num++;
 		}
 		print("Loaded " + num + " classes");
+		List<Class> final = new List<Class>();
+		final.AddRange(Classes);
+		final.Sort((x,y) =>{return x.Unlocked ? 0:1;});
+		Classes = final.ToArray();
 	}
 
 
 	IEnumerator LoadAssets_Routine()
 	{
 		_Items = ItemNames;
-		_Waves = new Wave[WaveParent.transform.childCount];
-		for(int i = 0; i < WaveParent.transform.childCount; i++)
-		{
-			_Waves[i] = WaveParent.transform.GetChild(i).GetComponent<Wave>();
-			_Waves[i].Index = i;
-		}
+		//_Waves = new Wave[WaveParent.transform.childCount];
+		//for(int i = 0; i < WaveParent.transform.childCount; i++)
+		//{
+		//	_Waves[i] = WaveParent.transform.GetChild(i).GetComponent<Wave>();
+		//	_Waves[i].Index = i;
+		//}
 
 		TileModel = (GameObject) Resources.Load("TileModel");
+
+
 
 		UnityEngine.Object[] textures = Resources.LoadAll("Icons");
 		//Sprite [] textures = (Sprite[]) Resources.LoadAll("Icons");
@@ -755,13 +782,13 @@ public class GameData : MonoBehaviour {
 		}
 
 		
-		//_Abilities = new Ability[AbilityParent.transform.childCount];
-		//for(int i = 0; i < AbilityParent.transform.childCount; i++)
-		//{
-		//	_Abilities[i] = AbilityParent.transform.GetChild(i).GetComponent<Ability>();
-		//	//_Abilities[i].Index = i;
-		//}
-		//AbilityParent.SetActive(false);
+		_Abilities = new Ability[AbilityParent.transform.childCount];
+		for(int i = 0; i < AbilityParent.transform.childCount; i++)
+		{
+			_Abilities[i] = AbilityParent.transform.GetChild(i).GetComponent<Ability>();
+			//_Abilities[i].Index = i;
+		}
+		AbilityParent.SetActive(false);
 
 		_Status = new Status[TileEffectParent.transform.childCount];
 		for(int i = 0; i < TileEffectParent.transform.childCount; i++)
@@ -773,9 +800,10 @@ public class GameData : MonoBehaviour {
 		TileEffectParent.SetActive(false);
 
 		yield return null;
-		LoadAbilities();
+		//LoadAbilities();
 
 		yield return StartCoroutine(TileMaster.Types.LoadSprites());
+		yield return StartCoroutine(TileMaster.Types.LoadPrefabs());
 
 		print("FINISHED LOADING");
 		loaded_assets = true;
@@ -788,19 +816,19 @@ public class GameData : MonoBehaviour {
 //Get Class by Name
 	public ClassContainer GetClassContainer(string name)
 	{
-		foreach(ClassContainer child in Classes)
-		{
-			if(name == child.Name || name == child.ShortName) 
-			{
-				return child;
-			}
-		}
+		//foreach(ClassContainer child in Classes)
+		//{
+		//	if(name == child.Name || name == child.ShortName) 
+		//	{
+		//		return child;
+		//	}
+		//}
 		return null;
 	}
 
 	public Class GetClass(string name)
 	{
-		foreach(Class child in ClassesTest)
+		foreach(Class child in Classes)
 		{
 			if(name == child.Name || name == child.Info.ShortName)
 			{
@@ -918,7 +946,13 @@ public class ItemInfo
 [System.Serializable]
 public class ItemColours
 {
-	public Color Basic, Crude, Masterwork, Developers, Unique;
+	public Color Basic, 
+	Generator, 
+	Shift, 
+	Unstable,
+	Primal,
+	Elegant,
+	Developers;
 }
 
 

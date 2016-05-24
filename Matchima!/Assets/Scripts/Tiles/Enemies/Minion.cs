@@ -27,8 +27,11 @@ public class Minion : Enemy {
 		Rank = 1;
 
 		Name        = "Minion";
-		InitStats.Value       = 1 + (int)(factor/10);
-		hpfactor    *= MinionHPAdded + factor / 3;
+
+		factor *= Random.Range(0.8F, 1.1F);
+		factor = factor * (InitStats.Value);
+
+		hpfactor    *= MinionHPAdded + factor / 6;
 		atkfactor   *= MinionATKAdded + factor / 5;
 
 		
@@ -39,9 +42,8 @@ public class Minion : Enemy {
 
 		if(Stats.isNew)
 		{
-			TileEffect sleep = (TileEffect) Instantiate(GameData.instance.GetTileEffectByName("Sleep"));
-			sleep.Duration = 1;
-			AddEffect(sleep);
+
+			AddEffect("Sleep", 1);
 			//sleep_part = EffectManager.instance.PlayEffect(this.transform, Effect.Sleep);
 		}
 	}

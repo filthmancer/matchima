@@ -6,7 +6,14 @@ public enum DiffMode
 {
 	Easy,
 	Normal,
-	Hard,
+	Hard
+}
+
+public enum GameMode
+{
+	Story,
+	Endless,
+	None
 }
 
 public class GameManager : MonoBehaviour {
@@ -16,12 +23,29 @@ public class GameManager : MonoBehaviour {
 	public static bool debug = false;
 	public static bool inStartMenu;
 
+	public static int ComboSize;
+
 	public static float GlobalManaMult = 1.0F,
 						GlobalHealthMult = 1.0F,
 						GlobalArmourMult = 1.0F;
-	public static float GrowthRate_Easy = 0.08F,
-						GrowthRate_Normal = 0.18F,
-						GrowthRate_Hard = 0.25F;
+	public static float GrowthRate_Easy = 0.19F,
+						GrowthRate_Normal = 0.26F,
+						GrowthRate_Hard = 0.40F;
+
+	public static float [] MeterDecay
+	{
+		get
+		{
+			return new float [] {	GameManager.instance.MeterDecayLvl0,
+									GameManager.instance.MeterDecayLvl1,
+									GameManager.instance.MeterDecayLvl2, 
+									GameManager.instance.MeterDecayLvl3};
+		}
+	}
+	private float	MeterDecayLvl0 = 0.0F,
+					MeterDecayLvl1 = 1.05F, 
+					MeterDecayLvl2 = 1.10F, 
+					MeterDecayLvl3 = 1.30F;
 
 	public Juice _Juice;
 	public AudioSource AudioObj;
@@ -39,31 +63,33 @@ public class GameManager : MonoBehaviour {
 				case DiffMode.Hard:
 				return Player.instance.Turns/20.0F * GrowthRate_Hard;
 			}
-			return GrowthRate_Easy;
+			return Player.instance.Turns/20.0F * GrowthRate_Easy;
 		}
 	}
+
+	private float Difficulty_init = 2.5F;
 	public static float Difficulty = 1;
 	public float _Difficulty = 0;
 
 	public DiffMode DifficultyMode = DiffMode.Normal;
+	public GameMode Mode = GameMode.Story;
 	public int TurnsToWin = 100;
 	public bool gameStart = false;
 	public bool paused = false;
 	public bool EnemyTurn = false;
 
 	public long RoundTokens = 0;
-	public int Tens = 0, Hunds = 0, Thous = 0;
+
 	private int OverflowThisTurn = 0;
 	private int OverflowMulti = 2;
-
 
 	private float OverflowHitMulti = 1.0F;
 	private float AllOfTypeMulti = 1.2F;
 
-	public Wave [] _Wave = new Wave[5];
+	public Wave _Wave;
 	public int TimeToWave = 3;
 
-	public bool LevelUp = false, WaveAlert = false;
+	public bool LevelUp = false;
 	
 	public bool isPaused
 	{
@@ -71,17 +97,19 @@ public class GameManager : MonoBehaviour {
 			return !gameStart || paused;
 		}
 	}
-
 	public static bool TuteActive = false;
-	public Wave TuteWave;
+
+	public WaveGroup StoryMode;
+	public WaveGroup EndlessMode;
 	void OnApplicationQuit()
 	{
 		GameData.instance.Save();
-		if(gameStart) PlayerLoader.Save();
-		PlayerPrefs.SetInt("Resume", 0);
-		//PlayerPrefs.SetInt("Resume", gameStart ? 1 : 0);
-		//PlayerPrefs.SetString("Name", Player.instance.Class.Name);
-		//PlayerPrefs.SetInt("Turns", Player.instance.Turns);
+		//PlayerPrefs.SetInt("Resume", 0);
+		if(!gameStart) return;
+		PlayerLoader.Save();
+		PlayerPrefs.SetInt("Resume", gameStart ? 1 : 0);
+		PlayerPrefs.SetString("Name", Player.Classes[0].Name);
+		PlayerPrefs.SetInt("Turns", Player.instance.Turns);
 	}
 
 	void OnApplicationPause()
@@ -92,20 +120,19 @@ public class GameManager : MonoBehaviour {
 			if(gameStart) 
 			{
 				PlayerLoader.Save();
+				PlayerPrefs.SetInt("Resume", gameStart ? 1 : 0);
+				PlayerPrefs.SetString("Name", Player.Classes[0].Name);
+				PlayerPrefs.SetInt("Turns", Player.instance.Turns);
 			}
-			PlayerPrefs.SetInt("Resume", 0); //gameStart ? 1 : 0);
-			//PlayerPrefs.SetString("Name", Player.instance.Class.Name);
-			//PlayerPrefs.SetInt("Turns", Player.instance.Turns);
+			
 		} 
 	}
 
 	void Awake()
 	{
-		//if(Application.isMobilePlatform)
-		//{
-			QualitySettings.vSyncCount = 0;
-			Application.targetFrameRate = 60;
-		//}
+		QualitySettings.vSyncCount = 0;
+		Application.targetFrameRate = 60;
+		
 		  
 		if(instance == null)
 		{
@@ -125,21 +152,28 @@ public class GameManager : MonoBehaviour {
 		_Juice = GetComponent<Juice>();
 		PlayerLoader = GetComponent<_GameSaveLoad>();
 		GameData.instance.Load();
-		Difficulty = 0;
+		Difficulty = Difficulty_init;
 		inStartMenu = true;
-		TuteActive = false;		
+		TuteActive = false;	
+		//CameraUtility.SetTurnOffset(false);	
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		_Difficulty = Difficulty;
-		if(Player.loaded && UIManager.loaded && !gameStart) 
+		if(Player.loaded && UIManager.loaded && !gameStart && !Player.Stats.isKilled) 
 		{
 			if(!GameData.loading_assets) GameData.instance.LoadAssets();
-			
-			if(GameData.loaded_assets) StartGame();
+			if(Application.isMobilePlatform)
+			{
+				Player.Options.GameSpeed = 0.8F;
+			}
+			if(GameData.loaded_assets)
+			{
+				if(Mode == GameMode.Story) PlayStoryMode();
+				else if (Mode == GameMode.Endless) PlayEndlessMode();
+			}
 		}
-		
 
 		if(Input.GetKeyDown(KeyCode.Z)) 
 		{
@@ -179,10 +213,15 @@ public class GameManager : MonoBehaviour {
 			Cheat(9);
 		}
 
-		if(Input.GetKeyDown(KeyCode.U))			Player.Classes[0].AddToMeter(Player.Classes[0].MeterMax);
-		if(Input.GetKeyDown(KeyCode.I))			Player.Classes[1].AddToMeter(Player.Classes[1].MeterMax);
-		if(Input.GetKeyDown(KeyCode.O))			Player.Classes[2].AddToMeter(Player.Classes[2].MeterMax);
-		if(Input.GetKeyDown(KeyCode.P))			Player.Classes[3].AddToMeter(Player.Classes[3].MeterMax);
+		if(Input.GetKeyDown(KeyCode.U))			Player.Classes[0].AddToMeter(Player.Classes[0].MeterTop);
+		if(Input.GetKeyDown(KeyCode.I))			Player.Classes[1].AddToMeter(Player.Classes[1].MeterTop);
+		if(Input.GetKeyDown(KeyCode.O))			Player.Classes[2].AddToMeter(Player.Classes[2].MeterTop);
+		if(Input.GetKeyDown(KeyCode.P))			Player.Classes[3].AddToMeter(Player.Classes[3].MeterTop);
+
+		if(Input.GetKeyDown(KeyCode.H))			Player.Classes[0].LevelUp();
+		if(Input.GetKeyDown(KeyCode.J))			Player.Classes[1].LevelUp();
+		if(Input.GetKeyDown(KeyCode.K))			Player.Classes[2].LevelUp();
+		if(Input.GetKeyDown(KeyCode.L))			Player.Classes[3].LevelUp();
 
 		if(Input.GetKeyDown(KeyCode.F5)) PlayerControl.instance.focusTile.AddValue(5);
 		if(Input.GetKeyDown(KeyCode.F10)) OpenInFileBrowser.Open(Application.persistentDataPath);
@@ -218,35 +257,40 @@ public class GameManager : MonoBehaviour {
 		yield return new WaitForSeconds(0.3F);
 		long AllTokens = 0;//PlayerPrefs.GetInt("AllTokens");
 
-		UIManager.instance.ShowKillUI(AllTokens, Tens, Hunds,Thous);
-		RoundTokens = Tens + (Hunds * 50) + (Thous * 500);
+	//	RoundTokens = Tens + (Hunds * 50) + (Thous * 500);
 		PlayerPrefs.SetInt("AllTokens", (int)(AllTokens + RoundTokens));
+		UIManager.instance.ShowKillUI(0, 0,0,0);
 	}
 
+	bool camopen;
 	public void Cheat(int i)
 	{
 		switch(i)
 		{
 			case 1: //Z
-			GetWave(GameData.instance.GetRandomWave(), 1);
+			print(Difficulty + Mathf.Exp(Difficulty_Growth) + ":" + Difficulty_Growth);
+			Difficulty += Mathf.Exp(Difficulty_Growth);
+			Player.instance.Turns += 25;
 			Player.Stats._Health = Player.Stats._HealthMax;
 			break;
 			case 2: //X
 			//GetWave(GameData.instance.GetRandomWave(), 2);
-			TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["chest"], GENUS.DEX, 1, 50);
+			//CameraUtility.SetTurnOffset(camopen);
+			camopen = !camopen;
+		//	TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["chest"], GENUS.ALL, 2, 1);
 			//UIManager.instance.ShowResourceUI();
 			break;
 			case 3: //c
-			TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["cross"], GENUS.ALL,1, 4);
+			TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["chest"], GENUS.ALL,1, 1);
 			break;
 			case 4: //V
 			//GetTurn();
 			int [] point = PlayerControl.instance.focusTile.Point.Base;
-			TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["ward"], GENUS.STR,1, 4);
-			(TileMaster.Tiles[point[0], point[1]] as Ward).Buff = "Frenzy";
-			TileEffect effect = (TileEffect) Instantiate(GameData.instance.GetTileEffectByName("Fragile"));
-			effect.GetArgs(-1);
-			TileMaster.Tiles[point[0], point[1]].AddEffect(effect);
+			TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["chest"], GENUS.ALL,1, 50);
+			//(TileMaster.Tiles[point[0], point[1]] as Ward).Buff = "Frenzy";
+			//TileEffect effect = (TileEffect) Instantiate(GameData.instance.GetTileEffectByName("Fragile"));
+			//effect.GetArgs(-1);
+			//TileMaster.Tiles[point[0], point[1]].AddEffect(effect);
 
 			break;
 			case 5: //B
@@ -254,8 +298,8 @@ public class GameManager : MonoBehaviour {
 			PlayerControl.instance.focusTile.Match(1000);
 			break;
 			case 6: //N
-			Player.instance.InitStats.MapSize.y+=1;
-			TileMaster.instance.IncreaseGrid(0,1);
+			Player.instance.InitStats.MapSize.y-=1;
+			TileMaster.instance.IncreaseGrid(0,-1);
 			break;
 			case 7: //M
 			Player.instance.InitStats.MapSize.x+=1;
@@ -265,13 +309,12 @@ public class GameManager : MonoBehaviour {
 			CameraUtility.instance.ScreenShake(0.6F, 1.1F);
 			break;
 			case 9: //S
-			TileMaster.instance.Ripple(TileMaster.Grid.Tiles[3,3]);
+			TileMaster.instance.Ripple(TileMaster.Grid.Tiles[3,3], 1.7F, 0.5F, 0.35F);
+			//TileMaster.instance.Ripple(TileMaster.Grid.Tiles[3,3]);
 			break;
 		}
 
-		//print(Difficulty + Mathf.Exp(Difficulty_Growth) + ":" + Difficulty_Growth);
-		//Difficulty += Mathf.Exp(Difficulty_Growth);
-		//Player.instance.Turns += 25;
+		
 	}
 
 	public void AddTokens(int tokens)
@@ -294,10 +337,6 @@ public class GameManager : MonoBehaviour {
 		int hunds = all % d - all % (d/10);
 		all -= hunds;
 
-
-			Thous += hunds/100;
-			Hunds += tens/10;
-			Tens += ones;
 		}
 		else
 		{
@@ -308,195 +347,74 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-	public void GetWave(Wave w, int? slot = null)
+	public void GetWave(Wave w)
 	{
-		int chances = 0;
-		while(!slot.HasValue)
-		{
-			slot = Random.Range(0, _Wave.Length);
-			if(_Wave[slot.Value] != null) slot = null;
-			chances ++;
-			if(chances > 10) return;
-		}
-		if(_Wave[slot.Value] != null) Destroy(_Wave[slot.Value].gameObject);
-		_Wave[slot.Value] = Instantiate(w);
-		_Wave[slot.Value].Active = false;
-		_Wave[slot.Value].Timer = 3;
-
-		if(_Wave[slot.Value].Effects.LevelUpOnEnd) Difficulty += Mathf.Exp(Difficulty_Growth);
-		//StartCoroutine(WaveStartRoutine(slot, alert));
-	}
-
-	public void ActivateWave(int slot, bool alert = true)
-	{
-		_Wave[slot].Randomise();
-		_Wave[slot].transform.parent = this.transform;
-		_Wave[slot].Current = _Wave[slot].Required;
-		_Wave[slot].Active = true;
-		WaveAlert = true;
-
-		StartCoroutine(WaveStartRoutine(slot, alert));
-	}
-
-	IEnumerator WaveStartRoutine(int slot, bool alert)
-	{
-		PlayerControl.instance.ResetSelected();
-		if(alert)
-		{
-			UIManager.instance.WaveAlert.SetActive(true);
-			UIManager.instance.WaveAlert.Img[0].gameObject.SetActive(true);
-			yield return new WaitForSeconds(0.15F);
-
-			yield return new WaitForSeconds(1.0F);
-			
-			UIManager.instance.WaveAlert.SetActive(false);
-			UIManager.instance.WaveAlert.Img[0].gameObject.SetActive(false);
-			PlayerControl.instance.ResetSelected();
-		}
-		WaveAlert = false;
-		_Wave[slot].OnStart(slot);
-		yield return null;
-	}
-
-	public void WaveEnd(int slot)
-	{
-		StartCoroutine(WaveEndRoutine(slot));
-	}
-
-	IEnumerator WaveEndRoutine(int slot)
-	{
-		WaveAlert = true;
-		GlobalManaMult = 1.0F;
-
-		float wait_time = 1.3F;
-		if(_Wave[slot].Effects.LevelUpOnEnd) 
-		{
-			WaveReward reward = GenerateWaveReward();
-			UIManager.instance.WaveAlert.SetActive(true);
-			UIManager.instance.WaveAlert.Img[1].gameObject.SetActive(true);
-			if(reward != null)
-			{
-				UIManager.instance.WaveAlert.Img[2].gameObject.SetActive(true);
-				UIManager.instance.WaveAlert.Txt[0].text = reward.Title;
-				wait_time += 0.6F;
-			}
-		}
-		yield return new WaitForSeconds(1.3F);
-		_Wave[slot].Active = false;		
-		TimeToWave = 3;//Random.Range((int)_Wave[slot].PointfieldEndTime.x, (int)_Wave[slot].PointfieldEndTime.y);
+		if(_Wave != null && _Wave != w) Destroy(_Wave.gameObject);
+		_Wave = Instantiate(w);
+		_Wave.transform.parent = this.transform;
 		
-		if(_Wave[slot].Effects.LevelUpOnEnd)
-		{
-			UIManager.instance.WaveAlert.SetActive(false);
-			UIManager.instance.WaveAlert.Img[1].gameObject.SetActive(false);
-			UIManager.instance.WaveAlert.Img[2].gameObject.SetActive(false);
-		}	
-		WaveAlert = false;
-		GameManager.instance._Wave[slot] = null;
-
-		if(slot == 0)
-		{
-			GetWave(GameData.instance.GetRandomWave(), slot);
-			int max = 0;
-			while(Random.value < Difficulty / 300) 
-			{
-				GetWave(GameData.instance.GetRandomWave(), max);
-				max ++;
-				if(max > 3) break;
-			}
-				
-		}
-		yield return StartCoroutine(CompleteTurnRoutine());
-		yield return null;
-	}
-
-	public WaveReward GenerateWaveReward()
-	{	
-		if(Random.value > 1.0F) return null;
-
-		WaveReward reward = new WaveReward();
-		reward.value = Difficulty;
-		float val = Random.value;
-		if(val < 0.25F)
-		{
-			reward.value = (reward.value * 5);
-			reward.Title = "+" + (int)reward.value + " mana";
-			foreach(Class child in Player.Classes)
-			{
-				child.AddToMeter((int)reward.value);
-			}
-		}
-		else if(val < 0.5F)
-		{
-			reward.value = 1.0F + reward.value / 100;
-			reward.Title = "+" + reward.value.ToString("0.00") + "x mana values";
-			GlobalManaMult = reward.value;
-		}
-		else if(val < 0.75F)
-		{
-			reward.value = Mathf.Clamp(reward.value / 3, 1, Mathf.Infinity);
-			reward.Title = "+ Upgrade Value!";
-			foreach(Class child in Player.Classes)
-			{
-				child.WaveLevelRate += (int) reward.value;
-			}
-		}
-		else
-		{
-			reward.value = Mathf.Clamp(reward.value * 20, 1, Player.Stats._HealthMax);
-			reward.Title = (int)reward.value + " HP HEAL";
-			Player.Stats.Heal((int) reward.value);
-		}
-		return reward;
-	}
-
-	public class WaveReward
-	{
-		public string Title;
-		public float value;
+		Difficulty += Mathf.Exp(Difficulty_Growth);
+		StartCoroutine(_Wave.Setup());
+		//StartCoroutine(WaveStartRoutine(_Wave.IntroAlert));
 	}
 
 	public ClassContainer CheckForClass(string name)
 	{
-		foreach(ClassContainer _class in GameData.instance.Classes)
-		{
-			if(_class.Name == name) 
-			{
-				return _class;
-			}
-		}
-		if(name == GameData.instance.EndlessMode.Name) return GameData.instance.EndlessMode;
-		Debug.LogError("CLASS COULD NOT BE FOUND");
+		//foreach(ClassContainer _class in GameData.instance.Classes)
+		//{
+		//	if(_class.Name == name) 
+		//	{
+		//		return _class;
+		//	}
+		//}
+		//if(name == GameData.instance.EndlessMode.Name) return GameData.instance//.EndlessMode;
+		//Debug.LogError("CLASS COULD NOT BE FOUND");
 		return null;
 	}
 
-	public void ResumeGame()
+
+	public void LoadGame(bool resume)
 	{
-		string _class = PlayerLoader.Load();
-		UIManager.Menu.ClassName.text = _class;
-		if(_class == "") return;
-		ClassContainer c = CheckForClass(_class);
-		TurnsToWin = c.TurnsToWin;
-		Player.instance.ResumeClass(c);
-		StartCoroutine(UIManager.instance.LoadUI());	
+		Class [] c = null;
+		if(resume)
+		{
+			c = PlayerLoader.Load();
+			if(c == null) return;
+		}
+
+		UIManager.instance.LoadScreen.SetActive(true);
+		UIManager.instance.LoadScreen.SetSpin(true);
+
+		Player.instance.Load(c);
+		StartCoroutine(UIManager.instance.LoadUI());
 	}
 
-	public void StartGame()
+	public void PlayStoryMode()
 	{
+		UIManager.instance.WaveAlert.SetTween(0,false);
 		inStartMenu = false;
 		gameStart = true;
 		StartCoroutine(Player.instance.BeginTurn());
 		RoundTokens = 0;
-		TimeToWave = Player.Stats.TurnsToWave;
 		UIManager.instance.LoadScreen.SetSpin(false);
 		UIManager.instance.LoadScreen.SetActive(false);
 
-		if(TuteActive) 
-		{
-			GetWave(TuteWave, 0);
-			ActivateWave(0, false);
-		}
-		else GetWave(GameData.instance.GetRandomWave(), 0);
+		Wave w = StoryMode.GetWaveProgressive();
+		if(w != null) GetWave(w);
+		else GetWave(EndlessMode.GetWaveRandom());
+	}
+
+	public void PlayEndlessMode()
+	{
+		UIManager.instance.WaveAlert.SetTween(0,false);
+		inStartMenu = false;
+		gameStart = true;
+		StartCoroutine(Player.instance.BeginTurn());
+		RoundTokens = 0;
+		UIManager.instance.LoadScreen.SetSpin(false);
+		UIManager.instance.LoadScreen.SetActive(false);
+
+		GetWave(EndlessMode.GetWaveRandom());
 	}
 
 	public void LoadClass(ClassContainer targetClass)
@@ -506,21 +424,6 @@ public class GameManager : MonoBehaviour {
 		StartCoroutine(UIManager.instance.LoadUI());
 	}
 
-
-	public void LoadGame()
-	{
-		UIManager.instance.LoadScreen.SetActive(true);
-		UIManager.instance.LoadScreen.SetSpin(true);
-		TurnsToWin = 100;
-		Player.instance.Load();
-		foreach(Class child in Player.Classes)
-		{
-			if(child == null) continue;
-			GameData.instance.LoadClassAbilities(child);
-		}
-		
-		StartCoroutine(UIManager.instance.LoadUI());
-	}
 
 
 	public void GetTurn()
@@ -532,141 +435,65 @@ public class GameManager : MonoBehaviour {
 	{
 
 /* PLAYER TURN */////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		float after_match = 0.2F, before_match = 0.5F;
-		int [] resource = new int [6];
-		int [] health   = new int [6];
-		int [] armour   = new int [6];
-		int enemies_hit = 0;
+
+		
 		EnemyTurn = true;
 		TileMaster.instance.SetFillGrid(false);
 		UIManager.instance.current_class = null;
 		UIManager.instance.SetClassButtons(false);
+		UIManager.instance.ShowTooltip(false);
 
+		UIManager.Objects.BotGear.SetTween(0, true);
+		UIManager.Objects.TopGear.SetTween(0, false);
+		yield return new WaitForSeconds(GameData.GameSpeed(0.03F));
+		////CameraUtility.SetTurnOffset(false);
+		yield return new WaitForSeconds(GameData.GameSpeed(0.03f));
+
+		yield return StartCoroutine(BeforeMatchRoutine());
 		bool all_of_resource = false;
-
-		yield return StartCoroutine(Player.instance.BeforeMatch(PlayerControl.instance.selectedTiles));
-		int rate = 3 + (int) ((Player.instance.Options.GameSpeed- 1) * 3), num = 0;
+		
 		if(Player.instance.CompleteMatch) 
 		{
-			foreach(Tile child in PlayerControl.instance.finalTiles)
-			{
-				if(child == null) continue;
-				//if(child.isMatching) continue;
-
-				int added_res = 0, added_armour = 0;
-
-				int v = 1;
-				if(child.Type.isEnemy)
-				{
-					v = PlayerControl.instance.AttackValue;
-					enemies_hit ++;
-				} 
-				
-				if(child.Match(v))
-				{
-					int [] values = child.Stats.GetValues();
-					if(values[0] > 0)
-					{
-						//if(child.Type.isEnemy) added_res += Player.Stats.Hunter;
-						//else added_res += Player.Stats.Harvester;
-					}
-					if(child.Genus == GENUS.NONE || child.Genus == GENUS.OMG) continue;
-					if(child.Genus == GENUS.ALL)
-					{
-						for(int i = 0; i < 4; i++)
-						{
-							resource[i] += values[0] + added_res;
-							health[i] += values[1];
-							armour[i] += values[2];
-						}
-					}
-						resource[(int)child.Genus] += values[0] + added_res;
-						health[(int)child.Genus]   += values[1]; //(values[1] > 0 ? Player.Stats.Healer : 0);
-						armour[(int)child.Genus]   += values[2] + added_armour;
-				}
-
-				yield return new WaitForSeconds(Time.deltaTime * rate);
-				num++;
-				if(num % 4 == 0) rate = Mathf.Clamp(rate - 1, 1, 5);
-			}
+			yield return StartCoroutine(MatchRoutine(PlayerControl.instance.finalTiles));
 		}
 		else EnemyTurn = false;
 
 		if(TileMaster.FillGrid_Override) TileMaster.instance.SetFillGrid(true);
 
-		yield return StartCoroutine(CollectResourcesRoutine(resource, health, armour));
-		//CollectResources(resource, health, armour);
-		
-
 		yield return StartCoroutine(Player.instance.AfterMatch());
 
-		Player.Stats.CompleteLeech(enemies_hit);
+		//Player.Stats.CompleteLeech(enemies_hit);
 		Player.Stats.CompleteRegen();
 		Player.instance.CompleteHealth();
 		Player.instance.CheckHealth();	
 		
 		PlayerControl.matchingTile = null;
-		Player.instance.CheckForBestCombo(resource);
-	
+		PlayerControl.instance.finalTiles.Clear();
+		//Player.instance.CheckForBestCombo(resource);
+
+		yield return StartCoroutine(Player.instance.EndTurn());
 /* ENEMY TURN */////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		
 
 		yield return StartCoroutine(TileMaster.instance.BeforeTurn());
-
-		for(int i = 0; i < _Wave.Length; i++)
-		{
-			if(_Wave[i] != null) 
-			{
-				if(_Wave[i].Active)
-				{
-					if(_Wave[i].Effects.HitByPresence) _Wave[i].AddPoints(-Player.Stats.Presence);
-					_Wave[i].AddPoints(-_Wave[i].PointsPerTurn);
-					//if(_Wave[i].Complete()) yield return new WaitForSeconds(GameData.GameSpeed(0.25F));
-				}
-				else
-				{
-					if(_Wave[i].Timer > 1)
-					{
-						_Wave[i].Timer --;
-					}
-					else if(_Wave[i].Timer == 1)
-					{
-						ActivateWave(i, true);
-					}
-				}
-			}
-		}
+		yield return StartCoroutine(_Wave.BeginTurn());
 		
-		if(Player.instance.EndTurn() && TileMaster.instance.EnemiesOnScreen > 0)
+		if(Player.instance.Turns % (int)Player.Stats.AttackRate == 0 && TileMaster.instance.EnemiesOnScreen > 0)
 		{
-			yield return new WaitForSeconds(0.2F);
 			yield return StartCoroutine(EnemyTurnRoutine());
 		}
-
 		yield return StartCoroutine(TileMaster.instance.AfterTurn());
-		
-		for(int i = 0; i < _Wave.Length; i++)
-		{
-			if(_Wave[i] != null) 
-			{
-				if(_Wave[i].Active)
-				{
-					if(_Wave[i].Complete()) yield return new WaitForSeconds(GameData.GameSpeed(0.15F));
-					if(_Wave[i].Current <= 0 && _Wave[i].Active)
-					{
-						WaveAlert = true;
-						yield return StartCoroutine(WaveEndRoutine(i));
-					}
-				}
-			}
-		}
-		TileMaster.instance.ResetTiles(true);
-		
 		yield return StartCoroutine(Player.instance.BeginTurn());
-		for(int i = 0; i < _Wave.Length; i++)
-		{
-			if(_Wave[i] != null) yield return StartCoroutine(_Wave[i].BeginTurn());
-		}
 		yield return StartCoroutine(CompleteTurnRoutine());
+		TileMaster.instance.ResetTiles(true);
+
+		yield return StartCoroutine(_Wave.AfterTurn());
+		if(_Wave.AllEnded && !Player.Stats.isKilled)
+		{
+			Wave w = StoryMode.GetWaveProgressive();
+			if(w != null) GetWave(w);
+			else GetWave(EndlessMode.GetWaveRandom());
+		}
 		yield return null;
 	}
 
@@ -674,10 +501,21 @@ public class GameManager : MonoBehaviour {
 	IEnumerator EnemyTurnRoutine()
 	{
 		float per_column = 0.15F;
-		List<Tile> all_attackers = new List<Tile>();
+		List<Tile> total_attackers = new List<Tile>();
+		int total_damage = 0;
 		List<Tile> column_attackers;
-		int damage = 0;
 
+		List<Tile> allied_attackers = new List<Tile>();
+	
+
+		UIManager.Objects.BotGear.SetTween(0, false);
+		UIManager.Objects.TopGear.SetTween(0, true);
+		yield return new WaitForSeconds(GameData.GameSpeed(0.02F));
+		////CameraUtility.SetTurnOffset(true);
+		yield return new WaitForSeconds(GameData.GameSpeed(0.15F));
+
+
+	//ENEMY ATTACKERS
 		for(int x = 0; x < TileMaster.instance.MapSize.x; x++)
 		{
 			column_attackers = new List<Tile>();
@@ -687,35 +525,162 @@ public class GameManager : MonoBehaviour {
 				if(tile == null) continue;
 				if(tile.CanAttack())
 				{
-					tile.OnAttack();
-					damage += tile.GetAttack();
-					column_attackers.Add(tile as Tile);
-					tile.SetState(TileState.Selected);
+					if(tile.Stats.isAlly)
+					{
+						allied_attackers.Add(tile);
+					}
+					else
+					{
+						
+						column_attackers.Add(tile);
+					}
+					
 				}
 			}
 			foreach(Tile child in column_attackers)
 			{
 				if(child == null) continue;
 
+				child.SetState(TileState.Selected);
+				child.OnAttack();
+				total_damage += child.GetAttack();
+
 				Vector3 pos = child.transform.position + (GameData.RandomVector*1.4F);
-				MoveToPoint mini = TileMaster.instance.CreateMiniTile(pos,UIManager.instance.HealthImg.transform, child.Info.Outer);
-				mini.SetPath(0.3F, 0.5F, 0.0F, 0.08F);
+				MoveToPoint mini = TileMaster.instance.CreateMiniTile(pos,UIManager.instance.Health.transform, child.Info.Outer);
+				mini.SetPath(0.5F, 0.5F, 0.0F, 0.1F);
 				mini.SetMethod(() =>{
-						Player.Stats.Hit(child.GetAttack(), child);
+						Player.instance.OnHit(child);
 						AudioManager.instance.PlayClipOn(Player.instance.transform, "Player", "Hit");
+						GameData.Log("Took " + child.GetAttack() + "damage from " + child);
 					}
 				);
 				yield return StartCoroutine(child.Animate("Attack", 0.05F));
 			}
 
-			all_attackers.AddRange(column_attackers);
+			total_attackers.AddRange(column_attackers);
 			if(column_attackers.Count > 0) yield return new WaitForSeconds(GameData.GameSpeed(per_column));
 		}
-		//UIManager.instance.targetui_class = nexttarget;
-		//Player.Stats.Hit(damage, all_attackers);
-		yield return new WaitForSeconds(0.2F);
+		if(total_attackers.Count > 0)
+		{
+			GameData.Log("Took " + total_damage + " damage from " + total_attackers.Count + " attackers");
+			yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+		} 
+
+
+	//ALLIED ATTACKERS
+		if(allied_attackers.Count > 0) 
+		{
+			TileMaster.instance.ResetTiles();
+			yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+		}
+		foreach(Tile child in allied_attackers)
+		{
+			if(child == null) continue;
+
+			child.SetState(TileState.Selected);
+			child.OnAttack();
+
+			Tile target = null;
+			for(int x = 0; x < TileMaster.Tiles.GetLength(0); x++)
+			{
+				for(int y = 0; y < TileMaster.Tiles.GetLength(1); y++)
+				{
+					if(TileMaster.Tiles[x,y].Type.isEnemy)
+					{
+						if(TileMaster.Tiles[x,y] == null) continue;
+						if(TileMaster.Tiles[x,y] == child) continue;
+						if(TileMaster.Tiles[x,y].Type.isAlly) continue;
+					
+						target = TileMaster.Tiles[x,y];
+						break;
+					}
+				}
+				if(target!= null) break;
+			}
+			
+			if(target != null)
+			{
+				Vector3 pos = child.transform.position + (GameData.RandomVector*1.4F);
+				MoveToPoint mini = TileMaster.instance.CreateMiniTile(pos, target.transform, child.Info.Outer);
+				mini.SetPath(0.2F, 0.5F, 0.0F, 0.1F);
+				mini.SetMethod(() =>{
+					if(target == null) return;
+					if(target != null) AudioManager.instance.PlayClipOn(target.transform, "Enemy", "Hit");
+						target.SetState(TileState.Selected);
+						target.InitStats.TurnDamage += child.GetAttack();
+						target.Match(0);
+						GameData.Log(child +  " dealt " + child.GetAttack() + "damage to " + target);
+					});
+				yield return StartCoroutine(child.Animate("Attack", 0.05F));
+			}
+		}
+		if(allied_attackers.Count > 0) yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 	}
 
+	public IEnumerator BeforeMatchRoutine()
+	{
+		List<Tile> newTiles = new List<Tile>();
+		newTiles.AddRange(PlayerControl.instance.selectedTiles);
+		PlayerControl.instance.selectedTiles.Clear();
+
+		int combo_factor = 0; //Number of repeated combos made by tiles
+		while(newTiles.Count > 0)
+		{
+			yield return StartCoroutine(Player.instance.BeforeMatch(newTiles, combo_factor==0));
+			newTiles.Clear();
+			newTiles.AddRange(PlayerControl.instance.selectedTiles);
+			PlayerControl.instance.selectedTiles.Clear();
+			combo_factor++;
+			//yield return new WaitForSeconds( GameData.GameSpeed(0.1F));
+		}
+	}
+
+	public IEnumerator MatchRoutine(List<Tile> tiles)
+	{
+		int [] resource = new int [6];
+		int [] health   = new int [6];
+		int [] armour   = new int [6];
+		int enemies_hit = 0;
+
+		float rate = 0.07F, num = 0;
+		foreach(Tile child in tiles)
+		{
+			if(child == null) continue;
+
+			int added_res = 0, added_armour = 0;
+
+			int v = 1;
+			if(child.Type.isEnemy)
+			{
+				v = PlayerControl.instance.AttackValue;
+				enemies_hit ++;
+			} 
+			
+			if(child.Match(v))
+			{
+				int [] values = child.Stats.GetValues();
+				if(child.Genus == GENUS.NONE || child.Genus == GENUS.OMG) continue;
+				if(child.Genus == GENUS.ALL)
+				{
+					for(int i = 0; i < 4; i++)
+					{
+						resource[i] += values[0] + added_res;
+						health[i] += values[1];
+						armour[i] += values[2];
+					}
+				}
+					resource[(int)child.Genus] += values[0] + added_res;
+					health[(int)child.Genus]   += values[1]; //(values[1] > 0 ? Player.Stats.Healer : 0);
+					armour[(int)child.Genus]   += values[2] + added_armour;
+			}
+
+			yield return new WaitForSeconds(GameData.GameSpeed(rate));
+			num++;
+			ComboSize++;
+			if(num % 4 == 0) rate = Mathf.Clamp(rate - 0.01F, 0.0F, 1.0F);
+		}
+		yield return StartCoroutine(CollectResourcesRoutine(resource, health, armour));
+	}
 
 	public IEnumerator BeginTurn()
 	{
@@ -724,7 +689,7 @@ public class GameManager : MonoBehaviour {
 
 	public IEnumerator CompleteTurnRoutine()
 	{
-		yield return StartCoroutine(Player.instance.CheckForBoonsRoutine());
+		//yield return StartCoroutine(Player.instance.CheckForBoonsRoutine());
 		Player.instance.CompleteHealth();
 		Player.instance.CheckHealth();	
 		Player.instance.ResetStats();
@@ -736,7 +701,15 @@ public class GameManager : MonoBehaviour {
 		PlayerControl.instance.finalTiles.Clear();
 		PlayerControl.matchingTile = null;
 
+		UIManager.instance.SetClassButtons(false);
+		
+		UIManager.Objects.BotGear.SetTween(0, true);
+		UIManager.Objects.TopGear.SetTween(0, false);
+		////CameraUtility.SetTurnOffset(false);
+
 		EnemyTurn = false;
+		ComboSize = 0;
+		yield return null;
 	}
 
 	public void CollectResources(int [] resource, int [] health, int [] armour, Bonus [] added_bonuses = null, bool all_of_res = true)
@@ -925,7 +898,7 @@ public class GameManager : MonoBehaviour {
 			if(complete) collecting_bonuses = false;
 			yield return null;
 		}
-		yield return new WaitForSeconds(0.4F);
+		yield return new WaitForSeconds(GameData.GameSpeed(0.3F));
 	}
 
 
@@ -953,7 +926,7 @@ public class GameManager : MonoBehaviour {
 
 	public void ToggleTileInfo()
 	{
-		Player._Options.ViewTileStats = !Player._Options.ViewTileStats;
+		Player.Options.ViewTileStats = !Player.Options.ViewTileStats;
 	}
 
 	public void AddOverflow(int amt)
@@ -963,11 +936,7 @@ public class GameManager : MonoBehaviour {
 
 	public void EnemyKilled(Enemy e)
 	{
-		for(int i = 0; i < _Wave.Length; i++)
-		{
-			if(_Wave[i] != null) _Wave[i].EnemyKilled(e);
-		}
-		
+		_Wave.EnemyKilled(e);
 	}
 
 	public void ToggleEasyGENUSe()

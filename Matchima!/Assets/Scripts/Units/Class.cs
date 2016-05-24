@@ -12,7 +12,9 @@ public class Class : Unit {
 	{
 		get
 		{
-			return new StCon("The " + Name + "   LVL: " + Level, GameData.Colour(Genus));
+			string name = "The " + Name;
+			//if(MeterLvl > 0) name += "  M-POWER: " + MeterLvl;
+			return new StCon(name, GameData.Colour(Genus));
 		}
 	}
 
@@ -21,15 +23,23 @@ public class Class : Unit {
 		get
 		{
 			List<StCon> final = new List<StCon>();
-			final.Add(new StCon(Meter + "/" + MeterMax + " Mana", GameData.Colour(Genus), true));
-			final.Add(new StCon(mainStat.StatCurrent + " " + GameData.StatLong(Genus), GameData.Colour(Genus), true));
+			final.Add(new StCon(Meter + "/" + MeterTop + " Mana", GameData.Colour(Genus)));
+			final.Add(new StCon("Lvl " + Level + " ("+ Exp_Current + "/" + Exp_Max + " xp)", GameData.Colour(GENUS.WIS)));
+
+			for(int i = 0; i < Stats.Length; i++)
+			{
+				bool last = i==Stats.Length-1;
+				final.Add(new StCon(Stats[i].StatCurrent+"", GameData.Colour((GENUS)i), last));
+				if(!last) final.Add(new StCon(" /", Color.white, false));
+			}
+		//	final.Add(new StCon(mainStat.StatCurrent + " " + GameData.StatLong(Genus), GameData.Colour(Genus)));
 			
-			final.Add(new StCon("+" + Stats.HealthMax + " HP  ", Color.white, false));
-			final.Add(new StCon("+" + Stats.Attack + " ATK", Color.white, true));
+			//final.Add(new StCon("+" + Stats.HealthMax + " HP  ", Color.white, false));
+			//final.Add(new StCon("+" + Stats.Attack + " ATK", Color.white, true));
 
 			foreach(Slot child in AllMods)
 			{
-				final.AddRange(child.Description_Tooltip);
+				if(child != null) final.AddRange(child.Description_Tooltip);
 			}
 
 			//for(int i = 0; i < Upgrades.Length; i++)
@@ -68,7 +78,8 @@ public class Class : Unit {
 	public ClassInfo Info;
 	
 	public Stat InitStats;
-	public Slot [] AllMods;
+	public List<Slot> AllMods;
+	public Slot InitMod;
 
 	public Slot [] _Boons
 	{
@@ -111,8 +122,7 @@ public class Class : Unit {
 	public bool CanCollectMana = true;
 
 	[HideInInspector]
-	public bool LevelUpAlert, PulseAlert;
-	public bool LevelUp;
+	public bool LevelUpAlert;
 
 	public StatContainer mainStat;
 
@@ -125,17 +135,49 @@ public class Class : Unit {
 			return GameData.PowerString(Meter);
 		}
 	}
-	public int Meter, MeterMax;
+	public int Meter;
+	public int _MeterMax;
+	public int MeterLvl;
 
-	public int BonusLevelRate = 0;
-	public int WaveLevelRate = 0;
-	public int TurnLevelRate = 1;
+
+	public int MeterTop
+	{
+		get{
+			if(MeterLvl+1 >= MeterMax_array.Length) return 1000;
+			else if(MeterLvl+1 < 0) return MeterMax_array[0];
+			else return MeterMax_array[MeterLvl+1];
+		}
+	}
+	public int MeterBottom
+	{
+		get{
+			return 0;
+			//if(MeterLvl >= MeterMax_array.Length) return MeterMax_array[MeterMax_array.Length-1];
+			//else if(MeterLvl < 0) return 0;
+			//else return MeterMax_array[MeterLvl] - 5;
+		}
+	}
+
+	[HideInInspector]
+	public int [] MeterMax_array = new int[3];
+
+	[HideInInspector]
+	public int BonusLevelRate = 0,WaveLevelRate = 0, TurnLevelRate = 1;
 	public Stat Stats;
 
-
-	private int MeterMax_init;
 	private float MeterMax_soft;
 	private float MeterGain = 0.2F;
+
+	protected bool ManaPowerActivate = false;
+	protected bool ManaPowerActive = false;
+	protected int MeterDecay = 1;
+	protected float MeterDecay_soft = 1.0F;
+	protected float [] MeterDecayInit = new float[]
+	{
+		0, 6, 7, 9
+	};
+
+	public GameObject ManaPowerParticle;
 
 	private bool LowHealthWarning = true, DeathWarning = true;
 	private float time_from_last_pulse = 0.0F;
@@ -149,7 +191,8 @@ public class Class : Unit {
 	private int combo_biggest = 0;
 
 	private bool HasLeveled = true;
-
+	public int Exp_Max, Exp_Current;
+	private float Exp_Max_soft;
 
 
 	// Use this for initialization
@@ -159,89 +202,62 @@ public class Class : Unit {
 	
 	public virtual void StartClass()
 	{
-		MeterMax_init = MeterMax;
-		int i =0;
+		Exp_Current = 0;
+		Exp_Max = 50;
+		Exp_Max_soft = 50.0F;
+		
+		Meter = 0;
+
+		int i = 0;
 		foreach(Slot child in _Slots)
 		{
 			if(child == null) continue;
 			child.Parent = this;
-			child.Init(i);
-			i++;
+			child.Init(i++);
 		}
-		foreach(Slot child in AllMods)
+		if(InitMod!= null)
 		{
-			if(child == null) continue;
-			child.Parent = this;
-			child.Init(i);
-			i++;
+			InitMod.Parent = this;
+			InitMod.Init(i++);
 		}
-		//RollForBonuses();
+		
+		for(int m = 0; m < AllMods.Count; m++)
+		{
+			if(AllMods[m] == null)
+			{
+				AllMods.RemoveAt(m);
+				m--;
+				continue;
+			}
+			AllMods[m].Parent = this;
+			AllMods[m].Init(m);
+		}
 		InitStats.Setup();
 		Reset();
 		Stats._Health = Stats._HealthMax;
 		Quotes.Setup(this);
-
-		GetBaseUpgrades();
-		//print(AllCurses.Length);
-
 		gameObject.name = Name + ": " + GameData.StatLong(Genus);
-		
 	}
 
 	public virtual void Update()
 	{
 		if(time_from_last_pulse < 5.0F) time_from_last_pulse += Time.deltaTime;
+		if(ManaPowerParticle != null)	ManaPowerParticle.transform.position = UIManager.ClassButtons[(int)Genus].transform.position;
 	}
 
 	public virtual float GetMeterRatio()
 	{
-		if(Meter == 0 || MeterMax == 0) return 0.0F;
+		if(Meter == 0 || MeterTop == 0) return 0.0F;
 		float f = Meter * 1.0F;
-		return f/MeterMax;
-	}
-
-	public void UpgradeStat(int i)
-	{
-		if(LevelPoints <= 0) return;
-		GENUS g = (GENUS) i;
-		switch(g)
-		{
-			case GENUS.STR:
-			InitStats.Strength += 1;
-			break;
-			case GENUS.DEX:
-			InitStats.Dexterity += 1;
-			break;
-			case GENUS.WIS:
-			InitStats.Wisdom += 1;
-			break;
-			case GENUS.CHA:
-			InitStats.Charisma += 1;
-			break;
-		}
-		Reset();
-		LevelPoints -= 1;
+		return (f-MeterBottom)/(MeterTop-MeterBottom);
 	}
 
 
-	public void UpgradeBonus(int i)
-	{
-		switch(i)
-		{
-			case 0:
-			//BonusA.Upgrade(ref LevelPoints);
-			break;
-			case 1:
-			//BonusB.Upgrade(ref LevelPoints);
-			break;
-		}
-		Reset();
-	}
 
-	public void Reset()
+	public virtual void Reset()
 	{
 		float ratio = (float) Stats._Health / (float) Stats._HealthMax;
-		int initres = Meter;
+		//int initres = Meter;
 		int heal = Stats.HealThisTurn;
 
 		InitStats.CheckStatInc();
@@ -261,6 +277,7 @@ public class Class : Unit {
 		{
 			if(child == null) continue;
 			if(child.CheckStats()!= null) Stats.AddStats(child.CheckStats());
+			child.StatusEffect();
 		}
 
 		Stats.ApplyStatInc();
@@ -269,54 +286,173 @@ public class Class : Unit {
 		Stats.Class_Type = Genus;
 		mainStat = Stats.GetResourceFromGENUS(Genus);
 
-		MeterMax_soft = MeterMax_init * (1.0F + (MeterGain * Level)) + mainStat.MeterInc + Stats.MeterMax;
-		MeterMax = (int) MeterMax_soft;
-		Meter = initres;
+		MeterMax_soft = _MeterMax * (1.0F + (MeterGain * Level)) + Stats.MeterMax;
+		MeterMax_array = new int [] {0, (int)(MeterMax_soft), (int)(MeterMax_soft * 2F), (int)(MeterMax_soft * 4.8F)};
+	}
+
+	public virtual IEnumerator BeforeMatch(List<Tile> tiles)
+	{
+		foreach(Slot child in _Slots)
+		{
+			if(child == null) continue;
+			yield return StartCoroutine(child.BeforeMatch(tiles));
+		}
+		foreach(Slot child in AllMods)
+		{
+			if(child == null) continue;
+			yield return StartCoroutine(child.BeforeMatch(tiles));
+		}
+		yield return null;
 	}
 
 
 	public virtual IEnumerator BeginTurn()
 	{
 		ManaThisTurn = 0;
+		foreach(Slot child in _Slots)
+		{
+			if(child == null) continue;
+			yield return StartCoroutine(child.BeforeTurn());
+		}
+		foreach(Slot child in AllMods)
+		{
+			if(child == null) continue;
+			yield return StartCoroutine(child.BeforeTurn());
+		}
+
+		AddToMeter(Stats.MeterRegen);
+		MeterDecay_soft *= (GameManager.MeterDecay[MeterLvl] + Stats.MeterDecay[MeterLvl] + Stats.MeterDecay_Global);
+		MeterDecay = (int)MeterDecay_soft;
+		if(Meter < MeterDecay) Meter = 0;
+		else AddToMeter(-MeterDecay);
+			
+		
+		yield return StartCoroutine(CheckManaPower());
+		Reset();
 		yield return null;
 	}
 
-	public virtual void EndTurn()
+	public virtual IEnumerator EndTurn()
 	{
 		foreach(Slot child in _Slots)
 		{
 			if(child == null) continue;
-			child.AfterTurnA();
+			yield return StartCoroutine(child.AfterTurn());
 		}
-		foreach(Slot child in _Slots)
+		foreach(Slot child in AllMods)
 		{
 			if(child == null) continue;
-			child.AfterTurnB();
+			yield return StartCoroutine(child.AfterTurn());
+		}
+		Reset();
+		yield return null;
+	}
+
+	public IEnumerator CheckManaPower()
+	{
+		if(Meter == 0 && MeterLvl > 0)
+		{
+			UIManager.ClassButtons[Index].ShowClass(true);
+			MeterLvl = 0;
+			MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons[(int)Genus].transform.position, "POWER\nDOWN", 75, GameData.Colour(Genus), 1.2F, 0.2F);
+			yield return new WaitForSeconds(0.1F);
+			MeterDecay_soft = MeterDecayInit[0];
+			MeterDecay = (int) MeterDecay_soft;
+			if(ManaPowerParticle != null) Destroy(ManaPowerParticle);
+			ManaPower(0);
+		}
+		else
+		{
+			
+			int newlvl = 0;
+			for(int i = 0; i < MeterMax_array.Length; i++)
+			{
+				if(Meter >= MeterMax_array[i]) newlvl = i;
+			}
+			//print(Meter + ":" + newlvl + " - " + MeterMax_array[1]);
+			if(MeterLvl < newlvl)
+			{
+				UIManager.instance.WaveAlert.SetTween(0,true);
+				UIManager.ClassButtons[Index].ShowClass(true);
+				yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+				
+				GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, "", GameData.Colour(Genus));
+				powerup.transform.position = UIManager.ClassButtons[(int)Genus].transform.position;
+
+				yield return new WaitForSeconds(GameData.GameSpeed(0.84F));
+				UIManager.instance.WaveAlert.SetTween(0,false);
+				Destroy(powerup);
+
+				MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons[(int)Genus].transform.position, "POWER\nUP", 75, GameData.Colour(Genus), 1.2F, 0.2F);
+
+				MeterLvl = newlvl;
+				MeterDecay_soft = MeterDecayInit[MeterLvl];
+				MeterDecay = (int) MeterDecay_soft;
+				ManaPower(MeterLvl);
+
+				Effect e = MeterLvl == 1 ? Effect.ManaPowerLvl1 : (MeterLvl == 2 ? Effect.ManaPowerLvl2 : Effect.ManaPowerLvl3);
+				ParticleSystem part = EffectManager.instance.PlayEffect(this.transform, e, "", GameData.Colour(Genus)).GetComponent<ParticleSystem>();
+				if(ManaPowerParticle != null) Destroy(ManaPowerParticle);
+				ManaPowerParticle = part.gameObject;
+				ManaPowerParticle.transform.position = UIManager.ClassButtons[(int)Genus].transform.position;
+				yield return null;
+			}
 		}
 
-		foreach(Slot child in AllMods)
-		{
-			if(child == null) continue;
-			child.AfterTurnA();
-		}
-		foreach(Slot child in AllMods)
-		{
-			if(child == null) continue;
-			child.AfterTurnB();
-		}
+
+
 		
-		AddToMeter(Stats.ManaRegen);
-		Reset();
+		/*if(newlvl == 0 && MeterLvl != 0) 
+		{
+			MeterLvl = 0;
+			MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons[(int)Genus].transform.position, "POWER\nDOWN", 75, GameData.Colour(Genus), 1.2F, 0.2F);
+			yield return new WaitForSeconds(0.1F);
+			Meter = 0;
+			//MeterDecay_soft = MeterDecayInit[MeterLvl];
+			//MeterDecay = (int)MeterDecay_soft;
+			//ManaPower(MeterLvl);
+
+			if(ManaPowerParticle != null) Destroy(ManaPowerParticle);
+		}
+		else if(newlvl != 0 && MeterLvl < newlvl)
+		{
+			MeterLvl = newlvl;
+			MeterDecay_soft = MeterDecayInit[MeterLvl];
+			MeterDecay = (int) MeterDecay_soft;
+			ManaPower(MeterLvl);
+
+			GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, "", GameData.Colour(Genus));
+			powerup.transform.position = UIManager.ClassButtons[(int)Genus].transform.position;
+			UIManager.instance.WaveAlert.SetTween(0,true);
+			yield return new WaitForSeconds(0.95F);
+			UIManager.instance.WaveAlert.SetTween(0,false);
+			Destroy(powerup);
+			MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons[(int)Genus].transform.position, "POWER\nUP", 75, GameData.Colour(Genus), 1.2F, 0.2F);
+
+			Effect e = MeterLvl == 1 ? Effect.ManaPowerLvl1 : (MeterLvl == 2 ? Effect.ManaPowerLvl2 : Effect.ManaPowerLvl3);
+			ParticleSystem part = EffectManager.instance.PlayEffect(this.transform, e, "", GameData.Colour(Genus)).GetComponent<ParticleSystem>();
+			part.startColor = GameData.Colour(Genus);
+
+			if(ManaPowerParticle != null) Destroy(ManaPowerParticle);
+			ManaPowerParticle = part.gameObject;
+			ManaPowerParticle.transform.position = UIManager.ClassButtons[(int)Genus].transform.position;
+
+			yield return null;
+		}*/
+
+
+		
 	}
 
 
 	public IEnumerator CheckForBoon()
 	{
-		if(!LevelUp) yield break;
+		yield break;
 
+//OLD STYLE (SPELL TILES)
+/*
 		int x = Utility.RandomInt(TileMaster.Tiles.GetLength(0));
 		int y = Utility.RandomInt(TileMaster.Tiles.GetLength(1));	
-
 		//while(TileMaster.Tiles[x,y].Info._TypeName == "boon" || 
 		//	  TileMaster.Tiles[x,y].Info._TypeName == "curse" || 
 		//	  TileMaster.Tiles[x,y].Info._TypeName == "cocoon"||
@@ -344,8 +480,18 @@ public class Class : Unit {
 		
 		//yield return StartCoroutine(GenerateLevelChoice());
 		//TurnLevelRate = 1;
+*/
+
+//NEW STYLE (MANA POWER)
+		//ManaPowerActive = true;
+		//MeterDecay = ManaPowerDecay_init;
+		//MeterDecay_soft = ManaPowerDecay_init;
+
+		//ParticleSystem part = (ParticleSystem) Instantiate(EffectManager.instance.Particles.ManaPower);
+		//part.startColor = GameData.Colour(Genus);
+		//ManaPowerParticle = part.gameObject;
+
 		HasLeveled = false;
-		LevelUp = false;
 		yield return new WaitForSeconds(Time.deltaTime * 20);
 	}
 
@@ -356,7 +502,7 @@ public class Class : Unit {
 
 	public virtual void GetSpellFizzle(int x, int y, GENUS g, int points)
 	{
-		MiniAlertUI m = UIManager.instance.MiniAlert(TileMaster.Tiles[x,y].Point.targetPos, "FIZZLE", 40, GameData.Colour(g), 1.2F, 0.3F);
+		MiniAlertUI m = UIManager.instance.MiniAlert(TileMaster.Tiles[x,y].Point.targetPos, "FIZZLE", 50, GameData.Colour(g), 1.2F, 0.3F);
 		int num = UnityEngine.Random.Range(0,3);
 		switch(num)
 		{
@@ -369,8 +515,7 @@ public class Class : Unit {
 			case 2:
 				TileMaster.instance.ReplaceTile(x,y,TileMaster.Types["blob"], g, TileMaster.Tiles[x,y].Point.Scale, points);
 			break;
-		}
-		
+		}	
 	}
 
 	public virtual bool UpdateClass()
@@ -429,7 +574,7 @@ public class Class : Unit {
 			return;
 		}
 		Meter = (int)Mathf.Clamp(Meter + res, 0, Mathf.Infinity);
-		ManaThisTurn += res;
+		//ManaThisTurn += res;
 		if(res > 0) 
 		{
 			if(time_from_last_pulse > 1.3F)
@@ -438,33 +583,76 @@ public class Class : Unit {
 				time_from_last_pulse = 0.0F;			
 			}
 		}
-		while(Meter >= MeterMax)
-		{
+		//if(Meter >= MeterTop)//while(Meter >= MeterTop)
+		//{
 			//LevelPoints ++;
+			//TurnLevelRate = (int) (MeterTop / 25);
+			//LevelPoints += TurnLevelRate + BonusLevelRate + WaveLevelRate;
+			//LevelPoints += Stats.BoonIncrease;
+			//TurnLevelRate = 0;
+			//BonusLevelRate = 0;
+			//WaveLevelRate = 0;
 
-		//NEW STYLE LEVELING
-			TurnLevelRate = (int) (MeterMax / 25);
-			LevelPoints += TurnLevelRate + BonusLevelRate + WaveLevelRate;
-			LevelPoints += Stats.BoonIncrease;
-			TurnLevelRate = 0;
+		//NEW STYLE METER (MANA POWER)
+			//MeterLvl ++;
+			//MeterDecay_soft = MeterDecayInit[MeterLvl-1];
+			//MeterDecay = (int) MeterDecay_soft;
+			//MeterDecay_soft = GameManager.MeterDecay[MeterLvl-1] + Stats.MeterDecay[MeterLvl-1] + Stats.MeterDecay_Global;
+			//MeterDecay = (int)MeterDecay;
+			//Player.instance.ResetStats();
+		//}
+	}
 
-			BonusLevelRate = 0;
-			WaveLevelRate = 0;
-			Level ++;
-			LevelUp = true;
-			LevelUpAlert = true;
-			InitStats.LevelUp();
-			Meter = (int)Mathf.Clamp(Meter - MeterMax,0,Mathf.Infinity);
-			Player.instance.ResetStats();
-			
-			//Stats._Health = Stats._HealthMax;
-			//Reset();
-			//if(Level % 10 == 0) 
-			//{
-				//Ability a = (Ability) Instantiate(RollForUnlock());
-				//GetSlot(a as Slot);
-			//}
+	public virtual void ManaPower(int lvl)
+	{
+
+	}
+
+	public void DestroyManaPowers()
+	{
+		for(int i = 0; i < AllMods.Count; i++)
+		{
+			if(AllMods[i].ManaPowerMod)
+			{
+				Destroy(AllMods[i].gameObject);
+				AllMods.RemoveAt(i);
+				
+			}
 		}
+	}
+
+	public void AddExp(Enemy e)
+	{
+		Exp_Current += e.Stats.Value;
+		while(Exp_Current > Exp_Max)
+		{
+			Exp_Current -= Exp_Max;
+			LevelUp();
+			Exp_Max_soft *= 1.5F;
+			Exp_Max = (int)Exp_Max_soft;
+		}
+	}
+
+	public void LevelUp()
+	{
+		Level ++;
+		LevelUpAlert = true;
+		InitStats.LevelUp();
+	}
+
+	public Slot AddMod(string name, params string [] args)
+	{
+		foreach(Slot child in AllMods)
+		{
+			if(child.Name_Basic == name) return null;
+		}
+
+		Slot m = (Slot) Instantiate(GameData.instance.GetMod(name));
+		m.SetArgs(args);
+		m.Parent = this;
+		m.transform.parent = this.transform;
+		AllMods.Add(m);
+		return m;
 	}
 
 
@@ -494,7 +682,6 @@ public class Class : Unit {
 
 	public void GetSlot(Slot s, int? num = null)
 	{
-		print(s + ":" + num);
 		if(s == null) return;
 
 		if(!num.HasValue)
@@ -558,7 +745,6 @@ public class Class : Unit {
 			s.Init(num.Value);
 			string type = (s is Ability ? " learned " : " equipped ");
 			Quote abalert = new Quote(Name + type + s.Name.Value, false, 1.5F);
-			print(abalert.WaitTime);
 			abalert.Parent = this;
 			abalert.ShowTail = false;
 			Reset();
@@ -801,96 +987,6 @@ public class Class : Unit {
 		Player.instance.ResetStats();
 	}
 
-	public IEnumerator GenerateLevelChoice()
-	{
-		//while(UIManager.InMenu) yield return null;
-		UIManager.InMenu = true;
-
-		ClassUpgrade [] choices = RollUpgrades(2, LevelPoints);
-		//UIManager.instance.OpenBoonUI(this, choices);
-
-		while(UIManager.BoonUI_active)
-		{
-			yield return null;
-		}
-
-		//yield return StartCoroutine(UIManager.instance.LevelChoiceRoutine(this, choices));
-		//if(UIManager.LevelChoice.HasValue)
-		//{
-			//choices[UIManager.LevelChoice.Value].Upgrade();
-		//}
-
-		/*if(UIManager.LevelChoice.Value == -1)
-		{
-			LevelPoints = 0;
-		}
-		else
-		{
-			ClassUpgrade final = choices[UIManager.LevelChoice.Value];
-			int loops = (final.IgnoreValue ? 1 : final.Value);
-
-			final.Current += final.Value;
-			yield return StartCoroutine(final.Upgrade);
-				
-			LevelPoints = 0;
-			TurnLevelRate = 1;
-		}*/
-
-		UIManager.Objects.LevelUpMenu.SetActive(false);
-		foreach(ClassUpgrade child in choices)
-		{
-			child.Value = 1;
-		}
-		UIManager.LevelChoice = null;
-		Player.instance.ResetStats();
-		UIManager.InMenu = false;
-		
-
-		HasLeveled = true;
-		bool closeUI = true;
-		foreach(Class child in Player.Classes)
-		{
-			if(!child.HasLeveled) closeUI = false;
-		}
-
-
-		if(closeUI)
-		{
-			UIManager.Objects.BigUI.SetActive(false);
-			UIManager.Objects.LevelUpMenu.SetActive(false);
-		}
-
-		yield return null;
-
-	}
-
-	/*public void GenerateSlotUpgrades()
-	{
-		foreach(Ability child in _Unlocks)
-		{
-			ClassUpgrade spell = new ClassUpgrade((int val) => {GetSlotRoutine(child);});
-			spell.BaseAmount = 1;
-			spell.Rarity = Rarity.Uncommon;
-			spell.Prefix = "SPELL: ";
-			spell.Suffix = child.Name_Basic;
-			AddUpgrades(spell);
-		}
-	}
-
-	public void GenerateSlotUpgrade(Slot s)
-	{
-		ClassUpgrade spell = new ClassUpgrade(SlotUpgrade(s));
-
-		spell.BaseAmount = 1;
-		spell.Rarity = s.Rarity;
-		spell.Prefix = "Lvl. ";
-		spell.Name = s.Name_Basic;
-		spell.IgnoreValue = true;
-		spell.SlotUpgrade = true;
-		spell.slotobj = s;
-		//spell.Suffix = s.Name_Basic;
-		AddUpgrades(spell);
-	}*/
 
 	public IEnumerator SlotUpgrade(Slot s)
 	{
@@ -1129,6 +1225,11 @@ public class QuoteGroup{
 	{
 		Quote q = new Quote(_text, _override, wait, c);
 		q.TickTime_init = tick;
+		Quotes.Add(q);
+	}
+
+	public void AddQuote(Quote q)
+	{
 		Quotes.Add(q);
 	}
 

@@ -102,7 +102,7 @@ public class GridInfo {
 		}
 	}
 
-	public void Increase(Vector2 _size)
+	public void ChangeBy(Vector2 _size)
 	{
 		GridPoint [,] newpoints = new GridPoint[Points.GetLength(0) + (int)_size.x,
 												Points.GetLength(1) + (int)_size.y];
@@ -115,21 +115,24 @@ public class GridInfo {
 		float bufferX = TileMaster.instance.tileBufferX;
 		float bufferY = TileMaster.instance.tileBufferY;
 
-		for(int c = 0; c < Column.Length; c++)
+		for(int c = 0; c < newcolumns.Length; c++)
 		{
-			newcolumns[c] = Column[c];
+			if(Column.Length > c) newcolumns[c] = Column[c];
+			else newcolumns[c] = new GameObject("Column " + c);
 		}
 
-		for(int c = 0; c < TilePoints.Length; c++)
+		for(int c = 0; c < newtilepoints.Length; c++)
 		{
-			newtilepoints[c] = TilePoints[c];
+			if(TilePoints.Length > c) newtilepoints[c] = TilePoints[c];
+			else newtilepoints[c] = new GameObject("Column " + c);
 		}
 
 
-		for(int x = 0; x < Points.GetLength(0); x++)
+		for(int x = 0; x < newpoints.GetLength(0); x++)
 		{
-			for(int y = 0; y < Points.GetLength(1); y++)
+			for(int y = 0; y < newpoints.GetLength(1); y++)
 			{
+				if(Points.GetLength(0) <= x || Points.GetLength(1) <= y) continue;
 				newpoints[x,y] = Points[x,y];
 			}
 			for(int yy = final_y; yy < newpoints.GetLength(1); yy++)
@@ -140,27 +143,56 @@ public class GridInfo {
 				newpoints[x,yy] = new GridPoint(new int[] {x,yy},_point.transform.position);
 			}
 		}
-
 		
-		for(int xx = final_x; xx < newpoints.GetLength(0);xx++)
+		if(final_x > newpoints.GetLength(0) || final_y > newpoints.GetLength(1))
 		{
-			GameObject column = new GameObject("Column " + xx);
-			column.transform.position += new Vector3(xx * (1+bufferX), 0,0);
-			column.transform.parent = tileParent.transform;
-			newcolumns[xx] = column;
-
-			newtilepoints[xx] = new GameObject("Column " + xx);
-			newtilepoints[xx].transform.position += new Vector3(xx * (1+bufferX), 0,0);
-			newtilepoints[xx].transform.parent =  pointParent.transform;
-
-			for(int yy = 0; yy < newpoints.GetLength(1); yy++)
+			for(int xx = newpoints.GetLength(0); xx < final_x;xx++)
 			{
-				GameObject _point = new GameObject("Point " + xx + ":" + yy);
-				_point.transform.position = new Vector3(xx*(1+bufferX), yy*(1+bufferY), 0);
-				_point.transform.parent = newtilepoints[xx].transform;
-				newpoints[xx,yy] = new GridPoint(new int[] {xx,yy},_point.transform.position);
+				for(int yy = 0; yy < final_y; yy++)
+				{
+					if(Points[xx,yy] != null) 
+					{
+						Points[xx,yy]._Tile.DestroyThyself();
+					}
+				}
+				
+			}
+
+			for(int yy = newpoints.GetLength(1); yy < final_y; yy++)
+			{
+
+				for(int xx = 0; xx < final_x; xx++)
+				{
+					if(Points[xx,yy] != null) 
+					{
+						Points[xx,yy]._Tile.DestroyThyself();
+					}
+				}
 			}
 		}
+		else
+		{
+			for(int xx = final_x; xx < newpoints.GetLength(0);xx++)
+			{
+				GameObject column = new GameObject("Column " + xx);
+				column.transform.position += new Vector3(xx * (1+bufferX), 0,0);
+				column.transform.parent = tileParent.transform;
+				newcolumns[xx] = column;
+
+				newtilepoints[xx] = new GameObject("Column " + xx);
+				newtilepoints[xx].transform.position += new Vector3(xx * (1+bufferX), 0,0);
+				newtilepoints[xx].transform.parent =  pointParent.transform;
+
+				for(int yy = 0; yy < newpoints.GetLength(1); yy++)
+				{
+					GameObject _point = new GameObject("Point " + xx + ":" + yy);
+					_point.transform.position = new Vector3(xx*(1+bufferX), yy*(1+bufferY), 0);
+					_point.transform.parent = newtilepoints[xx].transform;
+					newpoints[xx,yy] = new GridPoint(new int[] {xx,yy},_point.transform.position);
+				}
+			}
+		}
+		
 		Points = newpoints;
 		Column = newcolumns;
 		TilePoints = newtilepoints;
@@ -205,6 +237,7 @@ public class GridInfo {
 
 	public void SetPointInfo(int x, int y, TileInfo t)
 	{
+		
 		Points[x, y].Info = t;
 	}
 

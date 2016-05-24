@@ -23,7 +23,6 @@ public class DamageInc : ClassEffect {
 	public override void GetArgs(int _duration, params string [] args)
 	{
 		Duration = _duration;
-		//print(args[0] + ":" + GameData.StringToFloat(args[0]));
 		Damage = (int)GameData.StringToFloat(args[0]);
 	}
 
