@@ -153,9 +153,9 @@ public class Enemy : Tile {
 		if(!original) yield break;
 		InitStats.TurnDamage += PlayerControl.instance.AttackValue;
 		AudioManager.instance.PlayClipOn(this.transform, "Enemy", "Hit");
-		EffectManager.instance.PlayEffect(this.transform,Effect.Attack);
-
-		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+		GameObject part = EffectManager.instance.PlayEffect(this.transform, Effect.Attack);
+		CameraUtility.instance.ScreenShake(0.45F,  GameData.GameSpeed(0.09F));
+		yield return new WaitForSeconds(GameData.GameSpeed(0.15F));
 	}
 
 	public override IEnumerator AfterTurnRoutine(){
@@ -235,6 +235,7 @@ public class Enemy : Tile {
 			isMatching = true;
 			Player.Stats.PrevTurnKills ++;			
 			CollectThyself(true);
+
 
 			float item_chance = (float)Stats.Value/32.0F;
 			if(Stats.Value > 10) item_chance += 0.4F;

@@ -93,7 +93,7 @@ public class EffectManager : MonoBehaviour {
 		{
 			case Effect.Attack:
 				obj = (GameObject)Instantiate(Particles._Attack);
-				Vector3 offset = Vector3.right;
+				Vector3 offset = new Vector3(Random.Range(-1, 1), Random.Range(-1,1), 0);
 				obj.transform.position = t.position - offset + Vector3.back*3;
 				obj.transform.parent = t;
 				obj.GetComponent<MoveToPoint>().SetTarget(t.position + offset + Vector3.back*3);

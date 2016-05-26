@@ -4,7 +4,7 @@ using System.Collections;
 public class UIClassSelect : UIObj {
 
 	public Class _class;
-	float drag_threshold = 0.19F;
+	float drag_threshold = 0.2F;
 	public void Setup(Class c)
 	{
 		_class = c;
@@ -24,6 +24,7 @@ public class UIClassSelect : UIObj {
 			AddAction(UIAction.MouseUp, () => {
 			if(time_over < drag_threshold) 
 			{
+				(ParentObj as UIGear).isDragging = false;
 				UIManager.Menu.SetTargetClass(this);
 			}
 
@@ -45,4 +46,17 @@ public class UIClassSelect : UIObj {
 		});
 		 init = Img[0].color;
 	}
+
+	public override void LateUpdate()
+	{
+		if(isPressed)
+		{
+			time_over += Time.deltaTime;
+			//if(time_over > drag_threshold)
+			//{
+				
+			//}
+		}
+	}
+
 }

@@ -115,7 +115,7 @@ public class UIObj : MonoBehaviour {
 		Img[0].color = good ? GameData.instance.GoodColour : GameData.instance.BadColour;
 	}
 
-	void LateUpdate()
+	public virtual void LateUpdate()
 	{
 		if(isPressed)
 		{
@@ -142,6 +142,7 @@ public class UIObj : MonoBehaviour {
 		}
 		if(!isPressed) time_over = 0.0F;
 		isPressed = false;
+		Img[0].color = init;
 	}
 
 	public void _MouseOver()
@@ -155,7 +156,6 @@ public class UIObj : MonoBehaviour {
 
 	public void _MouseUp()
 	{
-
 		if(!isPressed)return;
 		foreach(Action child in Actions_MouseUp)
 		{

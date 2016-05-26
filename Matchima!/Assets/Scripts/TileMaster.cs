@@ -727,8 +727,7 @@ public class TileMaster : MonoBehaviour {
 
 		ParticleSystem col = EffectManager.instance.PlayEffect(t.transform, Effect.Destroy, "", GameData.instance.GetGENUSColour(t.Genus)).GetComponent<ParticleSystem>();
 		col.startSize = Mathf.Clamp((float)GameManager.ComboSize/15, 0.55F, 0.85F);
-		CameraUtility.instance.ScreenShake(0.16F,  GameData.GameSpeed(0.09F));
-
+		
 		Class [] c = null;
 		RectTransform [] res = null;
 

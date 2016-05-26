@@ -77,14 +77,14 @@ public class UIMenu : UIObj {
 		{
 			Class child = GameData.instance.Classes[i];
 			UIClassSelect obj = (UIClassSelect) Instantiate(ClassPrefab);
-			obj.transform.SetParent(UIManager.Objects.BotGear[3][0].transform);
+			obj.transform.SetParent(UIManager.Objects.BotGear[3].GetChild(0).transform);
 			
-			UIManager.Objects.BotGear[3][0].AddChild(obj);
+			UIManager.Objects.BotGear[3].GetChild(0).AddChild(obj);
 			obj.Setup(child);
 			obj.transform.rotation = Quaternion.Euler(0,0,360/wedge_num * i);
 
 		}
-		UIManager.Objects.BotGear[3][0].SetActive(false);
+		UIManager.Objects.BotGear[3].GetChild(0).SetActive(false);
 	}
 	
 	// Update is called once per frame

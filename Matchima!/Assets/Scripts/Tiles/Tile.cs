@@ -1105,8 +1105,9 @@ public class Tile : MonoBehaviour {
 		mp.DontDestroy = true;
 
 		mp.SetMethod(() => {
-			UnlockedFromGrid = false;
 			transform.position = new Vector3(Point.targetPos.x, Point.targetPos.y, transform.position.z);
+			UnlockedFromGrid = false;
+			
 		});
 		TileMaster.Grid[x, y]._Tile = this;
 		Setup(x,y);
