@@ -77,9 +77,10 @@ public class UIMenu : UIObj {
 		{
 			Class child = GameData.instance.Classes[i];
 			UIClassSelect obj = (UIClassSelect) Instantiate(ClassPrefab);
+			UIManager.Objects.BotGear[3].GetChild(0).AddChild(obj);
 			obj.transform.SetParent(UIManager.Objects.BotGear[3].GetChild(0).transform);
 			
-			UIManager.Objects.BotGear[3].GetChild(0).AddChild(obj);
+			
 			obj.Setup(child);
 			obj.transform.rotation = Quaternion.Euler(0,0,360/wedge_num * i);
 
@@ -98,25 +99,6 @@ public class UIMenu : UIObj {
 		}
 		
 		//Tokens.text = PlayerPrefs.GetInt("AllTokens") + " Tokens";
-
-		if(GameManager.inStartMenu)
-		{
-			//if(time > time_to_tile)
-			//{
-			//	TileInfo spec = TileMaster.Types.RandomType();
-			//	Tile new_tile = Instantiate(spec._Type.Prefab).GetComponent<Tile>();
-			//	//new_tile.Setup(new int [] {0,0}, spec);
-			//	new_tile.Setup(0,0,1,spec);
-			//	new_tile.transform.position = new Vector3(Random.Range(-3.5F,3.5F), 10, 0);
-			//	new_tile.speed_max_falling = -7.0F;
-			//	new_tile.Params._border.sprite = spec.Outer;
-			//	
-			//	tiles.Add(new_tile.gameObject);
-			//	time = 0.0F;
-			//	time_to_tile = Random.Range(0.8F, 2F);
-			//}
-			//else time += Time.deltaTime;
-		}
 	}
 
 	public void Reset()
