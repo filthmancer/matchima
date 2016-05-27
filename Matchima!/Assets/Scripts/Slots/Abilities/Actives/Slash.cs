@@ -84,7 +84,8 @@ public class Slash : Ability{
 				for(int x = 0; x < _tiles.GetLength(0); x++)
 				{
 					_tiles[x,rand_y].SetState(TileState.Selected, true);
-					to_collect.Add(_tiles[x,rand_y]);
+					if(!_tiles[x, rand_y].IsGenus(GENUS.OMG)) 
+						to_collect.Add(_tiles[x,rand_y]);
 				}
 			}
 		}
@@ -112,7 +113,8 @@ public class Slash : Ability{
 				for(int y = 0; y < _tiles.GetLength(1); y++)
 				{
 					_tiles[rand_x,y].SetState(TileState.Selected, true);
-					to_collect.Add(_tiles[rand_x,y]);
+					if(!_tiles[rand_x, y].IsGenus(GENUS.OMG))
+						to_collect.Add(_tiles[rand_x,y]);
 				}
 			}
 		}

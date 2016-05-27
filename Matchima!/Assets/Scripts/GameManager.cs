@@ -281,7 +281,7 @@ public class GameManager : MonoBehaviour {
 			//UIManager.instance.ShowResourceUI();
 			break;
 			case 3: //c
-			TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["chest"], GENUS.ALL,1, 1);
+			TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["mimic"], GENUS.ALL,1, 1);
 			break;
 			case 4: //V
 			//GetTurn();

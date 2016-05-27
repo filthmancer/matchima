@@ -13,12 +13,12 @@ public class Utility : MonoBehaviour {
 		return (int) UnityEngine.Random.Range(0, a);
 	}
 
-	public static Vector3 RandomVector(float x, float y, float z)
+	public static Vector3 RandomVector(float x = 0.0F, float y = 0.0F, float z = 0.0F)
 	{
 		return new Vector3(UnityEngine.Random.Range(0, x), UnityEngine.Random.Range(0, y), UnityEngine.Random.Range(0,z));
 	}
 
-	public static Vector3 RandomVectorInclusive(float x, float y, float z)
+	public static Vector3 RandomVectorInclusive(float x = 0.0F, float y = 0.0F, float z = 0.0F)
 	{
 		return new Vector3(UnityEngine.Random.Range(-x, x), UnityEngine.Random.Range(-y, y), UnityEngine.Random.Range(-z,z));
 	}

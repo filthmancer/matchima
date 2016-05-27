@@ -45,11 +45,24 @@ public class Fireball : Ability {
 	{
 		//if(activated) return;
 		//activated = true;
+		int xx = Random.Range(0, TileMaster.Grid.Size[0]);
+		int yy = Random.Range(0, TileMaster.Grid.Size[1]);
+		Tile target = TileMaster.Tiles[xx,yy];
 
-		int x = Random.Range(0, TileMaster.Grid.Size[0]);
-		int y = Random.Range(0, TileMaster.Grid.Size[1]);
-		Tile target = TileMaster.Tiles[x,y];
-		yield return StartCoroutine(CollectTiles(target));
+		UIManager.ClassButtons[Parent.Index].ShowClass(true);
+		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons[Parent.Index].transform.position + Vector3.up, 
+													"Fireball", 55, GameData.Colour(Parent.Genus), 1.2F, 0.25F);
+		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[(int)Parent.Genus].transform, Effect.Force);
+
+		MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
+		mp.SetTarget(target.transform.position);
+		mp.SetPath(0.85F, 0.2F);
+		mp.SetMethod(() => 
+			{
+				StartCoroutine(Cast(target));
+			});
+		yield return new WaitForSeconds(GameData.GameSpeed(0.4F));
+		//yield return StartCoroutine(CollectTiles(target));
 		//activated = false;
 	}
 
@@ -59,11 +72,9 @@ public class Fireball : Ability {
 		Description_Basic = "Collects all tiles in a " + radius + " tile radius around the target.";
 	}
 
-	public IEnumerator CollectTiles(Tile target)
+
+	IEnumerator Cast(Tile target)
 	{
-		UIManager.ClassButtons[Parent.Index].ShowClass(true);
-		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons[Parent.Index].transform.position + Vector3.up, 
-													"Fireball", 55, GameData.Colour(Parent.Genus), 1.2F, 0.25F);
 		int targX = target.Point.Base[0];
 		int targY = target.Point.Base[1];
 
@@ -77,11 +88,8 @@ public class Fireball : Ability {
 		Tile [,] _tiles = TileMaster.Tiles;
 		List<Tile> to_collect = new List<Tile>();
 
-		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[(int)Parent.Genus].transform, Effect.Force);
-		initpart.GetComponent<MoveToPoint>().SetTarget(target.transform.position);
-		yield return new WaitForSeconds(Time.deltaTime * 20);
-
 		List<GameObject> particles = new List<GameObject>();
+
 		for(int x = 0; x < _tiles.GetLength(0); x++)
 		{
 			for(int y = 0; y < _tiles.GetLength(1); y++)
@@ -148,8 +156,5 @@ public class Fireball : Ability {
 			Destroy(particles[i]);
 		}
 		particles.Clear();
-
-
-		yield break;
 	}
 }

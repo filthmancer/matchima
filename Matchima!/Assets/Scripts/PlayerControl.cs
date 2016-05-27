@@ -47,7 +47,9 @@ public class PlayerControl : MonoBehaviour {
 
 	bool swiping, swipeSent;
 	Vector2 last_position;
-	
+
+	public LineRenderer [] InnerLine, OuterLine;
+	private Vector3 linepos;
 
 	public float ComboBonus
 	{
@@ -66,6 +68,17 @@ public class PlayerControl : MonoBehaviour {
 	void Start () {
 		//_Line.SetPoints(Vector3.zero, -Vector3.one* 5);
 		//_Line.DrawLightning();
+
+		//InnerLine.sortingLayerID = Params._render.sortingLayerID;
+		//OuterLine.sortingLayerID = Params._render.sortingLayerID;
+		for(int x = 0; x < InnerLine.Length; x++)
+		{
+			InnerLine[x].sortingOrder = 1;
+			OuterLine[x].sortingOrder = 1;
+			InnerLine[x].SetWidth(0.2F, 0.2F);
+			OuterLine[x].SetWidth(0.05F, 0.05F);
+		}
+		
 	}
 
 	void Update () {
@@ -93,6 +106,64 @@ public class PlayerControl : MonoBehaviour {
 
 		if(!canMatch) return;
 
+		if(focusTile != null && !GameManager.instance.EnemyTurn && !UIManager.InMenu && selectedTiles.Count > 0)
+		{
+			for(int x = 0; x < InnerLine.Length; x++)
+			{
+				List<Vector3> finalpoints = new List<Vector3>();
+				for(int i = 0; i < selectedTiles.Count;i++)
+				{
+					Tile child = selectedTiles[i];
+					if(i == selectedTiles.Count - 1)
+					{
+						float softdist = 1.4F;
+						float stretch = 1.0F;
+						float str_decay = 1.0F;
+
+						float dist = Vector3.Distance(InputPos, child.transform.position);
+						Vector3 vel = InputPos - child.transform.position;
+						Vector3 final = child.transform.position + vel.normalized * softdist;
+
+						if(dist > softdist)
+						{
+							stretch = dist/softdist - (dist-softdist)/(dist-softdist);
+							linepos = final;
+						}
+						else
+						{
+							linepos = InputPos;
+						}
+					}
+					else
+					{
+						linepos = selectedTiles[i+1].transform.position;
+					}
+					Vector3 finalpoint = child.transform.position;
+					float power = (0.01F + MatchCount * 0.005F) * (x + 1);
+					Vector3 [] points = LightningLine(finalpoint, linepos, 5, power);
+					finalpoints.AddRange(points);
+				}
+				InnerLine[x].SetVertexCount(finalpoints.Count);
+				OuterLine[x].SetVertexCount(finalpoints.Count);
+				for(int i = 0; i < finalpoints.Count; i++)
+				{
+					InnerLine[x].SetPosition(i, finalpoints[i]);
+					OuterLine[x].SetPosition(i, finalpoints[i] + Vector3.back);
+				}
+				Color innercol = GameData.instance.GetGENUSColour(selectedTiles[0].Genus) * 0.9F;
+				innercol = Color.Lerp(innercol, Color.white, x*0.3F);
+				InnerLine[x].enabled = true;
+				InnerLine[x].SetColors(innercol, innercol);
+
+				Color outercol = Color.white;
+				outercol = Color.Lerp(outercol, innercol, x*0.3F);
+				OuterLine[x].enabled = true;
+				OuterLine[x].SetColors(outercol, outercol);
+			}
+			
+			
+			
+		}
 
 		if(matchingTile != null)//PlayerControl.matchingTile != null)
 		{
@@ -144,15 +215,24 @@ public class PlayerControl : MonoBehaviour {
 			AttackMatch = false;
 			AttackValue = 0;
 		}
-		
-		
-		
 	}
 
-	public void LateUpdate()
+	public Vector3 [] LightningLine(Vector3 start, Vector3 end, int segments, float power)
 	{
-		//if(!HoldingSlot) HeldButton = null;
+		Vector3 [] final = new Vector3[segments];
+		Vector3 velocity = start - end;
+		velocity.Normalize();
+		Vector3 last = start;
+		for(int i = 0; i < segments; i++)
+		{
+			final[i] = Vector3.Lerp(last, end, (float)i/segments);
+			final[i] += Utility.RandomVectorInclusive(1, 1, 0) * power;
+
+			last = final[i];
+		}
+		return final;
 	}
+
 
 	public void SwapSlots()
 	{
@@ -313,10 +393,18 @@ public class PlayerControl : MonoBehaviour {
 	public void CheckMatch()
 	{
 		if(focusTile == null) return;
-		bool match = true;
 
-		if(selectedTiles == null || selectedTiles.Count < Player.RequiredMatchNumber) match = false;
+		for(int x = 0; x < InnerLine.Length; x++)
+		{
+			InnerLine[x].enabled = false;
+			OuterLine[x].enabled = false;
+		}
 		
+
+		bool match = true;
+		if(selectedTiles == null || selectedTiles.Count < Player.RequiredMatchNumber) match = false;
+
+	
 		if(selectedTiles!= null && selectedTiles.Count > 0)
 		{
 			foreach(Tile child in selectedTiles)

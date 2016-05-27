@@ -154,8 +154,9 @@ public class Enemy : Tile {
 		InitStats.TurnDamage += PlayerControl.instance.AttackValue;
 		AudioManager.instance.PlayClipOn(this.transform, "Enemy", "Hit");
 		GameObject part = EffectManager.instance.PlayEffect(this.transform, Effect.Attack);
-		CameraUtility.instance.ScreenShake(0.45F,  GameData.GameSpeed(0.09F));
-		yield return new WaitForSeconds(GameData.GameSpeed(0.15F));
+		yield return new WaitForSeconds(GameData.GameSpeed(0.03F));
+		CameraUtility.instance.ScreenShake(0.35F,  GameData.GameSpeed(0.07F));
+		yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 	}
 
 	public override IEnumerator AfterTurnRoutine(){

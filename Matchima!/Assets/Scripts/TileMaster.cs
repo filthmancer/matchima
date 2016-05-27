@@ -771,6 +771,8 @@ public class TileMaster : MonoBehaviour {
 
 		List<MoveToPoint> restiles = new List<MoveToPoint>();
 		MoveToPoint mini;
+
+		float movespeed = 0.75F;
 		if(t.Type.isResource)
 		{
 			for(int rect = 0; rect < res.Length; rect++)
@@ -783,7 +785,7 @@ public class TileMaster : MonoBehaviour {
 					mini = CreateMiniTile(pos, res[rect] as Transform,
 														t.Params._border.sprite);
 					mini.Target = rect < c.Length ? c[rect] : null;
-					mini.SetPath(0.6F, 0.5F, 0.0F, 0.08F);
+					mini.SetPath(movespeed, 0.5F, 0.0F, 0.08F);
 					mini.SetMethod(() =>{
 							if(mini.Target != null) (mini.Target as Class).AddToMeter(val_per_tile);
 						}
@@ -800,7 +802,7 @@ public class TileMaster : MonoBehaviour {
 				Vector3 pos = t.transform.position + (rect > 0 ? GameData.RandomVector*1.4F : Vector3.zero);
 				mini = CreateMiniTile(pos, UIManager.instance.Health.transform,
 													t.Params._border.sprite);
-				mini.SetPath(0.6F, 0.0F, 0.0F, 0.08F);
+				mini.SetPath(movespeed, 0.0F, 0.0F, 0.08F);
 				mini.SetMethod(() =>{
 						Player.Stats.Heal(t.Stats.GetValues()[1]);
 					}
@@ -815,7 +817,7 @@ public class TileMaster : MonoBehaviour {
 				Vector3 pos = t.transform.position + (rect > 0 ? GameData.RandomVector*1.4F : Vector3.zero);
 				mini = CreateMiniTile(pos, UIManager.instance.Health.transform,
 													t.Params._border.sprite);
-				mini.SetPath(0.6F, 0.0F, 0.0F, 0.08F);
+				mini.SetPath(movespeed, 0.0F, 0.0F, 0.08F);
 				mini.SetMethod(() =>{
 						Player.Stats.AddArmour(t.Stats.GetValues()[2]);
 					}
@@ -832,7 +834,7 @@ public class TileMaster : MonoBehaviour {
 				Wave w = GameManager.instance._Wave;
 				mini = CreateMiniTile( pos, UIManager.Objects.WaveSlots[0].transform, 
 													t.Params._border.sprite);
-				mini.SetPath(0.6F, 0.5F, 0.0F, 0.08F);
+				mini.SetPath(movespeed, 0.5F, 0.0F, 0.08F);
 				mini.SetMethod(() =>{
 							if(w != null) w.EnemyKilled(t as Enemy);
 						}
@@ -846,7 +848,7 @@ public class TileMaster : MonoBehaviour {
 					pos = t.transform.position + (GameData.RandomVector*1.4F);
 					mini = CreateMiniTile( pos, UIManager.Objects.WaveSlots[i].transform, 
 														t.Params._border.sprite);
-					mini.SetPath(0.6F, 0.5F, 0.0F, 0.08F);
+					mini.SetPath(movespeed, 0.5F, 0.0F, 0.08F);
 					restiles.Add(mini);
 				}
 					
@@ -862,7 +864,7 @@ public class TileMaster : MonoBehaviour {
 					Vector3 pos = t.transform.position + (i > 0 ? GameData.RandomVector*1.4F : Vector3.zero);
 					mini = CreateMiniTile(pos, res[rect] as Transform, t.Params._border.sprite);
 					mini.Target = rect < c.Length ? c[rect] : null;
-					mini.SetPath(0.6F, 0.5F, 0.0F, 0.08F);
+					mini.SetPath(movespeed, 0.5F, 0.0F, 0.08F);
 					mini.SetMethod(() =>{
 							if(mini.Target != null) (mini.Target as Class).AddToMeter(val_per_tile);
 						}

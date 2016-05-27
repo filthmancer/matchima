@@ -162,6 +162,18 @@ public class Mimic : Enemy {
 		Params.HitCounter.SetActive(true);
 	}
 
+	public override void SetSprite()
+	{
+		int sprite = Stats.Value / 5;
+		SetBorder(Info.Outer);
+		if(revealed) sprite = 1;
+		else sprite = 0;
+
+		SetRender(Info.Inner[sprite]);
+		
+		if(Params._shiny != null && Params._render != null) Params._shiny.sprite = Params._render.sprite;
+	}
+
 	public override TileEffect AddEffect(TileEffect e)
 	{
 		foreach(TileEffect child in Effects)

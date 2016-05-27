@@ -147,7 +147,7 @@ public class Bard : Class {
 		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[(int)Genus].transform, Effect.Force);
 		MoveToPoint charm = initpart.GetComponent<MoveToPoint>();
 		charm.SetTarget(charmtarget.transform.position);
-		charm.SetPath(0.35F, 0.3F);
+		charm.SetPath(0.85F, 0.3F);
 		charm.Target_Tile = charmtarget;
 		charm.SetThreshold(0.15F);
 		charm.SetMethod(() =>
@@ -186,7 +186,7 @@ public class Bard : Class {
 		GameObject initsleep = EffectManager.instance.PlayEffect(UIManager.ClassButtons[(int)Genus].transform, Effect.Force);
 		MoveToPoint sleep = initsleep.GetComponent<MoveToPoint>();
 		sleep.SetTarget(sleeptarget.transform.position);
-		sleep.SetPath(0.35F, 0.3F);
+		sleep.SetPath(0.85F, 0.3F);
 		sleep.Target_Tile = sleeptarget;
 		sleep.SetThreshold(0.15F);
 		sleep.SetMethod(() =>
@@ -222,7 +222,7 @@ public class Bard : Class {
 			GameObject initsleep = EffectManager.instance.PlayEffect(UIManager.ClassButtons[(int)Genus].transform, Effect.Force);
 			MoveToPoint sleep = initsleep.GetComponent<MoveToPoint>();
 			sleep.SetTarget(sleeptarget.transform.position);
-			sleep.SetPath(0.35F, 0.3F);
+			sleep.SetPath(0.85F, 0.3F);
 			sleep.Target_Tile = sleeptarget;
 			sleep.SetThreshold(0.15F);
 			sleep.SetMethod(() =>

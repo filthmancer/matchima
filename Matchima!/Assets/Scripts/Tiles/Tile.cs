@@ -197,12 +197,12 @@ public class Tile : MonoBehaviour {
 			def = Params._render.material.color;
 			targetColor = def;
 			//_anim = GetComponent<Animator>();
-			Params.lineIn.sortingLayerID = Params._render.sortingLayerID;
-			Params.lineOut.sortingLayerID = Params._render.sortingLayerID;
-			Params.lineIn.sortingOrder = 1;
-			Params.lineOut.sortingOrder = 1;
-			Params.lineIn.SetWidth(0.3F, 0.3F);
-			Params.lineOut.SetWidth(0.1F, 0.1F);
+			//Params.lineIn.sortingLayerID = Params._render.sortingLayerID;
+			//Params.lineOut.sortingLayerID = Params._render.sortingLayerID;
+			//Params.lineIn.sortingOrder = 1;
+			//Params.lineOut.sortingOrder = 1;
+			//Params.lineIn.SetWidth(0.3F, 0.3F);
+			//Params.lineOut.SetWidth(0.1F, 0.1F);
 		}
 		
 
@@ -290,8 +290,8 @@ public class Tile : MonoBehaviour {
 		
 		if(!IsState(TileState.Selected))
 		{
-			Params.lineIn.enabled = false;
-			Params.lineOut.enabled = false;	
+			//Params.lineIn.enabled = false;
+			//Params.lineOut.enabled = false;	
 			linepos = PlayerControl.InputPos;
 			if(Player.Options.ViewTileStats) SetCounter("" + Stats.Value);
 			else if(!GameManager.instance.EnemyTurn) SetCounter("");
@@ -351,8 +351,8 @@ public class Tile : MonoBehaviour {
 			if(PlayerControl.instance.focusTile == this && PlayerControl.instance.SecondLastSelected() == this)	
 			{
 				PlayerControl.instance.BackTo(this);
-				Params.lineIn.enabled = false;
-				Params.lineOut.enabled = false;			
+				//Params.lineIn.enabled = false;
+				//Params.lineOut.enabled = false;			
 			}
 			else if(PlayerControl.instance.SecondLastSelected() == this && PlayerControl.instance.LastSelected() != null)
 			{
@@ -379,7 +379,7 @@ public class Tile : MonoBehaviour {
 					linepos = PlayerControl.InputPos;
 					//Params._render.transform.position = Vector3.Lerp(Point.targetPos, transform.position + vel, 0.02F);
 				}
-				Vector3 [] points = LightningLine(this.transform.position, linepos, 5, 0.01F + PlayerControl.MatchCount * 0.005F);
+				/*Vector3 [] points = LightningLine(this.transform.position, linepos, 5, 0.01F + PlayerControl.MatchCount * 0.005F);
 				for(int i = 0; i < points.Length; i++)
 				{
 					Params.lineIn.SetPosition(i, points[i]);
@@ -391,23 +391,24 @@ public class Tile : MonoBehaviour {
 
 				Params.lineOut.enabled = true;
 				Params.lineOut.SetColors(Color.white, Color.white);
+				*/
 				
 			}
 			else if(GameManager.instance.EnemyTurn || UIManager.InMenu)
 			{
-				Params.lineIn.enabled = false;
-				Params.lineOut.enabled = false;
+				//Params.lineIn.enabled = false;
+				//Params.lineOut.enabled = false;
 			}
 			else 
 			{
 				if(LineTarget == null) 
 				{
-					Params.lineIn.enabled = false;
-					Params.lineOut.enabled = false;
+					//Params.lineIn.enabled = false;
+					//Params.lineOut.enabled = false;
 					return;
 				}
 
-				Vector3 [] points = LightningLine(this.transform.position, LineTarget.transform.position, 5, 0.01F + PlayerControl.MatchCount * 0.005F);
+				/*Vector3 [] points = LightningLine(this.transform.position, LineTarget.transform.position, 5, 0.01F + PlayerControl.MatchCount * 0.005F);
 				for(int i = 0; i < points.Length; i++)
 				{
 					Params.lineIn.SetPosition(i, points[i]);
@@ -419,6 +420,7 @@ public class Tile : MonoBehaviour {
 
 				Params.lineOut.enabled = true;
 				Params.lineOut.SetColors(Color.white, Color.white);
+				*/
 			}
 		}		
 	}
