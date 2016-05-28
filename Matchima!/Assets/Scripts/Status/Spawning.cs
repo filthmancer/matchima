@@ -29,7 +29,6 @@ public class Spawning : TileEffect {
 		_Tile.AfterTurnEffect = true;
 	}
 
-
 	public override IEnumerator StatusEffectRoutine()
 	{
 		if(Duration != 0)
@@ -63,7 +62,8 @@ public class Spawning : TileEffect {
 				foreach(TileEffect child in _Tile.Effects)
 				{
 					if(child == this) continue;
-					t.AddEffect(child);
+					TileEffect neweff = (TileEffect) Instantiate(child);
+					t.AddEffect(neweff);
 				}
 				yield return new WaitForSeconds(Time.deltaTime*2);
 			}

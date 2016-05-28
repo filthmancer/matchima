@@ -98,31 +98,35 @@ public class UIManager : MonoBehaviour {
 		{
 			if(GameManager.instance._Wave[i] != null && GameManager.instance._Wave[i].Active && Objects.WaveSlots.Length > i)
 			{
-				Objects.WaveSlots[i].Txt[0].text = "";
-				//WaveTimer.text = "";
-		
-				Objects.WaveSlots[i].Img[1].enabled = true;
-				Objects.WaveSlots[i].Img[1].sprite = GameManager.instance._Wave[i].Inner;
-				Objects.WaveSlots[i].Img[1].color = Color.white;
-				Objects.WaveSlots[i].Img[2].enabled = true;
-				Objects.WaveSlots[i].Img[2].sprite = GameManager.instance._Wave[i].Outer;
-				Objects.WaveSlots[i].Img[2].color = Color.white;
+				UIObj w = Objects.WaveSlots[i];
+				w.SetActive(true);
+				w.Txt[0].text = "";	
+				w.Img[0].transform.gameObject.SetActive(true);
+				w.Img[0].enabled = true;	
+				w.Img[1].enabled = true;
+				w.Img[1].sprite = GameManager.instance._Wave[i].Inner;
+				w.Img[1].color = Color.white;
+				w.Img[2].enabled = true;
+				w.Img[2].sprite = GameManager.instance._Wave[i].Outer;
+				w.Img[2].color = Color.white;
 
 				if(GameManager.instance._Wave[i].Current > -1)
 				{
-					Objects.WaveSlots[i].Img[0].transform.gameObject.SetActive(true);
-					Objects.WaveSlots[i].Txt[0].text = GameManager.instance._Wave[i].Current+"";
+					w.GetChild(0).SetActive(true);
+					w.GetChild(0).Txt[0].text = GameManager.instance._Wave[i].Current+"";
 				}
+				else w.GetChild(0).SetActive(false);
 				
 			}
 			else 
 			{
-				Objects.WaveSlots[i].Img[0].transform.gameObject.SetActive(false);
-				for(int s = 1; s < Objects.WaveSlots[i].Img.Length; s++)
-				{
-					Objects.WaveSlots[i].Img[s].enabled = false;
-				}
-				Objects.WaveSlots[i].Txt[0].text = "";
+				Objects.WaveSlots[i].SetActive(false);
+				//Objects.WaveSlots[i].Img[0].transform.gameObject.SetActive(//false);
+				//for(int s = 1; s < Objects.WaveSlots[i].Img.Length; s++)
+				//{
+				//	Objects.WaveSlots[i].Img[s].enabled = false;
+				//}
+				//Objects.WaveSlots[i].Txt[0].text = "";
 				//if(GameManager.instance._Wave[i] != null && GameManager.instance._Wave[i].Timer > 0) 
 				//	WaveTimer.text = "" + GameManager.instance._Wave[i].Timer;
 				//else WaveTimer.text = "";
@@ -508,6 +512,7 @@ public class UIManager : MonoBehaviour {
 			child.Setup(Player.Classes[i]);
 			i++;
 		}
+
 		yield return null;
 	}
 

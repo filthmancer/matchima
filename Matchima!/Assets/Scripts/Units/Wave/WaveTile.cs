@@ -86,7 +86,8 @@ public class WaveTile : WaveUnit
 			int checks = 0;
 			while(replacedtile[randx, randy]||
 					!TileMaster.Tiles[randx,randy].IsType("resource")||
-					TileMaster.Tiles[randx,randy].Point.Scale > 1)
+					TileMaster.Tiles[randx,randy].Point.Scale > 1 ||
+					randy < 2)
 			{
 				randx = (int)Random.Range(0, TileMaster.instance.MapSize.x);
 				randy = (int)Random.Range(0, TileMaster.instance.MapSize.y);
@@ -95,14 +96,22 @@ public class WaveTile : WaveUnit
 			}
 			replacedtile[randx,randy] = true;
 
-			TileMaster.instance.ReplaceTile(randx, randy, TileMaster.Types[Species], Genus, Scale, FinalValue);
+			GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Force);
+			MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
+			mp.SetTarget(TileMaster.Tiles[randx,randy].transform.position);
+			mp.SetPath(1.0F, 0.2F);
+			mp.SetTileMethod(TileMaster.Tiles[randx,randy], (Tile t) => 
+				{
+					Tile newtile = TileMaster.instance.ReplaceTile(t, TileMaster.Types[Species], Genus, Scale, FinalValue);
+					for(int i = 0; i < Effects.Count; i++)
+					{
+						TileEffect effect = (TileEffect) Instantiate(GameData.instance.GetTileEffectByName(Effects[i].Name));
+						effect.GetArgs(Effects[i].Duration, Effects[i].Args);
+						newtile.AddEffect(Effects[i]);
+					}
+				});
+			
 
-			for(int i = 0; i < Effects.Count; i++)
-			{
-				TileEffect effect = (TileEffect) Instantiate(GameData.instance.GetTileEffectByName(Effects[i].Name));
-				effect.GetArgs(Effects[i].Duration, Effects[i].Args);
-				TileMaster.Tiles[randx, randy].AddEffect(Effects[i]);
-			}
 			yield return new WaitForSeconds(Time.deltaTime * 5);
 		}
 		yield return new WaitForSeconds(Time.deltaTime * 5);
@@ -142,7 +151,22 @@ public class WaveTile : WaveUnit
 			}
 
 			replacedtile[randx,randy] = true;
-			TileMaster.instance.ReplaceTile(randx, randy, TileMaster.Types[Species], Genus, Scale, FinalValue);
+
+			List<TileEffectInfo> Effects = Parent.GetEffects();
+			GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Force);
+			MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
+			mp.SetTarget(TileMaster.Tiles[randx,randy].transform.position);
+			mp.SetPath(1.0F, 0.2F);
+			mp.SetTileMethod(TileMaster.Tiles[randx,randy], (Tile t) => 
+				{
+					Tile newtile = TileMaster.instance.ReplaceTile(t, TileMaster.Types[Species], Genus, Scale, FinalValue);
+					for(int i = 0; i < Effects.Count; i++)
+					{
+						TileEffect effect = (TileEffect) Instantiate(GameData.instance.GetTileEffectByName(Effects[i].Name));
+						effect.GetArgs(Effects[i].Duration, Effects[i].Args);
+						newtile.AddEffect(Effects[i]);
+					}
+				});
 			yield return null;
 		}
 		yield return null;

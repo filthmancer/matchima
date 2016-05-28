@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class WaveTileEndOnTileDestroy : WaveTile {
 	public List<Tile> targets;
+	private List<Vector2> targetpoints;
 	public bool DestroyOnWaveEnd = true;
 	public override IEnumerator OnStart()
 	{
@@ -22,7 +23,8 @@ public class WaveTileEndOnTileDestroy : WaveTile {
 			int checks = 0;
 			while(replacedtile[randx, randy] || 
 				!TileMaster.Tiles[randx,randy].IsType("resource") || 
-				TileMaster.Tiles[randx,randy].Point.Scale > 1)
+				TileMaster.Tiles[randx,randy].Point.Scale > 1 ||
+				randy < 2)
 			{
 				randx = (int)Random.Range(0, TileMaster.instance.MapSize.x);
 				randy = (int)Random.Range(0, TileMaster.instance.MapSize.y);
@@ -31,14 +33,28 @@ public class WaveTileEndOnTileDestroy : WaveTile {
 			}
 			replacedtile[randx,randy] = true;
 
-			targets.Add(TileMaster.instance.ReplaceTile(randx, randy, TileMaster.Types[Species], Genus, Scale, FinalValue));
-			for(int i = 0; i < Effects.Count; i++)
-			{
-				TileMaster.Tiles[randx, randy].AddEffect(Effects[i]);
-			}
+			GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Force);
+			MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
+			mp.SetTarget(TileMaster.Tiles[randx,randy].transform.position);
+			mp.SetPath(1.2F, 0.2F);
+			//mp.Target_Tile = TileMaster.Tiles[randx,randy];
+			mp.SetTileMethod(TileMaster.Tiles[randx,randy], (Tile t) => 
+				{
+					Tile newtile = TileMaster.instance.ReplaceTile(t, TileMaster.Types[Species], Genus, Scale, FinalValue);
+					targets.Add(newtile);
+					for(int i = 0; i < Effects.Count; i++)
+					{
+						TileEffect effect = (TileEffect) Instantiate(GameData.instance.GetTileEffectByName(Effects[i].Name));
+						effect.GetArgs(Effects[i].Duration, Effects[i].Args);
+						newtile.AddEffect(Effects[i]);
+					}
+				});
+			
+		
+			
 			yield return new WaitForSeconds(Time.deltaTime * 5);
 		}
-		yield return new WaitForSeconds(Time.deltaTime * 5);
+		yield return new WaitForSeconds(Time.deltaTime * 20);
 	}
 
 	public override IEnumerator AfterTurn()
@@ -48,8 +64,7 @@ public class WaveTileEndOnTileDestroy : WaveTile {
 		bool end = true;
 		for(int i = 0; i < targets.Count; i++)
 		{
-
-			if(targets[i] != null && !targets[i].isMatching)
+			if(!targets[i].Destroyed && !targets[i].isMatching)
 			{
 				end = false;
 			}	
@@ -70,10 +85,10 @@ public class WaveTileEndOnTileDestroy : WaveTile {
 		Ended = true;
 		if(DestroyOnWaveEnd)
 		{
-			//foreach(Tile child in targets)
-			//{
-			//	if(child != null) child.DestroyThyself(false);
-			//}
+			foreach(Tile child in targets)
+			{
+				if(!child.Destroyed) child.DestroyThyself(false);
+			}
 		}
 	}
 

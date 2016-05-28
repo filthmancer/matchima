@@ -547,7 +547,7 @@ public class GameManager : MonoBehaviour {
 
 				Vector3 pos = child.transform.position + (GameData.RandomVector*1.4F);
 				MoveToPoint mini = TileMaster.instance.CreateMiniTile(pos,UIManager.instance.Health.transform, child.Info.Outer);
-				mini.SetPath(0.5F, 0.5F, 0.0F, 0.1F);
+				mini.SetPath(0.74F, 0.3F, 0.0F, 0.15F);
 				mini.SetMethod(() =>{
 						Player.instance.OnHit(child);
 						AudioManager.instance.PlayClipOn(Player.instance.transform, "Player", "Hit");

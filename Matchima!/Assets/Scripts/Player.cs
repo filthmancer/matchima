@@ -88,7 +88,7 @@ public class Player : MonoBehaviour {
 
 	float idle_quote_chance = 0.02F;
 	bool idle_quote = false;
-	float idle_time = .0F;
+	float idle_time = 0.0F;
 	void Awake()
 	{
 		instance = this;

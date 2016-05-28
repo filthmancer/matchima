@@ -26,6 +26,7 @@ public class MoveToPoint : MonoBehaviour {
 	private float threshold = 0.17F;
 	private float final_scale = 1.0F;
 	Action method;
+	Action<Tile> tilemethod;
 
 	// Update is called once per frame
 	void Update () {
@@ -52,6 +53,7 @@ public class MoveToPoint : MonoBehaviour {
 				if(delay <= 0.0F)
 				{
 					if(method != null) method();
+					if(tilemethod != null) tilemethod(Target_Tile);
 					if(!DontDestroy) Destroy(this.gameObject);
 					else Destroy(this);
 				}
@@ -104,5 +106,11 @@ public class MoveToPoint : MonoBehaviour {
 	public void SetMethod(Action a)
 	{
 		method = a;
+	}
+
+	public void SetTileMethod(Tile t, Action <Tile> a)
+	{
+		Target_Tile = t;
+		tilemethod = a;
 	}
 }

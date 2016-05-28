@@ -596,7 +596,6 @@ public class TileMaster : MonoBehaviour {
 				{
 					if(Tiles[xx,yy].isMatching) 
 					{
-						Utility.Flog(xx,yy);
 						Tiles[xx,yy].DestroyThyself();
 						continue;
 					}

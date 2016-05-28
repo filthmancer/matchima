@@ -185,7 +185,14 @@ public class UIMenu : UIObj {
 		switch(GameManager.instance.Mode)
 		{
 			case GameMode.Endless:
-	
+			for(int i = 0; i < Player.instance._Classes.Length; i++)
+			{
+				if(Player.instance._Classes[i] == null)
+				{
+					HeroMenu(0);
+					return;
+				}
+			}
 			break;
 			case GameMode.Story:
 			Player.instance._Classes[0] = GameData.instance.GetClass("Barbarian");

@@ -360,10 +360,26 @@
 	"buffers":
 	[
 		{
-			"file": "Scripts/PlayerControl.cs",
+			"file": "Scripts/Units/Wave/WaveTile.cs",
 			"settings":
 			{
-				"buffer_size": 13749,
+				"buffer_size": 5403,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Scripts/Units/Wave/WaveTileEndOnTileDestroy.cs",
+			"settings":
+			{
+				"buffer_size": 2672,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Scripts/Utilities/MoveToPoint.cs",
+			"settings":
+			{
+				"buffer_size": 2557,
 				"line_ending": "Unix"
 			}
 		},
@@ -372,38 +388,30 @@
 			"settings":
 			{
 				"buffer_size": 5176,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Scripts/Slots/Abilities/Actives/Fireball.cs",
+			"settings":
+			{
+				"buffer_size": 4587,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Scripts/Units/WaveUnit.cs",
+			"settings":
+			{
+				"buffer_size": 3081,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "Scripts/Utilities/CameraUtility.cs",
+			"file": "Scripts/UI/UIManager.cs",
 			"settings":
 			{
-				"buffer_size": 2427,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "Scripts/Tiles/Enemies/Mimic.cs",
-			"settings":
-			{
-				"buffer_size": 6267,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "Scripts/Tiles/Tile.cs",
-			"settings":
-			{
-				"buffer_size": 34922,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "Scripts/Tiles/Neutral/ItemTile.cs",
-			"settings":
-			{
-				"buffer_size": 1354,
+				"buffer_size": 19084,
 				"line_ending": "Unix"
 			}
 		},
@@ -411,26 +419,23 @@
 			"file": "Scripts/GameManager.cs",
 			"settings":
 			{
-				"buffer_size": 29052,
+				"buffer_size": 29054,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Scripts/Units/Wave.cs",
+			"settings":
+			{
+				"buffer_size": 8697,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "Scripts/Player.cs",
+			"file": "Scripts/UI/UIMenu.cs",
 			"settings":
 			{
-				"buffer_size": 16656,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "using UnityEngine;\nusing System.Collections;\nusing System.Collections.Generic;\nusing System;\nusing TMPro;\n\n\npublic class Class : Unit {\n\n\n	public virtual StCon _Name\n	{\n		get\n		{\n			string name = \"The \" + Name;\n			//if(MeterLvl > 0) name += \"  M-POWER: \" + MeterLvl;\n			return new StCon(name, GameData.Colour(Genus));\n		}\n	}\n\n	public virtual StCon [] _Desc\n	{\n		get\n		{\n			List<StCon> final = new List<StCon>();\n			final.Add(new StCon(Meter + \"/\" + MeterTop + \" Mana\", GameData.Colour(Genus)));\n			final.Add(new StCon(\"Lvl \" + Level + \" (\"+ Exp_Current + \"/\" + Exp_Max + \" xp)\", GameData.Colour(GENUS.WIS)));\n\n			for(int i = 0; i < Stats.Length; i++)\n			{\n				bool last = i==Stats.Length-1;\n				final.Add(new StCon(Stats[i].StatCurrent+\"\", GameData.Colour((GENUS)i), last));\n				if(!last) final.Add(new StCon(\" /\", Color.white, false));\n			}\n		//	final.Add(new StCon(mainStat.StatCurrent + \" \" + GameData.StatLong(Genus), GameData.Colour(Genus)));\n			\n			//final.Add(new StCon(\"+\" + Stats.HealthMax + \" HP  \", Color.white, false));\n			//final.Add(new StCon(\"+\" + Stats.Attack + \" ATK\", Color.white, true));\n\n			foreach(Slot child in AllMods)\n			{\n				if(child != null) final.AddRange(child.Description_Tooltip);\n			}\n\n			//for(int i = 0; i < Upgrades.Length; i++)\n			//{\n			//	bool newline = i % 2 == 0;\n			//	final.Add(new StCon(Upgrades[i], newline));\n			//}\n			\n			foreach(ClassEffect child in _Status)\n			{\n				final.AddRange(child.Description);\n			}\n				\n			return final.ToArray();\n		}\n	}\n\n	public virtual StCon [] Upgrades\n	{\n		get\n		{\n			List<StCon> final = new List<StCon>();\n			int num = 1;\n			foreach(ClassUpgrade child in AllBoons)\n			{\n				if(child.Current == 0) continue;\n				final.Add(new StCon(child.CurrentString + \" \" + child.Name, Color.white, (num % 3 == 0)));\n				num++;\n			}\n			return final.ToArray();\n		}\n	}\n	public Sprite Icon;\n	public bool Unlocked = true;\n\n	public ClassInfo Info;\n	\n	public Stat InitStats;\n	public List<Slot> AllMods;\n	public Slot InitMod;\n\n	public Slot [] _Boons\n	{\n		get\n		{\n			List<Slot> final = new List<Slot>();\n			foreach(Slot child in AllMods)\n			{\n				if((child is Ability) && (child as Ability).Type == ModType.Boon) final.Add(child);\n			}\n			return final.ToArray();\n		}\n	}\n	public Slot [] _Curses\n	{\n		get\n		{\n			List<Slot> final = new List<Slot>();\n			foreach(Slot child in AllMods)\n			{\n				if((child is Ability) && (child as Ability).Type == ModType.Curse) final.Add(child);\n			}\n			return final.ToArray();\n		}\n	}\n	public Slot [] _Slots = new Slot[1];\n	\n	public ClassQuotes Quotes; \n\n	public bool isKilled = false;\n\n	public ClassUpgrade [] AllBoons;\n	public ClassUpgrade [] AllCurses;\n\n	public int Level = 1;\n	public int LevelPoints = 0;\n\n	[HideInInspector]\n	public int ManaThisTurn = 0;\n	public bool CanCollectMana = true;\n\n	[HideInInspector]\n	public bool LevelUpAlert;\n\n	public StatContainer mainStat;\n\n	[HideInInspector]\n	public bool activated;\n\n	public string MeterString\n	{\n		get{\n			return GameData.PowerString(Meter);\n		}\n	}\n	public int Meter;\n	public int _MeterMax;\n	public int MeterLvl;\n\n\n	public int MeterTop\n	{\n		get{\n			if(MeterLvl+1 >= MeterMax_array.Length) return 1000;\n			else if(MeterLvl+1 < 0) return MeterMax_array[0];\n			else return MeterMax_array[MeterLvl+1];\n		}\n	}\n	public int MeterBottom\n	{\n		get{\n			return 0;\n			//if(MeterLvl >= MeterMax_array.Length) return MeterMax_array[MeterMax_array.Length-1];\n			//else if(MeterLvl < 0) return 0;\n			//else return MeterMax_array[MeterLvl] - 5;\n		}\n	}\n\n	[HideInInspector]\n	public int [] MeterMax_array = new int[3];\n\n	[HideInInspector]\n	public int BonusLevelRate = 0,WaveLevelRate = 0, TurnLevelRate = 1;\n	public Stat Stats;\n\n	private float MeterMax_soft;\n	private float MeterGain = 0.2F;\n\n	protected bool ManaPowerActivate = false;\n	protected bool ManaPowerActive = false;\n	protected int MeterDecay = 1;\n	protected float MeterDecay_soft = 1.0F;\n	protected float [] MeterDecayInit = new float[]\n	{\n		0, 6, 7, 9\n	};\n\n	public GameObject ManaPowerParticle;\n\n	private bool LowHealthWarning = true, DeathWarning = true;\n	private float time_from_last_pulse = 0.0F;\n	private IntVector [] combo_thresholds = new IntVector[] \n	{\n		new IntVector(15, 1), //GREAT\n		new IntVector(35, 4), //AMAZING\n		new IntVector(60, 10), //IMPOSSIBLE\n		new IntVector(100, 20), //MATCHIMADNESS\n	};\n	private int combo_biggest = 0;\n\n	private bool HasLeveled = true;\n	public int Exp_Max, Exp_Current;\n	private float Exp_Max_soft;\n\n\n	// Use this for initialization\n	public virtual void Start () {\n		\n	}\n	\n	public virtual void StartClass()\n	{\n		Exp_Current = 0;\n		Exp_Max = 50;\n		Exp_Max_soft = 50.0F;\n		\n		Meter = 0;\n\n		int i = 0;\n		foreach(Slot child in _Slots)\n		{\n			if(child == null) continue;\n			child.Parent = this;\n			child.Init(i++);\n		}\n		if(InitMod!= null)\n		{\n			InitMod.Parent = this;\n			InitMod.Init(i++);\n		}\n		\n		for(int m = 0; m < AllMods.Count; m++)\n		{\n			if(AllMods[m] == null)\n			{\n				AllMods.RemoveAt(m);\n				m--;\n				continue;\n			}\n			AllMods[m].Parent = this;\n			AllMods[m].Init(m);\n		}\n		InitStats.Setup();\n		Reset();\n		Stats._Health = Stats._HealthMax;\n		Quotes.Setup(this);\n		gameObject.name = Name + \": \" + GameData.StatLong(Genus);\n	}\n\n	public virtual void Update()\n	{\n		if(time_from_last_pulse < 5.0F) time_from_last_pulse += Time.deltaTime;\n		if(ManaPowerParticle != null)	ManaPowerParticle.transform.position = UIManager.ClassButtons[(int)Genus].transform.position;\n	}\n\n	public virtual float GetMeterRatio()\n	{\n		if(Meter == 0 || MeterTop == 0) return 0.0F;\n		float f = Meter * 1.0F;\n		return (f-MeterBottom)/(MeterTop-MeterBottom);\n	}\n\n\n\n	public virtual void Reset()\n	{\n		float ratio = (float) Stats._Health / (float) Stats._HealthMax;\n		//int initres = Meter;\n		int heal = Stats.HealThisTurn;\n\n		InitStats.CheckStatInc();\n		Stats = new Stat(InitStats);\n		foreach(Slot child in _Slots)\n		{\n			if(child == null) continue;\n			if(child is Item) child.Drag = DragType.None;\n			if(child.GetStats() != null) Stats.AddStats(child.GetStats());\n		}\n		foreach(Slot child in AllMods)\n		{\n			if(child == null) continue;\n			if(child.GetStats() != null) Stats.AddStats(child.GetStats());\n		}\n		foreach(ClassEffect child in _Status)\n		{\n			if(child == null) continue;\n			if(child.CheckStats()!= null) Stats.AddStats(child.CheckStats());\n			child.StatusEffect();\n		}\n\n		Stats.ApplyStatInc();\n		Stats._Health = (int) Mathf.Clamp(Stats._HealthMax * ratio, 0, Stats._HealthMax);\n		Stats.HealThisTurn = heal;\n		Stats.Class_Type = Genus;\n		mainStat = Stats.GetResourceFromGENUS(Genus);\n\n		MeterMax_soft = _MeterMax * (1.0F + (MeterGain * Level)) + Stats.MeterMax;\n		MeterMax_array = new int [] {0, (int)(MeterMax_soft), (int)(MeterMax_soft * 2F), (int)(MeterMax_soft * 4.8F)};\n	}\n\n	public virtual IEnumerator BeforeMatch(List<Tile> tiles)\n	{\n		foreach(Slot child in _Slots)\n		{\n			if(child == null) continue;\n			yield return StartCoroutine(child.BeforeMatch(tiles));\n		}\n		foreach(Slot child in AllMods)\n		{\n			if(child == null) continue;\n			yield return StartCoroutine(child.BeforeMatch(tiles));\n		}\n		yield return null;\n	}\n\n\n	public virtual IEnumerator BeginTurn()\n	{\n		ManaThisTurn = 0;\n		foreach(Slot child in _Slots)\n		{\n			if(child == null) continue;\n			yield return StartCoroutine(child.BeforeTurn());\n		}\n		foreach(Slot child in AllMods)\n		{\n			if(child == null) continue;\n			yield return StartCoroutine(child.BeforeTurn());\n		}\n\n		AddToMeter(Stats.MeterRegen);\n		MeterDecay_soft *= (GameManager.MeterDecay[MeterLvl] + Stats.MeterDecay[MeterLvl] + Stats.MeterDecay_Global);\n		MeterDecay = (int)MeterDecay_soft;\n		if(Meter < MeterDecay) Meter = 0;\n		else AddToMeter(-MeterDecay);\n			\n		\n		yield return StartCoroutine(CheckManaPower());\n		Reset();\n		yield return null;\n	}\n\n	public virtual IEnumerator EndTurn()\n	{\n		foreach(Slot child in _Slots)\n		{\n			if(child == null) continue;\n			yield return StartCoroutine(child.AfterTurn());\n		}\n		foreach(Slot child in AllMods)\n		{\n			if(child == null) continue;\n			yield return StartCoroutine(child.AfterTurn());\n		}\n		Reset();\n		yield return null;\n	}\n\n	public IEnumerator CheckManaPower()\n	{\n		if(Meter == 0 && MeterLvl > 0)\n		{\n			UIManager.ClassButtons[Index].ShowClass(true);\n			MeterLvl = 0;\n			MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons[(int)Genus].transform.position, \"POWER\\nDOWN\", 75, GameData.Colour(Genus), 1.2F, 0.2F);\n			yield return new WaitForSeconds(0.1F);\n			MeterDecay_soft = MeterDecayInit[0];\n			MeterDecay = (int) MeterDecay_soft;\n			if(ManaPowerParticle != null) Destroy(ManaPowerParticle);\n			ManaPower(0);\n		}\n		else\n		{\n			\n			int newlvl = 0;\n			for(int i = 0; i < MeterMax_array.Length; i++)\n			{\n				if(Meter >= MeterMax_array[i]) newlvl = i;\n			}\n			//print(Meter + \":\" + newlvl + \" - \" + MeterMax_array[1]);\n			if(MeterLvl < newlvl)\n			{\n				UIManager.instance.WaveAlert.SetTween(0,true);\n				UIManager.ClassButtons[Index].ShowClass(true);\n				yield return new WaitForSeconds(GameData.GameSpeed(0.1F));\n				\n				GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, \"\", GameData.Colour(Genus));\n				powerup.transform.position = UIManager.ClassButtons[(int)Genus].transform.position;\n\n				yield return new WaitForSeconds(GameData.GameSpeed(0.84F));\n				UIManager.instance.WaveAlert.SetTween(0,false);\n				Destroy(powerup);\n\n				MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons[(int)Genus].transform.position, \"POWER\\nUP\", 75, GameData.Colour(Genus), 1.2F, 0.2F);\n\n				MeterLvl = newlvl;\n				MeterDecay_soft = MeterDecayInit[MeterLvl];\n				MeterDecay = (int) MeterDecay_soft;\n				ManaPower(MeterLvl);\n\n				Effect e = MeterLvl == 1 ? Effect.ManaPowerLvl1 : (MeterLvl == 2 ? Effect.ManaPowerLvl2 : Effect.ManaPowerLvl3);\n				ParticleSystem part = EffectManager.instance.PlayEffect(this.transform, e, \"\", GameData.Colour(Genus)).GetComponent<ParticleSystem>();\n				if(ManaPowerParticle != null) Destroy(ManaPowerParticle);\n				ManaPowerParticle = part.gameObject;\n				ManaPowerParticle.transform.position = UIManager.ClassButtons[(int)Genus].transform.position;\n				yield return null;\n			}\n		}\n\n\n\n		\n		/*if(newlvl == 0 && MeterLvl != 0) \n		{\n			MeterLvl = 0;\n			MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons[(int)Genus].transform.position, \"POWER\\nDOWN\", 75, GameData.Colour(Genus), 1.2F, 0.2F);\n			yield return new WaitForSeconds(0.1F);\n			Meter = 0;\n			//MeterDecay_soft = MeterDecayInit[MeterLvl];\n			//MeterDecay = (int)MeterDecay_soft;\n			//ManaPower(MeterLvl);\n\n			if(ManaPowerParticle != null) Destroy(ManaPowerParticle);\n		}\n		else if(newlvl != 0 && MeterLvl < newlvl)\n		{\n			MeterLvl = newlvl;\n			MeterDecay_soft = MeterDecayInit[MeterLvl];\n			MeterDecay = (int) MeterDecay_soft;\n			ManaPower(MeterLvl);\n\n			GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, \"\", GameData.Colour(Genus));\n			powerup.transform.position = UIManager.ClassButtons[(int)Genus].transform.position;\n			UIManager.instance.WaveAlert.SetTween(0,true);\n			yield return new WaitForSeconds(0.95F);\n			UIManager.instance.WaveAlert.SetTween(0,false);\n			Destroy(powerup);\n			MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons[(int)Genus].transform.position, \"POWER\\nUP\", 75, GameData.Colour(Genus), 1.2F, 0.2F);\n\n			Effect e = MeterLvl == 1 ? Effect.ManaPowerLvl1 : (MeterLvl == 2 ? Effect.ManaPowerLvl2 : Effect.ManaPowerLvl3);\n			ParticleSystem part = EffectManager.instance.PlayEffect(this.transform, e, \"\", GameData.Colour(Genus)).GetComponent<ParticleSystem>();\n			part.startColor = GameData.Colour(Genus);\n\n			if(ManaPowerParticle != null) Destroy(ManaPowerParticle);\n			ManaPowerParticle = part.gameObject;\n			ManaPowerParticle.transform.position = UIManager.ClassButtons[(int)Genus].transform.position;\n\n			yield return null;\n		}*/\n\n\n		\n	}\n\n\n	public IEnumerator CheckForBoon()\n	{\n		yield break;\n\n//OLD STYLE (SPELL TILES)\n/*\n		int x = Utility.RandomInt(TileMaster.Tiles.GetLength(0));\n		int y = Utility.RandomInt(TileMaster.Tiles.GetLength(1));	\n		//while(TileMaster.Tiles[x,y].Info._TypeName == \"boon\" || \n		//	  TileMaster.Tiles[x,y].Info._TypeName == \"curse\" || \n		//	  TileMaster.Tiles[x,y].Info._TypeName == \"cocoon\"||\n		//	  TileMaster.Tiles[x,y].Info._TypeName == \"chest\")\n		while(!TileMaster.Tiles[x,y].IsType(\"resource\") && TileMaster.Tiles[x,y].Point.Scale > 1  && Player.QueuedSpell(x,y))\n		{\n			x = Utility.RandomInt(TileMaster.Tiles.GetLength(0));\n			y = Utility.RandomInt(TileMaster.Tiles.GetLength(1));\n		}\n\n		Player.QueueSpell(x,y);\n		ParticleSystem part = (ParticleSystem) Instantiate(EffectManager.instance.Particles.TouchParticle);\n		part.startColor = GameData.Colour(Genus);\n		part.transform.position = UIManager.ClassButtons[Index].transform.position;\n\n		MoveToPoint move = part.GetComponent<MoveToPoint>();\n		move.enabled = true;\n		move.SetTarget(TileMaster.Tiles[x,y].transform.position);\n		move.SetPath(0.3F, 0.25F);\n		move.SetMethod( () => {\n			if(UnityEngine.Random.value < 0.95F) GetSpellTile(x,y,Genus,LevelPoints);\n			else GetSpellFizzle(x,y,Genus, LevelPoints);\n			LevelPoints = 0;\n		});\n		\n		//yield return StartCoroutine(GenerateLevelChoice());\n		//TurnLevelRate = 1;\n*/\n\n//NEW STYLE (MANA POWER)\n		//ManaPowerActive = true;\n		//MeterDecay = ManaPowerDecay_init;\n		//MeterDecay_soft = ManaPowerDecay_init;\n\n		//ParticleSystem part = (ParticleSystem) Instantiate(EffectManager.instance.Particles.ManaPower);\n		//part.startColor = GameData.Colour(Genus);\n		//ManaPowerParticle = part.gameObject;\n\n		HasLeveled = false;\n		yield return new WaitForSeconds(Time.deltaTime * 20);\n	}\n\n	public virtual void GetSpellTile(int x, int y, GENUS g, int points)\n	{\n		TileMaster.instance.ReplaceTile(x,y, TileMaster.Types[\"cocoon\"], g, TileMaster.Tiles[x,y].Point.Scale, points);	\n	}\n\n	public virtual void GetSpellFizzle(int x, int y, GENUS g, int points)\n	{\n		MiniAlertUI m = UIManager.instance.MiniAlert(TileMaster.Tiles[x,y].Point.targetPos, \"FIZZLE\", 50, GameData.Colour(g), 1.2F, 0.3F);\n		int num = UnityEngine.Random.Range(0,3);\n		switch(num)\n		{\n			case 0:\n				TileMaster.instance.ReplaceTile(x,y,TileMaster.Types[\"chicken\"], GENUS.OMG, TileMaster.Tiles[x,y].Point.Scale, points);\n			break;\n			case 1:\n				TileMaster.instance.ReplaceTile(x,y,TileMaster.Types[\"altar\"], GENUS.OMG, TileMaster.Tiles[x,y].Point.Scale, points);\n			break;\n			case 2:\n				TileMaster.instance.ReplaceTile(x,y,TileMaster.Types[\"blob\"], g, TileMaster.Tiles[x,y].Point.Scale, points);\n			break;\n		}	\n	}\n\n	public virtual bool UpdateClass()\n	{\n		//TileMaster.instance.SetFillGrid(true);\n		return true;\n	}\n\n	public virtual void CheckHealth()\n	{\n		foreach(Slot child in _Slots)\n		{\n			if(child == null) continue;\n			child.CheckHealth();\n		}\n		foreach(Slot child in AllMods)\n		{\n			if(child == null) continue;\n			child.CheckHealth();\n		}\n\n\n		if(Player.Stats._Health > Player.Stats._HealthMax/5)\n		{\n			OnSafeHealth();\n		}\n		else if(Player.Stats._Health < Player.Stats._HealthMax/5 && Player.Stats._Health > 0) \n		{\n			OnLowHealth();\n		}\n		else if(Player.Stats._Health <= 0 && !isKilled)\n		{\n			isKilled = true;\n			LevelPoints = 0;\n			Meter = 0;\n			//Player.instance.ResetStats();\n			OnDeath();\n		}\n	}\n\n	public void Add(int res)\n	{\n		if(isKilled) return;\n	}\n\n	public void Complete()\n	{\n		AddToMeter(ManaThisTurn);\n	}\n\n	public void AddToMeter(int res)\n	{\n		if(isKilled || !CanCollectMana)\n		{\n			ManaThisTurn = 0;\n			return;\n		}\n		Meter = (int)Mathf.Clamp(Meter + res, 0, Mathf.Infinity);\n		//ManaThisTurn += res;\n		if(res > 0) \n		{\n			if(time_from_last_pulse > 1.3F)\n			{\n				UIManager.ClassButtons[Index].GetComponent<Animator>().SetTrigger(\"Pulse\");\n				time_from_last_pulse = 0.0F;			\n			}\n		}\n		//if(Meter >= MeterTop)//while(Meter >= MeterTop)\n		//{\n			//LevelPoints ++;\n			//TurnLevelRate = (int) (MeterTop / 25);\n			//LevelPoints += TurnLevelRate + BonusLevelRate + WaveLevelRate;\n			//LevelPoints += Stats.BoonIncrease;\n			//TurnLevelRate = 0;\n			//BonusLevelRate = 0;\n			//WaveLevelRate = 0;\n\n		//NEW STYLE METER (MANA POWER)\n			//MeterLvl ++;\n			//MeterDecay_soft = MeterDecayInit[MeterLvl-1];\n			//MeterDecay = (int) MeterDecay_soft;\n			//MeterDecay_soft = GameManager.MeterDecay[MeterLvl-1] + Stats.MeterDecay[MeterLvl-1] + Stats.MeterDecay_Global;\n			//MeterDecay = (int)MeterDecay;\n			//Player.instance.ResetStats();\n		//}\n	}\n\n	public virtual void ManaPower(int lvl)\n	{\n\n	}\n\n	public void DestroyManaPowers()\n	{\n		for(int i = 0; i < AllMods.Count; i++)\n		{\n			if(AllMods[i].ManaPowerMod)\n			{\n				Destroy(AllMods[i].gameObject);\n				AllMods.RemoveAt(i);\n				\n			}\n		}\n	}\n\n	public void AddExp(Enemy e)\n	{\n		Exp_Current += e.Stats.Value;\n		while(Exp_Current > Exp_Max)\n		{\n			Exp_Current -= Exp_Max;\n			LevelUp();\n			Exp_Max_soft *= 1.5F;\n			Exp_Max = (int)Exp_Max_soft;\n		}\n	}\n\n	public void LevelUp()\n	{\n		Level ++;\n		LevelUpAlert = true;\n		InitStats.LevelUp();\n	}\n\n	public Slot AddMod(string name, params string [] args)\n	{\n		foreach(Slot child in AllMods)\n		{\n			if(child.Name_Basic == name) return null;\n		}\n\n		Slot m = (Slot) Instantiate(GameData.instance.GetMod(name));\n		m.SetArgs(args);\n		m.Parent = this;\n		m.transform.parent = this.transform;\n		AllMods.Add(m);\n		return m;\n	}\n\n\n	public IEnumerator WaitForSlotDeleteRoutine(Slot a)\n	{\n		string type = (a is Ability ? \" learn \" : \" equip \");\n		Quote alerta = new Quote(Name + \" wants to\" + type + a.Name.Value + \", but has no free slots\", true, 0.2F);\n		Quote alertb = new Quote(\"Clear a slot to make room for \" + a.Name.Value + \"?\",  true, 0.2F);\n		alertb.SlotButtons = true;\n		alerta.Parent = this;\n		alerta.ShowTail = false;\n		alertb.Parent = this;\n		alertb.ShowTail = false;\n\n		yield return StartCoroutine(UIManager.instance.Alert(alerta, alertb));\n\n		int num = alertb.answer.Value;\n		if(num < _Slots.Length)\n		{\n			Destroy(_Slots[num].gameObject);\n			GetSlot(a, num);\n		}\n		else Destroy(a.gameObject);\n\n		yield return null;\n	}\n\n	public void GetSlot(Slot s, int? num = null)\n	{\n		if(s == null) return;\n\n		if(!num.HasValue)\n		{\n			for(int i = 0; i < _Slots.Length; i ++)\n			{\n				if(_Slots[i] == null) \n				{\n					num = i;\n					break;\n				}\n			}\n		}\n\n		if(!num.HasValue)\n		{\n			StartCoroutine(WaitForSlotDeleteRoutine(s));\n		}\n		else\n		{\n\n			s.transform.parent = this.transform;\n			_Slots[num.Value] = s;\n			\n			s.Parent = this;\n			s.Init(num.Value);\n			string type = (s is Ability ? \" learned \" : \" equipped \");\n			if(s is Item) s.Drag = DragType.None;\n			Quote abalert = new Quote(Name + type + s.Name.Value, false, 1.5F);\n			abalert.Parent = this;\n			abalert.ShowTail = false;\n			Reset();\n			Player.instance.ResetStats();\n			StartCoroutine(UIManager.instance.Quote(abalert));\n		}\n	}\n\n	public IEnumerator GetSlotRoutine(Slot s, int? num = null)\n	{\n		if(s == null) yield break;\n		if(!num.HasValue)\n		{\n			for(int i = 0; i < _Slots.Length; i ++)\n			{\n				if(_Slots[i] == null) \n				{\n					num = i;\n					break;\n				}\n			}\n		}\n\n		if(!num.HasValue)\n		{\n			yield return StartCoroutine(WaitForSlotDeleteRoutine(s));\n		}\n		else\n		{\n			s.transform.parent = this.transform;\n			_Slots[num.Value] = s;\n			s.Parent = this;\n			s.Init(num.Value);\n			string type = (s is Ability ? \" learned \" : \" equipped \");\n			Quote abalert = new Quote(Name + type + s.Name.Value, false, 1.5F);\n			abalert.Parent = this;\n			abalert.ShowTail = false;\n			Reset();\n			Player.instance.ResetStats();\n			if(s is Item) s.Drag = DragType.None;\n			StartCoroutine(UIManager.instance.Quote(abalert));\n		}\n		yield return null;\n	}\n\n	public virtual void OnDeath()\n	{\n		//if(DeathWarning)\n		//{\n		//	StartCoroutine(UIManager.instance.Quote(Quotes.Death));\n		//	DeathWarning = false;\n		//	LowHealthWarning = false;\n		//}\n	}\n\n	public virtual void OnLowHealth()\n	{\n		//if(LowHealthWarning)\n		//{\n		//	StartCoroutine(UIManager.instance.Quote(Quotes.Danger));\n		//	LowHealthWarning = false;\n		//}\n	}\n\n	public void OnSafeHealth()\n	{\n		DeathWarning = true;\n		LowHealthWarning = true;\n	}\n\n	public void OnCombo(int combo)\n	{\n		//BIGGEST COMBO\n		if(combo > combo_thresholds[0].x && combo > combo_biggest)\n		{\n			int bonus =  (combo - combo_biggest)/2;\n			if(bonus < 1) bonus = 1;\n			BonusLevelRate += bonus;\n			combo_biggest = combo;\n			StartCoroutine(UIManager.instance.Quote(Quotes.GoodBonus));\n			return;\n		}\n\n		//COMBO THRESHOLDS\n		for(int i = 0; i < combo_thresholds.Length; i++)\n		{\n			if(combo < combo_thresholds[i].x) break;\n			else\n			{\n				if(i+1 < combo_thresholds.Length)\n				{\n					if(combo > combo_thresholds[i+1].x) continue;\n					else\n					{\n						BonusLevelRate += combo_thresholds[i].y;\n						if(UnityEngine.Random.value > 0.8F)\n						{\n							StartCoroutine(UIManager.instance.Quote(Quotes.GoodBonus));\n						}\n					}\n				}\n				else\n				{\n					StartCoroutine(UIManager.instance.Quote(Quotes.GoodBonus));\n					BonusLevelRate += (combo/combo_thresholds[i].x) * combo_thresholds[i].y;\n				}\n			}\n		}\n\n		\n	}\n\n	public ClassUpgrade [] RollForBonuses(int num, int rarity = 1)\n	{\n		List<ClassUpgrade> final = new List<ClassUpgrade>();\n		List<ClassUpgrade> start = new List<ClassUpgrade>();\n		start.AddRange(AllBoons);\n		for(int i = 0; i < num; i++)\n		{\n			if(start.Count == 0) break;\n\n			int rand = UnityEngine.Random.Range(0, start.Count);\n			final.Add(start[rand]);\n			start.RemoveAt(rand);\n		}\n\n		return final.ToArray();\n	}\n\n	public void AddUpgrades(params ClassUpgrade [] ups)\n	{\n		List<ClassUpgrade> final = new List<ClassUpgrade>();\n		final.AddRange(AllBoons);\n		final.AddRange(ups);\n		AllBoons = final.ToArray();\n	}\n\n	public void AddCurses(params ClassUpgrade [] ups)\n	{\n		List<ClassUpgrade> final = new List<ClassUpgrade>();\n		final.AddRange(AllCurses);\n		final.AddRange(ups);\n		AllCurses = final.ToArray();\n	}\n\n	public ClassUpgrade [] RollUpgrades(int num, int rarity = 1)\n	{\n		List<ClassUpgrade> final = new List<ClassUpgrade>();\n		List<ClassUpgrade> start = new List<ClassUpgrade>();\n		start.AddRange(AllBoons);\n		int closest_rarity = (int) GameData.ClosestRarity(rarity);\n		int curr_rarity = 0;\n		int added_value = 0;\n		for(int i = 0; i < num; i++)\n		{\n			if(start.Count == 0) break;\n			ClassUpgrade u = null;\n			int rand = 0;\n			bool hasUpgrade = false;\n			while(!hasUpgrade)\n			{\n				if(start.Count == 0) break;\n				rand = UnityEngine.Random.Range(0, start.Count);\n				curr_rarity = (int)start[rand].Rarity;\n\n				if(curr_rarity > closest_rarity)\n				{\n					start.RemoveAt(rand);\n					continue;\n				}\n				else if (start[rand].slotobj != null)\n				{\n					if(final.Count > 0) continue;\n				}\n\n				if((curr_rarity == closest_rarity))\n				{\n					u = start[rand];\n					hasUpgrade = true;\n					start.RemoveAt(rand);\n					break;\n				}\n				else if(curr_rarity < closest_rarity)\n				{\n					int diff = closest_rarity/curr_rarity;\n					u = start[rand];\n					u.Value += (int) Mathf.Clamp(diff, 1, Mathf.Infinity);\n					hasUpgrade = true;\n					start.RemoveAt(rand);\n					break;\n				}\n			}\n			if(u!=null)\n			{\n				//print(closest_rarity + \" -- \" + u.Name + \": \"+ u.Rarity + \" (\"+ curr_rarity +\")\" + \" Value: \" + u.Value);\n				final.Add(u);\n				\n			}\n		}\n\n		return final.ToArray();\n	}\n\n	public ClassUpgrade [] RollCurses(int num, int rarity = 1)\n	{\n		List<ClassUpgrade> final = new List<ClassUpgrade>();\n		List<ClassUpgrade> start = new List<ClassUpgrade>();\n		start.AddRange(AllCurses);\n		int closest_rarity = (int) GameData.ClosestRarity(rarity);\n		int curr_rarity = 0;\n		int added_value = 0;\n		for(int i = 0; i < num; i++)\n		{\n			if(start.Count == 0) break;\n			ClassUpgrade u = null;\n			int rand = 0;\n			bool hasUpgrade = false;\n			while(!hasUpgrade)\n			{\n				if(start.Count == 0) break;\n				rand = UnityEngine.Random.Range(0, start.Count);\n				curr_rarity = (int)start[rand].Rarity;\n\n				if(curr_rarity > closest_rarity)\n				{\n					start.RemoveAt(rand);\n					continue;\n				}\n				else if (start[rand].slotobj != null)\n				{\n					if(final.Count > 0) continue;\n				}\n\n				if((curr_rarity == closest_rarity))\n				{\n					u = start[rand];\n					hasUpgrade = true;\n					start.RemoveAt(rand);\n					break;\n				}\n				else if(curr_rarity < closest_rarity)\n				{\n					int diff = closest_rarity/curr_rarity;\n					u = start[rand];\n					u.Value += (int) Mathf.Clamp(diff, 1, Mathf.Infinity);\n					hasUpgrade = true;\n					start.RemoveAt(rand);\n					break;\n				}\n			}\n			if(u!=null)\n			{\n				//print(closest_rarity + \" -- \" + u.Name + \": \"+ u.Rarity + \" (\"+ curr_rarity +\")\" + \" Value: \" + u.Value);\n				final.Add(u);\n				\n			}\n		}\n		return final.ToArray();\n	}\n\n	public void GetUpgrade(ClassUpgrade c)\n	{\n		StartCoroutine(c.Upgrade);\n\n		string type = \" gained \";\n		string value = (c.Value * c.BaseAmount) + c.Suffix + \" \" + c.Name;\n		Quote abalert = new Quote(Name + type + value, false, 1.0F);\n		abalert.Parent = this;\n		abalert.ShowTail = false;\n		StartCoroutine(UIManager.instance.Quote(abalert));\n\n		UIManager.instance.HideBoonUI();\n\n		Reset();\n		Player.instance.ResetStats();\n	}\n\n\n	public IEnumerator SlotUpgrade(Slot s)\n	{\n		Slot final = (Slot) Instantiate(s);\n		//final.Upgrade(val);\n		yield return StartCoroutine(GetSlotRoutine(final));\n	}\n\n	public static IEnumerator ActionUpgrade(ClassUpgrade c)\n	{\n		c._Action(c.Value);\n		yield return null;\n	}\n\n	TileChance genus, genusres, bomb, chest, armour;\n	TileChance aph_health, aph_res;\n\n	public void GetBaseUpgrades()\n	{\n		AddUpgrades(DefaultClassUpgrades.DefaultBoons(InitStats, Genus));\n		AddCurses(DefaultClassUpgrades.DefaultCurses(InitStats, Genus));\n		/*AddUpgrades();*/\n	}\n}\n\n[System.Serializable]\npublic class ClassQuotes\n{\n	public List<QuoteGroup> StartQuotes;\n	public List<QuoteGroup> GoodBonusQuotes;\n	public List<QuoteGroup> DangerQuotes;\n	public List<QuoteGroup> DeathQuotes;\n	public List<QuoteGroup> IdleQuotes;\n	public List<QuoteGroup> InfoQuotes;\n\n	public List<QuoteGroup> Special;\n\n	public static Quote DefaultStart = new Quote(\"I'm alive!\");\n	public static Quote DefaultBonus = new Quote(\"What a bonus, Mark!\");\n	public static Quote DefaultDanger = new Quote(\"This looks bad...\");\n	public static Quote DefaultDeath = new Quote(\"Ack, curses...\");\n	public static Quote DefaultIdle = new Quote(\"Hmm, hmm...\");\n\n	public Quote [] Start\n	{\n		get{\n			if(StartQuotes.Count == 0) return new Quote[] {DefaultStart};\n			int r = UnityEngine.Random.Range(0, StartQuotes.Count);\n			return StartQuotes[r].ToArray();\n		}\n	}\n\n	public Quote [] GoodBonus\n	{\n		get{\n			if(GoodBonusQuotes.Count == 0) return new Quote[] {DefaultBonus};\n			int r = UnityEngine.Random.Range(0, GoodBonusQuotes.Count);\n			return GoodBonusQuotes[r].ToArray();\n		}\n	}\n\n	public Quote [] Danger\n	{\n		get{\n			if(DangerQuotes.Count == 0) return new Quote[] {DefaultDanger};\n			int r = UnityEngine.Random.Range(0, DangerQuotes.Count);\n			return DangerQuotes[r].ToArray();\n		}\n	}\n\n	public Quote [] Death\n	{\n		get{\n			if(DeathQuotes.Count == 0) return new Quote[] {DefaultDeath};\n			int r = UnityEngine.Random.Range(0, DeathQuotes.Count);\n			return DeathQuotes[r].ToArray();\n		}\n	}\n	\n	public Quote [] Idle\n	{\n		get{\n			if(IdleQuotes.Count == 0) return new Quote[] {DefaultIdle};\n			int r = UnityEngine.Random.Range(0, IdleQuotes.Count);\n			return IdleQuotes[r].ToArray();\n		}\n	}\n\n	public Quote [] Info\n	{\n		get{\n			if(InfoQuotes.Count == 0) return new Quote[] {DefaultIdle};\n			int r = UnityEngine.Random.Range(0, InfoQuotes.Count);\n			return InfoQuotes[r].ToArray();\n		}\n	}\n\n	public QuoteGroup GetSpecial(string name)\n	{\n		foreach(QuoteGroup child in Special)\n		{\n			if(name == child.Name) return child;\n		}\n		return null;\n	}\n\n	public void Setup(Class c)\n	{\n		foreach(QuoteGroup child in StartQuotes) {child.Setup(c);}\n		foreach(QuoteGroup child in GoodBonusQuotes) {child.Setup(c);}\n		foreach(QuoteGroup child in DangerQuotes) {child.Setup(c);}\n		foreach(QuoteGroup child in DeathQuotes) {child.Setup(c);}\n\n		foreach(QuoteGroup child in IdleQuotes) {child.Setup(c);}\n		foreach(QuoteGroup child in InfoQuotes) {child.Setup(c);}\n	}\n}\n[System.Serializable]\npublic class Quote{\n	public string Text;\n	public float WaitTime = 0.0F;\n	[HideInInspector]\n	public float WaitTime_init = 0.3F;\n\n	public bool OverrideTouch, OverrideWait;\n	public bool SlotButtons, YesNoButtons;\n	public bool accepted;\n	public int? answer = null;\n\n\n	//[HideInInspector]\n	public Unit Parent;\n	//[HideInInspector]\n	public bool ShowTail = true;\n\n	string current_string;\n	int current_int;\n	float TickTime;\n	public float TickTime_init = 0.03F;\n\n	public Quote(string _text, bool _override = false, float wait = 0.8F, Unit p = null)\n	{\n		Text = _text;\n		OverrideTouch = _override;\n		WaitTime = wait;\n		WaitTime_init = WaitTime;\n		if(p != null)\n		{\n			Parent = p;\n			ShowTail = true;\n		}\n	}\n\n	public void Reset()\n	{\n		current_string = string.Empty;\n		current_int = 0;\n	}\n\n\n	public bool CheckForAccept(TextMeshProUGUI target = null)\n	{\n		bool overtouch = true;\n		if(OverrideTouch) overtouch = Input.GetMouseButton(0);\n		if(OverrideWait)\n		{\n			if(Input.GetMouseButton(0)) return true;\n		}\n		if((SlotButtons || YesNoButtons)) overtouch = answer.HasValue;\n\n		if(current_int < Text.Length)\n		{\n			if(WaitTime < WaitTime_init*0.8F && Input.GetMouseButton(0))\n			{\n				current_string = Text;\n				target.text = current_string;\n				current_int = Text.Length;\n			}\n			else\n			{\n				if(TickTime > 0.0F) TickTime -= Time.deltaTime;\n				else \n				{\n					current_string += Text[current_int];\n					current_int++;\n					if((current_int < Text.Length) && Text[current_int] == ' ')\n					{\n						current_string += Text[current_int];\n						current_int++;\n					}\n					TickTime = TickTime_init;\n					target.text = current_string;\n				}\n			}\n			\n		}\n\n		bool waitime = false;\n		if(WaitTime > 0.0F) WaitTime -= Time.deltaTime;\n		else \n		{\n			waitime = true;\n			if(accepted) WaitTime = WaitTime_init;\n		}\n\n\n\n		\n		accepted = overtouch && waitime;\n		return accepted;\n	}\n\n}\n\n[System.Serializable]\npublic class QuoteGroup{\n	public string Name;\n	public List<Quote> Quotes;\n\n	public Func<bool> Unlocked;\n\n	public Quote RandomQuote\n	{\n		get{\n			return Quotes[UnityEngine.Random.Range(0, Quotes.Count)];\n		}\n	}\n\n	public QuoteGroup(string n)\n	{\n		Name = n;\n		Quotes = new List<Quote>();\n	}\n\n	public void AddQuote(string _text, Unit c, bool _override = false, float wait = 3.0F, float tick = 0.01F)\n	{\n		Quote q = new Quote(_text, _override, wait, c);\n		q.TickTime_init = tick;\n		Quotes.Add(q);\n	}\n\n	public void AddQuote(Quote q)\n	{\n		Quotes.Add(q);\n	}\n\n	public Quote [] ToArray()\n	{\n		return Quotes.ToArray();\n	}\n\n	public void Setup(Unit c)\n	{\n		foreach(Quote child in Quotes)\n		{\n			if(child.Parent == null) child.Parent = c;\n			child.ShowTail = true;\n			child.WaitTime_init = child.WaitTime;\n		}\n	}\n}\n\n\n[System.Serializable]\npublic class UpgradeGroup\n{\n	public ClassUpgrade [] Upgrades;\n	public Class Target;\n	public bool CanSkip = false;\n\n	public UpgradeGroup(Class t, params ClassUpgrade [] u)\n	{\n		Upgrades = u;\n		Target = t;\n	}\n}\n\n\n[System.Serializable]\npublic class ClassInfo\n{\n	public int HealthRating;\n	public int AttackRating;\n	public int MagicRating;\n\n	public string Name;\n	public string ShortName;\n	public string Description;\n}",
-			"file": "Scripts/Units/Class.cs",
-			"file_size": 30806,
-			"file_write_time": 131088266170150996,
-			"settings":
-			{
-				"buffer_size": 30807,
+				"buffer_size": 11719,
 				"line_ending": "Unix"
 			}
 		}
@@ -471,24 +476,30 @@
 	},
 	"file_history":
 	[
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Chicken.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Tile.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Spawning.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/TileMaster.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/PlayerControl.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Roaming.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/EffectManager.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/Utility.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/CameraUtility.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Mimic.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Neutral/ItemTile.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/GameManager.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Player.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIMenu.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Class.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Enemy.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/MoveToPoint.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Bard.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Actives/Fireball.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/TileMaster.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Actives/Slash.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/GameManager.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Tile.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIMenu.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIClassSelect.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIObj.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/EffectManager.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Roaming.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Player.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIManager.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIGear.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Class.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIClassButton.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/GameData.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave.cs",
@@ -507,13 +518,10 @@
 		"/C/Users/MaxerJ/AppData/Roaming/Sublime Text 2/Packages/Zen Tabs/TODO.todo",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Healing.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Heal.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Mimic.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIKillScreen.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Grunt.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/PlayerControl.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/MiniAlertUI.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Bomb.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/CameraUtility.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Cross.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Sleep.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Wizard.cs",
@@ -552,9 +560,7 @@
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Passives/Wizardry.cs",
 		"/C/Users/MaxerJ/AppData/LocalLow/Lambert _ Blinn/Matchima_/SaveData.xml",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Unit.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Chicken.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/TileEffect.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Spawning.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Status.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Thief.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/IgnorePlayer.cs",
@@ -597,8 +603,7 @@
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Passives/Target.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Actives/Stack.cs",
 		"/C/Users/MaxerJ/Desktop/Matchima!/Assets/Scripts/Units/Classes/Abilities/Ability.cs",
-		"/C/Users/MaxerJ/Desktop/Matchima!/Assets/Scripts/Units/Classes/Abilities/Passives/FightingSpirit.cs",
-		"/C/Users/MaxerJ/Desktop/Matchima!/Assets/Scripts/Units/Classes/Abilities/Passives/Target.cs"
+		"/C/Users/MaxerJ/Desktop/Matchima!/Assets/Scripts/Units/Classes/Abilities/Passives/FightingSpirit.cs"
 	],
 	"find":
 	{
@@ -635,6 +640,8 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"Objects.WaveSlots[i]",
+			"ShiftTiles2",
 			"GetSlot",
 			"SetSprite",
 			"0.75F",
@@ -760,9 +767,7 @@
 			"BeginTurn",
 			"t.Point.",
 			"t.Point.Scale",
-			"TileMaster",
-			"Point",
-			"ShiftTiles2"
+			"TileMaster"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -830,23 +835,23 @@
 	"groups":
 	[
 		{
-			"selected": 8,
+			"selected": 6,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "Scripts/PlayerControl.cs",
+					"file": "Scripts/Units/Wave/WaveTile.cs",
 					"settings":
 					{
-						"buffer_size": 13749,
+						"buffer_size": 5403,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2781,
-								2781
+								3912,
+								3912
 							]
 						],
 						"settings":
@@ -903,25 +908,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1683.0,
+						"translation.y": 2451.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "Scripts/EffectManager.cs",
+					"file": "Scripts/Units/Wave/WaveTileEndOnTileDestroy.cs",
 					"settings":
 					{
-						"buffer_size": 5176,
+						"buffer_size": 2672,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1169,
-								1169
+								1431,
+								1431
 							]
 						],
 						"settings":
@@ -978,25 +983,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 950.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 2,
-					"file": "Scripts/Utilities/CameraUtility.cs",
+					"file": "Scripts/Utilities/MoveToPoint.cs",
 					"settings":
 					{
-						"buffer_size": 2427,
+						"buffer_size": 2557,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								196,
-								196
+								1267,
+								1267
 							]
 						],
 						"settings":
@@ -1060,18 +1065,18 @@
 				},
 				{
 					"buffer": 3,
-					"file": "Scripts/Tiles/Enemies/Mimic.cs",
+					"file": "Scripts/EffectManager.cs",
 					"settings":
 					{
-						"buffer_size": 6267,
+						"buffer_size": 5176,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3760,
-								3760
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1128,25 +1133,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 2803.0,
+						"translation.y": 741.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 4,
-					"file": "Scripts/Tiles/Tile.cs",
+					"file": "Scripts/Slots/Abilities/Actives/Fireball.cs",
 					"settings":
 					{
-						"buffer_size": 34922,
+						"buffer_size": 4587,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								26721,
-								26355
+								1721,
+								1598
 							]
 						],
 						"settings":
@@ -1203,25 +1208,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 20188.0,
+						"translation.y": 684.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 5,
-					"file": "Scripts/Tiles/Neutral/ItemTile.cs",
+					"file": "Scripts/Units/WaveUnit.cs",
 					"settings":
 					{
-						"buffer_size": 1354,
+						"buffer_size": 3081,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								937,
-								937
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1285,18 +1290,18 @@
 				},
 				{
 					"buffer": 6,
-					"file": "Scripts/GameManager.cs",
+					"file": "Scripts/UI/UIManager.cs",
 					"settings":
 					{
-						"buffer_size": 29052,
+						"buffer_size": 19084,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								6132,
-								6132
+								4013,
+								4013
 							]
 						],
 						"settings":
@@ -1353,25 +1358,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 4674.0,
+						"translation.y": 1245.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 7,
-					"file": "Scripts/Player.cs",
+					"file": "Scripts/GameManager.cs",
 					"settings":
 					{
-						"buffer_size": 16656,
+						"buffer_size": 29054,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								11460,
-								11460
+								13990,
+								13991
 							]
 						],
 						"settings":
@@ -1428,25 +1433,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 10175.0,
+						"translation.y": 10137.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 8,
-					"file": "Scripts/Units/Class.cs",
+					"file": "Scripts/Units/Wave.cs",
 					"settings":
 					{
-						"buffer_size": 30807,
+						"buffer_size": 8697,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								18138,
-								18138
+								5313,
+								5313
 							]
 						],
 						"settings":
@@ -1503,7 +1508,82 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 13842.0,
+						"translation.y": 4742.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "Scripts/UI/UIMenu.cs",
+					"settings":
+					{
+						"buffer_size": 11719,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								8419,
+								8419
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close"
+							],
+							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 5244.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"

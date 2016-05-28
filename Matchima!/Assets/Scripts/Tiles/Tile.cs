@@ -1108,6 +1108,9 @@ public class Tile : MonoBehaviour {
 
 		mp.SetMethod(() => {
 			transform.position = new Vector3(Point.targetPos.x, Point.targetPos.y, transform.position.z);
+			Params.transform.position = transform.position;
+			Params._render.transform.localPosition = Vector3.zero;
+			//Params._render.transform.position = new Vector3(Point.targetPos.x, Point.targetPos.y, transform.position.z);
 			UnlockedFromGrid = false;
 			
 		});
