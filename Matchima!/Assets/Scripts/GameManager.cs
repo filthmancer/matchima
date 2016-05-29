@@ -43,9 +43,9 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 	private float	MeterDecayLvl0 = 0.0F,
-					MeterDecayLvl1 = 1.05F, 
-					MeterDecayLvl2 = 1.10F, 
-					MeterDecayLvl3 = 1.30F;
+					MeterDecayLvl1 = 1.12F, 
+					MeterDecayLvl2 = 1.25F, 
+					MeterDecayLvl3 = 1.20F;
 
 	public Juice _Juice;
 	public AudioSource AudioObj;
@@ -100,7 +100,12 @@ public class GameManager : MonoBehaviour {
 	public static bool TuteActive = false;
 
 	public WaveGroup StoryMode;
-	public WaveGroup EndlessMode;
+	//public WaveGroup EndlessMode;
+
+	public Zone [] Zones;
+	public Zone CurrentZone;
+	public WaveGroup DefaultWaves;
+
 	void OnApplicationQuit()
 	{
 		GameData.instance.Save();
@@ -155,6 +160,7 @@ public class GameManager : MonoBehaviour {
 		Difficulty = Difficulty_init;
 		inStartMenu = true;
 		TuteActive = false;	
+		CurrentZone = Zones[0];
 		//CameraUtility.SetTurnOffset(false);	
 	}
 	
@@ -347,8 +353,25 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-	public void GetWave(Wave w)
+	public void GetZone()
 	{
+		CurrentZone = Zones[Random.Range(0,Zones.Length)];
+		
+	}
+
+	public void GetWave(Wave w = null)
+	{
+		if(w == null)
+		{
+			if(Mode == GameMode.Story) w = StoryMode.GetWaveProgressive();
+			else if(Mode == GameMode.Endless) 
+			{
+				if(Random.value > 0.5F) w = DefaultWaves.GetWaveRandom();
+				else w = CurrentZone.GetWaveRandom();
+
+			}
+		}
+
 		if(_Wave != null && _Wave != w) Destroy(_Wave.gameObject);
 		_Wave = Instantiate(w);
 		_Wave.transform.parent = this.transform;
@@ -357,21 +380,6 @@ public class GameManager : MonoBehaviour {
 		StartCoroutine(_Wave.Setup());
 		//StartCoroutine(WaveStartRoutine(_Wave.IntroAlert));
 	}
-
-	public ClassContainer CheckForClass(string name)
-	{
-		//foreach(ClassContainer _class in GameData.instance.Classes)
-		//{
-		//	if(_class.Name == name) 
-		//	{
-		//		return _class;
-		//	}
-		//}
-		//if(name == GameData.instance.EndlessMode.Name) return GameData.instance//.EndlessMode;
-		//Debug.LogError("CLASS COULD NOT BE FOUND");
-		return null;
-	}
-
 
 	public void LoadGame(bool resume)
 	{
@@ -399,9 +407,7 @@ public class GameManager : MonoBehaviour {
 		UIManager.instance.LoadScreen.SetSpin(false);
 		UIManager.instance.LoadScreen.SetActive(false);
 
-		Wave w = StoryMode.GetWaveProgressive();
-		if(w != null) GetWave(w);
-		else GetWave(EndlessMode.GetWaveRandom());
+		GetWave();
 	}
 
 	public void PlayEndlessMode()
@@ -414,7 +420,7 @@ public class GameManager : MonoBehaviour {
 		UIManager.instance.LoadScreen.SetSpin(false);
 		UIManager.instance.LoadScreen.SetActive(false);
 
-		GetWave(EndlessMode.GetWaveRandom());
+		GetWave();
 	}
 
 	public void LoadClass(ClassContainer targetClass)
@@ -490,9 +496,7 @@ public class GameManager : MonoBehaviour {
 		yield return StartCoroutine(_Wave.AfterTurn());
 		if(_Wave.AllEnded && !Player.Stats.isKilled)
 		{
-			Wave w = StoryMode.GetWaveProgressive();
-			if(w != null) GetWave(w);
-			else GetWave(EndlessMode.GetWaveRandom());
+			GetWave();
 		}
 		yield return null;
 	}
@@ -547,7 +551,7 @@ public class GameManager : MonoBehaviour {
 
 				Vector3 pos = child.transform.position + (GameData.RandomVector*1.4F);
 				MoveToPoint mini = TileMaster.instance.CreateMiniTile(pos,UIManager.instance.Health.transform, child.Info.Outer);
-				mini.SetPath(0.74F, 0.3F, 0.0F, 0.15F);
+				mini.SetPath(0.84F, 0.3F, 0.0F, 0.15F);
 				mini.SetMethod(() =>{
 						Player.instance.OnHit(child);
 						AudioManager.instance.PlayClipOn(Player.instance.transform, "Player", "Hit");
@@ -563,7 +567,7 @@ public class GameManager : MonoBehaviour {
 		if(total_attackers.Count > 0)
 		{
 			GameData.Log("Took " + total_damage + " damage from " + total_attackers.Count + " attackers");
-			yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+			yield return new WaitForSeconds(GameData.GameSpeed(0.05F));
 		} 
 
 

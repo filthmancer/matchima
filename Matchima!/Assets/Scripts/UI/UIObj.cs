@@ -124,7 +124,6 @@ public class UIObj : MonoBehaviour {
 
 	}
 
-
 	List<Action>	Actions_MouseOut = new List<Action>(), 
 					Actions_MouseOver = new List<Action>(),
 					Actions_MouseUp = new List<Action>(),
@@ -147,6 +146,7 @@ public class UIObj : MonoBehaviour {
 
 	public void _MouseOver()
 	{
+		if(!Application.isEditor) isPressed = true;
 		foreach(Action child in Actions_MouseOver)
 		{
 			child();
@@ -156,7 +156,7 @@ public class UIObj : MonoBehaviour {
 
 	public void _MouseUp()
 	{
-		if(!isPressed)return;
+		if(!isPressed) return;
 		foreach(Action child in Actions_MouseUp)
 		{
 			child();

@@ -346,7 +346,7 @@ public class _GameSaveLoad: MonoBehaviour {
         }
         else if((GameMode)myData._iUser.GameMode == GameMode.Endless)
         {
-          g = GameManager.instance.EndlessMode;
+          g = GameManager.instance.DefaultWaves;
         }
 			   GameManager.instance._Wave = Instantiate(g[myData._iUser.Wave.Index]);
 			   GameManager.instance._Wave.transform.parent = GameManager.instance.transform;

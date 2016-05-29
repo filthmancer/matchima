@@ -516,6 +516,11 @@ public class UIManager : MonoBehaviour {
 		yield return null;
 	}
 
+	public IEnumerator ScreenAlert(float time, string title, string desc = null)
+	{
+		yield break;
+	}
+
 	public IEnumerator Quote(params Quote [] q)
 	{
 		while(isQuoting || InMenu) yield return null;

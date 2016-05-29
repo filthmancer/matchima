@@ -107,7 +107,7 @@ public class UISlotButton : UIButton {
 		{
 			if(PlayerControl.HeldButton != this)
 			{
-				print("HIT");
+				//print("HIT");
 				UIManager.instance.SwapSlotButtons(this, (PlayerControl.HeldButton as UISlotButton).Parent, 0);
 				//PlayerControl.instance.SwapSlots();
 				//UIManager.instance.HideBoonUI();

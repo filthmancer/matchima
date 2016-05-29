@@ -174,7 +174,7 @@ public class Class : Unit {
 	protected float MeterDecay_soft = 1.0F;
 	protected float [] MeterDecayInit = new float[]
 	{
-		0, 6, 7, 9
+		0, 6, 10, 30
 	};
 
 	public GameObject ManaPowerParticle;
@@ -702,7 +702,7 @@ public class Class : Unit {
 		}
 		else
 		{
-
+			UIManager.ClassButtons[Index].GetChild(num.Value).SetActive(true);
 			s.transform.parent = this.transform;
 			_Slots[num.Value] = s;
 			s.Parent = this;
