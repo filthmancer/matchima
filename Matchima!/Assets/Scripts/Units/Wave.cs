@@ -45,19 +45,19 @@ public class Wave : Unit {
 	public virtual string IntroText
 	{
 		get{
-			return "Wave Approaching!";
+			return "";
 		}
 	} 
 	public virtual string EnterText 
 	{
 		get {
-			return "Wave Arrived!";
+			return string.Empty;
 		}
 	}
 	public virtual string ExitText 
 	{
 		get {
-			return "Wave Defeated!";
+			return "Floor Completed!";
 		}
 	}
 
@@ -86,7 +86,12 @@ public class Wave : Unit {
 
 		yield return StartCoroutine(OnStart());
 
-		yield return StartCoroutine(WaveStartRoutine());
+		for(int i = 0; i < AllSlots.Length; i++)
+		{
+			if(AllSlots[i] == null) continue;
+			AllSlots[i].Activate();
+		}	
+		yield return StartCoroutine(WaveActivateRoutine());
 
 
 		//OLD FORMAT FOR GETTING MODS (RANDOM)
@@ -142,12 +147,6 @@ public class Wave : Unit {
 			if(AllSlots[i] == null) continue;
 		
 			AllSlots[i].Timer --;
-			if(AllSlots[i].Timer == 0) 
-			{
-				AllSlots[i].Activate();
-				yield return new WaitForSeconds(Time.deltaTime * 10);
-				if(i == 0) yield return StartCoroutine(WaveActivateRoutine());
-			}
 		}		
 		for(int i = 0; i < AllSlots.Length; i++)
 		{
@@ -254,26 +253,10 @@ public class Wave : Unit {
 
 	protected virtual IEnumerator WaveStartRoutine()
 	{
-
 		PlayerControl.instance.ResetSelected();
 		if(IntroAlert)
 		{
-			
-			GameManager.instance.paused = true;
-
-			UIManager.instance.WaveAlert.SetTween(0,true);
-			UIManager.instance.WaveAlert.Img[0].gameObject.SetActive(true);
-			UIManager.instance.WaveAlert.Txt[0].text = IntroText;
-
-			yield return new WaitForSeconds(1.25F);
-			
-			UIManager.instance.WaveAlert.SetTween(0,false);
-			UIManager.instance.WaveAlert.Img[0].gameObject.SetActive(false);
-			UIManager.instance.WaveAlert.Txt[0].text = "";
-
-			PlayerControl.instance.ResetSelected();
-			GameManager.instance.paused = false;
-			
+			yield return StartCoroutine(UIManager.instance.Alert(1.25F, false, IntroText));
 		}
 		yield return null;
 		Player.instance.ResetStats();
@@ -285,48 +268,12 @@ public class Wave : Unit {
 		UIManager.Objects.TopGear.SetTween(0, true);
 		//CameraUtility.SetTurnOffset(true);
 
-		PlayerControl.instance.ResetSelected();
-		GameManager.instance.paused = true;
-		UIManager.instance.WaveAlert.SetTween(0,true);
-		UIManager.instance.WaveAlert.Img[0].gameObject.SetActive(true);
-		UIManager.instance.WaveAlert.Txt[0].text = EnterText;
-		UIManager.instance.WaveAlert.Img[2].gameObject.SetActive(true);
-		UIManager.instance.WaveAlert.Txt[2].text = Name;
-
-		yield return new WaitForSeconds(1.25F);
-		
-		UIManager.instance.WaveAlert.SetTween(0,false);
-		UIManager.instance.WaveAlert.Img[0].gameObject.SetActive(false);
-		UIManager.instance.WaveAlert.Txt[0].text = "";
-		UIManager.instance.WaveAlert.Img[2].gameObject.SetActive(false);
-		UIManager.instance.WaveAlert.Txt[2].text = "";
-		PlayerControl.instance.ResetSelected();
-		GameManager.instance.paused = false;
-		UIManager.Objects.BotGear.SetTween(0, true);
-		UIManager.Objects.TopGear.SetTween(0, false);
-		//CameraUtility.SetTurnOffset(false);
-		yield return null;
+		yield return StartCoroutine(UIManager.instance.Alert(1.25F, true, Name));
 	}
 
 	protected virtual IEnumerator WaveEndRoutine()
 	{
-		//WaveReward reward = GenerateWaveReward();
-		UIManager.instance.WaveAlert.SetTween(0,true);
-		UIManager.instance.WaveAlert.Img[0].gameObject.SetActive(true);
-		UIManager.instance.WaveAlert.Txt[0].text = ExitText;
-		//if(reward != null)
-		//{
-		//	UIManager.instance.WaveAlert.Img[2].gameObject.SetActive(true);
-		//	UIManager.instance.WaveAlert.Txt[0].text = reward.Title;
-		//}
-		yield return new WaitForSeconds(1.3F);
-
-		UIManager.instance.WaveAlert.SetTween(0,false);
-		UIManager.instance.WaveAlert.Img[0].gameObject.SetActive(false);
-		UIManager.instance.WaveAlert.Img[2].gameObject.SetActive(false);
-
-		//yield return StartCoroutine(GameManager.instance.CompleteTurnRoutine());
-		yield return null;
+		yield return StartCoroutine(UIManager.instance.Alert(1.25F, false, ExitText));
 	}
 
 	public WaveReward GenerateWaveReward()

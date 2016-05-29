@@ -369,10 +369,8 @@ public class Class : Unit {
 			{
 				if(Meter >= MeterMax_array[i]) newlvl = i;
 			}
-			//print(Meter + ":" + newlvl + " - " + MeterMax_array[1]);
 			if(MeterLvl < newlvl)
 			{
-				UIManager.instance.WaveAlert.SetTween(0,true);
 				UIManager.ClassButtons[Index].ShowClass(true);
 				yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 				
@@ -380,7 +378,6 @@ public class Class : Unit {
 				powerup.transform.position = UIManager.ClassButtons[(int)Genus].transform.position;
 
 				yield return new WaitForSeconds(GameData.GameSpeed(0.84F));
-				UIManager.instance.WaveAlert.SetTween(0,false);
 				Destroy(powerup);
 
 				MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons[(int)Genus].transform.position, "POWER\nUP", 75, GameData.Colour(Genus), 1.2F, 0.2F);

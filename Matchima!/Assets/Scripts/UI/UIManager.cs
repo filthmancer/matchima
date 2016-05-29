@@ -21,7 +21,7 @@ public class UIManager : MonoBehaviour {
 	public UITooltip Tooltip;
 
 	public UIKillScreen KillUI;
-	public UIObjTweener WaveAlert;
+	public UIObjTweener ScreenAlert;
 	//public Color WaveAlert_ActiveCol, WaveAlert_InactiveCol;
 
 	public ClassUpgradeUI ClassUI;
@@ -390,10 +390,6 @@ public class UIManager : MonoBehaviour {
 		Objects.WaveUI.SetActive(open);
 	}
 
-
-
-
-
 	//public void ItemConfirm(Class c)
 	//{
 	//	c.GetSlot(current_item);
@@ -516,8 +512,43 @@ public class UIManager : MonoBehaviour {
 		yield return null;
 	}
 
-	public IEnumerator ScreenAlert(float time, string title, string desc = null)
+	public IEnumerator Alert(float time, bool show_floor, string title = null, string desc = null)
 	{
+		GameManager.instance.paused = true;
+		ScreenAlert.SetActive(true);
+		ScreenAlert.SetTween(0,true);
+
+		if(show_floor)
+		{
+			(ScreenAlert.Child[2] as UIObjTweener).Txt[0].text = "Floor ";
+			(ScreenAlert.Child[2] as UIObjTweener).Txt[1].text = "" + GameManager.instance.FloorCurr;
+			(ScreenAlert.Child[2] as UIObjTweener).SetTween(0, true);
+			yield return new WaitForSeconds(GameData.GameSpeed(0.35F));
+		}
+
+		if(title != null)
+		{
+			(ScreenAlert.Child[0] as UIObjTweener).Txt[0].text = title;
+			(ScreenAlert.Child[0] as UIObjTweener).SetTween(0, true);
+			yield return new WaitForSeconds(GameData.GameSpeed(0.35F));
+		}
+
+		if(desc != null)
+		{
+			(ScreenAlert.Child[1] as UIObjTweener).Txt[0].text = desc;
+			(ScreenAlert.Child[1] as UIObjTweener).SetTween(0, true);
+		}
+
+
+		yield return new WaitForSeconds(GameData.GameSpeed(time));
+		
+		ScreenAlert.SetTween(0,false);
+		(ScreenAlert.Child[0] as UIObjTweener).SetTween(0, false);
+		(ScreenAlert.Child[1] as UIObjTweener).SetTween(0, false);
+		(ScreenAlert.Child[2] as UIObjTweener).SetTween(0, false);
+
+		PlayerControl.instance.ResetSelected();
+		GameManager.instance.paused = false;
 		yield break;
 	}
 

@@ -263,7 +263,6 @@ public class Player : MonoBehaviour {
 		if(ThisTurn_items.Count > 0)
 		{
 			UIManager.Objects.BotGear.SetTween(0, true);
-			UIManager.instance.WaveAlert.SetTween(0,true);
 			UIManager.instance.ItemUI.gameObject.SetActive(true);
 			UIManager.instance.current_class = null;
 			//UIManager.instance.current_item = child;
@@ -274,7 +273,7 @@ public class Player : MonoBehaviour {
 				yield return null;
 			}
 		}
-		UIManager.instance.WaveAlert.SetTween(0,false);
+		//UIManager.instance.WaveAlert.SetTween(0,false);
 
 		if(ThisTurn_upgrades.Count > 0)
 		{

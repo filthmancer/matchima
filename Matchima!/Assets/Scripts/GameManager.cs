@@ -70,10 +70,10 @@ public class GameManager : MonoBehaviour {
 	private float Difficulty_init = 2.5F;
 	public static float Difficulty = 1;
 	public float _Difficulty = 0;
-
 	public DiffMode DifficultyMode = DiffMode.Normal;
 	public GameMode Mode = GameMode.Story;
-	public int TurnsToWin = 100;
+
+	public int FloorCurr = 0;
 	public bool gameStart = false;
 	public bool paused = false;
 	public bool EnemyTurn = false;
@@ -368,17 +368,16 @@ public class GameManager : MonoBehaviour {
 			{
 				if(Random.value > 0.5F) w = DefaultWaves.GetWaveRandom();
 				else w = CurrentZone.GetWaveRandom();
-
 			}
 		}
 
 		if(_Wave != null && _Wave != w) Destroy(_Wave.gameObject);
 		_Wave = Instantiate(w);
 		_Wave.transform.parent = this.transform;
-		
-		Difficulty += Mathf.Exp(Difficulty_Growth);
 		StartCoroutine(_Wave.Setup());
-		//StartCoroutine(WaveStartRoutine(_Wave.IntroAlert));
+
+		Difficulty += Mathf.Exp(Difficulty_Growth);
+		FloorCurr += 1;
 	}
 
 	public void LoadGame(bool resume)
@@ -399,7 +398,7 @@ public class GameManager : MonoBehaviour {
 
 	public void PlayStoryMode()
 	{
-		UIManager.instance.WaveAlert.SetTween(0,false);
+		//UIManager.instance.WaveAlert.SetTween(0,false);
 		inStartMenu = false;
 		gameStart = true;
 		StartCoroutine(Player.instance.BeginTurn());
@@ -412,7 +411,7 @@ public class GameManager : MonoBehaviour {
 
 	public void PlayEndlessMode()
 	{
-		UIManager.instance.WaveAlert.SetTween(0,false);
+		//UIManager.instance.WaveAlert.SetTween(0,false);
 		inStartMenu = false;
 		gameStart = true;
 		StartCoroutine(Player.instance.BeginTurn());
@@ -426,7 +425,6 @@ public class GameManager : MonoBehaviour {
 	public void LoadClass(ClassContainer targetClass)
 	{
 		UIManager.instance.LoadScreen.SetActive(true);
-		TurnsToWin = targetClass.TurnsToWin;
 		StartCoroutine(UIManager.instance.LoadUI());
 	}
 

@@ -92,15 +92,7 @@ public class WardenBattle : Wave {
 		Slot3.Active = false;
 		Slot3.Ended = true;
 
-		UIManager.instance.WaveAlert.SetTween(0,true);
-		UIManager.instance.WaveAlert.Img[0].gameObject.SetActive(true);
-		UIManager.instance.WaveAlert.Txt[0].text = ExitText;
-
-		yield return new WaitForSeconds(1.3F);
-
-		UIManager.instance.WaveAlert.SetTween(0,false);
-		UIManager.instance.WaveAlert.Img[0].gameObject.SetActive(false);
-		yield return null;
+		yield return StartCoroutine(UIManager.instance.Alert(1.1F, false, ExitText));
 
 		int tx = ((TileMaster.Grid.Size[0]-1) / 2) - 1;
 		int ty = ((TileMaster.Grid.Size[1]-1) / 2) - 1;
