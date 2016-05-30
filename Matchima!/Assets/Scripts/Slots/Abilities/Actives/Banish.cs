@@ -30,7 +30,7 @@ public class Banish : Ability {
 	{
 		if(cooldown_time > 0) return;
 		if(!CanAfford()) return;
-		if(GameManager.instance._Wave == null) return;
+		if(GameManager.Wave == null) return;
 
 		activated = true;
 

@@ -67,6 +67,7 @@ public class UIMenu : UIObj {
 		(UIManager.Objects.TopGear as UIObjTweener).SetTween(1,true);
 		(UIManager.Objects.BotGear as UIObjTweener).SetTween(1,true);
 		UIManager.Objects.BotGear.Child[0].SetActive(false);
+		UIManager.Objects.TopGear.Child[2].SetActive(false);
 		UIManager.Objects.TopGear.SetRotate(true, Vector3.forward * Time.deltaTime * 4);
 		UIManager.Objects.BotGear.SetRotate(true, Vector3.back * Time.deltaTime * 4);
 		UIManager.ShowWaveButtons(false);
@@ -288,6 +289,7 @@ public class UIMenu : UIObj {
 		UIManager.Objects.BotGear.SetRotate(false);
 		UIManager.Objects.MiddleGear.SetActive(false);
 		UIManager.Objects.BotGear.Child[0].SetActive(true);
+		UIManager.Objects.TopGear.Child[2].SetActive(true);
 		bool alert = false;
 		for(int i = 0; i < Player.instance._Classes.Length; i++)
 		{

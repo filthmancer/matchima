@@ -34,6 +34,8 @@ public class TileMaster : MonoBehaviour {
 	public int EnemiesOnScreen;
 
 	public Vector2 MapSize;
+	[HideInInspector]
+	public Vector2 MapSize_Default;
 	public float tileBufferX = 0.2F, tileBufferY = 0.2F;
 	public float YOffset = 1.0F;
 	
@@ -176,7 +178,7 @@ public class TileMaster : MonoBehaviour {
 											0.0F};
 
 		Types.Setup();
-		//Spawner2.GetSpawnables(Types, GameManager.instance._Wave);
+		//Spawner2.GetSpawnables(Types, GameManager.Wave);
 	}
 
 	public Tile GetTile(int x, int y)
@@ -257,7 +259,7 @@ public class TileMaster : MonoBehaviour {
 		else //Create random grid
 		{
 			if(wait != 0.0F) yield return new WaitForSeconds(wait);
-			MapSize = Player.Stats.MapSize;
+			MapSize = MapSize_Default;
 
 			bool evenX = MapSize[0]%2 == 0;
 			bool evenY = MapSize[1]%2 == 0;
@@ -298,7 +300,26 @@ public class TileMaster : MonoBehaviour {
 
 	public void IncreaseGridTo(Vector2 final)
 	{
-		IncreaseGrid((int)(final.x - MapSize.x), (int)(final.y - MapSize.y));
+		GameData.Log("Changing Grid by " + final.x + ":" +final.y);
+		Vector2 diff = final - MapSize;
+		if(diff == Vector2.zero || Grid == null) return;
+		Grid.ChangeBy(diff);
+
+		MapSize = final;
+		float ortho = Mathf.Max(Grid.Size[0] * 1.4F, Grid.Size[1] *1.35F);
+		CameraUtility.TargetOrtho = Mathf.Clamp(ortho, 7, Mathf.Infinity);
+
+		CameraUtility.SetTargetPos(Vector3.Lerp(Grid[0,0].position, 
+												Grid[Grid.Size[0]-1, Grid.Size[1]-1].position,
+												0.5F));
+
+		spawn_stack = new float [Grid.Size[0]];
+		for(int sx = 0; sx < Grid.Size[0]; sx++)
+		{
+			if(Player.Stats.Shift == ShiftType.Down) spawn_stack[sx] = Camera.main.orthographicSize + 2.0F;
+			else if(Player.Stats.Shift == ShiftType.Up) spawn_stack[sx] = -(Camera.main.orthographicSize);
+		}
+		FillGrid = true;
 	}
 
 	public void IncreaseGrid(Vector2 diff)
@@ -308,13 +329,12 @@ public class TileMaster : MonoBehaviour {
 
 	public void IncreaseGrid(int x, int y)
 	{
-		//StartCoroutine(_IncreaseGrid(x,y));
 		GameData.Log("Changing Grid by " + x + ":" +y);
 		MapSize += new Vector2(x,y);
 
 		Grid.ChangeBy(new Vector2(x,y));
 
-		float ortho = Mathf.Max(Grid.Size[0] * 1.4F, Grid.Size[1] *1.35F);
+		float ortho = Mathf.Max(Grid.Size[0] * 1.4F, Grid.Size[1] * 1.35F);
 		CameraUtility.TargetOrtho = Mathf.Clamp(ortho, 7, Mathf.Infinity);
 
 		CameraUtility.SetTargetPos(Vector3.Lerp(Grid[0,0].position, 
@@ -827,10 +847,10 @@ public class TileMaster : MonoBehaviour {
 		}
 		if(t.Type.isEnemy)
 		{
-			if(GameManager.instance._Wave != null)
+			if(GameManager.Wave != null)
 			{
 				Vector3 pos = t.transform.position + (GameData.RandomVector*1.4F);
-				Wave w = GameManager.instance._Wave;
+				Wave w = GameManager.Wave;
 				mini = CreateMiniTile( pos, UIManager.Objects.WaveSlots[0].transform, 
 													t.Params._border.sprite);
 				mini.SetPath(movespeed, 0.5F, 0.0F, 0.08F);

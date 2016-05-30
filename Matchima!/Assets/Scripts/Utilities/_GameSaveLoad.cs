@@ -167,10 +167,10 @@ public class _GameSaveLoad: MonoBehaviour {
 			}
 		}
 
-		if(GameManager.instance._Wave != null)
+		if(GameManager.Wave != null)
 		{
       myData._iUser.Wave.HasWave = true;
-      Wave w = GameManager.instance._Wave;
+      Wave w = GameManager.Wave;
 			myData._iUser.Wave.Active = w.Active;
       myData._iUser.Wave.Index = w.Index;
 
@@ -348,17 +348,17 @@ public class _GameSaveLoad: MonoBehaviour {
         {
           g = GameManager.instance.DefaultWaves;
         }
-			   GameManager.instance._Wave = Instantiate(g[myData._iUser.Wave.Index]);
-			   GameManager.instance._Wave.transform.parent = GameManager.instance.transform;
-         for(int i = 0; i < GameManager.instance._Wave.Length; i++)
+			   GameManager.instance.CurrentWave = Instantiate(g[myData._iUser.Wave.Index]);
+			   GameManager.Wave.transform.parent = GameManager.instance.transform;
+         for(int i = 0; i < GameManager.Wave.Length; i++)
          {
           if(!myData._iUser.Wave.Slot[i]) continue;
-          GameManager.instance._Wave[i].Current = myData._iUser.Wave.Current[i];
-          GameManager.instance._Wave[i].Timer = myData._iUser.Wave.Timer[i];
+          GameManager.Wave[i].Current = myData._iUser.Wave.Current[i];
+          GameManager.Wave[i].Timer = myData._iUser.Wave.Timer[i];
          }
       }
 
-      Spawner2.GetSpawnables(TileMaster.Types, GameManager.instance._Wave);
+      Spawner2.GetSpawnables(TileMaster.Types, GameManager.Wave);
       //Player.instance.ResetStats();
       //Player.instance.ResetChances();
       Player.Stats._Health = myData._iUser.Health;

@@ -52,7 +52,6 @@ public class WardenBattle : Wave {
 		Slot3.Timer = 0;
 		Slot3.Activate();
 		
-		yield return StartCoroutine(Slot1.OnStart());
 		Slot1.Current = warden_actual_health;
 	}
 

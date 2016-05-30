@@ -1023,6 +1023,9 @@ public class Tile : MonoBehaviour {
 		SetRender(Info.Inner[sprite]);
 		
 		if(Params._shiny != null && Params._render != null) Params._shiny.sprite = Params._render.sprite;
+		//transform.position = Point.targetPos;
+		Params.transform.position = transform.position;
+		Params._render.transform.localPosition = Vector3.zero;
 	}
 
 	public  void SetBorder(Sprite border)
@@ -1110,7 +1113,6 @@ public class Tile : MonoBehaviour {
 			transform.position = new Vector3(Point.targetPos.x, Point.targetPos.y, transform.position.z);
 			Params.transform.position = transform.position;
 			Params._render.transform.localPosition = Vector3.zero;
-			//Params._render.transform.position = new Vector3(Point.targetPos.x, Point.targetPos.y, transform.position.z);
 			UnlockedFromGrid = false;
 			
 		});

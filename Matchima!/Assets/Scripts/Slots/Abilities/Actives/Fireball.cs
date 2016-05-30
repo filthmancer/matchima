@@ -145,6 +145,7 @@ public class Fireball : Ability {
 
 		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
 		yield return StartCoroutine(GameManager.instance.BeforeMatchRoutine());
+		yield return null;
 		yield return StartCoroutine(GameManager.instance.MatchRoutine(PlayerControl.instance.finalTiles));
 		yield return StartCoroutine(Player.instance.AfterMatch());
 

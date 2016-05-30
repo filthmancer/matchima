@@ -76,7 +76,7 @@ public class WaveUnit : Unit {
 	{
 		if(!Active || Ended) yield break;
 		TimeActive ++;
-		AddPoints(-PointsPerTurn);
+		//AddPoints(-PointsPerTurn);
 	}
 
 	public virtual IEnumerator AfterTurn()
@@ -87,33 +87,18 @@ public class WaveUnit : Unit {
 	}
 
 	private bool ShowingHealth;
-	public void Complete()
+	public virtual void Complete()
 	{
-		PointsThisTurn = 0;
-	}
-
-	public void AddPoints(int p)
-	{
-		if(!Active || Ended || Current == -1) return;
-		PointsThisTurn += p;
-		Current = Mathf.Clamp(Current - PointsThisTurn, 0, Required);
-		if(!ShowingHealth)
-		{
-			StartCoroutine(ShowHealthRoutine());
-		}
+		
 	}
 
 
-	public virtual void EnemyKilled(Enemy e)
+	public virtual int EnemyKilled(Enemy e)
 	{
-		if(!Active || Ended || Current == -1) return;
-		if(PointsPerEnemy <= 0) return;
-		PointsThisTurn += PointsPerEnemy * e.Stats.Value;
-		Current = Mathf.Clamp(Current - PointsPerEnemy * e.Stats.Value, 0, Required);
-		if(!ShowingHealth)
-		{
-			StartCoroutine(ShowHealthRoutine());
-		}
+		if(!Active || Ended || Current == -1) return 0;
+		if(PointsPerEnemy <= 0) return 0;
+		return PointsPerEnemy * e.Stats.Value;
+		
 	}
 
 	IEnumerator ShowHealthRoutine()

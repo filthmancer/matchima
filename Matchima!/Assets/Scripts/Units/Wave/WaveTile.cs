@@ -114,7 +114,7 @@ public class WaveTile : WaveUnit
 
 			yield return new WaitForSeconds(Time.deltaTime * 5);
 		}
-		yield return new WaitForSeconds(Time.deltaTime * 5);
+		yield return new WaitForSeconds(Time.deltaTime * 20);
 	}
 
 
@@ -129,7 +129,7 @@ public class WaveTile : WaveUnit
 	{
 		yield return StartCoroutine(base.BeginTurn());
 		if(!Active || Ended) yield break;
-		if(HitByPresence) AddPoints(-Player.Stats.Presence);
+		//if(HitByPresence) AddPoints(-Player.Stats.Presence);
 	//Spawn per round
 		if(SpawnType != WaveTileSpawn.XPerTurn) yield break;
 
@@ -167,9 +167,9 @@ public class WaveTile : WaveUnit
 						newtile.AddEffect(Effects[i]);
 					}
 				});
-			yield return null;
+			yield return new WaitForSeconds(Time.deltaTime * 5);
 		}
-		yield return null;
+		yield return new WaitForSeconds(Time.deltaTime * 20);
 	}
 
 	public override IEnumerator AfterTurn()

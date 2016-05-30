@@ -630,6 +630,19 @@ public class Class : Unit {
 		}
 	}
 
+	public void AddExp(int exp)
+	{
+		Exp_Current += exp;
+		while(Exp_Current > Exp_Max)
+		{
+			Exp_Current -= Exp_Max;
+			LevelUp();
+			Exp_Max_soft *= 1.5F;
+			Exp_Max = (int)Exp_Max_soft;
+		}
+	}
+
+
 	public void LevelUp()
 	{
 		Level ++;

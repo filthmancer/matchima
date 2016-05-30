@@ -24,6 +24,9 @@ public class GameManager : MonoBehaviour {
 	public static bool inStartMenu;
 
 	public static int ComboSize;
+	public static Zone Zone	{get{return instance.CurrentZone;}}
+	public static int Floor	{get{return instance.CurrentFloor;}}
+	public static Wave Wave{get{return instance.CurrentWave;}}
 
 	public static float GlobalManaMult = 1.0F,
 						GlobalHealthMult = 1.0F,
@@ -73,7 +76,10 @@ public class GameManager : MonoBehaviour {
 	public DiffMode DifficultyMode = DiffMode.Normal;
 	public GameMode Mode = GameMode.Story;
 
-	public int FloorCurr = 0;
+	public int CurrentFloor = 0;
+	public Zone CurrentZone;
+	public Wave CurrentWave;
+
 	public bool gameStart = false;
 	public bool paused = false;
 	public bool EnemyTurn = false;
@@ -86,8 +92,6 @@ public class GameManager : MonoBehaviour {
 	private float OverflowHitMulti = 1.0F;
 	private float AllOfTypeMulti = 1.2F;
 
-	public Wave _Wave;
-	public int TimeToWave = 3;
 
 	public bool LevelUp = false;
 	
@@ -103,7 +107,7 @@ public class GameManager : MonoBehaviour {
 	//public WaveGroup EndlessMode;
 
 	public Zone [] Zones;
-	public Zone CurrentZone;
+	
 	public WaveGroup DefaultWaves;
 
 	void OnApplicationQuit()
@@ -157,11 +161,12 @@ public class GameManager : MonoBehaviour {
 		_Juice = GetComponent<Juice>();
 		PlayerLoader = GetComponent<_GameSaveLoad>();
 		GameData.instance.Load();
+
 		Difficulty = Difficulty_init;
+		CurrentFloor = 0;
+
 		inStartMenu = true;
 		TuteActive = false;	
-		CurrentZone = Zones[0];
-		//CameraUtility.SetTurnOffset(false);	
 	}
 	
 	// Update is called once per frame
@@ -282,7 +287,7 @@ public class GameManager : MonoBehaviour {
 			case 2: //X
 			//GetWave(GameData.instance.GetRandomWave(), 2);
 			//CameraUtility.SetTurnOffset(camopen);
-			camopen = !camopen;
+			EscapeZone();
 		//	TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["chest"], GENUS.ALL, 2, 1);
 			//UIManager.instance.ShowResourceUI();
 			break;
@@ -309,7 +314,7 @@ public class GameManager : MonoBehaviour {
 			break;
 			case 7: //M
 			Player.instance.InitStats.MapSize.x+=1;
-			TileMaster.instance.IncreaseGrid(1,0);
+			Player.instance.ResetStats();
 			break;
 			case 8: //A
 			CameraUtility.instance.ScreenShake(0.6F, 1.1F);
@@ -353,10 +358,46 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-	public void GetZone()
+
+
+	public Zone GetZone(string name)
 	{
-		CurrentZone = Zones[Random.Range(0,Zones.Length)];
+		for(int i = 0; i < Zones.Length; i++)
+		{
+			if(Zones[i]._Name == name) return Zones[i];
+		}
+		return null;
+	}
+
+	public void EnterZone(string name = null)
+	{
+		if(CurrentZone != null) Destroy(CurrentZone.gameObject);
+		Zone target = null;
+
+		if(name == null) 
+		{
+			target = Zones[Random.Range(0,Zones.Length)];
+		}
+		else target = GetZone(name);
+
+		if(target == null) return;
+		CurrentZone = (Zone) Instantiate(target);
+		CurrentZone.transform.parent = this.transform;
+		CurrentZone.Randomise();
+
+		UIManager.instance.BackingTint = CurrentZone.Tint;
+		TileMaster.instance.MapSize_Default = CurrentZone.GetMapSize();
+		Player.instance.ResetStats();
+		StartCoroutine(UIManager.instance.Alert(1.2F, false, CurrentZone.Name));
+	}
+
+	public void EscapeZone()
+	{
+		return;
+		string oldname = CurrentZone.Name;
 		
+	 	StartCoroutine(UIManager.instance.Alert(1.2F, false, "Escaped " + oldname));
+	 	EnterZone();
 	}
 
 	public void GetWave(Wave w = null)
@@ -371,13 +412,13 @@ public class GameManager : MonoBehaviour {
 			}
 		}
 
-		if(_Wave != null && _Wave != w) Destroy(_Wave.gameObject);
-		_Wave = Instantiate(w);
-		_Wave.transform.parent = this.transform;
-		StartCoroutine(_Wave.Setup());
+		if(CurrentWave != null && CurrentWave != w) Destroy(CurrentWave.gameObject);
+		CurrentWave = Instantiate(w);
+		CurrentWave.transform.parent = this.transform;
+		StartCoroutine(CurrentWave.Setup());
 
 		Difficulty += Mathf.Exp(Difficulty_Growth);
-		FloorCurr += 1;
+		CurrentFloor += 1;
 	}
 
 	public void LoadGame(bool resume)
@@ -392,6 +433,7 @@ public class GameManager : MonoBehaviour {
 		UIManager.instance.LoadScreen.SetActive(true);
 		UIManager.instance.LoadScreen.SetSpin(true);
 
+		TileMaster.instance.MapSize = new Vector2(1,1);
 		Player.instance.Load(c);
 		StartCoroutine(UIManager.instance.LoadUI());
 	}
@@ -405,7 +447,7 @@ public class GameManager : MonoBehaviour {
 		RoundTokens = 0;
 		UIManager.instance.LoadScreen.SetSpin(false);
 		UIManager.instance.LoadScreen.SetActive(false);
-
+		EnterZone();
 		GetWave();
 	}
 
@@ -418,7 +460,7 @@ public class GameManager : MonoBehaviour {
 		RoundTokens = 0;
 		UIManager.instance.LoadScreen.SetSpin(false);
 		UIManager.instance.LoadScreen.SetActive(false);
-
+		EnterZone();
 		GetWave();
 	}
 
@@ -480,7 +522,7 @@ public class GameManager : MonoBehaviour {
 		
 
 		yield return StartCoroutine(TileMaster.instance.BeforeTurn());
-		yield return StartCoroutine(_Wave.BeginTurn());
+		yield return StartCoroutine(CurrentWave.BeginTurn());
 		
 		if(Player.instance.Turns % (int)Player.Stats.AttackRate == 0 && TileMaster.instance.EnemiesOnScreen > 0)
 		{
@@ -491,8 +533,8 @@ public class GameManager : MonoBehaviour {
 		yield return StartCoroutine(CompleteTurnRoutine());
 		TileMaster.instance.ResetTiles(true);
 
-		yield return StartCoroutine(_Wave.AfterTurn());
-		if(_Wave.AllEnded && !Player.Stats.isKilled)
+		yield return StartCoroutine(CurrentWave.AfterTurn());
+		if(CurrentWave.Ended && !Player.Stats.isKilled)
 		{
 			GetWave();
 		}
@@ -645,8 +687,9 @@ public class GameManager : MonoBehaviour {
 		int enemies_hit = 0;
 
 		float rate = 0.07F, num = 0;
-		foreach(Tile child in tiles)
+		for(int x = 0; x < tiles.Count; x++)
 		{
+			Tile child = tiles[x];
 			if(child == null) continue;
 
 			int added_res = 0, added_armour = 0;
@@ -938,7 +981,7 @@ public class GameManager : MonoBehaviour {
 
 	public void EnemyKilled(Enemy e)
 	{
-		_Wave.EnemyKilled(e);
+		CurrentWave.EnemyKilled(e);
 	}
 
 	public void ToggleEasyGENUSe()

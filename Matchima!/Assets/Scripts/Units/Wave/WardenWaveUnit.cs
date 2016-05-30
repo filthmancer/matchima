@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class WardenWaveUnit : WaveUnit {
 
-	Tile [] controllers;
+	List<Tile> controllers;
 
 	public bool controllers_dead = false;
 	public bool controllers_attack = false;
@@ -12,9 +12,9 @@ public class WardenWaveUnit : WaveUnit {
 	public override IEnumerator OnStart()
 	{
 		if(!Active || Ended) yield break;
-		controllers = new Tile[3];
+		controllers = new List<Tile>();
 		bool [,] replacedtile = new bool [(int)TileMaster.instance.MapSize.x, (int)TileMaster.instance.MapSize.y];
-		for(int i = 0; i < controllers.Length; i++)
+		for(int i = 0; i < 3; i++)
 		{
 			int randx = (int)Random.Range(0, TileMaster.instance.MapSize.x);
 			int randy = (int)Random.Range(0, TileMaster.instance.MapSize.y);
@@ -27,14 +27,22 @@ public class WardenWaveUnit : WaveUnit {
 			}
 			replacedtile[randx,randy] = true;
 
-			controllers[i] = (TileMaster.instance.ReplaceTile(randx, randy, TileMaster.Types["ward"], GENUS.RAND, 1, 0));
-			TileMaster.Tiles[randx, randy].InitStats.Hits += 3;
-			TileMaster.Tiles[randx, randy].CheckStats();
-			TileMaster.Tiles[randx, randy].DescriptionOverride = "Enemies ignore the Warden";
-
-			yield return new WaitForSeconds(Time.deltaTime * 10);
+			GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Force);
+			MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
+			mp.SetTarget(TileMaster.Tiles[randx,randy].transform.position);
+			mp.SetPath(1.2F, 0.2F);
+			//mp.Target_Tile = TileMaster.Tiles[randx,randy];
+			mp.SetTileMethod(TileMaster.Tiles[randx,randy], (Tile t) => 
+				{
+					controllers.Add(TileMaster.instance.ReplaceTile(randx, randy, TileMaster.Types["ward"], GENUS.RAND, 1, 0));
+					TileMaster.Tiles[randx, randy].InitStats.Hits += 3;
+					TileMaster.Tiles[randx, randy].CheckStats();
+					TileMaster.Tiles[randx, randy].DescriptionOverride = "Enemies ignore the Warden";
+				});
+		
+			yield return new WaitForSeconds(Time.deltaTime * 20);
 		}
-		yield break;
+		yield return new WaitForSeconds(Time.deltaTime * 20);
 	}
 
 	public override IEnumerator BeginTurn()
@@ -74,7 +82,7 @@ public class WardenWaveUnit : WaveUnit {
 	{
 		if(!Active || Ended) yield break;
 		bool end = true;
-		for(int i = 0; i < controllers.Length; i++)
+		for(int i = 0; i < controllers.Count; i++)
 		{
 			if(controllers[i] != null && !controllers[i].isMatching)
 			{
@@ -131,7 +139,7 @@ public class WardenWaveUnit : WaveUnit {
 				MoveToPoint mini = TileMaster.instance.CreateMiniTile(pos,UIManager.Objects.WaveSlots[0].transform, child.Info.Outer);
 				mini.SetPath(0.3F, 0.5F, 0.0F, 0.08F);
 				mini.SetMethod(() =>{
-						AddPoints(1);
+						Parent.AddPoints(-1);
 						AudioManager.instance.PlayClipOn(Player.instance.transform, "Player", "Hit");
 					}
 				);

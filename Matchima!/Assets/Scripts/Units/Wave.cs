@@ -32,6 +32,11 @@ public class Wave : Unit {
 	public float Chance = 1.0F;
 	public int RequiredDifficulty = 1;
 
+	public int Current;
+	public int Required;
+	private int PointsThisTurn;
+	public int PointsPerTurn;
+
 	public WaveUnit Slot1, Slot2, Slot3;
 	public bool HasDialogue;
 	public Quote [] Quotes;
@@ -61,20 +66,14 @@ public class Wave : Unit {
 		}
 	}
 
-	public bool AllEnded
+	public float GetRatio()
 	{
-		get
-		{
-			bool ended = true;
-			for(int i = 0; i < AllSlots.Length; i++)
-			{
-				if(AllSlots[i] == null) continue;
-				if(AllSlots[i] is WaveEffect) continue;
-				if(!AllSlots[i].Ended) ended = false;
-			}
-			return ended;
-		}
+		return (float) Current / Required;
 	}
+
+	public bool Ended;
+	public int Experience = 5;
+	private bool ShowingHealth;
 	
 	public IEnumerator Setup()
 	{
@@ -83,7 +82,7 @@ public class Wave : Unit {
 			if(AllSlots[i] == null) continue;
 			AllSlots[i].Setup(this,i);
 		}
-
+		Active = true;
 		yield return StartCoroutine(OnStart());
 
 		for(int i = 0; i < AllSlots.Length; i++)
@@ -91,49 +90,57 @@ public class Wave : Unit {
 			if(AllSlots[i] == null) continue;
 			AllSlots[i].Activate();
 		}	
+
 		yield return StartCoroutine(WaveActivateRoutine());
-
-
-		//OLD FORMAT FOR GETTING MODS (RANDOM)
-		/*
-			//Get a list of possible mods
-				List<WaveUnit> allmodwaves = new List<WaveUnit>();
-				allmodwaves.AddRange(ModWaveUnits);
-
-			//While a random roll is greater than the chance of X number of mods
-				int curr = 0;
-				while(Random.value < ModChance[curr])
-				{
-			//Roll chances of each individual mod
-					List<float> mod_chances = new List<float>();
-					List<WaveUnit> mod_waves = new List<WaveUnit>();
-					for(int i = 0; i < ModWaveUnits.Length; i++)
-					{
-						float c = ModWaveUnits[i].Chance;
-						if(c > 0.0F)
-						{
-							mod_chances.Add(c);
-							mod_waves.Add(ModWaveUnits[i]);
-						}
-					}
-
-			//Roll the index of selected mod and add mod
-					int index = ChanceEngine.Index(mod_chances.ToArray());
-					WaveUnit mod = mod_waves[index];
-					AddWaveUnit(mod);
-					curr++;
-
-			// Check if all slots are full
-					bool allfull = true;
-					for(int i = 0; i < AllSlots.Length; i++)
-					{
-						if(AllSlots[i] == null) allfull = false;
-					}
-					if(allfull) break;
-				}
-		*/
-
 	}
+
+	public void AddPoints(int p)
+	{
+		if(!Active || Ended || Current == -1) return;
+		PointsThisTurn += p;
+		Current = Mathf.Clamp(Current + p, 0, Required);
+		if(!ShowingHealth)
+		{
+			StartCoroutine(ShowHealthRoutine());
+		}
+	}
+
+	IEnumerator ShowHealthRoutine()
+	{
+		ShowingHealth = true;
+		int current_heal = PointsThisTurn;
+
+		string prefix = current_heal > 0 ? " +" : " ";
+		Vector3 tpos = Vector3.down + Vector3.right * 0.4F;
+		MiniAlertUI heal = UIManager.instance.MiniAlert(
+			UIManager.instance.WaveHealthText.transform.position, 
+			prefix + current_heal, 42, GameData.instance.BadColour, 1.7F,	-0.08F);
+
+		while(heal.lifetime > 0.0F)
+		{
+			if(PointsThisTurn == 0)
+			{
+				heal.lifetime = 0.0F;
+				heal.text = "";
+				break;
+			}
+			else if(PointsThisTurn != current_heal)
+			{
+				heal.lifetime += 0.2F;
+				heal.size = 42 + current_heal * 0.75F;
+				current_heal = PointsThisTurn;
+				heal.text = prefix + current_heal;
+			}
+			
+
+			yield return null;
+		}
+
+		ShowingHealth = false;
+
+		yield return null;
+	}
+
 
 	public virtual IEnumerator OnStart()
 	{
@@ -142,22 +149,18 @@ public class Wave : Unit {
 
 	public virtual IEnumerator BeginTurn()
 	{
-		for(int i = 0; i < AllSlots.Length; i++)
-		{
-			if(AllSlots[i] == null) continue;
-		
-			AllSlots[i].Timer --;
-		}		
+		AddPoints(PointsPerTurn);
 		for(int i = 0; i < AllSlots.Length; i++)
 		{
 			if(AllSlots[i] == null) continue;
 			if(AllSlots[i].Active)
 			{
-				if(AllSlots[i].Timer < 0) yield return StartCoroutine(AllSlots[i].BeginTurn());
-				else yield return StartCoroutine(AllSlots[i].OnStart());
+				AllSlots[i].Timer ++;
+
+				AddPoints(-AllSlots[i].PointsPerTurn);
+				yield return StartCoroutine(AllSlots[i].BeginTurn());
 			}
 		}
-
 
 		yield return null;
 	}
@@ -165,6 +168,7 @@ public class Wave : Unit {
 
 	public virtual IEnumerator AfterTurn()
 	{
+		PointsThisTurn = 0;
 		for(int i = 0; i < AllSlots.Length; i++)
 		{
 			if(AllSlots[i] == null) continue;
@@ -172,13 +176,23 @@ public class Wave : Unit {
 			{
 				yield return StartCoroutine(AllSlots[i].AfterTurn());
 				AllSlots[i].Complete();
-				if(AllSlots[i].Current == 0 && AllSlots[i].Active)
-				{
-					AllSlots[i].OnEnd();
-					GameManager.instance.paused = true;
-					yield return StartCoroutine(WaveEndRoutine());
-					GameManager.instance.paused = false;
-				}
+			}
+		}
+		if(Current <= 0 && Active)
+		{
+			for(int i = 0; i < AllSlots.Length; i++)
+			{
+				if(AllSlots[i] == null) continue;
+				AllSlots[i].OnEnd();
+			}
+			
+			GameManager.instance.paused = true;
+			yield return StartCoroutine(WaveEndRoutine());
+			GameManager.instance.paused = false;
+			Ended = true;
+			foreach(Class child in Player.Classes)
+			{
+				child.AddExp((int) (Experience * GameManager.Difficulty));
 			}
 		}
 		yield return null;
@@ -226,7 +240,8 @@ public class Wave : Unit {
 		for(int i = 0; i < AllSlots.Length; i++)
 		{
 			if(AllSlots[i] == null) continue;
-			AllSlots[i].EnemyKilled(e);
+
+			AddPoints(-AllSlots[i].EnemyKilled(e));
 		}
 	}
 
@@ -269,6 +284,14 @@ public class Wave : Unit {
 		//CameraUtility.SetTurnOffset(true);
 
 		yield return StartCoroutine(UIManager.instance.Alert(1.25F, true, Name));
+		for(int i = 0; i < AllSlots.Length; i++)
+		{
+			if(AllSlots[i] == null) continue;
+			if(AllSlots[i].Active)
+			{
+				 yield return StartCoroutine(AllSlots[i].OnStart());
+			}
+		}
 	}
 
 	protected virtual IEnumerator WaveEndRoutine()

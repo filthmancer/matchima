@@ -14,6 +14,7 @@ public class UIObjects : MonoBehaviour {
 	public UIObj ClassQuote, WaveQuote;
 	public UIObj Alert_Button, Alert_ButtonParent;
 	public TextMeshProUGUI LevelInfo, Alert;
+	public UIObj BackingLight;
 
 	public UIObj ArmourParent;
 

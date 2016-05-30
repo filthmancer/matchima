@@ -169,34 +169,6 @@ public class Enemy : Tile {
 			SetState(TileState.Idle, true);
 			if(_anim != null) _anim.SetBool("Sleep",false);
 		}
-
-		/*bool attack = !Stats.isNew && !Stats.isFrozen && Stats.isAlerted && !HasAttackedThisTurn;
-		if(Stats.isAlly && attack)
-		{
-			Tile target = null;
-			for(int x = 0; x < TileMaster.Tiles.GetLength(0); x++)
-			{
-				for(int y = 0; y < TileMaster.Tiles.GetLength(1); y++)
-				{
-					if(TileMaster.Tiles[x,y].Type.isEnemy)
-					{
-						if(TileMaster.Tiles[x,y] == null) continue;
-						if(TileMaster.Tiles[x,y] == this) continue;
-						if(!TileMaster.Tiles[x,y].Type.isAlly) 
-						{
-							target = TileMaster.Tiles[x,y];
-							break;
-						}
-					}
-				}
-				if(target!= null) break;
-			}
-			
-			if(target != null)
-			{
-				StartCoroutine(AllyAttack(target));
-			}
-		}*/
 	}
 
 	protected IEnumerator AllyAttack(Tile target)

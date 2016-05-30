@@ -14,20 +14,23 @@ public class UIManager : MonoBehaviour {
 	public static int? LevelChoice = null;
 
 	public LoadScreen LoadScreen;
+	public Color BackingTint;
 
 	public TextMeshProUGUI Health, Armour;
+	public TextMeshProUGUI WaveHealthText;
 	public TextMeshProUGUI WaveTimer;
 
 	public UITooltip Tooltip;
 
 	public UIKillScreen KillUI;
 	public UIObjTweener ScreenAlert;
-	//public Color WaveAlert_ActiveCol, WaveAlert_InactiveCol;
 
 	public ClassUpgradeUI ClassUI;
 	public ClassAbilityUI ClassAbUI;
 
-	public Image HealthImgLeft, HealthImgRight;
+	public Image [] PlayerHealth;
+	public Image [] WaveHealth;
+
 	public ClassSlotsUI _ClassButtons;
 	public static ClassSlotsUI ClassButtons{get{return UIManager.instance._ClassButtons;}}
 	public static UIObj [] WaveButtons{get{return Objects.WaveSlots;}}
@@ -85,18 +88,33 @@ public class UIManager : MonoBehaviour {
 			if(Input.touches.Length == 0) ShowTooltip(false);
 		}
 
-		HealthImgLeft.fillAmount = Mathf.Lerp(HealthImgLeft.fillAmount, Player.Stats.GetHealthRatio() * 0.82F, Time.deltaTime * 15);
-		HealthImgRight.fillAmount = Mathf.Lerp(HealthImgRight.fillAmount, Player.Stats.GetHealthRatio() * 0.82F, Time.deltaTime * 15);
-		HealthImgRight.color = Color.Lerp(GameData.instance.ShieldEmpty, GameData.instance.ShieldFull, Player.Stats.GetHealthRatio());
-		HealthImgLeft.color = Color.Lerp(GameData.instance.ShieldEmpty, GameData.instance.ShieldFull, Player.Stats.GetHealthRatio());
 		Health.text = Player.Stats.Health + "/" + Player.Stats.HealthMax;
+
+		for(int i = 0; i < PlayerHealth.Length; i++)
+		{
+			PlayerHealth[i].fillAmount = Mathf.Lerp(PlayerHealth[i].fillAmount, Player.Stats.GetHealthRatio(), Time.deltaTime * 15);
+			PlayerHealth[i].color = Color.Lerp(GameData.instance.ShieldEmpty, GameData.instance.ShieldFull, Player.Stats.GetHealthRatio());
+		}
+		if(GameManager.Wave != null)
+		{
+			WaveHealthText.text = ""+ GameManager.Wave.Current;
+			for(int i = 0; i < WaveHealth.Length; i++)
+			{
+				WaveHealth[i].fillAmount = Mathf.Lerp(WaveHealth[i].fillAmount, GameManager.Wave.GetRatio(), Time.deltaTime * 15);
+				WaveHealth[i].color = Color.Lerp(GameData.instance.ShieldEmpty, GameData.instance.ShieldFull, GameManager.Wave.GetRatio());
+			}
+		}
+		
+
+		Objects.BackingLight.Img[0].color = Color.Lerp(
+			Objects.BackingLight.Img[0].color, BackingTint, Time.deltaTime * 5);
 
 		Objects.ArmourParent.Txt[0].text = Player.Stats.Armour;
 		Objects.ArmourParent.SetActive(Player.Stats._Armour > 0);
 
-		for(int i = 0; i < GameManager.instance._Wave.Length; i++)
+		for(int i = 0; i < GameManager.Wave.Length; i++)
 		{
-			if(GameManager.instance._Wave[i] != null && GameManager.instance._Wave[i].Active && Objects.WaveSlots.Length > i)
+			if(GameManager.Wave[i] != null && GameManager.Wave[i].Active && Objects.WaveSlots.Length > i)
 			{
 				UIObj w = Objects.WaveSlots[i];
 				w.SetActive(true);
@@ -104,18 +122,19 @@ public class UIManager : MonoBehaviour {
 				w.Img[0].transform.gameObject.SetActive(true);
 				w.Img[0].enabled = true;	
 				w.Img[1].enabled = true;
-				w.Img[1].sprite = GameManager.instance._Wave[i].Inner;
+				w.Img[1].sprite = GameManager.Wave[i].Inner;
 				w.Img[1].color = Color.white;
 				w.Img[2].enabled = true;
-				w.Img[2].sprite = GameManager.instance._Wave[i].Outer;
+				w.Img[2].sprite = GameManager.Wave[i].Outer;
 				w.Img[2].color = Color.white;
 
-				if(GameManager.instance._Wave[i].Current > -1)
-				{
-					w.GetChild(0).SetActive(true);
-					w.GetChild(0).Txt[0].text = GameManager.instance._Wave[i].Current+"";
-				}
-				else w.GetChild(0).SetActive(false);
+				//if(GameManager.Wave[i].Current > -1)
+				//{
+				//	w.GetChild(0).SetActive(true);
+				//	w.GetChild(0).Txt[0].text = GameManager.Wave[i].Current+"";
+				//}
+				//else 
+				w.GetChild(0).SetActive(false);
 				
 			}
 			else 
@@ -127,8 +146,8 @@ public class UIManager : MonoBehaviour {
 				//	Objects.WaveSlots[i].Img[s].enabled = false;
 				//}
 				//Objects.WaveSlots[i].Txt[0].text = "";
-				//if(GameManager.instance._Wave[i] != null && GameManager.instance._Wave[i].Timer > 0) 
-				//	WaveTimer.text = "" + GameManager.instance._Wave[i].Timer;
+				//if(GameManager.Wave[i] != null && GameManager.Wave[i].Timer > 0) 
+				//	WaveTimer.text = "" + GameManager.Wave[i].Timer;
 				//else WaveTimer.text = "";
 			}
 		}
@@ -167,7 +186,7 @@ public class UIManager : MonoBehaviour {
 		ShowingHealth = true;
 
 		int current_heal = Player.Stats.HealThisTurn;
-		Vector3 tpos = Vector3.up * 0.2F + Vector3.left * 1.2F;
+		Vector3 tpos = Vector3.up * 0.35F + Vector3.left * 0.6F;
 		MiniAlertUI heal = UIManager.instance.MiniAlert(
 			UIManager.instance.Health.transform.position + tpos, 
 			" +" + current_heal, 42, GameData.instance.GoodColour, 1.7F,	0.01F);
@@ -185,7 +204,7 @@ public class UIManager : MonoBehaviour {
 				heal.lifetime += 0.4F;
 				heal.size = 42 + current_heal * 0.75F;
 				current_heal = Player.Stats.HealThisTurn;
-				heal.text = "+" + current_heal;
+				heal.text = " +" + current_heal;
 			}
 			yield return null;
 		}
@@ -201,7 +220,7 @@ public class UIManager : MonoBehaviour {
 		ShowingHit = true;
 
 		int current_hit = Player.Stats.DmgThisTurn;
-		Vector3 tpos = Vector3.up * 0.2F + Vector3.left * 0.3F;
+		Vector3 tpos = Vector3.up * 0.35F + Vector3.right * 0.6F;
 		MiniAlertUI hit = UIManager.instance.MiniAlert(
 			UIManager.instance.Health.transform.position + tpos, 
 			" -" + current_hit, 42, GameData.instance.BadColour, 1.7F, 0.01F);
@@ -219,7 +238,7 @@ public class UIManager : MonoBehaviour {
 				hit.lifetime += 0.2F;
 				current_hit = Player.Stats.DmgThisTurn;
 			}
-			hit.text = "-" + current_hit;
+			hit.text = " -" + current_hit;
 
 			yield return null;
 		}
@@ -512,8 +531,11 @@ public class UIManager : MonoBehaviour {
 		yield return null;
 	}
 
+	public bool AlertShowing = false;
 	public IEnumerator Alert(float time, bool show_floor, string title = null, string desc = null)
 	{
+		while(AlertShowing) yield return null;
+		AlertShowing = true;
 		GameManager.instance.paused = true;
 		ScreenAlert.SetActive(true);
 		ScreenAlert.SetTween(0,true);
@@ -521,7 +543,7 @@ public class UIManager : MonoBehaviour {
 		if(show_floor)
 		{
 			(ScreenAlert.Child[2] as UIObjTweener).Txt[0].text = "Floor ";
-			(ScreenAlert.Child[2] as UIObjTweener).Txt[1].text = "" + GameManager.instance.FloorCurr;
+			(ScreenAlert.Child[2] as UIObjTweener).Txt[1].text = "" + GameManager.Floor;
 			(ScreenAlert.Child[2] as UIObjTweener).SetTween(0, true);
 			yield return new WaitForSeconds(GameData.GameSpeed(0.35F));
 		}
@@ -549,6 +571,7 @@ public class UIManager : MonoBehaviour {
 
 		PlayerControl.instance.ResetSelected();
 		GameManager.instance.paused = false;
+		AlertShowing = false;
 		yield break;
 	}
 
@@ -733,8 +756,8 @@ public class UIManager : MonoBehaviour {
 
 	public void ShowWaveInfo(bool active, int num)
 	{
-		if(GameManager.instance._Wave == null) return;
-		ShowSimpleTooltip(active, Objects.WaveSlots[num].Img[1].transform, GameManager.instance._Wave[num].Name, GameManager.instance._Wave[num].Description);
+		if(GameManager.Wave == null) return;
+		ShowSimpleTooltip(active, Objects.WaveSlots[num].Img[1].transform, GameManager.Wave[num].Name, GameManager.Wave[num].Description);
 	}
 
 	public void AddClass(Class c, int slot)

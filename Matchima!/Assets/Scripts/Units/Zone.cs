@@ -3,7 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Zone : MonoBehaviour {
-	public string Name;
+	public string _Name;
+	public string Name
+	{
+		get{
+			return "The " + _Name;
+		}
+	}
 	public Wave IntroWave;
 	public Wave [] Waves;
 	public Wave this [int i]{get{return Waves[i];}}
@@ -14,7 +20,13 @@ public class Zone : MonoBehaviour {
 	public int StartAt = 0;
 
 	public Color Tint;
+	[SerializeField]
 	public IntVector MapSize;
+	[SerializeField]
+	private IntVector _Depth;
+
+	private int Depth;
+	private int Initial;
 
 	private int curr = 0;
 	private bool shown_intro_wave;
@@ -86,5 +98,23 @@ public class Zone : MonoBehaviour {
 		Wave w = choices[curr];
 		
 		return w;
+	}
+
+	public void CheckZone()
+	{
+		if(GameManager.Floor > Initial + Depth)
+		{
+			GameManager.instance.EscapeZone();
+		}
+	}
+
+	public void Randomise()
+	{
+		Depth = Random.Range(_Depth.x, _Depth.y);
+		Initial = GameManager.Floor;
+	}
+	public Vector2 GetMapSize()
+	{
+		return MapSize.ToVector2;
 	}
 }

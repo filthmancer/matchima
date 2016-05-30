@@ -160,7 +160,6 @@ public class GridInfo {
 
 			for(int yy = newpoints.GetLength(1); yy < final_y; yy++)
 			{
-
 				for(int xx = 0; xx < final_x; xx++)
 				{
 					if(Points[xx,yy] != null) 

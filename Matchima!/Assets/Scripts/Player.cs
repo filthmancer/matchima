@@ -153,26 +153,26 @@ public class Player : MonoBehaviour {
 
 	public void OnTileDestroy(Tile t)
 	{
-		if(t is Enemy)
-		{
-			Enemy e = t as Enemy;
-			foreach(Class child in Classes)
-			{
-				child.AddExp(e);
-			}
-		}
+		//if(t is Enemy)
+		//{
+		//	Enemy e = t as Enemy;
+		//	foreach(Class child in Classes)
+		//	{
+		//		child.AddExp(e);
+		//	}
+		//}
 	}
 
 	public void OnTileCollect(Tile t)
 	{
-		if(t is Enemy)
-		{
-			Enemy e = t as Enemy;
-			foreach(Class child in Classes)
-			{
-				child.AddExp(e);
-			}
-		}
+		//if(t is Enemy)
+		//{
+		//	Enemy e = t as Enemy;
+		//	foreach(Class child in Classes)
+		//	{
+		//		child.AddExp(e);
+		//	}
+		//}
 	}
 
 	public int CompleteClasses()
@@ -265,14 +265,16 @@ public class Player : MonoBehaviour {
 			UIManager.Objects.BotGear.SetTween(0, true);
 			UIManager.instance.ItemUI.gameObject.SetActive(true);
 			UIManager.instance.current_class = null;
-			//UIManager.instance.current_item = child;
+			UIManager.instance.ScreenAlert.SetTween(0, true);
 			UIManager.instance.ShowItemUI(ThisTurn_items.ToArray());
 
 			while(UIManager.ItemUI_active) 
 			{
 				yield return null;
 			}
+			UIManager.instance.ScreenAlert.SetTween(0, false);
 		}
+
 		//UIManager.instance.WaveAlert.SetTween(0,false);
 
 		if(ThisTurn_upgrades.Count > 0)
@@ -534,13 +536,14 @@ public class Player : MonoBehaviour {
 		Stats._Armour = armour;
 		Stats._Attack = finalattack;
 
-		Stats.MapSize.x = Mathf.Clamp(Stats.MapSize.x, 3, 14);
-		Stats.MapSize.y = Mathf.Clamp(Stats.MapSize.y, 3, 14);
+		Stats.MapSize.x = Mathf.Clamp(Stats.MapSize.x, 0, 4);
+		Stats.MapSize.y = Mathf.Clamp(Stats.MapSize.y, 0, 4);
 		
-		if(TileMaster.instance.MapSize != Stats.MapSize && !Stats.isKilled)
+		if(!Stats.isKilled)
 		{
-			//TileMaster.instance.MapSize = Stats.MapSize;
-			TileMaster.instance.IncreaseGridTo(Stats.MapSize);
+			Vector2 finalMap = TileMaster.instance.MapSize_Default 
+										+ Stats.MapSize;
+			TileMaster.instance.IncreaseGridTo(finalMap);
 		}
 
 		RequiredMatchNumber = Mathf.Clamp(3 + Stats.MatchNumberModifier, 1, 10);
@@ -561,7 +564,7 @@ public class Player : MonoBehaviour {
 			}
 		}
 
-		if(GameManager.instance._Wave != null) GameManager.instance._Wave.GetChances();
+		if(GameManager.Wave != null) GameManager.Wave.GetChances();
 		
 		Spawner2.GetSpawnables(TileMaster.Types);
 	}

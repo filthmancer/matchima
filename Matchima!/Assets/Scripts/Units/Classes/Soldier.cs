@@ -26,16 +26,16 @@ public class Soldier : Class {
 
 	public override void Update()
 	{
-		if(GameManager.instance._Wave != null && !first_wave)
+		if(GameManager.Wave != null && !first_wave)
 		{
 			first_wave = true;
-			if(GameManager.instance._Wave[0].Required > 8)
+			if(GameManager.Wave[0].Required > 8)
 			{
-				GameManager.instance._Wave[0].Required = 8;
-				GameManager.instance._Wave[0].Current = 8;
+				GameManager.Wave[0].Required = 8;
+				GameManager.Wave[0].Current = 8;
 			}
 		}
-		/*if(GameManager.instance._Wave != null && !GameManager.instance.WaveActive && !first_levelup)
+		/*if(GameManager.Wave != null && !GameManager.instance.WaveActive && !first_levelup)
 		{
 			StartCoroutine(UIManager.instance.Quote(QueuedQuotes[curr++],
 													QueuedQuotes[curr++]));

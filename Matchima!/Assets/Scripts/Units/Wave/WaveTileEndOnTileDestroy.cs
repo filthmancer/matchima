@@ -71,7 +71,7 @@ public class WaveTileEndOnTileDestroy : WaveTile {
 		}
 		if(end) 
 		{
-			AddPoints(-Current);
+			Parent.AddPoints(-1);
 			OnEnd();
 		}
 		Complete();
