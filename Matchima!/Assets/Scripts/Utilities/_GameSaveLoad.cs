@@ -339,15 +339,8 @@ public class _GameSaveLoad: MonoBehaviour {
       TileMaster.instance.LevelToLoad(level);
       if(myData._iUser.Wave.HasWave)
       {
-        WaveGroup g = null;
-        if((GameMode)myData._iUser.GameMode == GameMode.Story)
-        {
-          g = GameManager.instance.StoryMode;
-        }
-        else if((GameMode)myData._iUser.GameMode == GameMode.Endless)
-        {
-          g = GameManager.instance.DefaultWaves;
-        }
+        Zone g = GameManager.Zone;
+        
 			   GameManager.instance.CurrentWave = Instantiate(g[myData._iUser.Wave.Index]);
 			   GameManager.Wave.transform.parent = GameManager.instance.transform;
          for(int i = 0; i < GameManager.Wave.Length; i++)

@@ -172,6 +172,11 @@ public class UIMenu : UIObj {
 				(UIManager.Objects.BotGear[3][0].GetChild(i) as UIClassSelect).ClearActions();
 				(UIManager.Objects.BotGear[3][0].GetChild(i) as UIClassSelect).Setup(child); 
 			}
+			UIManager.Objects.BotGear[3][1].transform.SetAsLastSibling();
+			UIManager.Objects.BotGear[3][1].AddAction(UIAction.MouseDown,
+				() => {(UIManager.Objects.BotGear[3][0] as UIGear).Drag = true;});
+			UIManager.Objects.BotGear[3][1].AddAction(UIAction.MouseUp,
+				() => {(UIManager.Objects.BotGear[3][0] as UIGear).Drag = false;});
 		}
 		else
 		{

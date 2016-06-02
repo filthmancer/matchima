@@ -2,6 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 
+public enum ZoneStyle
+{
+	Progressive,
+	Random
+}
+
 public class Zone : MonoBehaviour {
 	public string _Name;
 	public string Name
@@ -12,6 +18,8 @@ public class Zone : MonoBehaviour {
 	}
 	public Wave IntroWave;
 	public Wave [] Waves;
+	public Wave BossWave;
+	public ZoneStyle Style;
 	public Wave this [int i]{get{return Waves[i];}}
 
 	public bool SkipAllStory;
@@ -25,6 +33,7 @@ public class Zone : MonoBehaviour {
 	[SerializeField]
 	private IntVector _Depth;
 
+	[SerializeField]
 	private int Depth;
 	private int Initial;
 
@@ -53,7 +62,6 @@ public class Zone : MonoBehaviour {
 			return IntroWave;
 		}
 
-
 		if(curr >= Waves.Length) 
 		{
 			if(!Repeat) return null;
@@ -66,7 +74,6 @@ public class Zone : MonoBehaviour {
 			w = Waves[curr];
 			curr++;
 		}
-		
 		return w;
 	}
 
@@ -92,6 +99,14 @@ public class Zone : MonoBehaviour {
 				chance.Add(child.Chance);
 			}
 		}
+		foreach(Wave child in GameManager.instance.DefaultWaves.Waves)
+		{
+			if(child.Chance > 0.0F && GameManager.Difficulty > child.RequiredDifficulty)
+			{
+				choices.Add(child);
+				chance.Add(child.Chance);
+			}
+		}
 
 		int index = ChanceEngine.Index(chance.ToArray());
 		curr = index;
@@ -100,12 +115,22 @@ public class Zone : MonoBehaviour {
 		return w;
 	}
 
-	public void CheckZone()
+	public Wave CheckZone()
 	{
-		if(GameManager.Floor > Initial + Depth)
+		if(GameManager.Floor >= Initial + Depth)
 		{
 			GameManager.instance.EscapeZone();
 		}
+		if(Style == ZoneStyle.Progressive) return GetWaveProgressive();
+		else if(Style == ZoneStyle.Random)
+		{
+			if(GameManager.Floor >= Initial+Depth-1 && BossWave != null)
+			{
+				return BossWave;
+			}
+			else return GetWaveRandom();
+		}
+		return null;
 	}
 
 	public void Randomise()

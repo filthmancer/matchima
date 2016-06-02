@@ -5,6 +5,8 @@ public class UIClassSelect : UIObj {
 
 	public Class _class;
 	float drag_threshold = 0.2F;
+
+	public bool CenterWheel;
 	public void Setup(Class c)
 	{
 		_class = c;
@@ -22,9 +24,11 @@ public class UIClassSelect : UIObj {
 			Txt[0].text = _class._Name.Value;
 			
 			AddAction(UIAction.MouseUp, () => {
+
 			if(time_over < drag_threshold) 
 			{
-				(ParentObj as UIGear).isDragging = false;
+				
+				//(ParentObj as UIGear).Drag = false;
 				UIManager.Menu.SetTargetClass(this);
 			}
 
@@ -40,7 +44,8 @@ public class UIClassSelect : UIObj {
 		{
 			//if(time_over > drag_threshold) 
 			//{
-				(ParentObj as UIGear).isDragging = true;
+				
+				//(ParentObj as UIGear).Drag = true;
 			//}
 			
 		});

@@ -115,6 +115,7 @@ public class Wave : Unit {
 		MiniAlertUI heal = UIManager.instance.MiniAlert(
 			UIManager.instance.WaveHealthText.transform.position, 
 			prefix + current_heal, 42, GameData.instance.BadColour, 1.7F,	-0.08F);
+		heal.transform.parent = UIManager.instance.WaveHealthText.transform;
 
 		while(heal.lifetime > 0.0F)
 		{

@@ -103,12 +103,14 @@ public class GameManager : MonoBehaviour {
 	}
 	public static bool TuteActive = false;
 
-	public WaveGroup StoryMode;
+	//public WaveGroup StoryMode;
+	public Zone StoryMode;
 	//public WaveGroup EndlessMode;
 
 	public Zone [] Zones;
 	
 	public WaveGroup DefaultWaves;
+	private float EnemyTurnTime = 0.0F;
 
 	void OnApplicationQuit()
 	{
@@ -184,6 +186,16 @@ public class GameManager : MonoBehaviour {
 				if(Mode == GameMode.Story) PlayStoryMode();
 				else if (Mode == GameMode.Endless) PlayEndlessMode();
 			}
+		}
+
+		if(EnemyTurn)
+		{
+			if(EnemyTurnTime > 50) 
+			{
+				EnemyTurnTime = 0.0F;
+				EnemyTurn = false;
+			}
+			else EnemyTurnTime += Time.deltaTime;
 		}
 
 		if(Input.GetKeyDown(KeyCode.Z)) 
@@ -369,16 +381,20 @@ public class GameManager : MonoBehaviour {
 		return null;
 	}
 
-	public void EnterZone(string name = null)
+	public void EnterZone(Zone z = null, string name = null)
 	{
 		if(CurrentZone != null) Destroy(CurrentZone.gameObject);
 		Zone target = null;
 
-		if(name == null) 
+		if(z != null)
 		{
-			target = Zones[Random.Range(0,Zones.Length)];
+			target = z;
 		}
-		else target = GetZone(name);
+		else if(name != null) 
+		{
+			target = GetZone(name);
+		}
+		else target = Zones[Random.Range(0,Zones.Length)];
 
 		if(target == null) return;
 		CurrentZone = (Zone) Instantiate(target);
@@ -393,10 +409,16 @@ public class GameManager : MonoBehaviour {
 
 	public void EscapeZone()
 	{
-		return;
+		print("esC");
+		StartCoroutine(_EscapeZone());
+		
+	}
+
+	IEnumerator _EscapeZone()
+	{
 		string oldname = CurrentZone.Name;
 		
-	 	StartCoroutine(UIManager.instance.Alert(1.2F, false, "Escaped " + oldname));
+	 	yield return StartCoroutine(UIManager.instance.Alert(1.2F, false, "Escaped " + oldname));
 	 	EnterZone();
 	}
 
@@ -404,12 +426,14 @@ public class GameManager : MonoBehaviour {
 	{
 		if(w == null)
 		{
-			if(Mode == GameMode.Story) w = StoryMode.GetWaveProgressive();
+			w = Zone.CheckZone();
+			/*
+			if(Mode == GameMode.Story) w = Zone.CheckZone();
 			else if(Mode == GameMode.Endless) 
 			{
 				if(Random.value > 0.5F) w = DefaultWaves.GetWaveRandom();
 				else w = CurrentZone.GetWaveRandom();
-			}
+			}*/
 		}
 
 		if(CurrentWave != null && CurrentWave != w) Destroy(CurrentWave.gameObject);
@@ -447,7 +471,7 @@ public class GameManager : MonoBehaviour {
 		RoundTokens = 0;
 		UIManager.instance.LoadScreen.SetSpin(false);
 		UIManager.instance.LoadScreen.SetActive(false);
-		EnterZone();
+		EnterZone(StoryMode);
 		GetWave();
 	}
 
@@ -534,6 +558,7 @@ public class GameManager : MonoBehaviour {
 		TileMaster.instance.ResetTiles(true);
 
 		yield return StartCoroutine(CurrentWave.AfterTurn());
+		
 		if(CurrentWave.Ended && !Player.Stats.isKilled)
 		{
 			GetWave();

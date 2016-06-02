@@ -109,8 +109,8 @@ public class GridInfo {
 		GameObject [] newcolumns = new GameObject[Column.Length + (int)_size.x];
 		GameObject [] newtilepoints = new GameObject[TilePoints.Length + (int)_size.x];
 
-		int final_x = Points.GetLength(0);
-		int final_y = Points.GetLength(1);
+		int curr_x = Points.GetLength(0);
+		int curr_y = Points.GetLength(1);
 
 		float bufferX = TileMaster.instance.tileBufferX;
 		float bufferY = TileMaster.instance.tileBufferY;
@@ -135,7 +135,7 @@ public class GridInfo {
 				if(Points.GetLength(0) <= x || Points.GetLength(1) <= y) continue;
 				newpoints[x,y] = Points[x,y];
 			}
-			for(int yy = final_y; yy < newpoints.GetLength(1); yy++)
+			for(int yy = curr_y; yy < newpoints.GetLength(1); yy++)
 			{
 				GameObject _point = new GameObject("Point " + x + ":" + yy);
 				_point.transform.position = new Vector3(x*(1+bufferX), yy*(1+bufferY), 0);
@@ -144,11 +144,11 @@ public class GridInfo {
 			}
 		}
 		
-		if(final_x > newpoints.GetLength(0) || final_y > newpoints.GetLength(1))
+		if(curr_x > newpoints.GetLength(0) || curr_y > newpoints.GetLength(1))
 		{
-			for(int xx = newpoints.GetLength(0); xx < final_x;xx++)
+			for(int xx = newpoints.GetLength(0); xx < curr_x;xx++)
 			{
-				for(int yy = 0; yy < final_y; yy++)
+				for(int yy = 0; yy < curr_y; yy++)
 				{
 					if(Points[xx,yy] != null) 
 					{
@@ -158,9 +158,9 @@ public class GridInfo {
 				
 			}
 
-			for(int yy = newpoints.GetLength(1); yy < final_y; yy++)
+			for(int yy = newpoints.GetLength(1); yy < curr_y; yy++)
 			{
-				for(int xx = 0; xx < final_x; xx++)
+				for(int xx = 0; xx < curr_x; xx++)
 				{
 					if(Points[xx,yy] != null) 
 					{
@@ -169,9 +169,9 @@ public class GridInfo {
 				}
 			}
 		}
-		else
-		{
-			for(int xx = final_x; xx < newpoints.GetLength(0);xx++)
+		//else
+		//{
+			for(int xx = curr_x; xx < newpoints.GetLength(0);xx++)
 			{
 				GameObject column = new GameObject("Column " + xx);
 				column.transform.position += new Vector3(xx * (1+bufferX), 0,0);
@@ -190,7 +190,7 @@ public class GridInfo {
 					newpoints[xx,yy] = new GridPoint(new int[] {xx,yy},_point.transform.position);
 				}
 			}
-		}
+		//}
 		
 		Points = newpoints;
 		Column = newcolumns;

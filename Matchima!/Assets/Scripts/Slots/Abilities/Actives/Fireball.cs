@@ -56,12 +56,12 @@ public class Fireball : Ability {
 
 		MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
 		mp.SetTarget(target.transform.position);
-		mp.SetPath(0.85F, 0.2F);
+		mp.SetPath(0.95F, 0.2F);
 		mp.SetMethod(() => 
 			{
-				StartCoroutine(Cast(target));
+				if(this != null) StartCoroutine(Cast(target));
 			});
-		yield return new WaitForSeconds(GameData.GameSpeed(0.4F));
+		yield return new WaitForSeconds(GameData.GameSpeed(0.6F));
 		//yield return StartCoroutine(CollectTiles(target));
 		//activated = false;
 	}

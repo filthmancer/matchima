@@ -4,8 +4,9 @@ using System.Collections;
 public class UIGear : UIObjTweener {
 	public bool isRotating;
 	public Vector3 rotationSpeed;
-
-	public bool isDragging;
+	public Transform gearTrans;
+	public bool Drag;
+	private bool isDragging;
 	private Vector3 dragAcc, dragAcc_avg;
 	private float dragSpeed = 2;
 	private float drag_timeout = 0.2F;
@@ -14,15 +15,15 @@ public class UIGear : UIObjTweener {
 	{
 		if(isRotating)
 		{
-			Img[0].transform.Rotate(rotationSpeed);
+			gearTrans.Rotate(rotationSpeed);
 		}
 		else
 		{
-			if(Input.GetMouseButton(0) && isDragging)
+			if(Input.GetMouseButton(0) && Drag)
 			{
 				drag_timeout_curr = 0.0F;
-				//print("TOUCH " + Input.GetAxis("Mouse X"));
-				dragAcc = new Vector3(-Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"), 0);
+				if(Input.GetMouseButtonDown(0)) dragAcc = Vector3.zero;
+				else dragAcc = new Vector3(-Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"), 0);
 				dragAcc_avg = Vector3.Lerp(dragAcc_avg, dragAcc, Time.deltaTime * 5);
 			}
 			else
@@ -37,7 +38,7 @@ public class UIGear : UIObjTweener {
 				dragAcc = Vector3.Lerp(dragAcc, Vector3.zero, Time.deltaTime * dragSpeed);
 			}
 			dragAcc.x = Mathf.Clamp(dragAcc.x, -8.5F, 8.5F);
-			transform.Rotate(new Vector3(0,0,dragAcc.x));
+			gearTrans.Rotate(new Vector3(0,0,dragAcc.x));
 		}
 		
 	}
