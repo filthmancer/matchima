@@ -145,8 +145,7 @@ public class GameManager : MonoBehaviour {
 
 	void Awake()
 	{
-		QualitySettings.vSyncCount = 0;
-		Application.targetFrameRate = 60;
+		
 		
 		  
 		if(instance == null)
@@ -162,6 +161,8 @@ public class GameManager : MonoBehaviour {
 	}
 	// Use this for initialization
 	void Start () {
+		QualitySettings.vSyncCount = 0;
+		Application.targetFrameRate = 60;
 		paused = false;
 		gameStart = false;
 		_Juice = GetComponent<Juice>();
