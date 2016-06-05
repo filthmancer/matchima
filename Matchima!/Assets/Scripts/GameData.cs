@@ -749,7 +749,7 @@ public class GameData : MonoBehaviour {
 		print("Loaded " + num + " classes");
 		List<Class> final = new List<Class>();
 		final.AddRange(Classes);
-		final.Sort((x,y) =>{return x.Unlocked ? 0:1;});
+		final = final.OrderBy(o=>!o.Unlocked).ToList();
 		Classes = final.ToArray();
 	}
 

@@ -8,7 +8,7 @@ public class Heal : Ability {
 	public int HealTotal
 	{
 		get{
-			return (int) ((float)HealInit * (StrengthFactor/2));
+			return (int) ((float)HealInit * (1 + (StrengthFactor/2)));
 		}
 	}
 

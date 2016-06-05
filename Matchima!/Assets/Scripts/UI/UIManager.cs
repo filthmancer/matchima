@@ -14,7 +14,7 @@ public class UIManager : MonoBehaviour {
 	public static int? LevelChoice = null;
 
 	public LoadScreen LoadScreen;
-	public Color BackingTint;
+	public Color BackingTint, WallTint;
 
 	public TextMeshProUGUI Health, Armour;
 	public TextMeshProUGUI WaveHealthText;
@@ -33,7 +33,7 @@ public class UIManager : MonoBehaviour {
 
 	public ClassSlotsUI _ClassButtons;
 	public static ClassSlotsUI ClassButtons{get{return UIManager.instance._ClassButtons;}}
-	public static UIObj [] WaveButtons{get{return Objects.WaveSlots;}}
+	public static UIObj [] WaveButtons{get{return Objects.TopGear[1][0].Child;}}
 	public ItemUI ItemUI;
 
 	[HideInInspector]
@@ -77,6 +77,31 @@ public class UIManager : MonoBehaviour {
 			ClassButtons[i]._Frame.sprite = TileMaster.Genus.Frame[i];
 			ClassButtons[i]._FrameMask.sprite = TileMaster.Genus.Frame[i];
 		}
+
+		Objects.MiddleGear[3][0].AddAction(UIAction.MouseUp, () =>
+		{
+			ShowOptions();
+		});
+		Objects.MiddleGear[3][2].AddAction(UIAction.MouseUp, ()=>
+		{
+			GameManager.instance.Retire();
+		});
+
+		Objects.MiddleGear[3][1].AddAction(UIAction.MouseUp, ()=>
+		{
+			GameManager.instance.SaveAndQuit();
+		});
+
+		Objects.TopLeftButton.AddAction(UIAction.MouseUp, () =>
+		{
+			ShowOptions();
+			
+		});
+		Objects.TopRightButton.AddAction(UIAction.MouseUp, () =>
+		{
+			ShowZoneMenu();
+			UIManager.Objects.MiddleGear[1].Txt[0].text = GameManager.Zone.Name;
+		});
 	}
 
 	void Update () {
@@ -88,11 +113,13 @@ public class UIManager : MonoBehaviour {
 			if(Input.touches.Length == 0) ShowTooltip(false);
 		}
 
+		Objects.TopRightButton.Txt[0].text = "" + GameManager.Floor;
+		Objects.TopRightButton.Txt[1].text = "" + GameManager.ZoneNum;
 		Health.text = Player.Stats.Health + "/" + Player.Stats.HealthMax;
 
 		for(int i = 0; i < PlayerHealth.Length; i++)
 		{
-			PlayerHealth[i].fillAmount = Mathf.Lerp(PlayerHealth[i].fillAmount, Player.Stats.GetHealthRatio(), Time.deltaTime * 15);
+			PlayerHealth[i].fillAmount = Mathf.Lerp(PlayerHealth[i].fillAmount, Player.Stats.GetHealthRatio()*0.88F, Time.deltaTime * 15);
 			PlayerHealth[i].color = Color.Lerp(GameData.instance.ShieldEmpty, GameData.instance.ShieldFull, Player.Stats.GetHealthRatio());
 		}
 		if(GameManager.Wave != null)
@@ -100,58 +127,63 @@ public class UIManager : MonoBehaviour {
 			WaveHealthText.text = ""+ GameManager.Wave.Current;
 			for(int i = 0; i < WaveHealth.Length; i++)
 			{
-				WaveHealth[i].fillAmount = Mathf.Lerp(WaveHealth[i].fillAmount, GameManager.Wave.GetRatio(), Time.deltaTime * 15);
+				WaveHealth[i].fillAmount = Mathf.Lerp(WaveHealth[i].fillAmount, GameManager.Wave.GetRatio()*0.88F, Time.deltaTime * 15);
 				WaveHealth[i].color = Color.Lerp(GameData.instance.ShieldEmpty, GameData.instance.ShieldFull, GameManager.Wave.GetRatio());
 			}
 		}
 		
-
 		Objects.BackingLight.Img[0].color = Color.Lerp(
 			Objects.BackingLight.Img[0].color, BackingTint, Time.deltaTime * 5);
+		Objects.Walls.Img[0].color = Color.Lerp(
+			Objects.Walls.Img[0].color, WallTint, Time.deltaTime * 5);
 
 		Objects.ArmourParent.Txt[0].text = Player.Stats.Armour;
 		Objects.ArmourParent.SetActive(Player.Stats._Armour > 0);
 
-		for(int i = 0; i < GameManager.Wave.Length; i++)
+		if(GameManager.Wave != null)
 		{
-			if(GameManager.Wave[i] != null && GameManager.Wave[i].Active && Objects.WaveSlots.Length > i)
-			{
-				UIObj w = Objects.WaveSlots[i];
-				w.SetActive(true);
-				w.Txt[0].text = "";	
-				w.Img[0].transform.gameObject.SetActive(true);
-				w.Img[0].enabled = true;	
-				w.Img[1].enabled = true;
-				w.Img[1].sprite = GameManager.Wave[i].Inner;
-				w.Img[1].color = Color.white;
-				w.Img[2].enabled = true;
-				w.Img[2].sprite = GameManager.Wave[i].Outer;
-				w.Img[2].color = Color.white;
+			for(int i = 0; i < GameManager.Wave.Length; i++)
+					{
+						if(GameManager.Wave[i] != null && GameManager.Wave[i].Active && Objects.TopGear[1].Length > i)
+						{
+							UIObj w = WaveButtons[i];
+							w.SetActive(true);
+							w.Txt[0].text = "";	
+							w.Img[1].transform.gameObject.SetActive(true);
+							w.Img[1].enabled = true;	
+							w.Img[0].enabled = true;
+							w.Img[0].sprite = GameManager.Wave[i].Inner;
+							w.Img[0].color = Color.white;
+							w.Img[2].enabled = true;
+							w.Img[2].sprite = GameManager.Wave[i].Outer;
+							w.Img[2].color = Color.white;
 
-				//if(GameManager.Wave[i].Current > -1)
-				//{
-				//	w.GetChild(0).SetActive(true);
-				//	w.GetChild(0).Txt[0].text = GameManager.Wave[i].Current+"";
-				//}
-				//else 
-				w.GetChild(0).SetActive(false);
-				
-			}
-			else 
-			{
-				Objects.WaveSlots[i].SetActive(false);
-				//Objects.WaveSlots[i].Img[0].transform.gameObject.SetActive(//false);
-				//for(int s = 1; s < Objects.WaveSlots[i].Img.Length; s++)
-				//{
-				//	Objects.WaveSlots[i].Img[s].enabled = false;
-				//}
-				//Objects.WaveSlots[i].Txt[0].text = "";
-				//if(GameManager.Wave[i] != null && GameManager.Wave[i].Timer > 0) 
-				//	WaveTimer.text = "" + GameManager.Wave[i].Timer;
-				//else WaveTimer.text = "";
-			}
+							//if(GameManager.Wave[i].Current > -1)
+							//{
+							//	w.GetChild(0).SetActive(true);
+							//	w.GetChild(0).Txt[0].text = GameManager.Wave[i].Current+"";
+							//}
+							//else 
+							//w.GetChild(0).SetActive(false);
+							
+						}
+						else 
+						{
+							WaveButtons[i].SetActive(false);
+							//WaveButtons[i].Img[0].transform.gameObject.SetActive(//false);
+							//for(int s = 1; s < WaveButtons[i].Img.Length; s++)
+							//{
+							//	WaveButtons[i].Img[s].enabled = false;
+							//}
+							//WaveButtons[i].Txt[0].text = "";
+							//if(GameManager.Wave[i] != null && GameManager.Wave[i].Timer > 0) 
+							//	WaveTimer.text = "" + GameManager.Wave[i].Timer;
+							//else WaveTimer.text = "";
+						}
+					}
+						
 		}
-					
+				
 		if(!ShowingHealth && Player.Stats.HealThisTurn > 0)
 		{
 			StartCoroutine(HealLoop());
@@ -433,6 +465,45 @@ public class UIManager : MonoBehaviour {
 		Objects.ShowObj(Objects.MainUI, !active);
 	}
 
+	public void ShowOptions()
+	{
+		if(!GameManager.instance.paused)
+		{
+			ScreenAlert.SetTween(0,true);
+			GameManager.instance.paused = true;
+			(UIManager.Objects.MiddleGear[3] as UIObjTweener).SetTween(0, true);
+		}
+		else
+		{
+			if((UIManager.Objects.MiddleGear[3] as UIObjTweener).Tweens[0].IsObjectOpened())
+			{
+				ScreenAlert.SetTween(0,false);
+				GameManager.instance.paused = false;
+				(UIManager.Objects.MiddleGear[3] as UIObjTweener).SetTween(0, false);
+			}
+			
+		}
+	}
+
+	public void ShowZoneMenu()
+	{
+		if(!GameManager.instance.paused)
+		{
+			ScreenAlert.SetTween(0,true);
+			GameManager.instance.paused = true;
+			(UIManager.Objects.MiddleGear[1] as UIObjTweener).SetTween(0, true);
+		}
+		else
+		{
+			if((UIManager.Objects.MiddleGear[1] as UIObjTweener).Tweens[0].IsObjectOpened())
+			{
+				ScreenAlert.SetTween(0,false);
+				GameManager.instance.paused = false;
+				(UIManager.Objects.MiddleGear[1] as UIObjTweener).SetTween(0, false);
+			}
+		}
+	}
+
 	public void ShowResourceUI()
 	{
 		InMenu = true;
@@ -517,7 +588,8 @@ public class UIManager : MonoBehaviour {
 		Menu.ClassMenu.SetActive(false);
 		Objects.ShowObj(Objects.Options, false);
 		Objects.ShowObj(Objects.MainUI, true);
-
+		(UIManager.Objects.TopLeftButton as UIObjTweener).SetTween(0, true);
+		(UIManager.Objects.TopRightButton as UIObjTweener).SetTween(0,true);
 		loaded  = true;
 		int i =0;
 
@@ -532,7 +604,7 @@ public class UIManager : MonoBehaviour {
 	}
 
 	public bool AlertShowing = false;
-	public IEnumerator Alert(float time, bool show_floor, string title = null, string desc = null)
+	public IEnumerator Alert(float time, bool show_floor, string title = null, string desc = null, string floor_override = null)
 	{
 		while(AlertShowing) yield return null;
 		AlertShowing = true;
@@ -546,6 +618,16 @@ public class UIManager : MonoBehaviour {
 			(ScreenAlert.Child[2] as UIObjTweener).Txt[1].text = "" + GameManager.Floor;
 			(ScreenAlert.Child[2] as UIObjTweener).SetTween(0, true);
 			yield return new WaitForSeconds(GameData.GameSpeed(0.35F));
+		}
+		else
+		{
+			if(floor_override != string.Empty)
+			{
+				ScreenAlert.Child[2].Txt[0].text = floor_override;
+				ScreenAlert.Child[2].Txt[1].text = "";
+				(ScreenAlert.Child[2] as UIObjTweener).SetTween(0, true);
+				yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+			}
 		}
 
 		if(title != null)
@@ -757,7 +839,7 @@ public class UIManager : MonoBehaviour {
 	public void ShowWaveInfo(bool active, int num)
 	{
 		if(GameManager.Wave == null) return;
-		ShowSimpleTooltip(active, Objects.WaveSlots[num].Img[1].transform, GameManager.Wave[num].Name, GameManager.Wave[num].Description);
+		ShowSimpleTooltip(active, Objects.TopGear[1][num].Img[1].transform, GameManager.Wave[num].Name, GameManager.Wave[num].Description);
 	}
 
 	public void AddClass(Class c, int slot)

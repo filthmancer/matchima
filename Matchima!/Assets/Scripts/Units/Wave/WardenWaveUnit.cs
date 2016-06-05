@@ -30,7 +30,7 @@ public class WardenWaveUnit : WaveUnit {
 			GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Force);
 			MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
 			mp.SetTarget(TileMaster.Tiles[randx,randy].transform.position);
-			mp.SetPath(1.2F, 0.2F);
+			mp.SetPath(0.35F, 0.2F);
 			//mp.Target_Tile = TileMaster.Tiles[randx,randy];
 			mp.SetTileMethod(TileMaster.Tiles[randx,randy], (Tile t) => 
 				{
@@ -136,7 +136,7 @@ public class WardenWaveUnit : WaveUnit {
 				if(child == null) continue;
 
 				Vector3 pos = child.transform.position + (GameData.RandomVector*1.4F);
-				MoveToPoint mini = TileMaster.instance.CreateMiniTile(pos,UIManager.Objects.WaveSlots[0].transform, child.Info.Outer);
+				MoveToPoint mini = TileMaster.instance.CreateMiniTile(pos,UIManager.Objects.TopGear[1][0].transform, child.Info.Outer);
 				mini.SetPath(0.3F, 0.5F, 0.0F, 0.08F);
 				mini.SetMethod(() =>{
 						Parent.AddPoints(-1);

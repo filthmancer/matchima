@@ -56,7 +56,7 @@ public class Fireball : Ability {
 
 		MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
 		mp.SetTarget(target.transform.position);
-		mp.SetPath(0.95F, 0.2F);
+		mp.SetPath(0.35F, 0.2F);
 		mp.SetMethod(() => 
 			{
 				if(this != null) StartCoroutine(Cast(target));

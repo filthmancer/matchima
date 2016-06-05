@@ -539,7 +539,7 @@ public class Player : MonoBehaviour {
 		Stats.MapSize.x = Mathf.Clamp(Stats.MapSize.x, 0, 4);
 		Stats.MapSize.y = Mathf.Clamp(Stats.MapSize.y, 0, 4);
 		
-		if(!Stats.isKilled)
+		if(!Stats.isKilled && TileMaster.GridSetup)
 		{
 			Vector2 finalMap = TileMaster.instance.MapSize_Default 
 										+ Stats.MapSize;

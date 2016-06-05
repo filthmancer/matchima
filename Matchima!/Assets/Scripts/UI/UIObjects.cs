@@ -11,10 +11,12 @@ public class UIObjects : MonoBehaviour {
 
 	public UIObj ClassUI, WaveUI;
 	public UIGear TopGear, BotGear, MiddleGear;
+	public UIObj TopLeftButton, TopRightButton;
 	public UIObj ClassQuote, WaveQuote;
 	public UIObj Alert_Button, Alert_ButtonParent;
 	public TextMeshProUGUI LevelInfo, Alert;
 	public UIObj BackingLight;
+	public UIObj Walls;
 
 	public UIObj ArmourParent;
 
@@ -22,7 +24,7 @@ public class UIObjects : MonoBehaviour {
 	public UIScoreWindowNew ScoreWindowB;
 	public MiniAlertUI MiniAlert;
 
-	public UIObj [] WaveSlots;
+	//public UIObj [] WaveSlots;
 
 	public UISlotButton SlotObj;
 

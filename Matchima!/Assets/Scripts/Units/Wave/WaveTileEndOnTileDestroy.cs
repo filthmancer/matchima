@@ -36,7 +36,7 @@ public class WaveTileEndOnTileDestroy : WaveTile {
 			GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Force);
 			MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
 			mp.SetTarget(TileMaster.Tiles[randx,randy].transform.position);
-			mp.SetPath(1.2F, 0.2F);
+			mp.SetPath(0.35F, 0.2F);
 			//mp.Target_Tile = TileMaster.Tiles[randx,randy];
 			mp.SetTileMethod(TileMaster.Tiles[randx,randy], (Tile t) => 
 				{
@@ -64,14 +64,14 @@ public class WaveTileEndOnTileDestroy : WaveTile {
 		bool end = true;
 		for(int i = 0; i < targets.Count; i++)
 		{
-			if(!targets[i].Destroyed && !targets[i].isMatching)
+			if(!targets[i].Destroyed)// && !targets[i].isMatching)
 			{
 				end = false;
 			}	
 		}
 		if(end) 
 		{
-			Parent.AddPoints(-1);
+			Parent.AddPoints(-1000);
 			OnEnd();
 		}
 		Complete();

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public enum DiffMode
 {
 	Easy,
-	Normal,
+	Okay,
 	Hard
 }
 
@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour {
 	public static int ComboSize;
 	public static Zone Zone	{get{return instance.CurrentZone;}}
 	public static int Floor	{get{return instance.CurrentFloor;}}
+	public static int ZoneNum {get{return instance._ZoneNum;}}
 	public static Wave Wave{get{return instance.CurrentWave;}}
 
 	public static float GlobalManaMult = 1.0F,
@@ -59,7 +60,7 @@ public class GameManager : MonoBehaviour {
 		get{
 			switch(DifficultyMode)
 			{
-				case DiffMode.Normal:
+				case DiffMode.Okay:
 				return Player.instance.Turns/20.0F * GrowthRate_Normal;
 				case DiffMode.Easy:
 				return Player.instance.Turns/20.0F * GrowthRate_Easy;
@@ -73,12 +74,13 @@ public class GameManager : MonoBehaviour {
 	private float Difficulty_init = 2.5F;
 	public static float Difficulty = 1;
 	public float _Difficulty = 0;
-	public DiffMode DifficultyMode = DiffMode.Normal;
+	public DiffMode DifficultyMode = DiffMode.Okay;
 	public GameMode Mode = GameMode.Story;
 
 	public int CurrentFloor = 0;
 	public Zone CurrentZone;
 	public Wave CurrentWave;
+	private int _ZoneNum = 0;
 
 	public bool gameStart = false;
 	public bool paused = false;
@@ -103,14 +105,16 @@ public class GameManager : MonoBehaviour {
 	}
 	public static bool TuteActive = false;
 
-	//public WaveGroup StoryMode;
 	public Zone StoryMode;
-	//public WaveGroup EndlessMode;
-
 	public Zone [] Zones;
 	
 	public WaveGroup DefaultWaves;
 	private float EnemyTurnTime = 0.0F;
+
+	[HideInInspector]
+	public Zone ResumeZone = null;
+	[HideInInspector]
+	public Wave ResumeWave = null;
 
 	void OnApplicationQuit()
 	{
@@ -163,9 +167,11 @@ public class GameManager : MonoBehaviour {
 		_Juice = GetComponent<Juice>();
 		PlayerLoader = GetComponent<_GameSaveLoad>();
 		GameData.instance.Load();
-
+		ResumeZone = null;
 		Difficulty = Difficulty_init;
+
 		CurrentFloor = 0;
+		_ZoneNum = 0;
 
 		inStartMenu = true;
 		TuteActive = false;	
@@ -174,17 +180,24 @@ public class GameManager : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		_Difficulty = Difficulty;
-		if(Player.loaded && UIManager.loaded && !gameStart && !Player.Stats.isKilled) 
+		if(Player.loaded && UIManager.loaded && !gameStart && !Player.Stats.isKilled)
 		{
 			if(!GameData.loading_assets) GameData.instance.LoadAssets();
 			if(Application.isMobilePlatform)
 			{
-				Player.Options.GameSpeed = 0.8F;
+				//Player.Options.GameSpeed = 0.8F;
 			}
 			if(GameData.loaded_assets)
 			{
-				if(Mode == GameMode.Story) PlayStoryMode();
-				else if (Mode == GameMode.Endless) PlayEndlessMode();
+				if(ResumeZone != null) 
+				{
+					ResumeGame();
+				}
+				else
+				{
+					if(Mode == GameMode.Story) PlayStoryMode();
+					else if (Mode == GameMode.Endless) PlayEndlessMode();
+				}
 			}
 		}
 
@@ -263,25 +276,36 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
+	public void Reset()
+	{
+		CurrentZone = null;
+		CurrentWave = null;
+		CurrentFloor = 0;
+	}
+
 	public void Retire()
 	{
-		UIManager.instance.ShowMenu(false);
+		UIManager.instance.ShowOptions();
 		Player.Stats.isKilled = true;
 		Player.instance.retired = true;
 		paused = true;
 		StartCoroutine(EndGame());
 	}
 
+	public void SaveAndQuit()
+	{
+		Player.instance.Reset();
+		GameManager.instance.gameStart = false;
+		GameData.instance.Save();
+		Application.LoadLevel(0);
+	}
+
 	IEnumerator EndGame()
 	{
 		yield return new WaitForSeconds(0.3F);
-		TileMaster.instance.ClearGrid(false);
+		TileMaster.instance.ClearGrid(true);
 
 		yield return new WaitForSeconds(0.3F);
-		long AllTokens = 0;//PlayerPrefs.GetInt("AllTokens");
-
-	//	RoundTokens = Tens + (Hunds * 50) + (Thous * 500);
-		PlayerPrefs.SetInt("AllTokens", (int)(AllTokens + RoundTokens));
 		UIManager.instance.ShowKillUI(0, 0,0,0);
 	}
 
@@ -297,19 +321,20 @@ public class GameManager : MonoBehaviour {
 			Player.Stats._Health = Player.Stats._HealthMax;
 			break;
 			case 2: //X
+			(UIManager.Objects.MiddleGear[3] as UIObjTweener).SetTween(0);
 			//GetWave(GameData.instance.GetRandomWave(), 2);
 			//CameraUtility.SetTurnOffset(camopen);
-			EscapeZone();
+			//EscapeZone();
 		//	TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["chest"], GENUS.ALL, 2, 1);
 			//UIManager.instance.ShowResourceUI();
 			break;
 			case 3: //c
-			TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["mimic"], GENUS.ALL,1, 1);
+			TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["lightning"], GENUS.DEX,1, 1);
 			break;
 			case 4: //V
 			//GetTurn();
 			int [] point = PlayerControl.instance.focusTile.Point.Base;
-			TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["chest"], GENUS.ALL,1, 50);
+			TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["lightning"], GENUS.STR,1, 50);
 			//(TileMaster.Tiles[point[0], point[1]] as Ward).Buff = "Frenzy";
 			//TileEffect effect = (TileEffect) Instantiate(GameData.instance.GetTileEffectByName("Fragile"));
 			//effect.GetArgs(-1);
@@ -397,33 +422,69 @@ public class GameManager : MonoBehaviour {
 		else target = Zones[Random.Range(0,Zones.Length)];
 
 		if(target == null) return;
+
+		_ZoneNum ++;
 		CurrentZone = (Zone) Instantiate(target);
 		CurrentZone.transform.parent = this.transform;
 		CurrentZone.Randomise();
 
 		UIManager.instance.BackingTint = CurrentZone.Tint;
+		UIManager.instance.WallTint = CurrentZone.WallTint;
 		TileMaster.instance.MapSize_Default = CurrentZone.GetMapSize();
 		Player.instance.ResetStats();
 		StartCoroutine(UIManager.instance.Alert(1.2F, false, CurrentZone.Name));
+		
+	}
+
+	IEnumerator _EnterZone(Zone z = null, string name = null, Wave w = null)
+	{
+		if(CurrentZone != null) Destroy(CurrentZone.gameObject);
+		Zone target = null;
+
+		if(z != null)
+		{
+			target = z;
+		}
+		else if(name != null) 
+		{
+			target = GetZone(name);
+		}
+		else target = Zones[Random.Range(0,Zones.Length)];
+
+		if(target == null) yield break;
+		_ZoneNum ++;
+		CurrentZone = (Zone) Instantiate(target);
+		CurrentZone.transform.parent = this.transform;
+		CurrentZone.Randomise();
+
+		UIManager.instance.BackingTint = CurrentZone.Tint;
+		UIManager.instance.WallTint = CurrentZone.WallTint;
+		TileMaster.instance.MapSize_Default = CurrentZone.GetMapSize();
+		Player.instance.ResetStats();
+		yield return StartCoroutine(UIManager.instance.Alert(1.2F, false, CurrentZone.Name, null, "Entered"));
+		yield return StartCoroutine(_GetWave(w));
 	}
 
 	public void EscapeZone()
 	{
-		print("esC");
 		StartCoroutine(_EscapeZone());
-		
 	}
 
 	IEnumerator _EscapeZone()
 	{
 		string oldname = CurrentZone.Name;
 		
-	 	yield return StartCoroutine(UIManager.instance.Alert(1.2F, false, "Escaped " + oldname));
-	 	EnterZone();
+		UIManager.instance.ShowZoneMenu();
+		UIManager.Objects.MiddleGear[1].Txt[0].text = "Escaped " + CurrentZone.Name;
+
+		yield return null;
+	 	//yield return StartCoroutine(UIManager.instance.Alert(1.2F, false, "Escaped " + oldname));
+	 	//yield return StartCoroutine(_EnterZone());
 	}
 
 	public void GetWave(Wave w = null)
 	{
+		CurrentFloor ++;
 		if(w == null)
 		{
 			w = Zone.CheckZone();
@@ -442,11 +503,36 @@ public class GameManager : MonoBehaviour {
 		StartCoroutine(CurrentWave.Setup());
 
 		Difficulty += Mathf.Exp(Difficulty_Growth);
-		CurrentFloor += 1;
+	
+	}
+
+	IEnumerator _GetWave(Wave w = null)
+	{
+		CurrentFloor ++;
+		if(w == null)
+		{
+			w = Zone.CheckZone();
+			/*
+			if(Mode == GameMode.Story) w = Zone.CheckZone();
+			else if(Mode == GameMode.Endless) 
+			{
+				if(Random.value > 0.5F) w = DefaultWaves.GetWaveRandom();
+				else w = CurrentZone.GetWaveRandom();
+			}*/
+		}
+
+		if(CurrentWave != null && CurrentWave != w) Destroy(CurrentWave.gameObject);
+		CurrentWave = Instantiate(w);
+		CurrentWave.transform.parent = this.transform;
+		yield return StartCoroutine(CurrentWave.Setup());
+
+		Difficulty += Mathf.Exp(Difficulty_Growth);
+		
 	}
 
 	public void LoadGame(bool resume)
 	{
+
 		Class [] c = null;
 		if(resume)
 		{
@@ -454,44 +540,68 @@ public class GameManager : MonoBehaviour {
 			if(c == null) return;
 		}
 
-		UIManager.instance.LoadScreen.SetActive(true);
-		UIManager.instance.LoadScreen.SetSpin(true);
+		(UIManager.Objects.TopGear as UIObjTweener).SetTween(1,true);
+		(UIManager.Objects.BotGear as UIObjTweener).SetTween(1,true);
+
+		(UIManager.Objects.TopGear as UIGear).SetRotate(true, new Vector3(0,0,1));
+		(UIManager.Objects.BotGear as UIGear).SetRotate(true, new Vector3(0,0,-1));
 
 		TileMaster.instance.MapSize = new Vector2(1,1);
+
 		Player.instance.Load(c);
 		StartCoroutine(UIManager.instance.LoadUI());
 	}
 
 	public void PlayStoryMode()
 	{
-		//UIManager.instance.WaveAlert.SetTween(0,false);
 		inStartMenu = false;
 		gameStart = true;
 		StartCoroutine(Player.instance.BeginTurn());
 		RoundTokens = 0;
-		UIManager.instance.LoadScreen.SetSpin(false);
-		UIManager.instance.LoadScreen.SetActive(false);
-		EnterZone(StoryMode);
-		GetWave();
+
+		ClearUI();
+		StartCoroutine(_EnterZone(StoryMode));
+		//GetWave();
 	}
 
 	public void PlayEndlessMode()
 	{
-		//UIManager.instance.WaveAlert.SetTween(0,false);
 		inStartMenu = false;
 		gameStart = true;
 		StartCoroutine(Player.instance.BeginTurn());
 		RoundTokens = 0;
-		UIManager.instance.LoadScreen.SetSpin(false);
-		UIManager.instance.LoadScreen.SetActive(false);
-		EnterZone();
-		GetWave();
+
+		ClearUI();
+		UIManager.Objects.TopGear.Txt[0].text = "";
+		StartCoroutine(_EnterZone());
+	}
+
+	public void ResumeGame()
+	{
+		inStartMenu = false;
+		gameStart = true;
+		StartCoroutine(Player.instance.BeginTurn());
+		RoundTokens = 0;
+
+		ClearUI();
+		StartCoroutine(_EnterZone(ResumeZone, null, ResumeWave));
 	}
 
 	public void LoadClass(ClassContainer targetClass)
 	{
 		UIManager.instance.LoadScreen.SetActive(true);
 		StartCoroutine(UIManager.instance.LoadUI());
+	}
+
+	void ClearUI()
+	{
+		(UIManager.Objects.TopGear as UIObjTweener).SetTween(1,false);
+		(UIManager.Objects.BotGear as UIObjTweener).SetTween(1,false);
+		(UIManager.Objects.TopGear as UIGear).SetRotate(false);
+		(UIManager.Objects.BotGear as UIGear).SetRotate(false);
+		UIManager.Objects.BotGear[0].SetActive(true);
+		//UIManager.Objects.TopGear[2].SetActive(true);
+		UIManager.Objects.TopGear.Txt[0].text = "";
 	}
 
 
@@ -616,7 +726,7 @@ public class GameManager : MonoBehaviour {
 
 				Vector3 pos = child.transform.position + (GameData.RandomVector*1.4F);
 				MoveToPoint mini = TileMaster.instance.CreateMiniTile(pos,UIManager.instance.Health.transform, child.Info.Outer);
-				mini.SetPath(0.84F, 0.3F, 0.0F, 0.15F);
+				mini.SetPath(0.3F, 0.25F, 0.0F, 0.1F);
 				mini.SetMethod(() =>{
 						Player.instance.OnHit(child);
 						AudioManager.instance.PlayClipOn(Player.instance.transform, "Player", "Hit");
@@ -1011,8 +1121,8 @@ public class GameManager : MonoBehaviour {
 
 	public void ToggleEasyGENUSe()
 	{
-		if(DifficultyMode == DiffMode.Normal) DifficultyMode = DiffMode.Easy;
-		else DifficultyMode = DiffMode.Normal;
+		if(DifficultyMode == DiffMode.Okay) DifficultyMode = DiffMode.Easy;
+		else DifficultyMode = DiffMode.Okay;
 	}
 }
 

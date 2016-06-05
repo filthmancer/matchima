@@ -280,11 +280,39 @@ public class Wave : Unit {
 
 	protected virtual IEnumerator WaveActivateRoutine()
 	{
+		UIManager.Objects.TopGear[2].SetActive(false);
 		UIManager.Objects.BotGear.SetTween(0, false);
 		UIManager.Objects.TopGear.SetTween(0, true);
-		//CameraUtility.SetTurnOffset(true);
+		UIManager.Objects.TopGear.FreeWheelDrag = true;
+
+		GameManager.instance.paused = true;
+		UIManager.instance.ScreenAlert.SetTween(0,true);
+
+		for(int i = 1; i < UIManager.Objects.TopGear[1].Length; i++)
+		{
+			int genus = Random.Range(0,4);
+			int num = TileMaster.Types.Length;
+			SPECIES t = TileMaster.Types[Random.Range(0,num)];
+			if(t.GetSprites(genus) == null || t.GetSprites(genus).Length == 0) continue;
+			UIManager.Objects.TopGear[1][i][0].Img[0].sprite = t.GetSprites(genus)[0];
+			UIManager.Objects.TopGear[1][i][0].Img[2].sprite = TileMaster.Genus.Frame[genus];
+			UIManager.Objects.TopGear[1][i][0].SetActive(true);
+		}
+
+		float spintime = Random.Range(0.4F, 0.7F);
+		while((spintime-=Time.deltaTime) > 0.0F)
+		{
+			UIManager.Objects.TopGear.AddSpin(spintime*2);
+			yield return null;
+		}
+		yield return new WaitForSeconds(GameData.GameSpeed(0.6F));
+		UIManager.Objects.TopGear.FreeWheelDrag = false;
+		UIManager.Objects.TopGear.MoveToDivision(0);
+		yield return new WaitForSeconds(GameData.GameSpeed(0.5F));
 
 		yield return StartCoroutine(UIManager.instance.Alert(1.25F, true, Name));
+
+		UIManager.Objects.TopGear[2].SetActive(true);
 		for(int i = 0; i < AllSlots.Length; i++)
 		{
 			if(AllSlots[i] == null) continue;
@@ -293,6 +321,14 @@ public class Wave : Unit {
 				 yield return StartCoroutine(AllSlots[i].OnStart());
 			}
 		}
+
+		for(int i = 1; i < UIManager.Objects.TopGear[1].Length; i++)
+		{
+			UIManager.Objects.TopGear[1][i][0].SetActive(false);
+		}
+
+		GameManager.instance.paused = false;
+		UIManager.instance.ScreenAlert.SetTween(0,false);
 	}
 
 	protected virtual IEnumerator WaveEndRoutine()

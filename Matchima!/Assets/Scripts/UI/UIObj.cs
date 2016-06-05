@@ -1,20 +1,20 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using System.Collections;
 using TMPro;
 using System;
 using System.Collections.Generic;
 
-public class UIObj : MonoBehaviour {
+public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IPointerUpHandler{
 	public string Name;
-	//[HideInInspector]
+	[HideInInspector]
 	public int Index = 100;
-
+	[HideInInspector]
+	public UIObj ParentObj;
 	public Image [] Img;
 	public TextMeshProUGUI [] Txt;
 	public UIObj [] Child;
-	//[HideInInspector]
-	public UIObj ParentObj;
 
 	public TextMeshProUGUI _Text
 	{get{
@@ -31,7 +31,7 @@ public class UIObj : MonoBehaviour {
 	{
 		if(Name == string.Empty) Name = gameObject.name;
 		else gameObject.name = Name;
-
+		
 		if(Img.Length == 0 && GetComponent<Image>()) Img = new Image[]{GetComponent<Image>()};
 		if(Txt.Length == 0 && GetComponent<TextMeshProUGUI>()) Txt = new TextMeshProUGUI[]{GetComponent<TextMeshProUGUI>()};
 		for(int i = 0; i < Child.Length; i++)
@@ -39,6 +39,8 @@ public class UIObj : MonoBehaviour {
 			Child[i].Index = i;
 			Child[i].ParentObj = this;
 		}
+
+		if(Img.Length > 0) init = Img[0].color;
 	}
 
 
@@ -124,11 +126,70 @@ public class UIObj : MonoBehaviour {
 
 	}
 
+	void _GenerateEvents()
+	{
+		//EventTrigger e = this.GetComponent<EventTrigger>();
+		//if(!e)	e = this.AddComponent<EventTrigger>();
+		//
+		//EventTrigger.Entry entry = new EventTrigger.Entry();
+		//entry.eventID = EvenTriggerType.PointerClick;
+		//entry.callback.AddListener(() => {_MouseClick();});
+		//e.triggers.Add(entry);
+		//entry = new EventTrigger.Entry();
+		//entry.eventID = EvenTriggerType.PointerEnter;
+		//entry.callback.AddListener(() => {_MouseOver();});
+		//e.triggers.Add(entry);
+		//entry = new EventTrigger.Entry();
+		//entry.eventID = EvenTriggerType.PointerExit;
+		//entry.callback.AddListener(() => {_MouseOut();});
+		//e.triggers.Add(entry);
+		//entry = new EventTrigger.Entry();
+		//entry.eventID = EvenTriggerType.PointerDown;
+		//entry.callback.AddListener(() => {_MouseDown();});
+		//e.triggers.Add(entry);
+		//entry = new EventTrigger.Entry();
+		//entry.eventID = EvenTriggerType.PointerUp;
+		//entry.callback.AddListener(() => {_MouseUp();});
+		//e.triggers.Add(entry);
+	}
 
+	public void OnPointerClick(PointerEventData eventData)
+	{
+
+	}
+
+	public void OnPointerDown(PointerEventData eventData)
+	{
+
+		//if(Application.isMobilePlatform) return;
+		foreach(Action child in Actions_MouseDown)
+		{
+			child();
+		}
+		isPressed = true;
+		time_over += Time.deltaTime;
+		init = Img[0].color;
+		Img[0].color = Color.Lerp(init, Color.black, 0.2F);
+	}
+
+	public void OnPointerUp(PointerEventData eventData)
+	{
+		Img[0].color = init;
+		//if(Application.isMobilePlatform) return;
+		foreach(Action child in Actions_MouseUp)
+		{
+			child();
+		}
+		
+		isPressed = false;
+		time_over = 0.0F;
+		init = Img[0].color;
+	}
 	List<Action>	Actions_MouseOut = new List<Action>(), 
 					Actions_MouseOver = new List<Action>(),
 					Actions_MouseUp = new List<Action>(),
-					Actions_MouseDown = new List<Action>();
+					Actions_MouseDown = new List<Action>(),
+					Actions_MouseClick = new List<Action>();
 
 
 	protected Color init;
@@ -162,6 +223,7 @@ public class UIObj : MonoBehaviour {
 
 	public void _MouseUp()
 	{
+		Img[0].color = init;
 		//if(Application.isMobilePlatform) return;
 		foreach(Action child in Actions_MouseUp)
 		{
@@ -170,7 +232,7 @@ public class UIObj : MonoBehaviour {
 		
 		isPressed = false;
 		time_over = 0.0F;
-		Img[0].color = init;
+		init = Img[0].color;
 	}
 
 	public void _MouseDown()
@@ -184,6 +246,11 @@ public class UIObj : MonoBehaviour {
 		time_over += Time.deltaTime;
 		init = Img[0].color;
 		Img[0].color = Color.Lerp(init, Color.black, 0.2F);
+	}
+
+	public void _MouseClick()
+	{
+
 	}
 
 	public void AddAction(UIAction a, Action func)
@@ -228,6 +295,9 @@ public class UIObj : MonoBehaviour {
 			case UIAction.MouseDown:
 			Actions_MouseDown.Clear();
 			break;
+			case UIAction.MouseClick:
+			Actions_MouseClick.Clear();
+			break;
 		}
 	}
 }
@@ -238,5 +308,6 @@ public enum UIAction
 	MouseOver,
 	MouseUp,
 	MouseDown,
+	MouseClick,
 	None
 }

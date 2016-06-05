@@ -36,7 +36,7 @@ public class UIClassSelect : UIObj {
 		}
 		else
 		{
-			Img[0].color = Color.Lerp(GameData.Colour(_class.Genus), Color.black, 0.4F);
+			Img[0].color = Color.Lerp(GameData.Colour(_class.Genus), Color.black, 0.6F);
 			Txt[0].text = "???";
 		}
 		

@@ -70,6 +70,11 @@ private int _currentmanapower = 100;
 		lightning.Chance = 0.1F;
 		InitStats.TileChances.Add(lightning);
 
+		TileChance vanilla = new TileChance();
+		vanilla.Genus = string.Empty;
+		vanilla.Type = "lightning";
+		vanilla.Chance = 0.1F;
+		InitStats.TileChances.Add(vanilla);
 		base.StartClass();	
 	}
 

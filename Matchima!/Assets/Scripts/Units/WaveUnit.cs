@@ -109,7 +109,7 @@ public class WaveUnit : Unit {
 		string prefix = current_heal < 0 ? "  +" : "  -";
 		Vector3 tpos = Vector3.right * 0.4F;
 		MiniAlertUI heal = UIManager.instance.MiniAlert(
-			UIManager.Objects.WaveSlots[Index].Txt[0].transform.position + tpos, 
+			UIManager.Objects.TopGear[1][Index].Txt[0].transform.position + tpos, 
 			prefix + current_heal, 42, GameData.instance.BadColour, 1.7F,	0.01F);
 
 		while(heal.lifetime > 0.0F)

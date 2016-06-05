@@ -2,6 +2,7 @@
 using System.Collections;
 
 public class GridInfo {
+	public bool setup = false;
 	public GameObject [] Column;
 	public GameObject [] TilePoints;
 	public GridPoint [,] Points;
@@ -56,11 +57,13 @@ public class GridInfo {
 	{
 		GameObject.Destroy(pointParent);
 		GameObject.Destroy(tileParent);
+		setup = false;
 		//Destroy(this.gameObject);
 	}
 
 	public void SetUp(Vector2 _size)
 	{
+		setup = true;
 		if(pointParent != null)
 		{
 			GameObject.Destroy(pointParent);

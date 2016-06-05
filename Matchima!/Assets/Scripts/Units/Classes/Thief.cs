@@ -74,7 +74,7 @@ public class Thief : Class {
 		switch(lvl)
 		{
 			case 1:
-				manapower = AddMod("Slash", "1", "X");
+				manapower = AddMod("Swap", "sword", "");
 				
 			break;
 			case 2:
@@ -82,7 +82,7 @@ public class Thief : Class {
 			//	manapower[1] = AddMod("Slash", "1", "X");
 			break;
 			case 3:
-			//	manapower[2] = AddMod("Shield", "0.2");
+				manapower = AddMod("Slash", "1", "X");
 			break;
 		}
 	}

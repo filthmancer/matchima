@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using TMPro;
 
-public class UIKillScreen : MonoBehaviour {
+public class UIKillScreen : UIObj {
 
 	public GameObject KillBox;
 	public TextMeshProUGUI Turns;
@@ -26,6 +26,12 @@ public class UIKillScreen : MonoBehaviour {
 
 	public void Activate(long alltokens, int tens, int hunds, int thous)
 	{
+		Child[0].ClearActions();
+		Child[0].AddAction(UIAction.MouseUp, () => {
+			UIManager.instance.Reset();
+			GameManager.instance.Reset();
+			TileMaster.instance.Reset();
+		});
 		StartCoroutine(CheckPoints(alltokens));
 		
 	}

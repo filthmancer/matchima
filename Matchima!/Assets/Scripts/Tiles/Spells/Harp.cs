@@ -81,9 +81,9 @@ public class Harp : Tile {
 	}
 
 
-	public override void DestroyThyself(bool collapse = false)
-	{
-		if(!collapse) Match(1);
-		else base.DestroyThyself(collapse);
-	}
+	//public override void DestroyThyself(bool collapse = false)
+	//{
+	//	if(!collapse) Match(1);
+	//	else base.DestroyThyself(collapse);
+	//}
 }

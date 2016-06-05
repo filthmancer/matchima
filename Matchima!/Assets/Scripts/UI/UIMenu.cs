@@ -56,23 +56,29 @@ public class UIMenu : UIObj {
 	private float time_to_tile = 0.6F;
 	private float time = 0.0F;
 
-
-
 	public MenuState State = MenuState.StartScreen;
-
+	private int top_division_last = 0;
 	void Start () {
 		UIManager.ShowClassButtons(false);
 		UIManager.ShowWaveButtons(false);
-		UIManager.Objects.MiddleGear.SetActive(false);
 		(UIManager.Objects.TopGear as UIObjTweener).SetTween(1,true);
 		(UIManager.Objects.BotGear as UIObjTweener).SetTween(1,true);
-		UIManager.Objects.BotGear.Child[0].SetActive(false);
-		UIManager.Objects.TopGear.Child[2].SetActive(false);
-		UIManager.Objects.TopGear.SetRotate(true, Vector3.forward * Time.deltaTime * 4);
-		UIManager.Objects.BotGear.SetRotate(true, Vector3.back * Time.deltaTime * 4);
+		UIManager.Objects.BotGear[0].SetActive(false);
+		UIManager.Objects.TopGear[2].SetActive(false);
+
+		UIManager.Objects.MiddleGear.Img[0].enabled = false;
+
+		UIManager.Objects.BotGear[1].AddAction(UIAction.MouseDown,()=>
+		{
+			UIManager.Menu.HeroMenu(0);
+		});
+
+		UIManager.Objects.TopGear.Txt[0].text = "";
+		UIManager.Objects.MiddleGear.Txt[0].text = "MATCHIMA!";
+		UIManager.Objects.BotGear.Txt[0].text = "TOUCH TO START";	
+
 		UIManager.ShowWaveButtons(false);
 
-		
 		int wedge_num = 8;
 		for(int i = 0; i < wedge_num; i++)
 		{
@@ -80,22 +86,33 @@ public class UIMenu : UIObj {
 			UIClassSelect obj = (UIClassSelect) Instantiate(ClassPrefab);
 			UIManager.Objects.BotGear[3].GetChild(0).AddChild(obj);
 			obj.transform.SetParent(UIManager.Objects.BotGear[3].GetChild(0).transform);
-			
-			
 			obj.Setup(child);
-			obj.transform.rotation = Quaternion.Euler(0,0,360/wedge_num * i);
-
+			obj.transform.rotation = Quaternion.Euler(0,0,360 - (360/wedge_num * i));
 		}
+		UIManager.Objects.BotGear[3].GetChild(1).transform.SetAsLastSibling();
+		UIManager.Objects.BotGear[3].GetChild(0).AddAction(UIAction.MouseDown,
+			() => {(UIManager.Objects.BotGear[3][0] as UIGear).Drag = true;});
+		UIManager.Objects.BotGear[3].GetChild(0).AddAction(UIAction.MouseUp,
+			() => {(UIManager.Objects.BotGear[3][0] as UIGear).Drag = false;});
 		UIManager.Objects.BotGear[3].GetChild(0).SetActive(false);
+
+		UIManager.Objects.BotGear[3].GetChild(2).transform.SetAsLastSibling();
+		UIManager.Objects.BotGear[3].GetChild(2).AddAction(UIAction.MouseUp,
+			() => {MainMenu(false);});
+
+		(UIManager.Objects.TopLeftButton as UIObjTweener).SetTween(0, false);
+		(UIManager.Objects.TopRightButton as UIObjTweener).SetTween(0,false);
 	}
 	
+	float TooltipTime = 0.4F;
 	// Update is called once per frame
 	void Update () {
 		if(State == MenuState.StartScreen)
 		{
+			UIManager.Objects.BotGear[1].Img[0].enabled = false;
 			if(Input.GetMouseButtonDown(0))
 			{
-				MainMenu();
+				MainMenu(true);
 			}
 		}
 		
@@ -109,61 +126,103 @@ public class UIMenu : UIObj {
 			UIManager.ClassButtons[i].TweenClass(false);
 		}
 		
+		UIManager.Objects.MiddleGear.Img[0].enabled = true;
+
+		UIManager.Objects.TopGear.Txt[0].text = "";
+		UIManager.Objects.MiddleGear.Txt[0].text = "";
+		UIManager.Objects.BotGear.Txt[0].text = "";	
 		(UIManager.Objects.BotGear as UIObjTweener).SetTween(2, false);
-		UIManager.Objects.BotGear[3][0].SetActive(false);
+		UIManager.Objects.BotGear[3][0].SetActive(true);
 		UIManager.Objects.MiddleGear.SetActive(true);
+
+		(UIManager.Objects.TopGear as UIObjTweener).SetTween(1,false);
+		(UIManager.Objects.BotGear as UIObjTweener).SetTween(1,false);
+		(UIManager.Objects.TopGear as UIGear).SetRotate(false);
+		(UIManager.Objects.BotGear as UIGear).SetRotate(false);
+		UIManager.Objects.BotGear[0].SetActive(true);
+		//UIManager.Objects.TopGear[2].SetActive(true);
+		UIManager.Objects.TopGear.Txt[0].text = "";
 	}
 	
-	public void MainMenu()
+	public void MainMenu(bool resume)
 	{
 		State = MenuState.MainMenu;
-
 		Reset();
-		UIManager.Objects.TopGear.SetRotate(true, Vector3.forward * Time.deltaTime * 2);
-		UIManager.Objects.BotGear.SetRotate(true, Vector3.forward * Time.deltaTime * 2);
-	
+		
+		UIManager.Objects.TopGear.AddAction(UIAction.MouseDown,
+			() => {(UIManager.Objects.TopGear as UIGear).Drag = true;});
+		UIManager.Objects.TopGear.AddAction(UIAction.MouseUp,
+			() => {(UIManager.Objects.TopGear as UIGear).Drag = false;});
 		(UIManager.Objects.TopGear as UIObjTweener).SetTween(1, false);
 		(UIManager.Objects.BotGear as UIObjTweener).SetTween(1, false);
 		UIManager.ShowClassButtons(true);
-		UIManager.WaveButtons[0].SetActive(true);
-		UIManager.WaveButtons[0].Txt[0].text = "New";
-		UIManager.WaveButtons[0].Img[1].color = GameData.Colour(GENUS.STR);
+
+		UIManager.Objects.MiddleGear.SetActive(true);
+		(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, true);
+		(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, true);
+
+		UIManager.Objects.BotGear[1].Img[0].enabled = true;
+
+		UIManager.Objects.TopGear[1][0].Txt[0].text = "STORY";
+		UIManager.Objects.TopGear[1][1].Txt[0].text = "ENDLESS";
+		UIManager.Objects.TopGear[1][2].Txt[0].text = "";
+		UIManager.Objects.TopGear[1][3].Txt[0].text = "OPTIONS";
+
+		UIManager.Objects.TopGear.DivisionActions.Add((int i) =>
+		{
+			GetMiddleGearInfo(i);
+		});
+
+		
 		if(PlayerPrefs.GetInt("Resume") == 1) 
 		{
-			UIManager.WaveButtons[1].SetActive(true);
-			UIManager.WaveButtons[1].Txt[0].text = "Resume";
-			UIManager.WaveButtons[1].Img[1].color = GameData.Colour(GENUS.DEX);
-			//ResumeGameInfo.text = PlayerPrefs.GetString("Name") + "\nTurn: " + PlayerPrefs.GetInt("Turns");
+			if(resume)
+			{
+				UIManager.Objects.TopGear.MoveToDivision(1);
+				GetMiddleGearInfo(1);
+			}
+			else
+			{
+				UIManager.Objects.TopGear.MoveToDivision(top_division_last);
+				GetMiddleGearInfo(top_division_last);
+			}
+			
+			//UIManager.Objects.TopGear[4][0].SetActive(true);
+			UIManager.Objects.TopGear[1][2].Txt[0].text = "RESUME";
+			//UIManager.Objects.TopGear[4][0].Img[1].color = GameData.Colour(GENUS.DEX);
+			
 		}
-		else UIManager.WaveButtons[1].SetActive(false);
-		
+		UIManager.Objects.BotGear[3][0].SetActive(true);
+		UIManager.Objects.TopGear.Img[2].enabled = false;
 		UIManager.Objects.TopGear.Txt[0].text = "";
-		UIManager.Objects.BotGear.Txt[0].text = "";
-		UIManager.Objects.MiddleGear[0].GetChild(0).ClearActions(UIAction.MouseUp);
-		UIManager.Objects.MiddleGear[0].GetChild(0).AddAction(UIAction.MouseUp,
-		() => {StartGame();});
-		UIManager.Objects.MiddleGear[0].GetChild(1).AddAction(UIAction.MouseUp,
-		() => {ChangeMode();});
-		UIManager.Objects.MiddleGear[0].GetChild(2).AddAction(UIAction.MouseUp,
-		() => {ChangeDifficulty();});
+		UIManager.Objects.BotGear.Txt[0].text = "";	
+
+		UIManager.Objects.TopGear.FlashArrows();
+		UIManager.Objects.BotGear.FlashArrows();
 	}
+
+	
 
 	public void HeroMenu(int x)
 	{
+		top_division_last = UIManager.Objects.TopGear.LastDivision;
 		if(State != MenuState.Character)
 		{
 			State = MenuState.Character;
+			UIManager.Objects.MiddleGear.SetActive(false);
 			(UIManager.Objects.BotGear as UIObjTweener).SetTween(2, true);
 			UIManager.Objects.BotGear[3][0].SetActive(true);
-			UIManager.Objects.TopGear[1][0].SetActive(true);
-			UIManager.Objects.TopGear[1][0].Txt[0].text = "Exit";
-			UIManager.Objects.TopGear[1][0].ClearActions();
-			UIManager.Objects.TopGear[1][0].AddAction(UIAction.MouseUp,
-			() =>{
-				MainMenu();
-				});
-			UIManager.Objects.TopGear[1][1].SetActive(false);
-			UIManager.Objects.TopGear[1][2].SetActive(false);
+			UIManager.Objects.BotGear.isFlashing = false;
+
+			UIManager.Objects.TopGear[1][0].Txt[0].text = "CUSTOM";
+			UIManager.Objects.TopGear[1][1].Txt[0].text = "SAVED";
+			UIManager.Objects.TopGear[1][2].Txt[0].text = "CHALLENGE";
+			UIManager.Objects.TopGear[1][3].Txt[0].text = "TEAM OF THE WEEK";
+			UIManager.Objects.TopGear.MoveToDivision(0);
+			(UIManager.Objects.BotGear[3][0] as UIGear).FlashArrows();	
+
+			UIManager.Objects.BotGear[1].Img[0].enabled = false;
+			
 			
 			int wedge_num = 8;
 			for(int i = 0; i < UIManager.Objects.BotGear[3][0].Length; i++)
@@ -172,11 +231,6 @@ public class UIMenu : UIObj {
 				(UIManager.Objects.BotGear[3][0].GetChild(i) as UIClassSelect).ClearActions();
 				(UIManager.Objects.BotGear[3][0].GetChild(i) as UIClassSelect).Setup(child); 
 			}
-			UIManager.Objects.BotGear[3][1].transform.SetAsLastSibling();
-			UIManager.Objects.BotGear[3][1].AddAction(UIAction.MouseDown,
-				() => {(UIManager.Objects.BotGear[3][0] as UIGear).Drag = true;});
-			UIManager.Objects.BotGear[3][1].AddAction(UIAction.MouseUp,
-				() => {(UIManager.Objects.BotGear[3][0] as UIGear).Drag = false;});
 		}
 		else
 		{
@@ -186,8 +240,9 @@ public class UIMenu : UIObj {
 	}
 
 
-	public void StartGame()
+	public void StartGame(GameMode g)
 	{
+		GameManager.instance.Mode = g;
 		switch(GameManager.instance.Mode)
 		{
 			case GameMode.Endless:
@@ -199,19 +254,81 @@ public class UIMenu : UIObj {
 					return;
 				}
 			}
+			UIManager.Objects.TopGear.Txt[0].text = "LOADING\nENDLESS";
 			break;
 			case GameMode.Story:
 			Player.instance._Classes[0] = GameData.instance.GetClass("Barbarian");
 			Player.instance._Classes[1] = GameData.instance.GetClass("Rogue");
 			Player.instance._Classes[2] = GameData.instance.GetClass("Wizard");
 			Player.instance._Classes[3] = GameData.instance.GetClass("Bard");
+			UIManager.Objects.TopGear.Txt[0].text = "LOADING\nSTORY";
 			break;
 		}
+
 
 		NewGameActivate();
 	}
 
+	public void GetMiddleGearInfo(int i)
+	{
+		if(i == 4) i = 0;
+		UIManager.Objects.MiddleGear.AddSpin(6);
+		//top_division_last = UIManager.Objects.TopGear.LastDivision;
+		switch(i)
+		{
+			case 0:
+			UIManager.Objects.MiddleGear[0].Txt[0].text = 
+			"FOUR ADVENTURERS BREAK INTO\nTHE FORBIDDEN UNDERCITY\nTO EXPLORE AND GATHER THE\nPRECIOUS 'MANA' THE SEEPS FROM BELOW";
+			(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, true);
+			(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, true);
 
+			UIManager.Objects.MiddleGear[0].GetChild(1).ClearActions();
+			UIManager.Objects.MiddleGear[0].GetChild(1).AddAction(UIAction.MouseUp,
+			() => {ChangeDifficulty();});
+
+			UIManager.Objects.MiddleGear[0].GetChild(0).ClearActions(UIAction.MouseUp);
+			UIManager.Objects.MiddleGear[0].GetChild(0).AddAction(UIAction.MouseUp,
+			() => {
+				StartGame(GameMode.Story);
+				});
+			break;
+			case 1:
+			UIManager.Objects.MiddleGear[0].Txt[0].text = 
+			"RESUME GAME\n" + 
+			"Turn: " + PlayerPrefs.GetInt("Turns");
+			(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, true);
+			(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, false);
+			UIManager.Objects.MiddleGear[0].GetChild(1).ClearActions();
+
+			UIManager.Objects.MiddleGear[0].GetChild(0).ClearActions(UIAction.MouseUp);
+			UIManager.Objects.MiddleGear[0].GetChild(0).AddAction(UIAction.MouseUp,
+			() => {
+				ResumeGameActivate();
+				});
+			break;
+			case 2:
+			UIManager.Objects.MiddleGear[0].Txt[0].text = "";
+			(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, false);
+			(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, false);
+			break;
+			case 3:
+			
+			UIManager.Objects.MiddleGear[0].Txt[0].text = 
+			"ENDLESSLY EXPLORE THE\nUNDERCITY, DELVING EVER DEEPER";
+			(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, true);
+			(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, true);
+			UIManager.Objects.MiddleGear[0].GetChild(1).ClearActions();
+			UIManager.Objects.MiddleGear[0].GetChild(1).AddAction(UIAction.MouseUp,
+			() => {ChangeDifficulty();});
+
+			UIManager.Objects.MiddleGear[0].GetChild(0).ClearActions(UIAction.MouseUp);
+			UIManager.Objects.MiddleGear[0].GetChild(0).AddAction(UIAction.MouseUp,
+			() => {
+				StartGame(GameMode.Endless);
+				});
+			break;
+		}
+	}
 
 	public void SetTargetSlot(int i)
 	{
@@ -261,7 +378,20 @@ public class UIMenu : UIObj {
 	{
 		GameManager.instance.DifficultyMode = GameManager.instance.DifficultyMode + 1;
 		if(GameManager.instance.DifficultyMode > (DiffMode)2) GameManager.instance.DifficultyMode = 0;
-		UIManager.Objects.MiddleGear[0].GetChild(2).Txt[0].text = "" + GameManager.instance.DifficultyMode;
+		UIManager.Objects.MiddleGear[0].GetChild(1).Txt[0].text = "" + GameManager.instance.DifficultyMode;
+		switch(GameManager.instance.DifficultyMode)
+		{
+			case DiffMode.Easy:
+				UIManager.Objects.MiddleGear[0].GetChild(1).Img[0].color = GameData.Colour(GENUS.WIS);
+			break;
+			case DiffMode.Okay:
+				UIManager.Objects.MiddleGear[0].GetChild(1).Img[0].color = GameData.Colour(GENUS.CHA);
+			break;
+			case DiffMode.Hard:
+				UIManager.Objects.MiddleGear[0].GetChild(1).Img[0].color = GameData.Colour(GENUS.STR);
+			break;
+		}
+		
 	}
 
 	public void ChangeMode(GameMode m = GameMode.None)
@@ -290,11 +420,18 @@ public class UIMenu : UIObj {
 
 	public void NewGameActivate()
 	{
-		UIManager.Objects.TopGear.SetRotate(false);
-		UIManager.Objects.BotGear.SetRotate(false);
-		UIManager.Objects.MiddleGear.SetActive(false);
-		UIManager.Objects.BotGear.Child[0].SetActive(true);
-		UIManager.Objects.TopGear.Child[2].SetActive(true);
+		UIManager.Objects.MiddleGear[0].SetActive(false);
+		UIManager.Objects.MiddleGear.Img[0].enabled = false;
+		UIManager.Objects.TopGear[2].SetActive(false);
+		
+		UIManager.Objects.TopGear[1][0].Txt[0].enabled = false;
+		UIManager.Objects.TopGear[1][1].Txt[0].enabled = false;
+		UIManager.Objects.TopGear[1][2].Txt[0].enabled = false;
+		UIManager.Objects.TopGear[1][3].Txt[0].enabled = false;
+		UIManager.Objects.BotGear[3].SetActive(false);
+		UIManager.Objects.TopGear.isFlashing = false;
+		UIManager.Objects.BotGear.isFlashing = false;
+		(UIManager.Objects.BotGear[3][0] as UIGear).isFlashing = false;	
 		bool alert = false;
 		for(int i = 0; i < Player.instance._Classes.Length; i++)
 		{
@@ -321,12 +458,22 @@ public class UIMenu : UIObj {
 		DefaultMenu.SetActive(false);
 	}
 
-
-
 	public void ResumeGameActivate()
 	{
 		DefaultMenu.SetActive(false);
 		GameManager.instance.LoadGame(true);
+		UIManager.Objects.MiddleGear[0].SetActive(false);
+		UIManager.Objects.MiddleGear.Img[0].enabled = false;
+		UIManager.Objects.TopGear[2].SetActive(false);
+		
+		UIManager.Objects.TopGear[1][0].Txt[0].enabled = false;
+		UIManager.Objects.TopGear[1][1].Txt[0].enabled = false;
+		UIManager.Objects.TopGear[1][2].Txt[0].enabled = false;
+		UIManager.Objects.TopGear[1][3].Txt[0].enabled = false;
+		UIManager.Objects.BotGear[3].SetActive(false);
+		UIManager.Objects.TopGear.isFlashing = false;
+		UIManager.Objects.BotGear.isFlashing = false;
+		(UIManager.Objects.BotGear[3][0] as UIGear).isFlashing = false;	
 	}
 
 	public void OptionsActivate()

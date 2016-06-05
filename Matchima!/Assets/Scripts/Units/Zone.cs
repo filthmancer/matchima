@@ -27,7 +27,7 @@ public class Zone : MonoBehaviour {
 	public bool Repeat;
 	public int StartAt = 0;
 
-	public Color Tint;
+	public Color Tint, WallTint;
 	[SerializeField]
 	public IntVector MapSize;
 	[SerializeField]

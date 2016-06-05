@@ -9,6 +9,12 @@ public class TileMaster : MonoBehaviour {
 	[SerializeField] private GenusTypes _GenusTypes;
 
 	public static GridInfo Grid;
+	public static bool GridSetup
+	{
+		get{if(Grid==null) return false;
+			else return Grid.setup;
+		}
+	}
 	public static Tile[,] Tiles
 	{
 		get{return TileMaster.Grid.Tiles;}
@@ -165,6 +171,11 @@ public class TileMaster : MonoBehaviour {
 		//Spawner2.GetSpawnables(Types);
 		//AllChanceCurrent = Spawner2.AllChanceFactors;
 		//ChanceRatio = AllChanceCurrent / AllChanceInit;
+	}
+
+	public void Reset()
+	{
+		ResetChances();
 	}
 
 	public void ResetChances()
@@ -522,7 +533,7 @@ public class TileMaster : MonoBehaviour {
 			{
 				if(Tiles.GetLength(0) > x && Tiles.GetLength(1) > y && Tiles[x,y] != null)
 				{
-					Tiles[x,y].DestroyThyself();//true);
+					Tiles[x,y].DestroyThyself(destroy);
 					Grid[x,y]._Tile = null;
 				}
 			}
@@ -530,6 +541,8 @@ public class TileMaster : MonoBehaviour {
 
 		if(!destroy) return;
 		if(Grid != null) Grid.DestroyThyself();
+
+		print(TileMaster.Grid);
 	}
 
 	public void NewGrid(SPECIES sp = null, GENUS g = GENUS.NONE, bool no_enemies = false)
@@ -791,7 +804,7 @@ public class TileMaster : MonoBehaviour {
 		List<MoveToPoint> restiles = new List<MoveToPoint>();
 		MoveToPoint mini;
 
-		float movespeed = 0.75F;
+		float movespeed = 0.3F;
 		if(t.Type.isResource)
 		{
 			for(int rect = 0; rect < res.Length; rect++)
@@ -800,7 +813,7 @@ public class TileMaster : MonoBehaviour {
 				int val_per_tile = t.Stats.GetValues()[0]/val;
 				for(int i = 0; i < val; i++)
 				{
-					Vector3 pos = t.transform.position + (i > 0 ? GameData.RandomVector*1.4F : Vector3.zero);
+					Vector3 pos = t.transform.position + (i > 0 ? GameData.RandomVector*0.9F : Vector3.zero);
 					mini = CreateMiniTile(pos, res[rect] as Transform,
 														t.Params._border.sprite);
 					mini.Target = rect < c.Length ? c[rect] : null;
@@ -818,7 +831,7 @@ public class TileMaster : MonoBehaviour {
 		{
 			for(int rect = 0; rect < res.Length; rect++)
 			{
-				Vector3 pos = t.transform.position + (rect > 0 ? GameData.RandomVector*1.4F : Vector3.zero);
+				Vector3 pos = t.transform.position + (rect > 0 ? GameData.RandomVector*0.9F : Vector3.zero);
 				mini = CreateMiniTile(pos, UIManager.instance.Health.transform,
 													t.Params._border.sprite);
 				mini.SetPath(movespeed, 0.0F, 0.0F, 0.08F);
@@ -833,7 +846,7 @@ public class TileMaster : MonoBehaviour {
 		{
 			for(int rect = 0; rect < res.Length; rect++)
 			{
-				Vector3 pos = t.transform.position + (rect > 0 ? GameData.RandomVector*1.4F : Vector3.zero);
+				Vector3 pos = t.transform.position + (rect > 0 ? GameData.RandomVector*0.9F : Vector3.zero);
 				mini = CreateMiniTile(pos, UIManager.instance.Health.transform,
 													t.Params._border.sprite);
 				mini.SetPath(movespeed, 0.0F, 0.0F, 0.08F);
@@ -849,28 +862,15 @@ public class TileMaster : MonoBehaviour {
 		{
 			if(GameManager.Wave != null)
 			{
-				Vector3 pos = t.transform.position + (GameData.RandomVector*1.4F);
+				Vector3 pos = t.transform.position + (GameData.RandomVector*0.9F);
 				Wave w = GameManager.Wave;
-				mini = CreateMiniTile( pos, UIManager.Objects.WaveSlots[0].transform, 
-													t.Params._border.sprite);
-				mini.SetPath(movespeed, 0.5F, 0.0F, 0.08F);
+				mini = CreateMiniTile(pos, UIManager.Objects.TopGear[1][0].transform, t.Params._border.sprite);
+				mini.SetPath(movespeed*3F, 0.5F, 0.0F, 0.08F);
 				mini.SetMethod(() =>{
 							if(w != null) w.EnemyKilled(t as Enemy);
 						}
 					);
-				restiles.Add(mini);
-
-				for(int i = 1; i < w.Length; i++)
-				{
-					if(w[i] == null) continue;
-					if((w[i]).PointsPerEnemy <= 0) continue;
-					pos = t.transform.position + (GameData.RandomVector*1.4F);
-					mini = CreateMiniTile( pos, UIManager.Objects.WaveSlots[i].transform, 
-														t.Params._border.sprite);
-					mini.SetPath(movespeed, 0.5F, 0.0F, 0.08F);
-					restiles.Add(mini);
-				}
-					
+				restiles.Add(mini);					
 			}
 
 			
@@ -880,7 +880,7 @@ public class TileMaster : MonoBehaviour {
 				int val_per_tile = t.Stats.GetValues()[0]/val;
 				for(int i = 0; i < val; i++)
 				{
-					Vector3 pos = t.transform.position + (i > 0 ? GameData.RandomVector*1.4F : Vector3.zero);
+					Vector3 pos = t.transform.position + (i > 0 ? GameData.RandomVector*0.9F : Vector3.zero);
 					mini = CreateMiniTile(pos, res[rect] as Transform, t.Params._border.sprite);
 					mini.Target = rect < c.Length ? c[rect] : null;
 					mini.SetPath(movespeed, 0.5F, 0.0F, 0.08F);
@@ -1574,54 +1574,27 @@ public static class Spawner2
 		TilesNoEnemies = new List<TileInfo>();
 		NoEnemiesChanceFactors = 0.0F;
 
-		//if(w != null) w.IncreaseChances();
 
 		for(int g = 0; g < t.Species.Count; g++)
 		{
 			SPECIES s = t.Species[g];
 			if(s.Chance > 0.0F) 
 			{
-			//Check if this is to spawn a specific colour
-				bool colour_chance = false;
 				for(int i = 0; i < s.AllGenus.Length; i++)
 				{
+					//Skip if genus tile chance is 0
+					if(s.AllGenus[i].Chance == 0.0F) continue;
 					TileInfo Info = new TileInfo(s, (GENUS)i);
-					if(s.AllGenus[i].Chance > 0.0F)
-					{
-						//Info = new TileInfo(s, (GENUS)i);
-					}
-					else if(i < 4)
-					{
-						//Info = new TileInfo(s, (GENUS)i);
-						
-						//MAKE SURE it's just the ADDED chance. If you add the default it spawns way too often.
-						Info.FinalChance = s.ChanceAdded;
-						
-					}
+
 					Tiles.Add(Info);
 					AllChanceFactors += Info.FinalChance;
+
 					if(!s.isEnemy)
 					{
 						NoEnemiesChanceFactors += Info.FinalChance;
 						TilesNoEnemies.Add(Info);
 					}
 				}
-			/*
-			//IF not to spawn a colour, make it spawn a random colour
-				if(!colour_chance && s.ChanceAdded > 0.0F)
-				{
-					TileInfo Info = new TileInfo(s, GENUS.RAND);
-			
-			//MAKE SURE it's just the ADDED chance. If you add the default it spawns way too often.
-					Info.FinalChance = s.ChanceAdded;
-					Tiles.Add(Info);
-					AllChanceFactors += Info.FinalChance;
-					if(!s.isEnemy)
-					{
-						NoEnemiesChanceFactors += Info.FinalChance;
-						TilesNoEnemies.Add(Info);
-					}
-				}*/
 			}
 		}
 	}

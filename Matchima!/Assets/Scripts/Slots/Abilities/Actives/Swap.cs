@@ -55,6 +55,47 @@ public class Swap : Ability {
 		Description_Basic = "Changes " + StartType + " tiles to " + EndType + " tiles";
 	}
 
+	public override IEnumerator BeforeTurn()
+	{
+		GENUS g = TileMaster.Genus[EndGenus];
+		int xx = Random.Range(0, TileMaster.Grid.Size[0]);
+		int yy = Random.Range(0, TileMaster.Grid.Size[1]);
+		Tile target = TileMaster.Tiles[xx,yy];
+
+		while(target.IsGenus(GENUS.OMG))
+		{
+			xx = Random.Range(0, TileMaster.Grid.Size[0]);
+			yy = Random.Range(0, TileMaster.Grid.Size[1]);
+			target = TileMaster.Tiles[xx,yy];
+		}
+
+		if(g == GENUS.NONE)  g = target.Genus;
+
+		UIManager.ClassButtons[Parent.Index].ShowClass(true);
+
+		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons[Parent.Index].transform.position + Vector3.up, 
+			"SPELLSWORD", 55, GameData.Colour(Parent.Genus), 1.2F, 0.25F);
+		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[(int)Parent.Genus].transform, Effect.Force);
+		MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
+		mp.SetTarget(target.transform.position);
+		mp.SetPath(0.35F, 0.2F);
+		mp.SetMethod(() => 
+			{
+				if(this != null)
+				{
+					TileMaster.instance.ReplaceTile(target, TileMaster.Types[EndSpecies], g);
+				}
+			});
+		yield return new WaitForSeconds(GameData.GameSpeed(0.6F));
+	}
+
+
+	public override void SetArgs(params string [] args)
+	{
+		EndSpecies = args[0];
+		EndGenus = args[1];
+	}
+
 	public override void Activate()
 	{
 		if(cooldown_time > 0) return;

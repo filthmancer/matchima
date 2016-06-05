@@ -124,7 +124,7 @@ public class _GameSaveLoad: MonoBehaviour {
 		myData._iUser.BestCombo = Player.instance.BestCombo;
 		myData._iUser.Health = Player.Stats._Health;
 
-
+    myData._iUser.Zone = GameManager.Zone._Name;
 		myData._iUser.ClassData = new ClassData[4];
 		for(int i = 0; i < 4; i++)
 		{
@@ -339,16 +339,16 @@ public class _GameSaveLoad: MonoBehaviour {
       TileMaster.instance.LevelToLoad(level);
       if(myData._iUser.Wave.HasWave)
       {
-        Zone g = GameManager.Zone;
+        Zone g = GameManager.instance.GetZone(myData._iUser.Zone);
+        GameManager.instance.ResumeZone = g;
+        GameManager.instance.ResumeWave = g[myData._iUser.Wave.Index];
         
-			   GameManager.instance.CurrentWave = Instantiate(g[myData._iUser.Wave.Index]);
-			   GameManager.Wave.transform.parent = GameManager.instance.transform;
-         for(int i = 0; i < GameManager.Wave.Length; i++)
+        /* for(int i = 0; i < GameManager.Wave.Length; i++)
          {
           if(!myData._iUser.Wave.Slot[i]) continue;
           GameManager.Wave[i].Current = myData._iUser.Wave.Current[i];
           GameManager.Wave[i].Timer = myData._iUser.Wave.Timer[i];
-         }
+         }*/
       }
 
       Spawner2.GetSpawnables(TileMaster.Types, GameManager.Wave);
@@ -504,6 +504,7 @@ public class UserData
 		public ClassData [] ClassData;
 		
 		public RowData [] Rows;
+    public string Zone;
 		public WaveData Wave;
   } 
 }
