@@ -99,8 +99,9 @@ public class UIManager : MonoBehaviour {
 		});
 		Objects.TopRightButton.AddAction(UIAction.MouseUp, () =>
 		{
-			ShowZoneMenu();
-			UIManager.Objects.MiddleGear[1].Txt[0].text = GameManager.Zone.Name;
+			Canvas.gameObject.SetActive(false);
+			//ShowZoneMenu();
+			//UIManager.Objects.MiddleGear[1].Txt[0].text = GameManager.Zone.Name;
 		});
 	}
 

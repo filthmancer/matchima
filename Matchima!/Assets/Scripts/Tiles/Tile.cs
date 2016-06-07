@@ -464,7 +464,7 @@ public class Tile : MonoBehaviour {
 			return;
 		}
 
-		Ray velRay = new Ray(transform.position, velocity);
+		/*Ray velRay = new Ray(transform.position, velocity);
 		RaycastHit hit;
 
 		if(Physics.Raycast(transform.position, -velocity, out hit, (speed + collide_radius) * Time.deltaTime * 80))
@@ -500,10 +500,10 @@ public class Tile : MonoBehaviour {
 			}
 		}
 		else
-		{
+		{*/
 			float finalspeed = speed - gravity;
 			speed = Mathf.Clamp(finalspeed, speed_max_falling, speed_max_rising);
-		}
+		//}
 		if(!GameManager.inStartMenu && TileMaster.Grid != null)
 		{
 			if(Stats.Shift == ShiftType.Down && transform.position.y <= Point.targetPos.y - (speed*Time.deltaTime)) 

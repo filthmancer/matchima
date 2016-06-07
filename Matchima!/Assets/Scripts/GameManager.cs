@@ -186,7 +186,7 @@ public class GameManager : MonoBehaviour {
 			if(!GameData.loading_assets) GameData.instance.LoadAssets();
 			if(Application.isMobilePlatform)
 			{
-				//Player.Options.GameSpeed = 0.8F;
+				Player.Options.GameSpeed = 0.7F;
 			}
 			if(GameData.loaded_assets)
 			{
@@ -1061,7 +1061,7 @@ public class GameManager : MonoBehaviour {
 					//AddTokens(armour[r]);
 				}
 
-				StartCoroutine(UIManager.Objects.GetScoreWindow().AddScore(matchGENUS, Player.Classes[r], resource[r], health[r], armour[r], bonuses.ToArray()));
+				//StartCoroutine(UIManager.Objects.GetScoreWindow().AddScore(matchGENUS, Player.Classes[r], resource[r], health[r], armour[r], bonuses.ToArray()));
 
 			}
 		}
