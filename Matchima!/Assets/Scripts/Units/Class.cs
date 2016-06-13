@@ -324,9 +324,9 @@ public class Class : Unit {
 		MeterDecay = (int)MeterDecay_soft;
 		if(Meter < MeterDecay) Meter = 0;
 		else AddToMeterDirect(-MeterDecay);
-			
-		
 		yield return StartCoroutine(CheckManaPower());
+		
+		
 		Reset();
 		yield return null;
 	}
@@ -343,6 +343,7 @@ public class Class : Unit {
 			if(child == null) continue;
 			yield return StartCoroutine(child.AfterTurn());
 		}
+
 		Reset();
 		yield return null;
 	}

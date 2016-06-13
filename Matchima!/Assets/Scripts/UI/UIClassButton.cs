@@ -35,6 +35,8 @@ public class UIClassButton : UIObj {
 		if(!class_set && _class != null) 
 		{
 			AddListener(_class);
+			AddAction(UIAction.MouseOver, () => {HoverOver();});
+			AddAction(UIAction.MouseDown, () => {PartialOpen.OpenCloseObjectAnimation();});
 			if(ClassInit.IsObjectOpened()) ClassInit.OpenCloseObjectAnimation();
 		}
 		else if(_class == null && ClassInit.IsObjectOpened()) ClassInit.OpenCloseObjectAnimation();
@@ -127,6 +129,8 @@ public class UIClassButton : UIObj {
 			}
 			
 		}
+
+		
 	}
 
 	public void Remove()
@@ -189,20 +193,16 @@ public class UIClassButton : UIObj {
 		}
 	}
 
-	public void MouseOver()
+	public void HoverOver()
 	{
 		over = true;
 		if(PlayerControl.HoldingSlot)
 		{
-			if(UIManager.ItemUI_active) 
+			UIManager.instance.ShowClassAbilities(_class);
+			if(!PartialOpen.IsObjectOpened())
 			{
-				UIManager.instance.ShowClassAbilities(_class);
-				if(!PartialOpen.IsObjectOpened())
-				{
-				 PartialOpen.OpenCloseObjectAnimation();
-				}
+			 	PartialOpen.OpenCloseObjectAnimation();
 			}
-			else if(UIManager.BoonUI_active && UIManager.instance.current_class == _class) UIManager.instance.ShowClassAbilities(_class, true);
 		}
 	}
 

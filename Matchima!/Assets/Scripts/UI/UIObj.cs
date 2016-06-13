@@ -6,7 +6,7 @@ using TMPro;
 using System;
 using System.Collections.Generic;
 
-public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IPointerUpHandler{
+public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IPointerUpHandler,IPointerEnterHandler, IPointerExitHandler{
 	public string Name;
 	[HideInInspector]
 	public int Index = 100;
@@ -158,6 +158,26 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 
 	}
 
+	public void OnPointerEnter(PointerEventData eventData)
+	{
+		foreach(Action child in Actions_MouseOver)
+		{
+			child();
+		}
+		if(Img.Length > 0) init = Img[0].color;
+	}
+
+	public void OnPointerExit(PointerEventData eventData)
+	{
+		foreach(Action child in Actions_MouseOut)
+		{
+			child();
+		}
+		isPressed = false;
+		time_over = 0.0F;
+		if(Img.Length > 0) Img[0].color = init;
+	}
+
 	public void OnPointerDown(PointerEventData eventData)
 	{
 
@@ -168,8 +188,11 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 		}
 		isPressed = true;
 		time_over += Time.deltaTime;
-		init = Img[0].color;
-		Img[0].color = Color.Lerp(init, Color.black, 0.2F);
+		if(Img.Length > 0) 
+		{
+			init = Img[0].color;
+			Img[0].color = Color.Lerp(init, Color.black, 0.2F);
+		}
 	}
 
 	public void OnPointerUp(PointerEventData eventData)
@@ -183,7 +206,7 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 		
 		isPressed = false;
 		time_over = 0.0F;
-		init = Img[0].color;
+		if(Img.Length > 0) Img[0].color = init;
 	}
 	List<Action>	Actions_MouseOut = new List<Action>(), 
 					Actions_MouseOver = new List<Action>(),

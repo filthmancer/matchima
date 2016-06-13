@@ -274,18 +274,20 @@ public class UIManager : MonoBehaviour {
 			{
 				//StartCoroutine(
 					a.Parent.GetSlot(slotb, a.Index);
+					ClassButtons[a.Parent.Index].TweenClass(false);
 			}
 			if(b.Parent != null) 
 			{
 				//StartCoroutine(
 
 					b.Parent.GetSlot(slota, b.Index);
+					ClassButtons[b.Parent.Index].TweenClass(false);
 			}
 			
 			b.Setup(slota);
 			a.Setup(slotb);
 			b.Drag = DragType.None;
-			a.Drag = DragType.Hold;
+			a.Drag = DragType.None;
 
 			_class.Setup(c);
 		}
@@ -296,13 +298,11 @@ public class UIManager : MonoBehaviour {
 	}
 
 
-	/*public void ShowTooltip(bool Active, UIButton ab = null)
+	public void ShowTooltip(bool Active, UIButton ab = null)
 	{
-		//if(!Active) uitarget = null;
 		Tooltip.SetTooltip(Active, ab);
-		(Objects.TopGear as UIGear).MoveToDivision(Active ? 3 : TopGear_lastdivision);
-		Objects.TopGear[1][1][3].SetActive(Active);
-		//AdvTooltip.SetTooltip(false, ab, input, output);
+		//(Objects.TopGear as UIGear).MoveToDivision(Active ? 3 : TopGear_lastdivision);
+		//Objects.TopGear[1][1][3].SetActive(Active);
 	}
 
 	/*public void ShowAdvTooltip(bool Active, UIButton ab = null)
@@ -354,6 +354,7 @@ public class UIManager : MonoBehaviour {
 		(Objects.TopGear as UIGear).DoDivisionLerpActions = true;
 		(Objects.TopGear as UIGear).MoveToDivision(TopGear_lastdivision);
 	}
+
 	Tile uitarget = null;
 	public void ShowGearTooltip(bool active, Tile t = null)
 	{
@@ -632,7 +633,8 @@ public class UIManager : MonoBehaviour {
 
 	public void ShowOptions()
 	{
-		if(!GameManager.instance.paused)
+		bool open = (UIManager.Objects.MiddleGear[3] as UIObjTweener).Tween.IsObjectOpened();
+		if(!open && !GameManager.instance.paused)
 		{
 			ScreenAlert.SetTween(0,true);
 			GameManager.instance.paused = true;
@@ -640,19 +642,16 @@ public class UIManager : MonoBehaviour {
 		}
 		else
 		{
-			if((UIManager.Objects.MiddleGear[3] as UIObjTweener).Tweens[0].IsObjectOpened())
-			{
 				ScreenAlert.SetTween(0,false);
 				GameManager.instance.paused = false;
-				(UIManager.Objects.MiddleGear[3] as UIObjTweener).SetTween(0, false);
-			}
-			
+				(UIManager.Objects.MiddleGear[3] as UIObjTweener).SetTween(0, false);			
 		}
 	}
 
 	public void ShowZoneMenu()
 	{
-		if(!GameManager.instance.paused)
+		bool open = (UIManager.Objects.MiddleGear[1] as UIObjTweener).Tween.IsObjectOpened();
+		if(!open && !GameManager.instance.paused)
 		{
 			ScreenAlert.SetTween(0,true);
 			GameManager.instance.paused = true;
@@ -1062,7 +1061,9 @@ public class UIManager : MonoBehaviour {
 	public void ShowZoneUI(bool ended)
 	{
 		(Objects.MiddleGear[1] as UIObjTweener).SetTween(0);
-		GameManager.instance.paused = !GameManager.instance.paused;
+		bool open = (Objects.MiddleGear[1] as UIObjTweener).Tween.IsObjectOpened();
+		GameManager.instance.paused = open;
+		if(!open) UIManager.instance.SetClassButtons(false);
 		if(ended)
 		{
 			Objects.MiddleGear[1].Txt[0].text = "Escaped " + GameManager.Zone.Name;
@@ -1090,17 +1091,28 @@ public class UIManager : MonoBehaviour {
 		(Objects.MiddleGear[2] as UIObjTweener).SetTween(0);
 		for(int i = 0; i < Objects.MiddleGear[2][1].Length; i++)
 		{
-			Objects.MiddleGear[2][1][i].SetActive(false);
+			Destroy(Objects.MiddleGear[2][1][i].gameObject);
 		}
+		List<UIObj> newitems = new List<UIObj>();
 		for(int i = 0; i < Player.StashItems.Count; i++)
 		{
 			Item item = Player.StashItems[i];
 			item.Seen = true;
-			Objects.MiddleGear[2][1][i].SetActive(true);
+
+			UISlotButton newslot = (UISlotButton) Instantiate(Objects.SlotObj);
+			Transform ns = newslot.transform;
+			ns.SetParent(Objects.MiddleGear[2][1].transform);
+			ns.localScale = Vector3.one;
+			newslot.Setup(item);
+			newslot.Drag = DragType.Hold;
+			newitems.Add(newslot);
+			/*Objects.MiddleGear[2][1][i].SetActive(true);
 			Objects.MiddleGear[2][1][i].Img[1].sprite = item.Icon;
-			Objects.MiddleGear[2][1][i].Img[0].color = item.Colour;
+			Objects.MiddleGear[2][1][i].Img[0].color = item.Colour;*/
 		}
+		Objects.MiddleGear[2][1].Child = newitems.ToArray();
 	}
+
 
 
 	public void Reset()

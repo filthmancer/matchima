@@ -65,7 +65,9 @@ public class UISlotButton : UIButton {
 			this.GetComponent<Button>().enabled = true;
 			Img[2].fillAmount = 0.0F;
 
-			Drag = slot.Drag;
+			Drag = DragType.Hold;
+			AddAction(UIAction.MouseDown, () => {MouseOver();});
+			AddAction(UIAction.MouseUp, () => {LetGo();});
 		}
 		init_pos = transform.position;
 	}
@@ -87,22 +89,15 @@ public class UISlotButton : UIButton {
 
 	public void Activate()
 	{
-		activated = true;
-		//if(slot == null || UIManager.InMenu) return;
-		//slot.Activate();		
+		activated = true;	
 	}
 
-	public void ButtonHit()
-	{
-		if(UIManager.InMenu)
-		{
-			
-		}
-	}
 
-	public override void MouseUp()
+
+	public void LetGo()
 	{
 		dragging = false;
+		UIManager.instance.ShowTooltip(false);
 		if(PlayerControl.HeldButton != null)
 		{
 			if(PlayerControl.HeldButton != this)
@@ -115,6 +110,7 @@ public class UISlotButton : UIButton {
 			else if(PlayerControl.HeldButton == this && Drag == DragType.Hold)
 			{
 				Class c = UIManager.instance.current_class;
+
 				if(c != null)
 				{
 					if(c._Slots.Length > 1)
@@ -174,6 +170,8 @@ public class UISlotButton : UIButton {
 	{
 		//UIManager.instance.ShowTooltip(true, this);
 		over = true;
+		activated = true;
+		init_pos = transform.position;
 		if(PlayerControl.HoldingSlot && PlayerControl.HeldButton != this && PlayerControl.HeldButton.Drag == DragType.Hold)
 		{
 			PlayerControl.SwapButton = this;

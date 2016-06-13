@@ -32,7 +32,7 @@ public class UIButton : UIObj {
 		if(over && !dragging)
 		{
 			
-			//UIManager.instance.ShowTooltip(true, this);
+			UIManager.instance.ShowTooltip(true, this);
 			over = false;
 		}
 

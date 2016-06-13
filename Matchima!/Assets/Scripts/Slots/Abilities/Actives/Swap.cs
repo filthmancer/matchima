@@ -55,7 +55,7 @@ public class Swap : Ability {
 		Description_Basic = "Changes " + StartType + " tiles to " + EndType + " tiles";
 	}
 
-	public override IEnumerator BeforeTurn()
+	public override IEnumerator AfterTurn()
 	{
 		GENUS g = TileMaster.Genus[EndGenus];
 		int xx = Random.Range(0, TileMaster.Grid.Size[0]);

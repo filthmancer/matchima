@@ -147,9 +147,6 @@ public class GameManager : MonoBehaviour {
 
 	void Awake()
 	{
-		
-		
-		  
 		if(instance == null)
 		{
 			DontDestroyOnLoad(transform.gameObject);
@@ -165,6 +162,10 @@ public class GameManager : MonoBehaviour {
 	void Start () {
 		QualitySettings.vSyncCount = 0;
 		Application.targetFrameRate = 60;
+		if(!Application.isMobilePlatform)
+		{
+			Screen.SetResolution(525,830, false);
+		}
 		paused = false;
 		gameStart = false;
 		_Juice = GetComponent<Juice>();
@@ -640,14 +641,15 @@ public class GameManager : MonoBehaviour {
 		PlayerControl.instance.finalTiles.Clear();
 		//Player.instance.CheckForBestCombo(resource);
 
-		yield return StartCoroutine(Player.instance.EndTurn());
-
-/* ENEMY TURN */////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		yield return new WaitForSeconds(GameData.GameSpeed(0.05F));
 		TileMaster.instance.SetFillGrid(true);
+		while(!TileMaster.AllLanded)	yield return null;
+		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+		yield return StartCoroutine(Player.instance.EndTurn());
 		StartCoroutine(SplashBonus(ComboSize));
-		yield return StartCoroutine(TileMaster.instance.BeforeTurn());
 		
+		yield return StartCoroutine(TileMaster.instance.BeforeTurn());
+		UIManager.instance.SetClassButtons(false);
+/* ENEMY TURN */////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		if(Player.instance.Turns % (int)Player.Stats.AttackRate == 0 && TileMaster.instance.EnemiesOnScreen > 0)
 		{
 			yield return StartCoroutine(EnemyTurnRoutine());

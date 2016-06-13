@@ -23,7 +23,7 @@ public class Heal : Ability {
 
 
 
-	public override IEnumerator BeforeTurn()
+	public override IEnumerator AfterTurn()
 	{	
 		yield return StartCoroutine(ActiveRoutine());
 	}

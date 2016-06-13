@@ -80,13 +80,13 @@ public class Bard : Class {
 	}
 
 
-	public override IEnumerator BeginTurn()
+	public override IEnumerator EndTurn()
 	{
 
 		if(warcry_a) yield return StartCoroutine(WarcryA());
 		if(warcry_b) yield return StartCoroutine(WarcryB());
 		if(warcry_c) yield return StartCoroutine(WarcryC());
-		yield return StartCoroutine(base.BeginTurn());
+		yield return StartCoroutine(base.EndTurn());
 	}
 
 

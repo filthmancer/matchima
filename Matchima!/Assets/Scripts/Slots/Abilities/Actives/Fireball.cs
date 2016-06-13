@@ -41,7 +41,7 @@ public class Fireball : Ability {
 		radius = GameData.StringToInt(args[0]);
 	}
 
-	public override IEnumerator BeforeTurn()
+	public override IEnumerator AfterTurn()
 	{
 		//if(activated) return;
 		//activated = true;
