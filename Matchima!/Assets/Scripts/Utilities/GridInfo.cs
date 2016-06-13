@@ -31,6 +31,9 @@ public class GridInfo {
 		}
 	}
 
+
+
+
 	public int [] Size
 	{
 		get{
@@ -153,7 +156,8 @@ public class GridInfo {
 			{
 				for(int yy = 0; yy < curr_y; yy++)
 				{
-					if(Points[xx,yy] != null) 
+					if(Points.GetLength(0) <= xx || Points.GetLength(1) <= yy) continue;
+					if(Points[xx,yy]._Tile != null) 
 					{
 						Points[xx,yy]._Tile.DestroyThyself();
 					}
@@ -165,7 +169,8 @@ public class GridInfo {
 			{
 				for(int xx = 0; xx < curr_x; xx++)
 				{
-					if(Points[xx,yy] != null) 
+					if(Points.GetLength(0) <= xx || Points.GetLength(1) <= yy) continue;
+					if(Points[xx,yy]._Tile != null) 
 					{
 						Points[xx,yy]._Tile.DestroyThyself();
 					}
@@ -227,9 +232,12 @@ public class GridInfo {
 		return Points[x,y].position;
 	}
 
-	public Vector3 GetPoint(int [] num)
+
+	public Vector3 GetPoint(int[] x)
 	{
-		return Points[num[0], num[1]].position;
+		if(x[0] > Size[0]-1) x[0] = Size[0]-1;
+		if(x[1] > Size[1]-1) x[1] = Size[1]-1;
+		return Points[x[0],x[1]].position;
 	}
 
 	public void SetPointInfo(int [] num, TileInfo t)

@@ -172,7 +172,7 @@ public class UISlotButton : UIButton {
 
 	public override void MouseOver()
 	{
-		UIManager.instance.ShowTooltip(true, this);
+		//UIManager.instance.ShowTooltip(true, this);
 		over = true;
 		if(PlayerControl.HoldingSlot && PlayerControl.HeldButton != this && PlayerControl.HeldButton.Drag == DragType.Hold)
 		{
@@ -184,7 +184,7 @@ public class UISlotButton : UIButton {
 	public override void MouseOut()
 	{
 		over = false;
-		UIManager.instance.ShowTooltip(false);
+		//UIManager.instance.ShowTooltip(false);
 		prepare_to_swap = false;
 		PlayerControl.SwapButton = null;
 	}

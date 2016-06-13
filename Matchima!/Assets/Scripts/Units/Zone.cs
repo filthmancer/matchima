@@ -39,7 +39,7 @@ public class Zone : MonoBehaviour {
 
 	private int curr = 0;
 	private bool shown_intro_wave;
-
+	private bool ShownBoss;
 	public void Start()
 	{
 		curr = StartAt;
@@ -64,7 +64,16 @@ public class Zone : MonoBehaviour {
 
 		if(curr >= Waves.Length) 
 		{
-			if(!Repeat) return null;
+			if(BossWave != null && !ShownBoss) 
+			{
+				ShownBoss = true;
+				return BossWave;
+			}
+			else if(!Repeat) 
+			{
+				//GameManager.instance.EscapeZone();
+				return null;
+			}
 			else curr = 0;
 		}
 		Wave w = Waves[curr];
@@ -117,14 +126,14 @@ public class Zone : MonoBehaviour {
 
 	public Wave CheckZone()
 	{
-		if(GameManager.Floor >= Initial + Depth)
-		{
-			GameManager.instance.EscapeZone();
-		}
 		if(Style == ZoneStyle.Progressive) return GetWaveProgressive();
 		else if(Style == ZoneStyle.Random)
 		{
-			if(GameManager.Floor >= Initial+Depth-1 && BossWave != null)
+			if(GameManager.Floor >= Initial + Depth)
+			{
+				GameManager.instance.EscapeZone();
+			}
+			if(GameManager.Floor == Initial+Depth-1 && BossWave != null)
 			{
 				return BossWave;
 			}

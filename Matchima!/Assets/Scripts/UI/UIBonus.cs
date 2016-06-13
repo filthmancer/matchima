@@ -149,12 +149,12 @@ public class UIBonus : MonoBehaviour {
 	{
 		if(bonus_scr.Length == 0) return;
 
-		UIManager.instance.ShowSimpleTooltip(true, bonus_obj[n].transform, bonus_scr[n].Name, bonus_scr[n].Description);
+		//UIManager.instance.ShowSimpleTooltip(true, bonus_obj[n].transform, bonus_scr[n].Name, bonus_scr[n].Description);
 	}
 
 	public void Deactivate()
 	{
-		UIManager.instance.ShowTooltip(false);
+		//UIManager.instance.ShowTooltip(false);
 	}
 
 	public void ShowBonuses(bool enable)

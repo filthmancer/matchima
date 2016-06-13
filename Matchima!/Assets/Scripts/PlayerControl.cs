@@ -282,7 +282,7 @@ public class PlayerControl : MonoBehaviour {
 			{
 				tooltip_current = 0.0F;
 				tooltip_showing = false;
-				UIManager.instance.ShowTooltip(false);
+				UIManager.instance.ShowGearTooltip(false);
 				focusTile.Reset(true);
 				ResetSelected();
 			}
@@ -319,21 +319,23 @@ public class PlayerControl : MonoBehaviour {
 				else focusTile = nt;
 				tooltip_current = 0.0F;
 				tooltip_showing = false;
-				UIManager.instance.ShowTooltip(false);
+				//UIManager.instance.ShowTooltip(false);
 			}
 			else if(nt != null && focusTile == nt)
 			{
-				if(tooltip_current > tooltip_time && ! tooltip_showing)
+				UIManager.instance.ShowGearTooltip(true, focusTile);
+				/*if(tooltip_current > tooltip_time && ! tooltip_showing)
 				{
-					UIManager.instance.ShowSimpleTooltip(true, focusTile.transform, focusTile._Name, focusTile.FullDescription);
+					
+					//UIManager.instance.ShowSimpleTooltip(true, focusTile.transform, focusTile._Name, focusTile.FullDescription);
 					tooltip_showing = true;
 				}
-				else if(!tooltip_showing) tooltip_current += Time.deltaTime;
+				else if(!tooltip_showing) tooltip_current += Time.deltaTime;*/
 			}
 			else
 			{
 				focusTile = null;
-				UIManager.instance.ShowTooltip(false);
+				//UIManager.instance.ShowTooltip(false);
 				tooltip_current = 0.0F;
 				tooltip_showing = false;
 			}

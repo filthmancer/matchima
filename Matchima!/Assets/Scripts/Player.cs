@@ -12,6 +12,25 @@ public class Player : MonoBehaviour {
 	public static bool loaded = false;
 	public static Stat Stats;
 
+	public static List<Item> StashItems
+	{
+		get{
+			return instance.ThisTurn_items;
+		}
+	}
+
+	public static bool NewItems
+	{
+		get
+		{
+			foreach(Item child in StashItems)
+			{
+				if(!child.Seen) return true;
+			}
+			return false;
+		}
+	}
+
 	public bool CompleteMatch = true;
 	public int Turns = 0;
 	public int BestCombo = 0;
@@ -260,20 +279,19 @@ public class Player : MonoBehaviour {
 		//Tutorial();
 
 
-		if(ThisTurn_items.Count > 0)
-		{
-			UIManager.Objects.BotGear.SetTween(0, true);
-			UIManager.instance.ItemUI.gameObject.SetActive(true);
-			UIManager.instance.current_class = null;
-			UIManager.instance.ScreenAlert.SetTween(0, true);
-			UIManager.instance.ShowItemUI(ThisTurn_items.ToArray());
-
-			while(UIManager.ItemUI_active) 
-			{
-				yield return null;
-			}
-			UIManager.instance.ScreenAlert.SetTween(0, false);
-		}
+		//if(ThisTurn_items.Count > 0)
+		//{
+		//	UIManager.Objects.BotGear.SetTween(0, true);
+		//	UIManager.instance.ItemUI.gameObject.SetActive(true);
+		//	UIManager.instance.current_class = null;
+		//	UIManager.instance.ScreenAlert.SetTween(0, true);
+		//	UIManager.instance.ShowItemUI(ThisTurn_items.ToArray());
+		//	while(UIManager.ItemUI_active) 
+		//	{
+		//		yield return null;
+		//	}
+		//	UIManager.instance.ScreenAlert.SetTween(0, false);
+		//}
 
 		//UIManager.instance.WaveAlert.SetTween(0,false);
 
@@ -305,7 +323,7 @@ public class Player : MonoBehaviour {
 		
 		PlayerControl.instance.canMatch = true;
 
-		ThisTurn_items.Clear();
+		//ThisTurn_items.Clear();
 		ThisTurn_upgrades.Clear();
 
 		Stats.PrevTurnKills = 0;
@@ -342,9 +360,29 @@ public class Player : MonoBehaviour {
 		yield return null;
 	}
 
+	bool showingpickup = false;
 	public void PickupItem(Item i)
 	{
+		StartCoroutine(_PickupItem(i));
+	}
+
+	IEnumerator _PickupItem(Item i)
+	{
+		while(showingpickup) yield return null;
+		showingpickup = true;
+		(UIManager.Objects.MiddleGear[2] as UIObjTweener).SetTween(1, true);
+		UIManager.Objects.MiddleGear[2][0].SetActive(false);
+		UIManager.Objects.MiddleGear[2].Txt[0].text = "FOUND\n" + i.Name.Value;
+		UIManager.Objects.MiddleGear[2].Txt[1].text = "Added to Stash";
+
+		yield return new WaitForSeconds(GameData.GameSpeed(2.0F));
+		(UIManager.Objects.MiddleGear[2] as UIObjTweener).SetTween(1, false);
+		yield return new WaitForSeconds(GameData.GameSpeed(0.45F));
+		UIManager.Objects.MiddleGear[2][0].SetActive(true);
+		UIManager.Objects.MiddleGear[2].Txt[0].text = "";
+		UIManager.Objects.MiddleGear[2].Txt[1].text = "";
 		ThisTurn_items.Add(i);
+		showingpickup = false;
 	}
 
 	public void PickupUpgrade(UpgradeGroup c)

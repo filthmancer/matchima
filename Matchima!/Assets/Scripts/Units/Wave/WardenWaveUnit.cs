@@ -14,7 +14,7 @@ public class WardenWaveUnit : WaveUnit {
 		if(!Active || Ended) yield break;
 		controllers = new List<Tile>();
 		bool [,] replacedtile = new bool [(int)TileMaster.instance.MapSize.x, (int)TileMaster.instance.MapSize.y];
-		for(int i = 0; i < 3; i++)
+		for(int i = 0; i < 2; i++)
 		{
 			int randx = (int)Random.Range(0, TileMaster.instance.MapSize.x);
 			int randy = (int)Random.Range(0, TileMaster.instance.MapSize.y);
@@ -35,12 +35,12 @@ public class WardenWaveUnit : WaveUnit {
 			mp.SetTileMethod(TileMaster.Tiles[randx,randy], (Tile t) => 
 				{
 					controllers.Add(TileMaster.instance.ReplaceTile(randx, randy, TileMaster.Types["ward"], GENUS.RAND, 1, 0));
-					TileMaster.Tiles[randx, randy].InitStats.Hits += 3;
+					TileMaster.Tiles[randx, randy].InitStats.Hits = 3;
 					TileMaster.Tiles[randx, randy].CheckStats();
 					TileMaster.Tiles[randx, randy].DescriptionOverride = "Enemies ignore the Warden";
 				});
 		
-			yield return new WaitForSeconds(Time.deltaTime * 20);
+			yield return new WaitForSeconds(Time.deltaTime * 30);
 		}
 		yield return new WaitForSeconds(Time.deltaTime * 20);
 	}
@@ -84,7 +84,7 @@ public class WardenWaveUnit : WaveUnit {
 		bool end = true;
 		for(int i = 0; i < controllers.Count; i++)
 		{
-			if(controllers[i] != null && !controllers[i].isMatching)
+			if(!controllers[i].Destroyed)
 			{
 				end = false;
 			}	
@@ -135,14 +135,9 @@ public class WardenWaveUnit : WaveUnit {
 			{
 				if(child == null) continue;
 
-				Vector3 pos = child.transform.position + (GameData.RandomVector*1.4F);
-				MoveToPoint mini = TileMaster.instance.CreateMiniTile(pos,UIManager.Objects.TopGear[1][0].transform, child.Info.Outer);
-				mini.SetPath(0.3F, 0.5F, 0.0F, 0.08F);
-				mini.SetMethod(() =>{
-						Parent.AddPoints(-1);
-						AudioManager.instance.PlayClipOn(Player.instance.transform, "Player", "Hit");
-					}
-				);
+				AudioManager.instance.PlayClipOn(child.transform, "Enemy", "Attack");
+
+				child.AttackWaveUnit(Parent);
 				yield return StartCoroutine(child.Animate("Attack", 0.05F));
 			}
 

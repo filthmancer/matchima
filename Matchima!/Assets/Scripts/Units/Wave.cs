@@ -299,7 +299,7 @@ public class Wave : Unit {
 			UIManager.Objects.TopGear[1][i][0].SetActive(true);
 		}
 
-		float spintime = Random.Range(0.4F, 0.7F);
+		float spintime = Random.Range(0.5F, 1.3F);
 		while((spintime-=Time.deltaTime) > 0.0F)
 		{
 			UIManager.Objects.TopGear.AddSpin(spintime*2);

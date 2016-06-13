@@ -158,6 +158,7 @@ public class UIMenu : UIObj {
 		UIManager.ShowClassButtons(true);
 
 		UIManager.Objects.MiddleGear.SetActive(true);
+		UIManager.Objects.MiddleGear[0][0].Img[0].color = GameData.instance.GoodColour;
 		(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, true);
 		(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, true);
 
@@ -174,7 +175,7 @@ public class UIMenu : UIObj {
 		});
 
 		
-		if(PlayerPrefs.GetInt("Resume") == 1) 
+		/*if(PlayerPrefs.GetInt("Resume") == 1) 
 		{
 			if(resume)
 			{
@@ -191,7 +192,9 @@ public class UIMenu : UIObj {
 			UIManager.Objects.TopGear[1][2].Txt[0].text = "RESUME";
 			//UIManager.Objects.TopGear[4][0].Img[1].color = GameData.Colour(GENUS.DEX);
 			
-		}
+		}*/
+		UIManager.Objects.TopGear.MoveToDivision(top_division_last);
+		GetMiddleGearInfo(top_division_last);
 		UIManager.Objects.BotGear[3][0].SetActive(true);
 		UIManager.Objects.TopGear.Img[2].enabled = false;
 		UIManager.Objects.TopGear.Txt[0].text = "";
@@ -265,7 +268,6 @@ public class UIMenu : UIObj {
 			break;
 		}
 
-
 		NewGameActivate();
 	}
 
@@ -278,7 +280,7 @@ public class UIMenu : UIObj {
 		{
 			case 0:
 			UIManager.Objects.MiddleGear[0].Txt[0].text = 
-			"FOUR ADVENTURERS BREAK INTO\nTHE FORBIDDEN UNDERCITY\nTO EXPLORE AND GATHER THE\nPRECIOUS 'MANA' THE SEEPS FROM BELOW";
+			"FOUR ADVENTURERS BREAK INTO\nTHE FORBIDDEN UNDERCITY\nTO EXPLORE AND GATHER THE\nPRECIOUS 'MANA' THAT SEEPS FROM BELOW";
 			(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, true);
 			(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, true);
 
@@ -291,9 +293,14 @@ public class UIMenu : UIObj {
 			() => {
 				StartGame(GameMode.Story);
 				});
+			(UIManager.Objects.BotGear as UIGear).SetTween(3, true);
 			break;
 			case 1:
-			UIManager.Objects.MiddleGear[0].Txt[0].text = 
+			UIManager.Objects.MiddleGear[0].Txt[0].text = "???";
+			(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, false);
+			(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, false);
+			(UIManager.Objects.BotGear as UIGear).SetTween(3, true);
+			/*UIManager.Objects.MiddleGear[0].Txt[0].text = 
 			"RESUME GAME\n" + 
 			"Turn: " + PlayerPrefs.GetInt("Turns");
 			(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, true);
@@ -304,15 +311,16 @@ public class UIMenu : UIObj {
 			UIManager.Objects.MiddleGear[0].GetChild(0).AddAction(UIAction.MouseUp,
 			() => {
 				ResumeGameActivate();
-				});
+				});*/
 			break;
 			case 2:
 			UIManager.Objects.MiddleGear[0].Txt[0].text = "";
 			(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, false);
 			(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, false);
+			(UIManager.Objects.BotGear as UIGear).SetTween(3, true);
 			break;
 			case 3:
-			
+			top_division_last = 3;
 			UIManager.Objects.MiddleGear[0].Txt[0].text = 
 			"ENDLESSLY EXPLORE THE\nUNDERCITY, DELVING EVER DEEPER";
 			(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, true);
@@ -326,6 +334,7 @@ public class UIMenu : UIObj {
 			() => {
 				StartGame(GameMode.Endless);
 				});
+			(UIManager.Objects.BotGear as UIGear).SetTween(3, false);
 			break;
 		}
 	}
@@ -406,7 +415,6 @@ public class UIMenu : UIObj {
 		GameManager.instance.Mode = m;
 
 		UIManager.Objects.MiddleGear[0].GetChild(1).Txt[0].text = "" + GameManager.instance.Mode;
-		UIManager.Objects.MiddleGear[0].GetChild(0).BooleanObjColor(m == GameMode.Story);
 	}
 
 
@@ -432,6 +440,9 @@ public class UIMenu : UIObj {
 		UIManager.Objects.TopGear.isFlashing = false;
 		UIManager.Objects.BotGear.isFlashing = false;
 		(UIManager.Objects.BotGear[3][0] as UIGear).isFlashing = false;	
+		(UIManager.Objects.BotGear as UIGear).SetTween(3, false);
+		UIManager.Objects.BotGear[1].ClearActions();
+		UIManager.Objects.BotGear[1].Img[0].enabled = false;
 		bool alert = false;
 		for(int i = 0; i < Player.instance._Classes.Length; i++)
 		{
@@ -448,6 +459,7 @@ public class UIMenu : UIObj {
 		}
 		DefaultMenu.SetActive(false);
 		ClassMenu.SetActive(false);
+		
 		GameManager.instance.LoadGame(false);
 	}
 

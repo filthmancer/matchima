@@ -29,6 +29,8 @@ public class GameManager : MonoBehaviour {
 	public static int ZoneNum {get{return instance._ZoneNum;}}
 	public static Wave Wave{get{return instance.CurrentWave;}}
 
+	public static Zone ZoneChoiceA, ZoneChoiceB;
+
 	public static float GlobalManaMult = 1.0F,
 						GlobalHealthMult = 1.0F,
 						GlobalArmourMult = 1.0F;
@@ -196,6 +198,7 @@ public class GameManager : MonoBehaviour {
 				}
 				else
 				{
+					//TileMaster.instance.SetFillGrid(true);
 					if(Mode == GameMode.Story) PlayStoryMode();
 					else if (Mode == GameMode.Endless) PlayEndlessMode();
 				}
@@ -322,12 +325,10 @@ public class GameManager : MonoBehaviour {
 			Player.Stats._Health = Player.Stats._HealthMax;
 			break;
 			case 2: //X
-			(UIManager.Objects.MiddleGear[3] as UIObjTweener).SetTween(0);
+			//EscapeZone();
 			//GetWave(GameData.instance.GetRandomWave(), 2);
 			//CameraUtility.SetTurnOffset(camopen);
-			//EscapeZone();
-		//	TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["chest"], GENUS.ALL, 2, 1);
-			//UIManager.instance.ShowResourceUI();
+			TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["chest"], GENUS.ALL, 1, 1);
 			break;
 			case 3: //c
 			TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["lightning"], GENUS.DEX,1, 1);
@@ -396,8 +397,6 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-
-
 	public Zone GetZone(string name)
 	{
 		for(int i = 0; i < Zones.Length; i++)
@@ -409,32 +408,7 @@ public class GameManager : MonoBehaviour {
 
 	public void EnterZone(Zone z = null, string name = null)
 	{
-		if(CurrentZone != null) Destroy(CurrentZone.gameObject);
-		Zone target = null;
-
-		if(z != null)
-		{
-			target = z;
-		}
-		else if(name != null) 
-		{
-			target = GetZone(name);
-		}
-		else target = Zones[Random.Range(0,Zones.Length)];
-
-		if(target == null) return;
-
-		_ZoneNum ++;
-		CurrentZone = (Zone) Instantiate(target);
-		CurrentZone.transform.parent = this.transform;
-		CurrentZone.Randomise();
-
-		UIManager.instance.BackingTint = CurrentZone.Tint;
-		UIManager.instance.WallTint = CurrentZone.WallTint;
-		TileMaster.instance.MapSize_Default = CurrentZone.GetMapSize();
-		Player.instance.ResetStats();
-		StartCoroutine(UIManager.instance.Alert(1.2F, false, CurrentZone.Name));
-		
+		StartCoroutine(_EnterZone(z, name, null));
 	}
 
 	IEnumerator _EnterZone(Zone z = null, string name = null, Wave w = null)
@@ -458,12 +432,28 @@ public class GameManager : MonoBehaviour {
 		CurrentZone.transform.parent = this.transform;
 		CurrentZone.Randomise();
 
+		(UIManager.Objects.MiddleGear[2] as UIObjTweener).SetTween(0, false);
+		(UIManager.Objects.MiddleGear[1] as UIObjTweener).SetTween(0, false);
 		UIManager.instance.BackingTint = CurrentZone.Tint;
 		UIManager.instance.WallTint = CurrentZone.WallTint;
+
 		TileMaster.instance.MapSize_Default = CurrentZone.GetMapSize();
+
+		if(CurrentWave != null) 
+		{
+			Destroy(CurrentWave.gameObject);
+			CurrentWave = null;
+		}
 		Player.instance.ResetStats();
+
+		if(GameManager.ZoneNum > 1) 
+		{
+			yield return null;
+			TileMaster.instance.NewGrid();
+		}
 		yield return StartCoroutine(UIManager.instance.Alert(1.2F, false, CurrentZone.Name, null, "Entered"));
 		yield return StartCoroutine(_GetWave(w));
+		
 	}
 
 	public void EscapeZone()
@@ -475,9 +465,14 @@ public class GameManager : MonoBehaviour {
 	{
 		string oldname = CurrentZone.Name;
 		
-		UIManager.instance.ShowZoneMenu();
-		UIManager.Objects.MiddleGear[1].Txt[0].text = "Escaped " + CurrentZone.Name;
-
+		
+		ZoneChoiceA = Zones[Random.Range(0,Zones.Length)];
+		ZoneChoiceB = Zones[Random.Range(0,Zones.Length)];
+		while(ZoneChoiceB == ZoneChoiceA)
+		{
+			ZoneChoiceB = Zones[Random.Range(0,Zones.Length)];
+		}
+		UIManager.instance.ShowZoneUI(true);
 		yield return null;
 	 	//yield return StartCoroutine(UIManager.instance.Alert(1.2F, false, "Escaped " + oldname));
 	 	//yield return StartCoroutine(_EnterZone());
@@ -513,27 +508,22 @@ public class GameManager : MonoBehaviour {
 		if(w == null)
 		{
 			w = Zone.CheckZone();
-			/*
-			if(Mode == GameMode.Story) w = Zone.CheckZone();
-			else if(Mode == GameMode.Endless) 
-			{
-				if(Random.value > 0.5F) w = DefaultWaves.GetWaveRandom();
-				else w = CurrentZone.GetWaveRandom();
-			}*/
 		}
 
 		if(CurrentWave != null && CurrentWave != w) Destroy(CurrentWave.gameObject);
+		if(w == null)
+		{
+			yield return StartCoroutine(_EscapeZone());
+			yield break;
+		}
 		CurrentWave = Instantiate(w);
 		CurrentWave.transform.parent = this.transform;
 		yield return StartCoroutine(CurrentWave.Setup());
-
 		Difficulty += Mathf.Exp(Difficulty_Growth);
-		
 	}
 
 	public void LoadGame(bool resume)
 	{
-
 		Class [] c = null;
 		if(resume)
 		{
@@ -550,6 +540,7 @@ public class GameManager : MonoBehaviour {
 		TileMaster.instance.MapSize = new Vector2(1,1);
 
 		Player.instance.Load(c);
+
 		StartCoroutine(UIManager.instance.LoadUI());
 	}
 
@@ -617,19 +608,16 @@ public class GameManager : MonoBehaviour {
 
 /* PLAYER TURN */////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		
 		EnemyTurn = true;
 		TileMaster.instance.SetFillGrid(false);
 		UIManager.instance.current_class = null;
 		UIManager.instance.SetClassButtons(false);
-		UIManager.instance.ShowTooltip(false);
+		UIManager.instance.ShowGearTooltip(false);
 
 		UIManager.Objects.BotGear.SetTween(0, true);
 		UIManager.Objects.TopGear.SetTween(0, false);
-		yield return new WaitForSeconds(GameData.GameSpeed(0.03F));
-		////CameraUtility.SetTurnOffset(false);
-		yield return new WaitForSeconds(GameData.GameSpeed(0.03f));
-
+		yield return new WaitForSeconds(GameData.GameSpeed(0.06F));
+		UIManager.instance.MoveTopGear(0);
 		yield return StartCoroutine(BeforeMatchRoutine());
 		bool all_of_resource = false;
 		
@@ -639,7 +627,7 @@ public class GameManager : MonoBehaviour {
 		}
 		else EnemyTurn = false;
 
-		if(TileMaster.FillGrid_Override) TileMaster.instance.SetFillGrid(true);
+		//if(TileMaster.FillGrid_Override) TileMaster.instance.SetFillGrid(true);
 
 		yield return StartCoroutine(Player.instance.AfterMatch());
 
@@ -653,47 +641,49 @@ public class GameManager : MonoBehaviour {
 		//Player.instance.CheckForBestCombo(resource);
 
 		yield return StartCoroutine(Player.instance.EndTurn());
-/* ENEMY TURN */////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		
 
+/* ENEMY TURN */////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		yield return new WaitForSeconds(GameData.GameSpeed(0.05F));
+		TileMaster.instance.SetFillGrid(true);
+		StartCoroutine(SplashBonus(ComboSize));
 		yield return StartCoroutine(TileMaster.instance.BeforeTurn());
-		yield return StartCoroutine(CurrentWave.BeginTurn());
 		
 		if(Player.instance.Turns % (int)Player.Stats.AttackRate == 0 && TileMaster.instance.EnemiesOnScreen > 0)
 		{
 			yield return StartCoroutine(EnemyTurnRoutine());
 		}
+		
+		yield return StartCoroutine(CurrentWave.BeginTurn());
 		yield return StartCoroutine(TileMaster.instance.AfterTurn());
 		yield return StartCoroutine(Player.instance.BeginTurn());
-		yield return StartCoroutine(CompleteTurnRoutine());
-		TileMaster.instance.ResetTiles(true);
 
+		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+		yield return StartCoroutine(CompleteTurnRoutine());
+		
 		yield return StartCoroutine(CurrentWave.AfterTurn());
 		
 		if(CurrentWave.Ended && !Player.Stats.isKilled)
 		{
-			GetWave();
+			yield return StartCoroutine(_GetWave());
 		}
+		TileMaster.instance.ResetTiles(true);
+		UIManager.instance.ResetTopGear();
 		yield return null;
 	}
 
 
 	IEnumerator EnemyTurnRoutine()
 	{
-		float per_column = 0.15F;
+		float per_column = 0.22F;
 		List<Tile> total_attackers = new List<Tile>();
 		int total_damage = 0;
 		List<Tile> column_attackers;
 
 		List<Tile> allied_attackers = new List<Tile>();
 	
-
+		yield return new WaitForSeconds(GameData.GameSpeed(0.6F));
 		UIManager.Objects.BotGear.SetTween(0, false);
 		UIManager.Objects.TopGear.SetTween(0, true);
-		yield return new WaitForSeconds(GameData.GameSpeed(0.02F));
-		////CameraUtility.SetTurnOffset(true);
-		yield return new WaitForSeconds(GameData.GameSpeed(0.15F));
-
 
 	//ENEMY ATTACKERS
 		for(int x = 0; x < TileMaster.instance.MapSize.x; x++)
@@ -703,15 +693,16 @@ public class GameManager : MonoBehaviour {
 			{
 				Tile tile = TileMaster.Tiles[x,y];
 				if(tile == null) continue;
+				if(tile.AttackedThisTurn) print(tile);
 				if(tile.CanAttack())
 				{
+					tile.AttackedThisTurn = true;
 					if(tile.Stats.isAlly)
 					{
 						allied_attackers.Add(tile);
 					}
 					else
 					{
-						
 						column_attackers.Add(tile);
 					}
 					
@@ -725,16 +716,8 @@ public class GameManager : MonoBehaviour {
 				child.OnAttack();
 				total_damage += child.GetAttack();
 
-				Vector3 pos = child.transform.position + (GameData.RandomVector*1.4F);
-				MoveToPoint mini = TileMaster.instance.CreateMiniTile(pos,UIManager.instance.Health.transform, child.Info.Outer);
-				mini.SetPath(0.3F, 0.25F, 0.0F, 0.1F);
-				mini.SetMethod(() =>{
-						Player.instance.OnHit(child);
-						AudioManager.instance.PlayClipOn(Player.instance.transform, "Player", "Hit");
-						GameData.Log("Took " + child.GetAttack() + "damage from " + child);
-					}
-				);
-				yield return StartCoroutine(child.Animate("Attack", 0.05F));
+				child.AttackPlayer();
+				yield return StartCoroutine(child.Animate("Attack", 0.09F));
 			}
 
 			total_attackers.AddRange(column_attackers);
@@ -743,7 +726,7 @@ public class GameManager : MonoBehaviour {
 		if(total_attackers.Count > 0)
 		{
 			GameData.Log("Took " + total_damage + " damage from " + total_attackers.Count + " attackers");
-			yield return new WaitForSeconds(GameData.GameSpeed(0.05F));
+			yield return new WaitForSeconds(GameData.GameSpeed(0.13F));
 		} 
 
 
@@ -780,7 +763,7 @@ public class GameManager : MonoBehaviour {
 			
 			if(target != null)
 			{
-				Vector3 pos = child.transform.position + (GameData.RandomVector*1.4F);
+				/*Vector3 pos = child.transform.position + (GameData.RandomVector*1.4F);
 				MoveToPoint mini = TileMaster.instance.CreateMiniTile(pos, target.transform, child.Info.Outer);
 				mini.SetPath(0.2F, 0.5F, 0.0F, 0.1F);
 				mini.SetMethod(() =>{
@@ -790,7 +773,35 @@ public class GameManager : MonoBehaviour {
 						target.InitStats.TurnDamage += child.GetAttack();
 						target.Match(0);
 						GameData.Log(child +  " dealt " + child.GetAttack() + "damage to " + target);
-					});
+					});*/
+
+				float init_size = Random.Range(130, 170);
+				float init_rotation = Random.Range(-7,7);
+				float info_time = 0.57F;
+				float info_size = init_size + (child.Stats.Value * 2);
+				float info_movespeed = 0.22F;
+				float info_finalscale = 0.55F;
+
+				Vector3 pos = TileMaster.Grid.GetPoint(child.Point.Point(0)) + Vector3.down * 0.3F;
+				MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + child.GetAttack(), info_size, GameData.instance.BadColour, info_time, 0.03F, false);
+				m.Txt[0].outlineColor = GameData.instance.BadColourFill;
+				m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
+				MoveToPoint mini = m.GetComponent<MoveToPoint>();
+				m.AddJuice(Juice.instance.BounceB, info_time);
+				m.AddAction(() => {mini.enabled = true;});
+				m.DestroyOnEnd = false;
+
+				mini.SetTarget(target.transform.position);
+				mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
+				mini.SetMethod(() =>{
+						if(target == null) return;
+						if(target != null) AudioManager.instance.PlayClipOn(target.transform, "Enemy", "Hit");
+							target.SetState(TileState.Selected);
+							target.InitStats.TurnDamage += child.GetAttack();
+							target.Match(0);
+							GameData.Log(child +  " dealt " + child.GetAttack() + "damage to " + target);
+					}
+				);
 				yield return StartCoroutine(child.Animate("Attack", 0.05F));
 			}
 		}
@@ -858,14 +869,12 @@ public class GameManager : MonoBehaviour {
 			yield return new WaitForSeconds(GameData.GameSpeed(rate));
 			num++;
 			ComboSize++;
+			
 			if(num % 4 == 0) rate = Mathf.Clamp(rate - 0.01F, 0.0F, 1.0F);
 		}
+		 
 		yield return StartCoroutine(CollectResourcesRoutine(resource, health, armour));
-	}
-
-	public IEnumerator BeginTurn()
-	{
-		yield return null;
+		
 	}
 
 	public IEnumerator CompleteTurnRoutine()
@@ -893,7 +902,7 @@ public class GameManager : MonoBehaviour {
 		yield return null;
 	}
 
-	public void CollectResources(int [] resource, int [] health, int [] armour, Bonus [] added_bonuses = null, bool all_of_res = true)
+	/*public void CollectResources(int [] resource, int [] health, int [] armour, Bonus [] added_bonuses = null, bool all_of_res = true)
 	{
 		UIManager.Objects.GetScoreWindow().Reset();
 		for(int r = 0; r < resource.Length; r++)
@@ -918,7 +927,6 @@ public class GameManager : MonoBehaviour {
 			}
 			if(matchGENUS == GENUS.ALL || matchGENUS == GENUS.PRP) all_of_res = false;
 			
-
 			if(resource[r] != 0 || health[r] != 0 || armour[r] != 0)
 			{
 				List<Bonus> bonuses = new List<Bonus>();
@@ -940,26 +948,7 @@ public class GameManager : MonoBehaviour {
 
 				bonuses.AddRange(Player.instance.CheckForBonus((GENUS) r));
 				if(added_bonuses != null) bonuses.AddRange(added_bonuses);	
-//
 
-//				StartCoroutine(UIManager.Objects.GetScoreWindow().AddScore(matchGENUS, Player.Classes[r], resource[r], health[r], armour[r], bonuses.ToArray()));//
-
-//				ResourceBonus(ref resource[r], ref health[r], ref armour[r], bonuses.ToArray());		//
-
-//				
-//				if(resource[r]    != 0) {
-//					Player.Classes[r].Add(resource[r]);
-//					//Player.Stats.AddResourceOfGENUS(matchGENUS, resource[r]);
-//					//AddTokens(resource[r]);
-//				}
-//				if(health[r] != 0) {
-//					Player.Stats.Heal(health[r]);
-//					//AddTokens(health[r]/5);
-//				}
-//				if(armour[r] != 0) {
-//					Player.Stats.AddArmour(armour[r]);
-//					//AddTokens(armour[r]);
-//				}
 
 				int final_res = resource[r];
 				int final_health = health[r];
@@ -986,41 +975,19 @@ public class GameManager : MonoBehaviour {
 
 			}
 		}
-	}
+	}*/
 
 	public IEnumerator CollectResourcesRoutine(int [] resource, int [] health, int [] armour, Bonus [] added_bonuses = null, bool all_of_res = true)
 	{
 		UIManager.Objects.GetScoreWindow().Reset();
+		
 		for(int r = 0; r < resource.Length; r++)
 		{
 			if(resource[r] != 0 || health[r] != 0 || armour[r] != 0)
 			{
-				GENUS matchGENUS = (GENUS)r;
-				if(all_of_res && matchGENUS != GENUS.ALL && matchGENUS != GENUS.PRP)
-				{
-					for(int x = 0; x < TileMaster.Tiles.GetLength(0); x ++)
-					{
-						for(int y = 0; y < TileMaster.Tiles.GetLength(1); y++)
-						{
-							Tile t = TileMaster.Tiles[x,y];
-							if(t)
-							{
-								//if(t.Type.Genus == matchGENUS) print(t.Stats.isNew);
-								if(t.Genus == matchGENUS && !t.Stats.isNew) 
-								{
-									all_of_res = false;
-								}
-							}
-						}
-					}
-				}
-				if(matchGENUS == GENUS.ALL || matchGENUS == GENUS.PRP) all_of_res = false;
-				//print(all_of_res + ":" + matchGENUS);
-
-			
 				List<Bonus> bonuses = new List<Bonus>();
 
-				if(GameData.GenusIsResource(matchGENUS))
+				/*if(GameData.GenusIsResource(matchGENUS))
 				{
 					bonuses.Add(new Bonus(Player.Classes[(int)matchGENUS].Stats.GetResourceFromGENUS(matchGENUS).ResMultiplier,
 						GameData.GENUSToString(matchGENUS), 
@@ -1028,7 +995,7 @@ public class GameManager : MonoBehaviour {
 						GameData.instance.GetGENUSColour(matchGENUS)));
 				}
 
-				if(all_of_res) bonuses.Add(new Bonus(Player.Stats.AllColourMulti, "ALL", "Bonus for collecting all of a colour", GameData.instance.GetGENUSColour(matchGENUS)));
+				if(all_of_res) bonuses.Add(new Bonus(Player.Stats.AllColourMulti, "ALL", "Bonus for collecting all of a colour", GameData.instance.GetGENUSColour(matchGENUS)));*/
 				
 				if(PlayerControl.instance.ComboBonus > 1.0F) bonuses.Add(new Bonus(PlayerControl.instance.ComboBonus, 
 					"COMBO", 
@@ -1044,24 +1011,6 @@ public class GameManager : MonoBehaviour {
 
 				ResourceBonus(ref final_res, ref final_health, ref final_armour, bonuses.ToArray());	
 				if(r >= 4) yield break;	
-				Player.Classes[r].OnCombo(final_res);
-				if(final_res    > 0) {
-
-					//Player.Classes[r].StartCoroutine(Player.Classes[r].AddRoutine(final_res, bonuses.ToArray()));
-					//Player.Classes[r].Add(final_res);
-					//Player.Stats.AddResourceOfGENUS(matchGENUS, final_res);
-					//AddTokens(final_res);
-				}
-				if(final_health != 0) {
-					//Player.Classes[r].Stats.Heal(final_health);
-					//AddTokens(final_health/5);
-				}
-				if(final_armour != 0) {
-					//Player.Classes[r].Stats.AddArmour(final_armour);
-					//AddTokens(armour[r]);
-				}
-
-				//StartCoroutine(UIManager.Objects.GetScoreWindow().AddScore(matchGENUS, Player.Classes[r], resource[r], health[r], armour[r], bonuses.ToArray()));
 
 			}
 		}
@@ -1103,6 +1052,168 @@ public class GameManager : MonoBehaviour {
 					armour = (int) (armour * bonuses[b].Multiplier);
 				}
 			}
+	}
+
+
+	public IEnumerator SplashBonus(int num)
+	{
+	//Combo Size Bonus Points
+			float info_size = 120;
+			string title = "";
+			Color col = GameData.Colour(GENUS.STR);
+			if(num >= 20)
+			{
+				title = "WOW!";
+				info_size = 190;
+				col = GameData.Colour(GENUS.PRP);
+			}
+			else if(num >= 10)
+			{
+				title = "GREAT!";
+				info_size = 150;
+				col = GameData.Colour(GENUS.DEX);
+			}
+			else if(num >= 5)
+			{
+				title = "GOOD!";
+				info_size = 120;
+				col = GameData.Colour(GENUS.WIS);
+			}
+			else yield break;
+
+			float init_rotation = Random.Range(-4,4);
+			float info_time = 0.95F;
+			
+			float info_movespeed = 0.27F;
+			float info_finalscale = 0.5F;
+
+			//Player.OnCombo(ComboSize);
+			Vector3 pos = UIManager.Objects.BotGear.Img[2].transform.position + Vector3.down * 0.6F;
+			pos += Utility.RandomVectorInclusive(1,0,0);
+			MiniAlertUI m = UIManager.instance.MiniAlert(pos, title, info_size,col, info_time, 0.03F, false);
+
+			m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
+			//MoveToPoint mini = m.GetComponent<MoveToPoint>();
+			m.AddJuice(Juice.instance.BounceB, info_time);
+			//m.AddAction(() => {mini.enabled = true;});
+			//m.DestroyOnEnd = false;
+
+			//mini.SetTarget(UIManager.ClassButtons[(int)g].transform.position);
+			//mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
+			//mini.SetMethod(() =>{
+			//		Player.Classes[(int)g].AddToMeter(5);
+			//	}
+			//);
+		yield return new WaitForSeconds(GameData.GameSpeed(0.9F));
+
+
+	//All of Colour Bonus
+		for(int i = 0; i < Player.Classes.Length; i++)
+		{
+			/*bool all_of_res = true;
+			GENUS matchGENUS = Player.Classes[i].Genus;
+			if(matchGENUS != GENUS.ALL)
+			{
+				for(int x = 0; x < TileMaster.Tiles.GetLength(0); x ++)
+				{
+					for(int y = 0; y < TileMaster.Tiles.GetLength(1); y++)
+					{
+						Tile t = TileMaster.Tiles[x,y];
+						if(t)
+						{
+							if(t.Genus == matchGENUS && !t.Stats.isNew) 
+							{
+								all_of_res = false;
+							}
+						}
+					}
+				}
+			}
+
+			if(all_of_res)
+			{
+				init_rotation = Random.Range(-4,4);
+				title = "ALL " + GameData.ResourceLong(matchGENUS) + "!";
+				info_size = 130;
+				col = GameData.Colour(matchGENUS);
+
+				pos = UIManager.Objects.BotGear.Img[2].transform.position + Vector3.down * 0.6F;
+				pos += (Vector3.left * 2) + (Vector3.right * i);
+				m = UIManager.instance.MiniAlert(pos, title, info_size,col, info_time, 0.03F, false);
+
+				m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
+				m.AddJuice(Juice.instance.BounceB, info_time);
+
+				//MoveToPoint mini = m.GetComponent<MoveToPoint>();
+				//m.AddAction(() => {mini.enabled = true;});
+				//m.DestroyOnEnd = false;
+				//mini.SetTarget(UIManager.ClassButtons[i].transform.position);
+				//mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
+				//mini.SetMethod(() =>{
+				//		Player.Classes[i].AddToMeter(5);
+				//	}
+				//);
+				yield return new WaitForSeconds(GameData.GameSpeed(0.6F));
+			}*/
+			yield return StartCoroutine(AllOfResRoutine(i));	
+		}
+	}
+
+	IEnumerator AllOfResRoutine(int i)
+	{
+		float info_size = 120;
+		string title = "";
+		Color col = GameData.Colour(GENUS.STR);
+		float init_rotation = Random.Range(-4,4);
+		float info_time = 0.95F;
+		
+		float info_movespeed = 0.27F;
+		float info_finalscale = 0.5F;
+
+		bool all_of_res = true;
+		GENUS matchGENUS = Player.Classes[i].Genus;
+		if(matchGENUS != GENUS.ALL)
+		{
+			for(int x = 0; x < TileMaster.Tiles.GetLength(0); x ++)
+			{
+				for(int y = 0; y < TileMaster.Tiles.GetLength(1); y++)
+				{
+					Tile t = TileMaster.Tiles[x,y];
+					if(t)
+					{
+						if(t.Genus == matchGENUS && !t.Stats.isNew) 
+						{
+							all_of_res = false;
+						}
+					}
+				}
+			}
+		}
+
+		if(all_of_res)
+		{
+			init_rotation = Random.Range(-4,4);
+			title = "ALL " + GameData.ResourceLong(matchGENUS) + "!";
+			col = GameData.Colour(matchGENUS);
+
+			Vector3 pos = UIManager.Objects.BotGear.Img[2].transform.position + Vector3.down * 0.6F;
+			pos += (Vector3.left * 2) + (Vector3.right * i);
+			MiniAlertUI m = UIManager.instance.MiniAlert(pos, title, info_size,col, info_time, 0.03F, false);
+
+			m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
+			m.AddJuice(Juice.instance.BounceB, info_time);
+
+			MoveToPoint mini = m.GetComponent<MoveToPoint>();
+			m.AddAction(() => {mini.enabled = true;});
+			m.DestroyOnEnd = false;
+			mini.SetTarget(UIManager.ClassButtons[i].transform.position);
+			mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
+			mini.SetMethod(() =>{
+					Player.Classes[i].AddToMeter(5);
+				}
+			);
+			yield return new WaitForSeconds(GameData.GameSpeed(0.6F));
+		}
 	}
 
 	public void ToggleTileInfo()

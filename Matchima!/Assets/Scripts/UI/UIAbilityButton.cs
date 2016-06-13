@@ -110,7 +110,7 @@ public class UIAbilityButton : MonoBehaviour {
 	public void MouseOut()
 	{
 		over = false;
-		UIManager.instance.ShowTooltip(false);
+		//UIManager.instance.ShowTooltip(false);
 	}
 
 	void AddListener()

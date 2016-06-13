@@ -24,6 +24,10 @@ public class UIObjects : MonoBehaviour {
 	public UIScoreWindowNew ScoreWindowB;
 	public MiniAlertUI MiniAlert;
 
+	public GameObject TxtTooltipObj;
+	public UIObj HorizontalGrouper, VerticalGrouper;
+	public UIObj TextObj;
+
 	//public UIObj [] WaveSlots;
 
 	public UISlotButton SlotObj;

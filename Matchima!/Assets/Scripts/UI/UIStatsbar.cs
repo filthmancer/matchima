@@ -58,11 +58,11 @@ public class UIStatsbar : MonoBehaviour {
 
 	public void ShowTooltip(string name)
 	{
-		UIManager.instance.ShowSimpleTooltip(true, this.transform, "", name);
+	//	UIManager.instance.ShowSimpleTooltip(true, this.transform, "", name);
 	}
 
 	public void HideTooltip()
 	{
-		UIManager.instance.ShowTooltip(false);
+		//UIManager.instance.ShowTooltip(false);
 	}
 }

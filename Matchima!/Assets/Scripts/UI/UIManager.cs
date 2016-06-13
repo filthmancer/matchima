@@ -44,6 +44,7 @@ public class UIManager : MonoBehaviour {
 	public Item current_item;
 
 	public static bool InMenu;
+	private int TopGear_lastdivision = 0;
 
 	[HideInInspector]
 	public bool ResUIOpen = false;
@@ -77,32 +78,6 @@ public class UIManager : MonoBehaviour {
 			ClassButtons[i]._Frame.sprite = TileMaster.Genus.Frame[i];
 			ClassButtons[i]._FrameMask.sprite = TileMaster.Genus.Frame[i];
 		}
-
-		Objects.MiddleGear[3][0].AddAction(UIAction.MouseUp, () =>
-		{
-			ShowOptions();
-		});
-		Objects.MiddleGear[3][2].AddAction(UIAction.MouseUp, ()=>
-		{
-			GameManager.instance.Retire();
-		});
-
-		Objects.MiddleGear[3][1].AddAction(UIAction.MouseUp, ()=>
-		{
-			GameManager.instance.SaveAndQuit();
-		});
-
-		Objects.TopLeftButton.AddAction(UIAction.MouseUp, () =>
-		{
-			ShowOptions();
-			
-		});
-		Objects.TopRightButton.AddAction(UIAction.MouseUp, () =>
-		{
-			Canvas.gameObject.SetActive(false);
-			//ShowZoneMenu();
-			//UIManager.Objects.MiddleGear[1].Txt[0].text = GameManager.Zone.Name;
-		});
 	}
 
 	void Update () {
@@ -111,11 +86,12 @@ public class UIManager : MonoBehaviour {
 
 		if(!Application.isEditor)
 		{
-			if(Input.touches.Length == 0) ShowTooltip(false);
+			if(Input.touches.Length == 0) ShowGearTooltip(false);
 		}
 
 		Objects.TopRightButton.Txt[0].text = "" + GameManager.Floor;
 		Objects.TopRightButton.Txt[1].text = "" + GameManager.ZoneNum;
+		Objects.TopRightButton.Txt[2].enabled = Player.NewItems;
 		Health.text = Player.Stats.Health + "/" + Player.Stats.HealthMax;
 
 		for(int i = 0; i < PlayerHealth.Length; i++)
@@ -133,55 +109,55 @@ public class UIManager : MonoBehaviour {
 			}
 		}
 		
-		Objects.BackingLight.Img[0].color = Color.Lerp(
-			Objects.BackingLight.Img[0].color, BackingTint, Time.deltaTime * 5);
+		CameraUtility.instance.MainLight.color = Color.Lerp(
+			CameraUtility.instance.MainLight.color, BackingTint, Time.deltaTime * 5);
 		Objects.Walls.Img[0].color = Color.Lerp(
 			Objects.Walls.Img[0].color, WallTint, Time.deltaTime * 5);
 
-		Objects.ArmourParent.Txt[0].text = Player.Stats.Armour;
+		Objects.ArmourParent.Txt[0].text = Player.Stats._Armour > 0 ? Player.Stats.Armour : "";
 		Objects.ArmourParent.SetActive(Player.Stats._Armour > 0);
 
 		if(GameManager.Wave != null)
 		{
 			for(int i = 0; i < GameManager.Wave.Length; i++)
-					{
-						if(GameManager.Wave[i] != null && GameManager.Wave[i].Active && Objects.TopGear[1].Length > i)
-						{
-							UIObj w = WaveButtons[i];
-							w.SetActive(true);
-							w.Txt[0].text = "";	
-							w.Img[1].transform.gameObject.SetActive(true);
-							w.Img[1].enabled = true;	
-							w.Img[0].enabled = true;
-							w.Img[0].sprite = GameManager.Wave[i].Inner;
-							w.Img[0].color = Color.white;
-							w.Img[2].enabled = true;
-							w.Img[2].sprite = GameManager.Wave[i].Outer;
-							w.Img[2].color = Color.white;
+			{
+				if(GameManager.Wave[i] != null && GameManager.Wave[i].Active && Objects.TopGear[1].Length > i)
+				{
+					UIObj w = WaveButtons[i];
+					w.SetActive(true);
+					w.Txt[0].text = "";	
+					w.Img[1].transform.gameObject.SetActive(true);
+					w.Img[1].enabled = true;	
+					w.Img[0].enabled = true;
+					w.Img[0].sprite = GameManager.Wave[i].Inner;
+					w.Img[0].color = Color.white;
+					w.Img[2].enabled = true;
+					w.Img[2].sprite = GameManager.Wave[i].Outer;
+					w.Img[2].color = Color.white;
 
-							//if(GameManager.Wave[i].Current > -1)
-							//{
-							//	w.GetChild(0).SetActive(true);
-							//	w.GetChild(0).Txt[0].text = GameManager.Wave[i].Current+"";
-							//}
-							//else 
-							//w.GetChild(0).SetActive(false);
-							
-						}
-						else 
-						{
-							WaveButtons[i].SetActive(false);
-							//WaveButtons[i].Img[0].transform.gameObject.SetActive(//false);
-							//for(int s = 1; s < WaveButtons[i].Img.Length; s++)
-							//{
-							//	WaveButtons[i].Img[s].enabled = false;
-							//}
-							//WaveButtons[i].Txt[0].text = "";
-							//if(GameManager.Wave[i] != null && GameManager.Wave[i].Timer > 0) 
-							//	WaveTimer.text = "" + GameManager.Wave[i].Timer;
-							//else WaveTimer.text = "";
-						}
-					}
+					//if(GameManager.Wave[i].Current > -1)
+					//{
+					//	w.GetChild(0).SetActive(true);
+					//	w.GetChild(0).Txt[0].text = GameManager.Wave[i].Current+"";
+					//}
+					//else 
+					//w.GetChild(0).SetActive(false);
+					
+				}
+				else 
+				{
+					WaveButtons[i].SetActive(false);
+					//WaveButtons[i].Img[0].transform.gameObject.SetActive(//false);
+					//for(int s = 1; s < WaveButtons[i].Img.Length; s++)
+					//{
+					//	WaveButtons[i].Img[s].enabled = false;
+					//}
+					//WaveButtons[i].Txt[0].text = "";
+					//if(GameManager.Wave[i] != null && GameManager.Wave[i].Timer > 0) 
+					//	WaveTimer.text = "" + GameManager.Wave[i].Timer;
+					//else WaveTimer.text = "";
+				}
+			}
 						
 		}
 				
@@ -222,20 +198,22 @@ public class UIManager : MonoBehaviour {
 		Vector3 tpos = Vector3.up * 0.35F + Vector3.left * 0.6F;
 		MiniAlertUI heal = UIManager.instance.MiniAlert(
 			UIManager.instance.Health.transform.position + tpos, 
-			" +" + current_heal, 42, GameData.instance.GoodColour, 1.7F,	0.01F);
-
+			" +" + current_heal, 65,  GameData.instance.GoodColour, 1.7F,	0.01F);
+		heal.transform.SetParent(UIManager.instance.Health.transform);
+		heal.Txt[0].outlineColor = GameData.instance.GoodColourFill;
 		while(heal.lifetime > 0.0F)
 		{
 			if(Player.Stats.HealThisTurn == 0)
 			{
+				yield return new WaitForSeconds(Time.deltaTime * 30);
 				heal.lifetime = 0.0F;
 				heal.text = "";
 				break;
 			}
 			else if(Player.Stats.HealThisTurn != current_heal)
 			{
-				heal.lifetime += 0.4F;
-				heal.size = 42 + current_heal * 0.75F;
+				heal.lifetime += 0.5F;
+				heal.size = 65 + current_heal * 0.75F;
 				current_heal = Player.Stats.HealThisTurn;
 				heal.text = " +" + current_heal;
 			}
@@ -256,19 +234,22 @@ public class UIManager : MonoBehaviour {
 		Vector3 tpos = Vector3.up * 0.35F + Vector3.right * 0.6F;
 		MiniAlertUI hit = UIManager.instance.MiniAlert(
 			UIManager.instance.Health.transform.position + tpos, 
-			" -" + current_hit, 42, GameData.instance.BadColour, 1.7F, 0.01F);
+			" -" + current_hit, 65, GameData.instance.BadColour, 1.7F, 0.01F);
+		hit.Txt[0].outlineColor = GameData.instance.BadColourFill;
+		hit.transform.SetParent(UIManager.instance.Health.transform);
 
 		while(hit.lifetime > 0.0F)
 		{
 			if(Player.Stats.DmgThisTurn == 0)
 			{
+				yield return new WaitForSeconds(Time.deltaTime * 30);
 				hit.lifetime = 0.0F;
-				hit.size = 42 + current_hit*0.75F;
+				hit.size = 65 + current_hit*0.75F;
 				break;
 			}
 			if(Player.Stats.DmgThisTurn != current_hit)
 			{
-				hit.lifetime += 0.2F;
+				hit.lifetime += 0.6F;
 				current_hit = Player.Stats.DmgThisTurn;
 			}
 			hit.text = " -" + current_hit;
@@ -315,27 +296,210 @@ public class UIManager : MonoBehaviour {
 	}
 
 
-	public void ShowTooltip(bool Active, UIButton ab = null)
+	/*public void ShowTooltip(bool Active, UIButton ab = null)
 	{
+		//if(!Active) uitarget = null;
 		Tooltip.SetTooltip(Active, ab);
+		(Objects.TopGear as UIGear).MoveToDivision(Active ? 3 : TopGear_lastdivision);
+		Objects.TopGear[1][1][3].SetActive(Active);
 		//AdvTooltip.SetTooltip(false, ab, input, output);
 	}
 
-	public void ShowAdvTooltip(bool Active, UIButton ab = null)
+	/*public void ShowAdvTooltip(bool Active, UIButton ab = null)
 	{
+		//if(!Active) uitarget = null;
 		Tooltip.SetTooltip(false, ab);
+		(Objects.TopGear as UIGear).MoveToDivision(Active ? 3 : TopGear_lastdivision);
+		Objects.TopGear[1][1][3].SetActive(Active);
 		//AdvTooltip.SetTooltip(Active, ab, input, output);
 	}
 
 	public void ShowSimpleTooltip(bool active, Transform obj, string name, string desc)
 	{
-		Tooltip.SetSimpleTooltip(active, obj, name, desc);
+		if(!active) uitarget = null;
+		//Tooltip.SetSimpleTooltip(active, obj, name, desc);
+		(Objects.TopGear as UIGear).MoveToDivision(active ? 3 : TopGear_lastdivision);
+		Objects.TopGear[1][1][3].SetActive(active);
+		Objects.TopGear[1][1][3].Txt[0].text = name;
+		Objects.TopGear[1][1][3].Txt[0].color = Color.white;
 	}
 
 
 	public void ShowSimpleTooltip(bool active, Transform obj, StCon name, StCon [] desc)
 	{
-		Tooltip.SetSimpleTooltip(active, obj, name, desc);
+		if(!active) uitarget = null;
+		//Tooltip.SetSimpleTooltip(active, obj, name, desc);
+		(Objects.TopGear as UIGear).MoveToDivision(active ? 3 : TopGear_lastdivision);
+		Objects.TopGear[1][1][3].SetActive(active);
+		Objects.TopGear[1][1][3].Txt[0].text = name.Value;
+		Objects.TopGear[1][1][3].Txt[0].color = name.Colour;
+
+		//for(int i = 0; i < desc; i++)
+		//{
+		//	Objects.TopGear[1][3].[0].
+		//}
+		
+	}*/
+
+	public void MoveTopGear(int i, bool actions = false)
+	{
+		(Objects.TopGear as UIGear).DragLerpSpeed = 15;
+		(Objects.TopGear as UIGear).DoDivisionLerpActions = actions;
+		(Objects.TopGear as UIGear).MoveToDivision(i);
+	}
+
+	public void ResetTopGear()
+	{
+		(Objects.TopGear as UIGear).DragLerpSpeed = 15;
+		(Objects.TopGear as UIGear).DoDivisionLerpActions = true;
+		(Objects.TopGear as UIGear).MoveToDivision(TopGear_lastdivision);
+	}
+	Tile uitarget = null;
+	public void ShowGearTooltip(bool active, Tile t = null)
+	{
+		if(!active) uitarget = null;
+
+		(Objects.TopGear as UIGear).DragLerpSpeed = active ? 15 : 5;
+		(Objects.TopGear as UIGear).DoDivisionLerpActions = !active;
+		(Objects.TopGear as UIGear).MoveToDivision(active ? 3 : TopGear_lastdivision);
+		//Objects.TopGear[1][1][3].SetActive(active);
+
+		if(uitarget == t) return;
+		uitarget = t;
+		
+		if(!active || t == null) return;
+
+		Objects.TopGear[1][1][3].Txt[0].text = t._Name.Value;
+		Objects.TopGear[1][1][3].Txt[0].color = t._Name.Colour;
+
+		if(t.BaseDescription.Length > 0)
+		{
+			Objects.TopGear[1][1][3][0].SetActive(true);
+			for(int i = 0; i < Objects.TopGear[1][1][3][0].Length; i++)
+			{
+				if(Objects.TopGear[1][1][3][0].GetChild(i) != null)
+					Destroy(Objects.TopGear[1][1][3][0].GetChild(i).gameObject);
+			}
+			List<UIObj> newchildren = new List<UIObj>();
+			
+			Transform TopParent = Objects.TopGear[1][1][3][0].transform;
+			UIObj ParentObj = (UIObj) Instantiate(Objects.HorizontalGrouper);
+			Transform ParentTrans = ParentObj.transform;
+			ParentTrans.SetParent(TopParent);
+			ParentTrans.position = Vector3.zero;
+			ParentTrans.localScale = Vector3.one;
+			ParentTrans.localRotation = Quaternion.Euler(0,0,0);
+			newchildren.Add(ParentObj);
+			for(int i = 0; i < t.BaseDescription.Length; i++)
+			{
+				UIObj new_desc = (UIObj) Instantiate(Objects.TextObj);
+				new_desc.transform.SetParent(ParentTrans);
+				new_desc.transform.position = Vector3.zero;
+				new_desc.transform.localScale = Vector3.one;
+				new_desc.transform.localRotation = Quaternion.Euler(0,0,0);
+				new_desc.Txt[0].text = t.BaseDescription[i].Value;
+				new_desc.Txt[0].color = t.BaseDescription[i].Colour;
+
+				if(t.BaseDescription[i].NewLine && i < t.BaseDescription.Length-1)
+				{
+					ParentObj = (UIObj) Instantiate(Objects.HorizontalGrouper);
+					ParentTrans = ParentObj.transform;
+					ParentTrans.SetParent(TopParent);
+					ParentTrans.position = Vector3.zero;
+					ParentTrans.localScale = Vector3.one;
+					ParentTrans.localRotation = Quaternion.Euler(0,0,0);
+					newchildren.Add(ParentObj);
+				}
+				Objects.TopGear[1][1][3][0].Child = newchildren.ToArray();
+			}
+		}
+		else Objects.TopGear[1][1][3][0].SetActive(false);
+		
+		if(t.EffectDescription.Length > 0)
+		{
+			Objects.TopGear[1][1][3][1].SetActive(true);
+			for(int i = 0; i < Objects.TopGear[1][1][3][1].Length; i++)
+			{
+				if(Objects.TopGear[1][1][3][1].GetChild(i) != null)
+					Destroy(Objects.TopGear[1][1][3][1].GetChild(i).gameObject);
+			}
+			List<UIObj> newchildren = new List<UIObj>();
+			
+			Transform TopParent = Objects.TopGear[1][1][3][1].transform;
+			UIObj ParentObj = (UIObj) Instantiate(Objects.HorizontalGrouper);
+			Transform ParentTrans = ParentObj.transform;
+			ParentTrans.SetParent(TopParent);
+			ParentTrans.position = Vector3.zero;
+			ParentTrans.localScale = Vector3.one;
+			ParentTrans.localRotation = Quaternion.Euler(0,0,0);
+			newchildren.Add(ParentObj);
+			for(int i = 0; i < t.EffectDescription.Length; i++)
+			{
+				UIObj new_desc = (UIObj) Instantiate(Objects.TextObj);
+				new_desc.transform.SetParent(ParentTrans);
+				new_desc.transform.position = Vector3.zero;
+				new_desc.transform.localScale = Vector3.one;
+				new_desc.transform.localRotation = Quaternion.Euler(0,0,0);
+				new_desc.Txt[0].text = t.EffectDescription[i].Value;
+				new_desc.Txt[0].color = t.EffectDescription[i].Colour;
+
+				if(t.EffectDescription[i].NewLine && i < t.EffectDescription.Length-1)
+				{
+					ParentObj = (UIObj) Instantiate(Objects.HorizontalGrouper);
+					ParentTrans = ParentObj.transform;
+					ParentTrans.SetParent(TopParent);
+					ParentTrans.position = Vector3.zero;
+					ParentTrans.localScale = Vector3.one;
+					ParentTrans.localRotation = Quaternion.Euler(0,0,0);
+					newchildren.Add(ParentObj);
+				}
+				Objects.TopGear[1][1][3][1].Child = newchildren.ToArray();
+			}
+		}
+		else Objects.TopGear[1][1][3][1].SetActive(false);
+
+		if(t.Description != null && t.Description.Length > 0)
+		{
+			Objects.TopGear[1][1][3][2].SetActive(true);
+			for(int i = 0; i < Objects.TopGear[1][1][3][2].Length; i++)
+			{
+				if(Objects.TopGear[1][1][3][2].GetChild(i) != null)
+					Destroy(Objects.TopGear[1][1][3][2].GetChild(i).gameObject);
+			}
+			List<UIObj> newchildren = new List<UIObj>();
+			
+			Transform TopParent = Objects.TopGear[1][1][3][2].transform;
+			UIObj ParentObj = (UIObj) Instantiate(Objects.HorizontalGrouper);
+			Transform ParentTrans = ParentObj.transform;
+			ParentTrans.SetParent(TopParent);
+			ParentTrans.position = Vector3.zero;
+			ParentTrans.localScale = Vector3.one;
+			ParentTrans.localRotation = Quaternion.Euler(0,0,0);
+			newchildren.Add(ParentObj);
+			for(int i = 0; i < t.Description.Length; i++)
+			{
+				UIObj new_desc = (UIObj) Instantiate(Objects.TextObj);
+				new_desc.transform.SetParent(ParentTrans);
+				new_desc.transform.position = Vector3.zero;
+				new_desc.transform.localScale = Vector3.one;
+				new_desc.transform.localRotation = Quaternion.Euler(0,0,0);
+				new_desc.Txt[0].text = t.Description[i].Value;
+				new_desc.Txt[0].color = t.Description[i].Colour;
+
+				if(t.Description[i].NewLine && i < t.Description.Length-1)
+				{
+					ParentObj = (UIObj) Instantiate(Objects.HorizontalGrouper);
+					ParentTrans = ParentObj.transform;
+					ParentTrans.SetParent(TopParent);
+					ParentTrans.position = Vector3.zero;
+					ParentTrans.localScale = Vector3.one;
+					ParentTrans.localRotation = Quaternion.Euler(0,0,0);
+					newchildren.Add(ParentObj);
+				}
+				Objects.TopGear[1][1][3][2].Child = newchildren.ToArray();
+			}
+		}
+		else Objects.TopGear[1][1][3][2].SetActive(false);		
 	}
 
 	public void ShowStats()
@@ -601,6 +765,50 @@ public class UIManager : MonoBehaviour {
 			i++;
 		}
 
+		UIObj zone = Objects.MiddleGear[1] as UIObj;
+		zone[0].AddAction(UIAction.MouseUp,() => {ShowStashUI();});
+		zone[1].AddAction(UIAction.MouseUp,() => {GameManager.instance.EnterZone(GameManager.ZoneChoiceA);});
+		zone[2].AddAction(UIAction.MouseUp,() => {GameManager.instance.EnterZone(GameManager.ZoneChoiceB);});
+
+		Objects.MiddleGear[2][0].AddAction(UIAction.MouseUp, ()=>
+		{
+			(Objects.MiddleGear[2] as UIObjTweener).SetTween(0, false);
+		});
+
+
+		Objects.MiddleGear[3][0].AddAction(UIAction.MouseUp, () =>
+		{
+			ShowOptions();
+		});
+		Objects.MiddleGear[3][2].AddAction(UIAction.MouseUp, ()=>
+		{
+			GameManager.instance.Retire();
+		});
+
+		Objects.MiddleGear[3][1].AddAction(UIAction.MouseUp, ()=>
+		{
+			GameManager.instance.SaveAndQuit();
+		});
+
+		Objects.TopLeftButton.AddAction(UIAction.MouseUp, () =>
+		{
+			ShowOptions();
+			
+		});
+		Objects.TopRightButton.AddAction(UIAction.MouseUp, () =>
+		{
+			//GameManager.instance.EscapeZone();
+			ShowZoneUI(false);
+			(Objects.MiddleGear[2] as UIObjTweener).SetTween(0, false);
+			UIManager.Objects.MiddleGear[1].Txt[0].text = GameManager.Zone.Name;
+		});
+
+		(Objects.TopGear as UIGear).DivisionActions.Add((int num) =>
+		{
+			TopGear_lastdivision = num;
+		});
+
+		
 		yield return null;
 	}
 
@@ -615,6 +823,7 @@ public class UIManager : MonoBehaviour {
 
 		if(show_floor)
 		{
+
 			(ScreenAlert.Child[2] as UIObjTweener).Txt[0].text = "Floor ";
 			(ScreenAlert.Child[2] as UIObjTweener).Txt[1].text = "" + GameManager.Floor;
 			(ScreenAlert.Child[2] as UIObjTweener).SetTween(0, true);
@@ -622,7 +831,7 @@ public class UIManager : MonoBehaviour {
 		}
 		else
 		{
-			if(floor_override != string.Empty)
+			if(floor_override != null)
 			{
 				ScreenAlert.Child[2].Txt[0].text = floor_override;
 				ScreenAlert.Child[2].Txt[1].text = "";
@@ -840,14 +1049,57 @@ public class UIManager : MonoBehaviour {
 	public void ShowWaveInfo(bool active, int num)
 	{
 		if(GameManager.Wave == null) return;
-		ShowSimpleTooltip(active, Objects.TopGear[1][num].Img[1].transform, GameManager.Wave[num].Name, GameManager.Wave[num].Description);
+		//ShowSimpleTooltip(active, Objects.TopGear[1][num].Img[1].transform, GameManager.Wave[num].Name, GameManager.Wave[num].Description);
 	}
 
 	public void AddClass(Class c, int slot)
 	{
 		ClassButtons[slot].Setup(c);
 		MiniAlert(Health.transform.position + Vector3.up * 1.3F,
-				  c.Name + " joined the party!", 50, GameData.Colour((GENUS)slot), 1.5F);
+	  	c.Name + " joined the party!", 50, GameData.Colour((GENUS)slot), 1.5F);
+	}
+
+	public void ShowZoneUI(bool ended)
+	{
+		(Objects.MiddleGear[1] as UIObjTweener).SetTween(0);
+		GameManager.instance.paused = !GameManager.instance.paused;
+		if(ended)
+		{
+			Objects.MiddleGear[1].Txt[0].text = "Escaped " + GameManager.Zone.Name;
+			Objects.MiddleGear[1].Txt[1].text = "";
+			Objects.MiddleGear[1].Txt[2].enabled = Player.NewItems;
+			Objects.MiddleGear[1].Txt[3].enabled = true;
+			Objects.MiddleGear[1].Child[1].SetActive(true);
+			Objects.MiddleGear[1].Child[2].SetActive(true);
+			Objects.MiddleGear[1].Child[1].Txt[0].text = GameManager.ZoneChoiceA.Name;
+			Objects.MiddleGear[1].Child[2].Txt[0].text = GameManager.ZoneChoiceB.Name;
+		}
+		else
+		{
+			Objects.MiddleGear[1].Txt[0].text = GameManager.Zone.Name;
+			Objects.MiddleGear[1].Txt[1].text = "";
+			Objects.MiddleGear[1].Txt[2].enabled = Player.NewItems;
+			Objects.MiddleGear[1].Txt[3].enabled = false;
+			Objects.MiddleGear[1].Child[1].SetActive(false);
+			Objects.MiddleGear[1].Child[2].SetActive(false);
+		}
+	}
+
+	public void ShowStashUI()
+	{
+		(Objects.MiddleGear[2] as UIObjTweener).SetTween(0);
+		for(int i = 0; i < Objects.MiddleGear[2][1].Length; i++)
+		{
+			Objects.MiddleGear[2][1][i].SetActive(false);
+		}
+		for(int i = 0; i < Player.StashItems.Count; i++)
+		{
+			Item item = Player.StashItems[i];
+			item.Seen = true;
+			Objects.MiddleGear[2][1][i].SetActive(true);
+			Objects.MiddleGear[2][1][i].Img[1].sprite = item.Icon;
+			Objects.MiddleGear[2][1][i].Img[0].color = item.Colour;
+		}
 	}
 
 

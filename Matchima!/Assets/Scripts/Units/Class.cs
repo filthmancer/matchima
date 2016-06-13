@@ -308,7 +308,6 @@ public class Class : Unit {
 
 	public virtual IEnumerator BeginTurn()
 	{
-		ManaThisTurn = 0;
 		foreach(Slot child in _Slots)
 		{
 			if(child == null) continue;
@@ -320,11 +319,11 @@ public class Class : Unit {
 			yield return StartCoroutine(child.BeforeTurn());
 		}
 
-		AddToMeter(Stats.MeterRegen);
+		AddToMeterDirect(Stats.MeterRegen);
 		MeterDecay_soft *= (GameManager.MeterDecay[MeterLvl] + Stats.MeterDecay[MeterLvl] + Stats.MeterDecay_Global);
 		MeterDecay = (int)MeterDecay_soft;
 		if(Meter < MeterDecay) Meter = 0;
-		else AddToMeter(-MeterDecay);
+		else AddToMeterDirect(-MeterDecay);
 			
 		
 		yield return StartCoroutine(CheckManaPower());
@@ -394,100 +393,13 @@ public class Class : Unit {
 				ManaPowerParticle.transform.position = UIManager.ClassButtons[(int)Genus].transform.position;
 				yield return null;
 			}
-		}
-
-
-
-		
-		/*if(newlvl == 0 && MeterLvl != 0) 
-		{
-			MeterLvl = 0;
-			MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons[(int)Genus].transform.position, "POWER\nDOWN", 75, GameData.Colour(Genus), 1.2F, 0.2F);
-			yield return new WaitForSeconds(0.1F);
-			Meter = 0;
-			//MeterDecay_soft = MeterDecayInit[MeterLvl];
-			//MeterDecay = (int)MeterDecay_soft;
-			//ManaPower(MeterLvl);
-
-			if(ManaPowerParticle != null) Destroy(ManaPowerParticle);
-		}
-		else if(newlvl != 0 && MeterLvl < newlvl)
-		{
-			MeterLvl = newlvl;
-			MeterDecay_soft = MeterDecayInit[MeterLvl];
-			MeterDecay = (int) MeterDecay_soft;
-			ManaPower(MeterLvl);
-
-			GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, "", GameData.Colour(Genus));
-			powerup.transform.position = UIManager.ClassButtons[(int)Genus].transform.position;
-			UIManager.instance.WaveAlert.SetTween(0,true);
-			yield return new WaitForSeconds(0.95F);
-			UIManager.instance.WaveAlert.SetTween(0,false);
-			Destroy(powerup);
-			MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons[(int)Genus].transform.position, "POWER\nUP", 75, GameData.Colour(Genus), 1.2F, 0.2F);
-
-			Effect e = MeterLvl == 1 ? Effect.ManaPowerLvl1 : (MeterLvl == 2 ? Effect.ManaPowerLvl2 : Effect.ManaPowerLvl3);
-			ParticleSystem part = EffectManager.instance.PlayEffect(this.transform, e, "", GameData.Colour(Genus)).GetComponent<ParticleSystem>();
-			part.startColor = GameData.Colour(Genus);
-
-			if(ManaPowerParticle != null) Destroy(ManaPowerParticle);
-			ManaPowerParticle = part.gameObject;
-			ManaPowerParticle.transform.position = UIManager.ClassButtons[(int)Genus].transform.position;
-
-			yield return null;
-		}*/
-
-
-		
+		}	
 	}
 
 
 	public IEnumerator CheckForBoon()
 	{
 		yield break;
-
-//OLD STYLE (SPELL TILES)
-/*
-		int x = Utility.RandomInt(TileMaster.Tiles.GetLength(0));
-		int y = Utility.RandomInt(TileMaster.Tiles.GetLength(1));	
-		//while(TileMaster.Tiles[x,y].Info._TypeName == "boon" || 
-		//	  TileMaster.Tiles[x,y].Info._TypeName == "curse" || 
-		//	  TileMaster.Tiles[x,y].Info._TypeName == "cocoon"||
-		//	  TileMaster.Tiles[x,y].Info._TypeName == "chest")
-		while(!TileMaster.Tiles[x,y].IsType("resource") && TileMaster.Tiles[x,y].Point.Scale > 1  && Player.QueuedSpell(x,y))
-		{
-			x = Utility.RandomInt(TileMaster.Tiles.GetLength(0));
-			y = Utility.RandomInt(TileMaster.Tiles.GetLength(1));
-		}
-
-		Player.QueueSpell(x,y);
-		ParticleSystem part = (ParticleSystem) Instantiate(EffectManager.instance.Particles.TouchParticle);
-		part.startColor = GameData.Colour(Genus);
-		part.transform.position = UIManager.ClassButtons[Index].transform.position;
-
-		MoveToPoint move = part.GetComponent<MoveToPoint>();
-		move.enabled = true;
-		move.SetTarget(TileMaster.Tiles[x,y].transform.position);
-		move.SetPath(0.3F, 0.25F);
-		move.SetMethod( () => {
-			if(UnityEngine.Random.value < 0.95F) GetSpellTile(x,y,Genus,LevelPoints);
-			else GetSpellFizzle(x,y,Genus, LevelPoints);
-			LevelPoints = 0;
-		});
-		
-		//yield return StartCoroutine(GenerateLevelChoice());
-		//TurnLevelRate = 1;
-*/
-
-//NEW STYLE (MANA POWER)
-		//ManaPowerActive = true;
-		//MeterDecay = ManaPowerDecay_init;
-		//MeterDecay_soft = ManaPowerDecay_init;
-
-		//ParticleSystem part = (ParticleSystem) Instantiate(EffectManager.instance.Particles.ManaPower);
-		//part.startColor = GameData.Colour(Genus);
-		//ManaPowerParticle = part.gameObject;
-
 		HasLeveled = false;
 		yield return new WaitForSeconds(Time.deltaTime * 20);
 	}
@@ -560,7 +472,13 @@ public class Class : Unit {
 
 	public void Complete()
 	{
-		AddToMeter(ManaThisTurn);
+		Meter = (int)Mathf.Clamp(Meter + ManaThisTurn, 0, Mathf.Infinity);
+		ManaThisTurn = 0;
+	}
+
+	public void AddToMeterDirect(int res)
+	{
+		Meter = (int)Mathf.Clamp(Meter + res, 0, Mathf.Infinity);
 	}
 
 	public void AddToMeter(int res)
@@ -570,10 +488,13 @@ public class Class : Unit {
 			ManaThisTurn = 0;
 			return;
 		}
-		Meter = (int)Mathf.Clamp(Meter + res, 0, Mathf.Infinity);
-		//ManaThisTurn += res;
+		
+		//Meter = (int)Mathf.Clamp(Meter + res, 0, Mathf.Infinity);
+		ManaThisTurn += res;
+		
 		if(res > 0) 
 		{
+			if(!adding_to_meter) StartCoroutine(MeterLoop());
 			if(time_from_last_pulse > 1.3F)
 			{
 				UIManager.ClassButtons[Index].GetComponent<Animator>().SetTrigger("Pulse");
@@ -598,6 +519,57 @@ public class Class : Unit {
 			//MeterDecay = (int)MeterDecay;
 			//Player.instance.ResetStats();
 		//}
+	}
+
+	bool adding_to_meter = false;
+	IEnumerator MeterLoop()
+	{
+		adding_to_meter = true;
+
+		float info_time = 0.95F;
+		float info_size = 100;
+		float info_movespeed = 0.07F;
+		float info_finalscale = 0.5F;
+
+		int current_meter = ManaThisTurn;
+		Vector3 tpos = Vector3.up * 0.15F;
+		MiniAlertUI heal = UIManager.instance.MiniAlert(
+			UIManager.ClassButtons[Index].transform.position + tpos, 
+			" +" + current_meter, info_size,   GameData.Colour(Genus), 0.5F, 0.18F);
+
+		heal.transform.SetParent(UIManager.ClassButtons[Index].transform);
+		heal.AddJuice(Juice.instance.BounceB, 0.5F);
+		MoveToPoint mini = heal.GetComponent<MoveToPoint>();
+		heal.AddAction(() => {mini.enabled = true;});
+		heal.DestroyOnEnd = false;
+		mini.SetTarget(UIManager.ClassButtons[Index].transform.position);
+		mini.SetPath(info_movespeed, 0.1F, 0.0F, info_finalscale);
+		mini.SetMethod(() =>{
+				Complete();
+			}
+		);
+		while(heal.lifetime > 0.0F)
+		{
+			if(ManaThisTurn == 0)
+			{
+				yield return new WaitForSeconds(Time.deltaTime * 30);
+				heal.lifetime = 0.0F;
+				heal.text = "";
+				break;
+			}
+			else if(ManaThisTurn != current_meter)
+			{
+				current_meter = ManaThisTurn;
+				heal.lifetime += 0.1F;
+				heal.size = info_size + (current_meter * 0.9F);
+				heal.text = "+" + current_meter;
+				heal.ResetJuice(0.2F);
+			}
+			yield return null;
+		}
+		
+		adding_to_meter = false;
+		yield return null;
 	}
 
 	public virtual void ManaPower(int lvl)

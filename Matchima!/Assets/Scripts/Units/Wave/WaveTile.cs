@@ -112,7 +112,7 @@ public class WaveTile : WaveUnit
 				});
 			
 
-			yield return new WaitForSeconds(Time.deltaTime * 5);
+			yield return new WaitForSeconds(Time.deltaTime * 20);
 		}
 		yield return new WaitForSeconds(Time.deltaTime * 20);
 	}

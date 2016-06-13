@@ -39,12 +39,12 @@ public class WardenBattle : Wave {
 		Timer = 0;
 
 		QuoteGroup tute = new QuoteGroup("Tute");
-		tute.AddQuote("Excellent work, making it this far.",  Slot1, true, 1.4F);
-		tute.AddQuote("But I can't let you go any further.",  Slot1, true, 1.4F);
-		tute.AddQuote("The more mana you absorb, the stronger you'll be...",  Slot1, true, 1.4F);
-		tute.AddQuote("And I can't have you escaping back to the surface.",  Slot1, true, 1.4F);
+		tute.AddQuote("Excellent work, making it this far.",  Slot1, true, 0.8F);
+		tute.AddQuote("But I can't let you go any further.",  Slot1, true, 0.8F);
+		tute.AddQuote("The more mana you absorb, the stronger you'll be...",  Slot1, true, 0.8F);
+		tute.AddQuote("And I can't have you escaping back to the surface.",  Slot1, true, 0.8F);
 
-		tute.AddQuote("So I'll just get rid of you now.",  Slot1, true, 1.4F);
+		tute.AddQuote("So I'll just get rid of you now.",  Slot1, true, 0.8F);
 
 		yield return StartCoroutine(UIManager.instance.Quote(tute.ToArray()));
 		Slot2.Timer = 0;
@@ -75,6 +75,41 @@ public class WardenBattle : Wave {
 		}
 
 		yield return null;
+	}
+
+
+	protected override IEnumerator WaveActivateRoutine()
+	{
+		UIManager.Objects.TopGear[2].SetActive(false);
+		UIManager.Objects.BotGear.SetTween(0, false);
+		UIManager.Objects.TopGear.SetTween(0, true);
+		UIManager.Objects.TopGear.FreeWheelDrag = true;
+
+		GameManager.instance.paused = true;
+		UIManager.instance.ScreenAlert.SetTween(0,true);
+
+		UIManager.Objects.TopGear.FreeWheelDrag = false;
+		UIManager.Objects.TopGear.MoveToDivision(0);
+
+		yield return StartCoroutine(UIManager.instance.Alert(1.25F, true, Name));
+
+		UIManager.Objects.TopGear[2].SetActive(true);
+		for(int i = 0; i < AllSlots.Length; i++)
+		{
+			if(AllSlots[i] == null) continue;
+			if(AllSlots[i].Active)
+			{
+				 yield return StartCoroutine(AllSlots[i].OnStart());
+			}
+		}
+
+		for(int i = 1; i < UIManager.Objects.TopGear[1].Length; i++)
+		{
+			UIManager.Objects.TopGear[1][i][0].SetActive(false);
+		}
+
+		GameManager.instance.paused = false;
+		UIManager.instance.ScreenAlert.SetTween(0,false);
 	}
 
 	protected override IEnumerator WaveEndRoutine()

@@ -26,14 +26,14 @@ public class Altar : Tile {
 	{
 		base.Setup(x,y,scale,inf,value_inc);
 		
-		InitStats.Deathtime = Stats.Value - 1;
+		InitStats.Deathtime = Stats.Value;
 		CheckStats();
 	}
 
 
-	public override IEnumerator BeforeTurnRoutine()
+	public override IEnumerator AfterTurnRoutine()
 	{
-		Reset();
+		yield return StartCoroutine(base.AfterTurnRoutine());
 		if(Stats.Lifetime >= Stats.Deathtime) 
 		{
 			DestroyThyself(true);

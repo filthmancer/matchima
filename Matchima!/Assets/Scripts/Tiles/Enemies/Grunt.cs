@@ -4,17 +4,17 @@ using System.Collections;
 public class Grunt : Enemy {
 
 
-	private int GruntHPFactor = 11, GruntHPAdded = 1;
-	private int GruntATKFactor = 20, GruntATKAdded = 1;
+	private int GruntHPFactor = 9, GruntHPAdded = 1;
+	private int GruntATKFactor = 18, GruntATKAdded = 1;
 
 	private int CaptainHPFactor = 8, CaptainHPAdded = 1;
-	private int CaptainATKFactor = 20, CaptainATKAdded = 1;
+	private int CaptainATKFactor = 18, CaptainATKAdded = 1;
 
-	private int ChiefHPFactor = 13, ChiefHPAdded = 2;
-	private int ChiefATKFactor = 19, ChiefATKAdded = 1;
+	private int ChiefHPFactor = 11, ChiefHPAdded = 2;
+	private int ChiefATKFactor = 18, ChiefATKAdded = 1;
 
 	private int TerrorHPFactor = 13, TerrorHPAdded = 5;
-	private int TerrorATKFactor = 18, TerrorATKAdded = 1;
+	private int TerrorATKFactor = 16, TerrorATKAdded = 1;
 
 	public override StCon [] Description
 	{
@@ -36,8 +36,6 @@ public class Grunt : Enemy {
 				break;
 			}
 			return new StCon[]{new StCon((_EnemyType + " Enemy")),
-							   new StCon((Stats.Hits > 0 ? Stats.Hits : 0) + " Health", GameData.Colour(GENUS.STR), false),
-							   new StCon((Stats.Attack > 0 ? Stats.Attack : 0) + " Attack", GameData.Colour(GENUS.DEX)),
 							   new StCon(d)
 							   };
 		}
@@ -72,7 +70,7 @@ public class Grunt : Enemy {
 		float hpfactor = Random.Range(HPRange.x, HPRange.y);
 		float atkfactor = Random.Range(ATKRange.x, ATKRange.y);
 
-		factor *= Random.Range(0.8F, 1.1F);
+		factor *= Random.Range(0.8F, 1.4F);
 		factor = factor * (InitStats.Value);
 		Rank = 1;
 		if(InitStats.Value > 10) Rank = 4;

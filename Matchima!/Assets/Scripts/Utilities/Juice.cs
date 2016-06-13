@@ -6,9 +6,7 @@ public class Juice : MonoBehaviour {
 	{
 		get {return GameManager.instance._Juice;}
 	}
-	public AnimationCurve ClockworkA;
-
-	public AnimationCurve BounceA;
+	public Curve3D BounceB;
 
 	public JuiceIt Squish;
 	public JuiceIt Ripple;
@@ -49,9 +47,18 @@ public class Juice : MonoBehaviour {
 		return anim.Evaluate(t);
 	}
 
-	public Vector3 JuiceItNow(Curve3D j, Vector3 init, float curr)
+	public Vector3 JuiceItNow(Curve3D j, Vector3 init, float curr, float inten = 1.0F)
 	{
-		return Vector3.Scale(init, j.Evaluate(curr));
+		return Vector3.Scale(init, j.Evaluate(curr) * inten);
+	}
+
+	public Vector3 ScaleItNow(Curve3D j, Vector3 init, float curr, float inten = 1.0F)
+	{
+		Vector3 finscale = j.Evaluate(curr);
+		finscale.x = 1.0F - ((1.0F - finscale.x) * inten);
+		finscale.y = 1.0F - ((1.0F - finscale.y) * inten);
+		finscale.z = 1.0F - ((1.0F - finscale.z) * inten);
+		return Vector3.Scale(init, finscale);
 	}
 
 	public void JuiceIt(JuiceIt j, Transform t, float time, float intensity = 1.0F)

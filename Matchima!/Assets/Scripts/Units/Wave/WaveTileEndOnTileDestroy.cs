@@ -6,6 +6,7 @@ public class WaveTileEndOnTileDestroy : WaveTile {
 	public List<Tile> targets;
 	private List<Vector2> targetpoints;
 	public bool DestroyOnWaveEnd = true;
+	public int PointsPerTarget = 1;
 	public override IEnumerator OnStart()
 	{
 		if(!Active || Ended) yield break;
@@ -71,7 +72,7 @@ public class WaveTileEndOnTileDestroy : WaveTile {
 		}
 		if(end) 
 		{
-			Parent.AddPoints(-1000);
+			Parent.AddPoints(-PointsPerTarget);
 			OnEnd();
 		}
 		Complete();

@@ -138,7 +138,7 @@ public class Collect : Ability {
 		float final_mult = (1 + StatBonus()) * upgrade_value_mult;
 		bonuses.Add(new Bonus(final_mult , "ABL", "Bonus from " + name + " ability", GameData.instance.GetGENUSColour(GENUS.PRP)));
 		
-		GameManager.instance.CollectResources(resource, heal, armour, bonuses.ToArray());
+		//GameManager.instance.CollectResources(resource, heal, armour, bonuses.ToArray());
 		
 		cooldown_time = cooldown;
 		activated = false;

@@ -20,11 +20,18 @@ public class UIGear : UIObjTweener {
 								  // it stops dragging.
 	public bool DontLandOnSameDivision; //Move to next division if it will land
 										//on the same one
+	[HideInInspector]
+	public bool DoDivisionLerpActions;
 
+	public int ThisDivision
+	{
+		get{return drag_closest_division;}
+	}
 	public int LastDivision
 	{
 		get{return drag_last_division;}
 	}
+
 
 	private bool isDragging;
 	private Vector3 dragAcc, dragAcc_avg;
@@ -81,7 +88,6 @@ public class UIGear : UIObjTweener {
 					gearTrans.Rotate(new Vector3(0,0,FlipDrag ? -dragAcc.x : dragAcc.x));
 				else if(DragLerpDivisions > 0)
 				{
-					
 					if(!drag_divisionlerp && !isDragging)
 					{
 						drag_divisionlerp = true;
@@ -98,7 +104,7 @@ public class UIGear : UIObjTweener {
 						}
 
 						
-						OnDivisionLerp(drag_closest_division);
+						if(DoDivisionLerpActions) OnDivisionLerp(drag_closest_division);
 						drag_last_division = drag_closest_division;
 						
 					}

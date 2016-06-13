@@ -45,7 +45,7 @@ public class UIClassButton : UIObj {
 			if(tooltip_timer > 0.0F)	tooltip_timer -= Time.deltaTime;
 			else 
 			{
-				UIManager.instance.ShowSimpleTooltip(true, this.transform, _class._Name, _class._Desc);
+				//UIManager.instance.ShowSimpleTooltip(true, this.transform, _class._Name, _class._Desc);
 				over = false;
 			}
 		}
@@ -209,7 +209,7 @@ public class UIClassButton : UIObj {
 	public void MouseOut()
 	{
 		over = false;
-		UIManager.instance.ShowTooltip(false);
+		//UIManager.instance.ShowTooltip(false);
 		//if(PartialOpen.IsObjectOpened())
 		//{
 		// PartialOpen.OpenCloseObjectAnimation();

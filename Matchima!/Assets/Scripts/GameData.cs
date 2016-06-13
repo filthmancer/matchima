@@ -31,6 +31,7 @@ public class GameData : MonoBehaviour {
 	public Color Combo;
 	public ItemColours _ItemColours;
 	public Color GoodColour, BadColour;
+	public Color GoodColourFill, BadColourFill;
 	public Color ShieldFull, ShieldEmpty;
 
 	//public ClassContainer [] Classes;

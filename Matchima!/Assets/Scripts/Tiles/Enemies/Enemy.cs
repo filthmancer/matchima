@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 
 public enum EnemyType
@@ -24,7 +25,7 @@ public class Enemy : Tile {
 
 	private float threat_anim, threat_anim_init = 0.4F;
 
-	public override StCon [] Description
+	/*public override StCon [] Description
 	{
 		get{
 			return new StCon[]{
@@ -32,6 +33,22 @@ public class Enemy : Tile {
 				new StCon((Stats.Hits > 0 ? Stats.Hits : 0) + " Health"),
 				new StCon((Stats.Attack > 0 ? Stats.Attack : 0) + " Attack")
 			};
+		}
+	}*/
+
+	public override StCon [] BaseDescription
+	{
+		get{
+			List<StCon> basic = new List<StCon>();
+			if(Stats.Resource != 0)
+			basic.Add(new StCon("+" + Stats.GetValues()[0] + " Mana", GameData.Colour(Genus), false));
+			if(Stats.Heal != 0)
+			basic.Add(new StCon("+" + Stats.GetValues()[1] + "% Health", GameData.Colour(GENUS.STR), false));
+			if(Stats.Armour != 0)
+			basic.Add(new StCon("+" + Stats.GetValues()[2] + " Armour", GameData.Colour(GENUS.DEX), false));
+			basic.Add(new StCon((Stats.Hits > 0 ? Stats.Hits : 0) + " Health", GameData.Colour(GENUS.STR), false));
+			basic.Add(new StCon((Stats.Attack > 0 ? Stats.Attack : 0) + " Attack", GameData.Colour(GENUS.DEX), false));
+			return basic.ToArray();
 		}
 	}
 
@@ -48,12 +65,6 @@ public class Enemy : Tile {
 	}
 
 
-
-	public override void Start()
-	{
-		base.Start();
-	}
-
 	public sealed override void Setup(int x, int y, int scale, TileInfo sp, int value_inc = 0)
 	{
 		base.Setup(x,y, scale, sp, value_inc);
@@ -68,7 +79,7 @@ public class Enemy : Tile {
 		float hpfactor = Random.Range(HPRange.x, HPRange.y);
 		float atkfactor = Random.Range(ATKRange.x, ATKRange.y);
 
-		factor *= Random.Range(0.8F, 1.2F);
+		factor *= Random.Range(0.8F, 1.4F);
 		Rank = 1;
 
 		InitStats.Hits        = (int)(hpfactor);
@@ -134,7 +145,7 @@ public class Enemy : Tile {
 			threat_time -= Time.deltaTime;
 			if(threat_time <= 0.0F) 
 			{
-				AudioManager.instance.PlayClipOn(this.transform, "Enemy", "Threat");
+				AudioManager.instance.PlayClipOn(trans, "Enemy", "Threat");
 			}
 		}
 	}
@@ -150,11 +161,25 @@ public class Enemy : Tile {
 		if(isMatching) yield break;
 		isMatching = true;
 
-		if(!original) yield break;
-		InitStats.TurnDamage += PlayerControl.instance.AttackValue;
-		AudioManager.instance.PlayClipOn(this.transform, "Enemy", "Hit");
-		GameObject part = EffectManager.instance.PlayEffect(this.transform, Effect.Attack);
+		if(original) InitStats.TurnDamage += PlayerControl.instance.AttackValue;
+
+		AudioManager.instance.PlayClipOn(trans, "Enemy", "Hit");
+		GameObject part = EffectManager.instance.PlayEffect(trans, Effect.Attack);
 		yield return new WaitForSeconds(GameData.GameSpeed(0.03F));
+
+		float init_rotation = Random.Range(-3,3);
+		float info_time = 0.4F;
+		float info_start_size = 110;
+		float info_movespeed = 0.25F;
+		float info_finalscale = 0.65F;
+
+		Vector3 pos = TileMaster.Grid.GetPoint(Point.Point(0)) + Vector3.down * 0.3F;
+		MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + InitStats.TurnDamage, info_start_size, GameData.Colour(Genus), info_time, 0.6F, false);
+		m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
+		m.SetVelocity(Utility.RandomVectorInclusive(0.4F) + (Vector3.up*0.6F));
+		m.Gravity = true;
+		m.AddJuice(Juice.instance.BounceB, info_time/0.8F);
+
 		CameraUtility.instance.ScreenShake(0.35F,  GameData.GameSpeed(0.07F));
 		yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 	}
@@ -244,20 +269,12 @@ public class Enemy : Tile {
 	{
 		if(type == "Attack")
 		{
-			SetDamage();
+			Juice.instance.JuiceIt(Juice._Attack, Params._render.transform, 0.7F, 1.0F);
 		} 
 		if(time != 0.0F) yield return new WaitForSeconds(time);
 		else yield return null;
 	}
 
-	void SetDamage()
-	{
-		AudioManager.instance.PlayClipOn(this.transform, "Enemy", "Attack");
-		UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), "" + GetAttack(), 85, Color.red, 0.8F,0.02F);
-		//_anim.SetBool("Threat", false);
-		Juice.instance.JuiceIt(Juice._Attack, Params._render.transform, 0.7F, 1.0F);
-		//_anim.SetTrigger("Attack");
-	}
 
 	public override void Stun(int stun)
 	{

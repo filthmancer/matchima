@@ -3,7 +3,21 @@ using System.Collections;
 
 public class CameraUtility : MonoBehaviour {
 	public static CameraUtility instance;
-	void Awake(){instance = this;}
+	
+	void Awake()
+	{
+		if(instance == null)
+		{
+			instance = this;
+		}
+		else if(instance != this) 
+		{
+			instance.Invoke("Start",0.05F);
+			Destroy(this.gameObject);
+		}
+	}
+
+	public Light MainLight;
 
 	public static Vector3 TargetPos;
 	public static float TargetOrtho = 0.0F;

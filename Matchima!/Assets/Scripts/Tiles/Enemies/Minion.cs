@@ -10,8 +10,7 @@ public class Minion : Enemy {
 	{
 		get{
 			return new StCon[]{
-			new StCon((Stats.Hits > 0 ? Stats.Hits : 0) + " Health", GameData.Colour(GENUS.STR), false),
-			new StCon((Stats.Attack > 0 ? Stats.Attack : 0) + " Attack", GameData.Colour(GENUS.DEX)),
+			new StCon((_EnemyType + " Enemy")),
 			new StCon("A weak enemy with\n a strong attack")
 			};
 		}

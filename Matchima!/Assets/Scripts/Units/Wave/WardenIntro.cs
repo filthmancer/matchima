@@ -79,7 +79,7 @@ public class WardenIntro : Wave {
 					tute.AddQuote("But that's the way we came in!", Player.Classes[1], true, 1.4F);
 					yield return StartCoroutine(UIManager.instance.Quote(tute.ToArray()));
 
-					Slot1.OnEnd();
+					AddPoints(-1);
 				break;
 			}
 			yield return null;

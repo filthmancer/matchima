@@ -16,9 +16,7 @@ public class Blob : Enemy {
 		get{
 			return new StCon[]{
 				new StCon((_EnemyType + " Enemy")),
-				new StCon((Stats.Hits > 0 ? Stats.Hits : 0) + " Health", GameData.Colour(GENUS.STR), false),
-				new StCon((Stats.Attack > 0 ? Stats.Attack : 0) + " Attack", GameData.Colour(GENUS.DEX)),
-				new StCon("Merges with other\nenemies to increase\nattack and health", GameData.Colour(GENUS.WIS))
+				new StCon("Merges with other blobs", GameData.Colour(GENUS.PRP))
 			};
 		}
 	}
@@ -36,8 +34,8 @@ public class Blob : Enemy {
 		factor *= Random.Range(0.8F, 1.1F);
 		factor = factor * (InitStats.Value);
 
-		hpfactor    *= BlobHPAdded + factor / 3;
-		atkfactor   *= BlobATKAdded + factor / 8;
+		hpfactor    *= BlobHPAdded + factor / 4.0F;
+		atkfactor   *= BlobATKAdded + factor / 4.0F;
 
 		InitStats.Hits        = (int)(hpfactor);
 		InitStats.Attack      = (int)(atkfactor);
@@ -192,7 +190,6 @@ public class Blob : Enemy {
 			//InitStats.Resource += (int) (InitStats.value_soft) - InitStats.Value;
 			InitStats.Value = (int)InitStats.value_soft;
 
-
 			UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), "" + (Stats.Value), 75, Color.white,0.8F,0.0F);
 			Animate("Alert");
 		}
@@ -200,7 +197,6 @@ public class Blob : Enemy {
 
 	public IEnumerator MergeBlobs(Tile m)
 	{
-
 		SetState(TileState.Idle, true);
 
 		Vector3 pos = transform.position + (GameData.RandomVector*1.4F);
@@ -216,10 +212,8 @@ public class Blob : Enemy {
 			);
 
 
-		yield return new WaitForSeconds(0.35F);
-		
-		
-		yield return new WaitForSeconds(0.15F);
+		yield return new WaitForSeconds(0.5F);
+	
 		Reset();
 
 		if(m.Stats.Value > m.Point.Scale * 15)
@@ -260,10 +254,12 @@ public class Blob : Enemy {
 										TileMaster.Types["blob"], gen, 
 										group[0].Point.Scale+1, 0);
 
+		TileMaster.Tiles[x,y].RemoveEffect("Sleep");
+
 		
-		TileMaster.Tiles[x,y].InitStats.Value = (int)Mathf.Clamp((float)TileMaster.Tiles[x,y].InitStats.Value * 0.4F, 1, ((float)value*0.4F));
-		//TileMaster.Tiles[x,y].InitStats.Hits += hits/2;
-		//TileMaster.Tiles[x,y].InitStats.Attack += attack/2;
+		TileMaster.Tiles[x,y].InitStats.Value = (int)Mathf.Clamp((float)TileMaster.Tiles[x,y].InitStats.Value, 1, ((float)value));
+		TileMaster.Tiles[x,y].InitStats.Hits += hits;
+		//TileMaster.Tiles[x,y].InitStats.Attack += attack;
 
 		TileMaster.Tiles[x,y].CheckStats();
 

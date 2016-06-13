@@ -605,10 +605,10 @@ public class TileInfo
 		FinalEffects.AddRange(s.Effects);
 		FinalEffects.AddRange(s[g].Effects);
 		
-		if(!s.isEnemy) 
+		/*if(!s.isEnemy && !s.isHealth) 
 		{
 			FinalValue.Mult(1 + GameManager.Difficulty/10);
-		}
+		}*/
 	}
 
 	public TileInfo(TileInfo t)

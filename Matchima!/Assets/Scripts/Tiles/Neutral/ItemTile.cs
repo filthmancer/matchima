@@ -39,8 +39,6 @@ public class ItemTile : Tile {
 		GameObject item_obj = Instantiate(ItemObj);
 		_Item = item_obj.GetComponent<Item>();
 		_Item.SetStats(null, Stats.Value, Genus);
-		//_render.sprite = _Item.Icon;
-
 		Player.instance.PickupItem(_Item);
 		CollectThyself(true);
 		TileMaster.Tiles[Point.Base[0], Point.Base[1]] = null;

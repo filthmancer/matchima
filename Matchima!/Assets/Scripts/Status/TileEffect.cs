@@ -25,4 +25,9 @@ public class TileEffect : Status {
 		yield break;
 	}
 
+	public virtual void OnDestroy()
+	{
+		
+	}
+
 }

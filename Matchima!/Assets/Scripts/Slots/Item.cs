@@ -80,6 +80,7 @@ public class Item : Slot {
 
 	public List<Upgrade> AllUpgrades = new List<Upgrade>();
 	private string prefix = "";
+	public bool Seen;
 	//private int prefix_value = 0;
 
 

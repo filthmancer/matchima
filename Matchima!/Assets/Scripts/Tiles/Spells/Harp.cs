@@ -58,8 +58,8 @@ public class Harp : Tile {
 		new_part.transform.position = transform.position;
 		new_part.transform.parent = transform;
 
-		TileMaster.instance.Ripple(this, to_collect, 2.4F*Stats.Value, GameData.GameSpeed(0.5F), 0.2F);
-		yield return new WaitForSeconds(GameData.GameSpeed(0.45F));
+		TileMaster.instance.Ripple(this, to_collect, 2.4F*Stats.Value, GameData.GameSpeed(0.45F), 0.2F);
+		yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 		if(to_collect.Count > 0)
 		{
 			foreach(Tile child in to_collect)
@@ -69,14 +69,16 @@ public class Harp : Tile {
 					if(child.Type.isEnemy) 
 					{					
 						child.SetState(TileState.Selected, true);
-						MiniAlertUI m = UIManager.instance.MiniAlert(child.Point.targetPos, "Sleep", 55, GameData.Colour(child.Genus), 1.2F, 0.1F);
+						MiniAlertUI m = UIManager.instance.MiniAlert(child.Point.targetPos, " Sleep", 65, GameData.Colour(child.Genus), 0.3F, 0.1F);
 						child.AddEffect("Sleep", StunDuration);
 					}
 					
 				}
 			}
-		}
+			yield return new WaitForSeconds(GameData.GameSpeed(0.3F));
 
+		}
+		
 		yield break;
 	}
 

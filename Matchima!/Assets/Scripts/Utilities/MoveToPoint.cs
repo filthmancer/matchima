@@ -14,6 +14,8 @@ public class MoveToPoint : MonoBehaviour {
 	public Unit Target;
 	[HideInInspector]
 	public Tile Target_Tile;
+	[HideInInspector]
+	public int [] Target_Int;
 
 	private float LerpingSpeed = 1.0F;
 
@@ -27,6 +29,7 @@ public class MoveToPoint : MonoBehaviour {
 	private float final_scale = 1.0F;
 	Action method;
 	Action<Tile> tilemethod;
+	Action<int[]> intmethod;
 
 	// Update is called once per frame
 	void Update () {
@@ -54,6 +57,7 @@ public class MoveToPoint : MonoBehaviour {
 				{
 					if(method != null) method();
 					if(tilemethod != null) tilemethod(Target_Tile);
+					if(intmethod != null) intmethod(Target_Int);
 					if(!DontDestroy) Destroy(this.gameObject);
 					else Destroy(this);
 				}
@@ -113,4 +117,11 @@ public class MoveToPoint : MonoBehaviour {
 		Target_Tile = t;
 		tilemethod = a;
 	}
+
+	public void SetIntMethod(Action <int[]> a, params int [] i)
+	{
+		Target_Int = i;
+		intmethod = a;
+	}
+
 }

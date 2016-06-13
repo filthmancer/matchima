@@ -32,7 +32,7 @@ public class ModContainer : MonoBehaviour {
 		}
 	}
 
-	public static UpgradeBracket Basic = new UpgradeBracket("Basic", ItemType.Basic, 5.0F, new GenusBracket []
+	public static UpgradeBracket Basic = new UpgradeBracket("Basic", ItemType.Basic, 1.0F, new GenusBracket []
 	{
 		new GenusBracket("Red",
 			new Upgrade("Wise", " Max MP", 1.0F, ScaleType.GRADIENT, 0.4F, (Stat s, float val) => {s.MeterMax += 5 + (int)val;}, 1, 5),
@@ -57,7 +57,7 @@ public class ModContainer : MonoBehaviour {
 		
 	});
 
-	public static UpgradeBracket Generator = new UpgradeBracket("Generator", ItemType.Generator, 0.6F, new GenusBracket[]
+	public static UpgradeBracket Generator = new UpgradeBracket("Generator", ItemType.Generator, 0.75F, new GenusBracket[]
 	{
 		new GenusBracket("Red",
 			new Upgrade("Bombers's", "% chance of Bomb", 0.45F, ScaleType.GRADIENT, 0.06F,

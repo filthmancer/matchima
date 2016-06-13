@@ -8,8 +8,7 @@ public class Mimic : Enemy {
 	{
 		get{
 			if(revealed) return new StCon[]{
-				new StCon((Stats.Hits > 0 ? Stats.Hits : 0) + " Health", GameData.Colour(GENUS.STR), false),
-				new StCon((Stats.Attack > 0 ? Stats.Attack : 0) + " Attack", GameData.Colour(GENUS.DEX)),
+				new StCon((_EnemyType + " Enemy")),
 				new StCon("High damage trickster enemy.", GameData.Colour(Genus))
 			};
 			else return new StCon[]{new StCon("Contains an item.", GameData.Colour(Genus))};

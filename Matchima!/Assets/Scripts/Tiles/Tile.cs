@@ -14,16 +14,16 @@ public class Tile : MonoBehaviour {
 	public int x{get{return Point.Base[0];}}
 	public int y{get{return Point.Base[1];}}
 
-	public StCon [] BaseDescription
+	public virtual StCon [] BaseDescription
 	{
 		get{
 			List<StCon> basic = new List<StCon>();
 			if(Stats.Resource != 0)
-			basic.Add(new StCon("+" + Stats.GetValues()[0] + " "  + GameData.ResourceLong(Genus) + " Mana", GameData.Colour(Genus)));
+			basic.Add(new StCon("+" + Stats.GetValues()[0] + " Mana", GameData.Colour(Genus), false));
 			if(Stats.Heal != 0)
-			basic.Add(new StCon("+" + Stats.GetValues()[1] + "% Health", GameData.Colour(GENUS.STR)));
+			basic.Add(new StCon("+" + Stats.GetValues()[1] + "% Health", GameData.Colour(GENUS.STR), false));
 			if(Stats.Armour != 0)
-			basic.Add(new StCon("+" + Stats.GetValues()[2] + " Armour", GameData.Colour(GENUS.DEX)));
+			basic.Add(new StCon("+" + Stats.GetValues()[2] + " Armour", GameData.Colour(GENUS.DEX), false));
 			return basic.ToArray();
 		}
 	}
@@ -36,8 +36,18 @@ public class Tile : MonoBehaviour {
 		get{
 			List<StCon> final = new List<StCon>();
 			if(Genus == GENUS.OMG) final.Add(new StCon("Cannot be matched", Color.grey));
-			final.AddRange(BaseDescription);
+			//final.AddRange(BaseDescription);
 			if(Description != null)	final.AddRange(Description);
+			if(EffectDescription != null) final.AddRange(EffectDescription);
+			return final.ToArray();
+		}
+	}
+
+	public virtual StCon [] EffectDescription
+	{
+		get
+		{
+			List<StCon> final = new List<StCon>();
 			foreach(TileEffect child in Effects)
 			{
 				final.AddRange(child.Description);
@@ -85,7 +95,8 @@ public class Tile : MonoBehaviour {
 	public bool AfterTurnCheck = false;
 	[HideInInspector]
 	public bool originalMatch = false;
-
+	//[HideInInspector]
+	public bool AttackedThisTurn;
 	public TileParamContainer Params;
 
 	[HideInInspector]
@@ -121,6 +132,8 @@ public class Tile : MonoBehaviour {
 	public bool state_override = false;
 
 	protected List<GameObject> particles;
+	protected Transform trans;
+
 
 	protected virtual TileUpgrade [] AddedUpgrades
 	{
@@ -170,8 +183,7 @@ public class Tile : MonoBehaviour {
 
 	// Use this for initialization
 	public virtual void Start () {
-
-       
+       trans = this.transform;
 	}
 
 	public void Setup(int x, int y)
@@ -179,7 +191,7 @@ public class Tile : MonoBehaviour {
 		//Setup(x,y, _Scale, Info, InitStats.Value-1);
 
 		Point = new TilePointContainer(x,y,_Scale, this);
-
+		trans = this.transform;
 		if(!Info.ShiftOverride) InitStats.Shift = Player.Stats.Shift;
 		else InitStats.Shift = Info.Shift;
 		transform.name = Info.Name + " | " + Point.Base[0] + ":" + Point.Base[1];
@@ -189,7 +201,7 @@ public class Tile : MonoBehaviour {
 	public virtual void Setup(int x, int y, int scale, TileInfo inf, int value_inc = 0)
 	{
 		Point = new TilePointContainer(x,y,scale, this);
-
+		trans = this.transform;
 		Info = new TileInfo(inf);
 
 		if(Params != null)
@@ -237,7 +249,8 @@ public class Tile : MonoBehaviour {
 		InitStats.Value = Info.Value;
 		if(InitStats.Hits == 0) InitStats.Hits = 1;
 		AddUpgrades(val);
-		
+
+		InitStats.Lifetime = 0;
 		InitStats.isNew = true;
 		InitStats.value_soft = (float) InitStats.Value;
 
@@ -319,7 +332,7 @@ public class Tile : MonoBehaviour {
 						{	
 							SetState(TileState.Selected);
 							PlayerControl.instance.GetSelectedTile(this);
-							AudioManager.instance.PlayClipOn(this.transform, "Player", "Touch");
+							AudioManager.instance.PlayClipOn(trans, "Player", "Touch");
 						}
 						else SetState(TileState.Idle);	
 					}		
@@ -379,7 +392,7 @@ public class Tile : MonoBehaviour {
 					linepos = PlayerControl.InputPos;
 					//Params._render.transform.position = Vector3.Lerp(Point.targetPos, transform.position + vel, 0.02F);
 				}
-				/*Vector3 [] points = LightningLine(this.transform.position, linepos, 5, 0.01F + PlayerControl.MatchCount * 0.005F);
+				/*Vector3 [] points = LightningLine(trans.position, linepos, 5, 0.01F + PlayerControl.MatchCount * 0.005F);
 				for(int i = 0; i < points.Length; i++)
 				{
 					Params.lineIn.SetPosition(i, points[i]);
@@ -408,7 +421,7 @@ public class Tile : MonoBehaviour {
 					return;
 				}
 
-				/*Vector3 [] points = LightningLine(this.transform.position, LineTarget.transform.position, 5, 0.01F + PlayerControl.MatchCount * 0.005F);
+				/*Vector3 [] points = LightningLine(trans.position, LineTarget.transform.position, 5, 0.01F + PlayerControl.MatchCount * 0.005F);
 				for(int i = 0; i < points.Length; i++)
 				{
 					Params.lineIn.SetPosition(i, points[i]);
@@ -568,7 +581,7 @@ public class Tile : MonoBehaviour {
 			break;
 			case TileState.Locked:
 			targetScale = defaultScale;
-			targetColor = def * 0.65F;
+			targetColor = Color.Lerp(def, Color.black, 0.65F);
 			break;
 			case TileState.Selected:
 			targetScale = defaultScale * 1.2F;
@@ -615,7 +628,7 @@ public class Tile : MonoBehaviour {
 		if(this == null) return false;
 		InitStats.Hits -= 1;
 		CheckStats();
-		AudioManager.instance.PlayClipOn(this.transform, "Player", "Match");
+		AudioManager.instance.PlayClipOn(trans, "Player", "Match");
 		if(Stats.Hits <= 0)
 		{
 			isMatching = true;
@@ -624,12 +637,13 @@ public class Tile : MonoBehaviour {
 			
 			CollectThyself(true);
 			TileMaster.Tiles[Point.Base[0], Point.Base[1]] = null;
+
 			return true;			
 		}
 		else 
 		{
 			isMatching = false;
-			EffectManager.instance.PlayEffect(this.transform,Effect.Attack);
+			EffectManager.instance.PlayEffect(trans,Effect.Attack);
 		}
 		return false;
 	}
@@ -680,9 +694,8 @@ public class Tile : MonoBehaviour {
 			TileMaster.instance.AddVelocityToColumn(Point.Base[0], Point.Base[1], 0.2F + Stats.Value * 0.5F);
 			Destroyed = true;
 			GetComponent<SphereCollider>().enabled = false;
-			
 		}
-		
+
 		TileMaster.instance.CollectTile(this, destroy);
 	}
 
@@ -704,7 +717,7 @@ public class Tile : MonoBehaviour {
 			bool dest = true;
 			float gravity = 0.03F;
 			float vel = -0.2F;
-			float life = 1.0F;
+			float life = 0.5F;
 	
 			float sidevel = UnityEngine.Random.value > 0.5F ? UnityEngine.Random.value * 0.1F : -UnityEngine.Random.value * 0.1F;
 			
@@ -731,7 +744,7 @@ public class Tile : MonoBehaviour {
 		else yield return null;
 	}
 
-	public virtual bool CanAttack() {return Type.isEnemy && Stats.Attack > 0;}
+	public virtual bool CanAttack() {return !AttackedThisTurn && Type.isEnemy && Stats.Attack > 0;}
 	public virtual int GetAttack() {return Mathf.Max(Stats.Attack, 0);}
 	public virtual int GetHealth() {return Mathf.Max(Stats.Hits,0);}
 	public virtual void Stun(int Stun){}
@@ -752,19 +765,19 @@ public class Tile : MonoBehaviour {
 			float dist = Vector3.Distance(nextTile.transform.position, transform.position);
 			Vector3 vel = nextTile.transform.position - transform.position;
 
-			Vector3 [] points = LightningLine(this.transform.position, nextTile.transform.position, 4, 0.1F);
+			Vector3 [] points = LightningLine(trans.position, nextTile.transform.position, 4, 0.1F);
 
 			for(int i = 0; i < points.Length; i++)
 			{
 				Params.lineIn.SetPosition(i, points[i]);
 				Params.lineOut.SetPosition(i, points[i] + Vector3.back);
 			}
-			//Params.lineIn.SetPosition(0, this.transform.position);
+			//Params.lineIn.SetPosition(0, trans.position);
 			//Params.lineIn.SetPosition(1, nextTile.transform.position);
 			Params.lineIn.SetColors(GameData.instance.GetGENUSColour(Genus), GameData.instance.GetGENUSColour(nextTile.Genus));
 
 			Params.lineOut.SetColors(Color.white, Color.white);
-			//Params.lineOut.SetPosition(0, this.transform.position + Vector3.back);
+			//Params.lineOut.SetPosition(0, trans.position + Vector3.back);
 			//Params.lineOut.SetPosition(1, nextTile.transform.position + Vector3.back);
 		}
 	}
@@ -853,6 +866,7 @@ public class Tile : MonoBehaviour {
 		//if(!IsState(TileState.Locked) && 
 		state_override = false;
 		originalMatch = false;
+		AttackedThisTurn = false;
 		if(idle) SetState(TileState.Idle);
 	}
 
@@ -910,6 +924,67 @@ public class Tile : MonoBehaviour {
 		}
 		return 0;
 	}
+
+	public void AttackPlayer()
+	{
+		AudioManager.instance.PlayClipOn(trans, "Enemy", "Attack");
+		//UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), "" + GetAttack(), 95, Color.red, 0.8F,0.08F);
+
+		float init_size = UnityEngine.Random.Range(130, 170);
+		float init_rotation = UnityEngine.Random.Range(-7,7);
+
+		float info_time = 0.57F;
+		float info_size = init_size + (GetAttack() * 2);
+		float info_movespeed = 0.22F;
+		float info_finalscale = 0.65F;
+
+		Vector3 pos = TileMaster.Grid.GetPoint(Point.Point(0));
+		MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + GetAttack(), info_size, Color.black, info_time, 0.03F, false);
+		m.Txt[0].outlineColor = GameData.Colour(Genus);
+		m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
+		MoveToPoint mini = m.GetComponent<MoveToPoint>();
+		m.AddJuice(Juice.instance.BounceB, info_time);
+		m.AddAction(() => {mini.enabled = true;});
+		m.DestroyOnEnd = false;
+
+		mini.SetTarget(UIManager.instance.Health.transform.position);
+		mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
+		mini.SetMethod(() =>{
+				Player.instance.OnHit(this);
+				AudioManager.instance.PlayClipOn(Player.instance.transform, "Player", "Hit");
+				GameData.Log("Took " + this.GetAttack() + "damage from " + this);
+			}
+		);
+	}
+
+	public void AttackWaveUnit(Wave w)
+	{
+		float init_size = UnityEngine.Random.Range(130, 170);
+		float init_rotation = UnityEngine.Random.Range(-7,7);
+
+		float info_time = 0.57F;
+		float info_size = init_size + (GetAttack() * 2);
+		float info_movespeed = 0.22F;
+		float info_finalscale = 0.65F;
+
+		Vector3 pos = TileMaster.Grid.GetPoint(Point.Point(0));
+		MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + GetAttack(), info_size, GameData.instance.BadColour, info_time, 0.03F, false);
+		m.Txt[0].outlineColor = GameData.Colour(Genus);
+		m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
+		MoveToPoint mini = m.GetComponent<MoveToPoint>();
+		m.AddJuice(Juice.instance.BounceB, info_time);
+		m.AddAction(() => {mini.enabled = true;});
+		m.DestroyOnEnd = false;
+
+		mini.SetTarget(UIManager.Objects.TopGear[1][0][0].transform.position);
+		mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
+		mini.SetMethod(() =>{
+				w.AddPoints(-GetAttack());
+				//AudioManager.instance.PlayClipOn(Player.instance.transform, "Player", "Hit");
+			}
+		);
+	}
+
 
 	public virtual void SetValue(int val)
 	{
@@ -1050,8 +1125,8 @@ public class Tile : MonoBehaviour {
 
 		TileEffect e = init;
 		e.Setup(this);
-		e.transform.position = this.transform.position;
-		e.transform.parent = this.transform;
+		e.transform.position = trans.position;
+		e.transform.parent = trans;
 		Effects.Add(e);
 		CheckStats();
 		return e;
@@ -1070,11 +1145,26 @@ public class Tile : MonoBehaviour {
 		TileEffect e = (Status) (Instantiate(GameData.instance.GetTileEffectByName(name))) as TileEffect;
 		e.GetArgs(duration, args);
 		e.Setup(this);
-		e.transform.position = this.transform.position;
-		e.transform.parent = this.transform;
+		e.transform.position = trans.position;
+		e.transform.parent = trans;
 		Effects.Add(e);
 		CheckStats();
 		return e;
+	}
+
+	public virtual void RemoveEffect(string name)
+	{
+		for(int i = 0; i < Effects.Count; i++)
+		{
+			if(Effects[i].Name == name)
+			{
+				TileEffect e = Effects[i];
+				Effects.RemoveAt(i);
+
+				e.OnDestroy();
+				Destroy(e.gameObject);
+			}
+		}
 	}
 
 	public virtual TileEffect AddEffect(TileEffectInfo inf)
