@@ -14,12 +14,6 @@ public enum MenuState
 
 public class UIMenu : UIObj {
 
-	public UIObj ClassMenu;
-	public UIObj PauseMenu;
-	public UIObj OptionsMenu;
-	public UIObj HelpMenu;
-	public UIObj DefaultMenu;
-
 	public UIObj ClassButton;
 	public UIObj ResumeGame;
 	public UIObj NewGame;
@@ -417,15 +411,6 @@ public class UIMenu : UIObj {
 		UIManager.Objects.MiddleGear[0].GetChild(1).Txt[0].text = "" + GameManager.instance.Mode;
 	}
 
-
-	public void BackToDefault()
-	{
-		DefaultMenu.SetActive(true);
-		ClassMenu.SetActive(false);
-		OptionsMenu.SetActive(false);
-		HelpMenu.SetActive(false);
-	}
-
 	public void NewGameActivate()
 	{
 		UIManager.Objects.MiddleGear[0].SetActive(false);
@@ -457,22 +442,12 @@ public class UIMenu : UIObj {
 			StartCoroutine(SetAlert());
 			return;
 		}
-		DefaultMenu.SetActive(false);
-		ClassMenu.SetActive(false);
 		
 		GameManager.instance.LoadGame(false);
 	}
 
-	public void CustomStartActivate()
-	{
-		//HeroMenu();
-		ClassMenu.SetActive(true);
-		DefaultMenu.SetActive(false);
-	}
-
 	public void ResumeGameActivate()
 	{
-		DefaultMenu.SetActive(false);
 		GameManager.instance.LoadGame(true);
 		UIManager.Objects.MiddleGear[0].SetActive(false);
 		UIManager.Objects.MiddleGear.Img[0].enabled = false;
@@ -488,37 +463,21 @@ public class UIMenu : UIObj {
 		(UIManager.Objects.BotGear[3][0] as UIGear).isFlashing = false;	
 	}
 
-	public void OptionsActivate()
-	{
-		OptionsMenu.SetActive(true);
-		ResetOptions();
-		DefaultMenu.SetActive(false);
-	}
-
 	public void ResetOptions()
 	{
-		OptionsMenu["RealNumbers"].BooleanObjColor(Player.Options.ShowNumbers);
-		OptionsMenu["RealHP"].BooleanObjColor(Player.Options.RealHP);
-		OptionsMenu["Intros"].BooleanObjColor(Player.Options.ShowIntroWaves);
-		OptionsMenu["Story"].BooleanObjColor(!Player.Options.SkipAllStory);
-	}
-
-	public void HelpActivate()
-	{
-		HelpMenu.SetActive(true);
-		DefaultMenu.SetActive(false);
+		//OptionsMenu["RealNumbers"].BooleanObjColor(Player.Options.ShowNumbers);
+		//OptionsMenu["RealHP"].BooleanObjColor(Player.Options.RealHP);
+		//OptionsMenu["Intros"].BooleanObjColor(Player.Options.ShowIntroWaves);
+		//OptionsMenu["Story"].BooleanObjColor(!Player.Options.SkipAllStory);
 	}
 
 	public void TutorialActivate()
 	{
-		DefaultMenu.SetActive(false);
 		Player.instance._Classes[0] = GameData.instance.GetClass("Barbarian");
 		//Player.instance._Classes[1] = GameData.instance.GetClass("Rogue");
 		//Player.instance._Classes[2] = GameData.instance.GetClass("Wizard");
 		//Player.instance._Classes[3] = GameData.instance.GetClass("Bard");
 		GameManager.TuteActive = true;
-		DefaultMenu.SetActive(false);
-		ClassMenu.SetActive(false);
 		GameManager.instance.LoadGame(false);
 	}
 

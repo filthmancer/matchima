@@ -497,10 +497,39 @@ public class GameManager : MonoBehaviour {
 		if(CurrentWave != null && CurrentWave != w) Destroy(CurrentWave.gameObject);
 		CurrentWave = Instantiate(w);
 		CurrentWave.transform.parent = this.transform;
+
+		for(int i = 0; i < GameManager.Wave.Length; i++)
+		{
+			if(GameManager.Wave[i] != null && GameManager.Wave[i].Active && UIManager.Objects.TopGear[1].Length > i)
+			{
+				UIObj wavebutton = UIManager.WaveButtons[i];
+				wavebutton.SetActive(true);
+				wavebutton.Txt[0].text = "";	
+				wavebutton.Img[1].transform.gameObject.SetActive(true);
+				wavebutton.Img[1].enabled = true;	
+				wavebutton.Img[0].enabled = true;
+				wavebutton.Img[0].sprite = GameManager.Wave[i].Inner;
+				wavebutton.Img[0].color = Color.white;
+				wavebutton.Img[2].enabled = true;
+				wavebutton.Img[2].sprite = GameManager.Wave[i].Outer;
+				wavebutton.Img[2].color = Color.white;				
+			}
+			else 
+			{
+				UIManager.WaveButtons[i].SetActive(false);
+			}
+		}
+
 		StartCoroutine(CurrentWave.Setup());
 
 		Difficulty += Mathf.Exp(Difficulty_Growth);
-	
+		UIManager.Objects.TopRightButton.Txt[0].text = "" + GameManager.Floor;
+		UIManager.Objects.TopRightButton.Txt[1].text = "" + GameManager.ZoneNum;
+
+		CameraUtility.instance.MainLight.color = Color.Lerp(
+			CameraUtility.instance.MainLight.color, UIManager.instance.BackingTint, Time.deltaTime * 5);
+		UIManager.Objects.Walls.Img[0].color = Color.Lerp(
+			UIManager.Objects.Walls.Img[0].color, UIManager.instance.WallTint, Time.deltaTime * 5);
 	}
 
 	IEnumerator _GetWave(Wave w = null)

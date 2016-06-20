@@ -381,6 +381,7 @@ public class Player : MonoBehaviour {
 		UIManager.Objects.MiddleGear[2][0].SetActive(true);
 		UIManager.Objects.MiddleGear[2].Txt[0].text = "";
 		UIManager.Objects.MiddleGear[2].Txt[1].text = "";
+		UIManager.Objects.TopRightButton.Txt[2].enabled = true;
 		ThisTurn_items.Add(i);
 		showingpickup = false;
 	}

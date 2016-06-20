@@ -89,9 +89,9 @@ public class UIManager : MonoBehaviour {
 			if(Input.touches.Length == 0) ShowGearTooltip(false);
 		}
 
-		Objects.TopRightButton.Txt[0].text = "" + GameManager.Floor;
-		Objects.TopRightButton.Txt[1].text = "" + GameManager.ZoneNum;
-		Objects.TopRightButton.Txt[2].enabled = Player.NewItems;
+		//Objects.TopRightButton.Txt[0].text = "" + GameManager.Floor;
+		//Objects.TopRightButton.Txt[1].text = "" + GameManager.ZoneNum;
+		//Objects.TopRightButton.Txt[2].enabled = Player.NewItems;
 		Health.text = Player.Stats.Health + "/" + Player.Stats.HealthMax;
 
 		for(int i = 0; i < PlayerHealth.Length; i++)
@@ -109,15 +109,16 @@ public class UIManager : MonoBehaviour {
 			}
 		}
 		
-		CameraUtility.instance.MainLight.color = Color.Lerp(
-			CameraUtility.instance.MainLight.color, BackingTint, Time.deltaTime * 5);
-		Objects.Walls.Img[0].color = Color.Lerp(
-			Objects.Walls.Img[0].color, WallTint, Time.deltaTime * 5);
+		
+		//CameraUtility.instance.MainLight.color = Color.Lerp(
+			//CameraUtility.instance.MainLight.color, BackingTint, Time.deltaTime * 5);
+		//Objects.Walls.Img[0].color = Color.Lerp(
+			//Objects.Walls.Img[0].color, WallTint, Time.deltaTime * 5);
 
 		Objects.ArmourParent.Txt[0].text = Player.Stats._Armour > 0 ? Player.Stats.Armour : "";
 		Objects.ArmourParent.SetActive(Player.Stats._Armour > 0);
 
-		if(GameManager.Wave != null)
+		/*if(GameManager.Wave != null)
 		{
 			for(int i = 0; i < GameManager.Wave.Length; i++)
 			{
@@ -159,15 +160,15 @@ public class UIManager : MonoBehaviour {
 				}
 			}
 						
-		}
+		}*/
 				
 		if(!ShowingHealth && Player.Stats.HealThisTurn > 0)
 		{
-			StartCoroutine(HealLoop());
+			//StartCoroutine(HealLoop());
 		}
 		if(!ShowingHit && Player.Stats.DmgThisTurn > 0)
 		{
-			StartCoroutine(HitLoop());
+			//StartCoroutine(HitLoop());
 		}
 	}
 
@@ -514,8 +515,8 @@ public class UIManager : MonoBehaviour {
 
 	public void ShowClassUI(bool active)
 	{
-		Menu.ClassMenu.SetActive(active);
-		Objects.ShowObj(Objects.MainUI, !active);
+		//Menu.ClassMenu.SetActive(active);
+		//Objects.ShowObj(Objects.MainUI, !active);
 	}
 
 	public static void ShowClassButtons(bool? active = null)
@@ -627,8 +628,8 @@ public class UIManager : MonoBehaviour {
 
 	public void ShowMenu(bool active)
 	{
-		Menu.PauseMenu.SetActive(active);
-		Objects.ShowObj(Objects.MainUI, !active);
+		//Menu.PauseMenu.SetActive(active);
+		//Objects.ShowObj(Objects.MainUI, !active);
 	}
 
 	public void ShowOptions()
@@ -749,8 +750,8 @@ public class UIManager : MonoBehaviour {
 	public IEnumerator LoadUI()
 	{
 		yield return new WaitForSeconds(0.2F);
-		Menu.ClassMenu.SetActive(false);
-		Objects.ShowObj(Objects.Options, false);
+		//Menu.ClassMenu.SetActive(false);
+		//Objects.ShowObj(Objects.Options, false);
 		Objects.ShowObj(Objects.MainUI, true);
 		(UIManager.Objects.TopLeftButton as UIObjTweener).SetTween(0, true);
 		(UIManager.Objects.TopRightButton as UIObjTweener).SetTween(0,true);
@@ -774,7 +775,6 @@ public class UIManager : MonoBehaviour {
 			(Objects.MiddleGear[2] as UIObjTweener).SetTween(0, false);
 		});
 
-
 		Objects.MiddleGear[3][0].AddAction(UIAction.MouseUp, () =>
 		{
 			ShowOptions();
@@ -788,6 +788,10 @@ public class UIManager : MonoBehaviour {
 		{
 			GameManager.instance.SaveAndQuit();
 		});
+
+		Objects.MiddleGear[1].SetActive(false);
+		Objects.MiddleGear[2].SetActive(false);
+		Objects.MiddleGear[3].SetActive(false);
 
 		Objects.TopLeftButton.AddAction(UIAction.MouseUp, () =>
 		{
