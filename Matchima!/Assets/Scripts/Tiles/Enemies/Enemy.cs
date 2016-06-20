@@ -111,7 +111,6 @@ public class Enemy : Tile {
 
 		float hp = Mathf.Ceil(Player.Options.RealHP ? ((float)Stats.Hits/(float)Player.Stats._Attack) : (Stats.Hits));
 		
-
 		if(Params.HitCounter != null) Params.HitCounter.SetActive(hp > 1);
 		if(Params.HitCounterText != null)
 		{
@@ -169,7 +168,7 @@ public class Enemy : Tile {
 
 		float init_rotation = Random.Range(-3,3);
 		float info_time = 0.4F;
-		float info_start_size = 110;
+		float info_start_size = 100 + (InitStats.TurnDamage*2);
 		float info_movespeed = 0.25F;
 		float info_finalscale = 0.65F;
 
@@ -180,8 +179,8 @@ public class Enemy : Tile {
 		m.Gravity = true;
 		m.AddJuice(Juice.instance.BounceB, info_time/0.8F);
 
-		CameraUtility.instance.ScreenShake(0.35F,  GameData.GameSpeed(0.07F));
-		yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
+		CameraUtility.instance.ScreenShake(0.26F + 0.02F * InitStats.TurnDamage,  GameData.GameSpeed(0.06F));
+		yield return new WaitForSeconds(GameData.GameSpeed(0.18F));
 	}
 
 	public override IEnumerator AfterTurnRoutine(){

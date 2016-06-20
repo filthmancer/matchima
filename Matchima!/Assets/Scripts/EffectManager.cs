@@ -10,6 +10,7 @@ public enum Effect
 	Curse,
 	Destroy,
 	Force,
+	Fire,
 	Lightning,
 	Replace,
 	Shiny,
@@ -39,6 +40,7 @@ public class ParticleContainer
 	public ParticleSystem _AntiGravity;
 	public ParticleSystem _Force;
 	public ParticleSystem _Lightning;
+	public ParticleSystem _Fireball;
 
 	public ParticleSystem _ManaPowerUp, _ManaPowerDown;
 	public ParticleSystem _ManaPowerLvl1,_ManaPowerLvl2,_ManaPowerLvl3;
@@ -174,6 +176,11 @@ public class EffectManager : MonoBehaviour {
 			break;
 			case Effect.ManaPowerLvl3:
 				part = (ParticleSystem) Instantiate(Particles._ManaPowerLvl3);
+				part.transform.position = t.position;
+				part.transform.parent = t;
+			break;
+			case Effect.Fire:
+				part = (ParticleSystem) Instantiate(Particles._Fireball);
 				part.transform.position = t.position;
 				part.transform.parent = t;
 			break;

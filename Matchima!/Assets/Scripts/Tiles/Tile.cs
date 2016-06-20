@@ -933,9 +933,9 @@ public class Tile : MonoBehaviour {
 		float init_size = UnityEngine.Random.Range(130, 170);
 		float init_rotation = UnityEngine.Random.Range(-7,7);
 
-		float info_time = 0.57F;
+		float info_time = 0.43F;
 		float info_size = init_size + (GetAttack() * 2);
-		float info_movespeed = 0.22F;
+		float info_movespeed = Time.deltaTime * 20;
 		float info_finalscale = 0.65F;
 
 		Vector3 pos = TileMaster.Grid.GetPoint(Point.Point(0));
@@ -962,9 +962,9 @@ public class Tile : MonoBehaviour {
 		float init_size = UnityEngine.Random.Range(130, 170);
 		float init_rotation = UnityEngine.Random.Range(-7,7);
 
-		float info_time = 0.57F;
+		float info_time = 0.43F;
 		float info_size = init_size + (GetAttack() * 2);
-		float info_movespeed = 0.22F;
+		float info_movespeed = Time.deltaTime * 20;
 		float info_finalscale = 0.65F;
 
 		Vector3 pos = TileMaster.Grid.GetPoint(Point.Point(0));

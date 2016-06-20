@@ -11,8 +11,20 @@ public class Thief : Class {
 		attack = new TileChance();
 		attack.Genus = "Alpha";
 		attack.Type = "sword";
-		attack.Chance = 0.15F;
+		attack.Chance = 0.25F;
 		InitStats.TileChances.Add(attack);
+
+		TileChance bomb = new TileChance();
+		bomb.Genus = GameData.ResourceLong(Genus);
+		bomb.Type = "arcane";
+		bomb.Chance = 0.3F;
+		InitStats.TileChances.Add(bomb);
+
+		TileChance health = new TileChance();
+		health.Genus = GameData.ResourceLong(Genus);
+		health.Type = "health";
+		health.Chance = 0.05F;
+		InitStats.TileChances.Add(health);
 
 	/*	ClassUpgrade b = new ClassUpgrade((int val) => {attack.Chance += 0.02F * val;});
 		b.BaseAmount = 2;

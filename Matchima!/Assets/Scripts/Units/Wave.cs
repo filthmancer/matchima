@@ -39,6 +39,7 @@ public class Wave : Unit {
 
 	public WaveUnit Slot1, Slot2, Slot3;
 	public bool HasDialogue;
+	public bool ExplodeOnEnd;
 	public Quote [] Quotes;
 	public WaveUnit [] AllSlots
 	{
@@ -299,16 +300,16 @@ public class Wave : Unit {
 			UIManager.Objects.TopGear[1][i][0].SetActive(true);
 		}
 
-		float spintime = Random.Range(0.5F, 1.3F);
-		while((spintime-=Time.deltaTime) > 0.0F)
+		float spintime = Random.Range(0.6F, 0.95F);
+		while((spintime-=Time.deltaTime) > 0.1F)
 		{
-			UIManager.Objects.TopGear.AddSpin(spintime*2);
+			UIManager.Objects.TopGear.AddSpin(spintime*3);
 			yield return null;
 		}
-		yield return new WaitForSeconds(GameData.GameSpeed(0.6F));
+		//yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 		UIManager.Objects.TopGear.FreeWheelDrag = false;
 		UIManager.Objects.TopGear.MoveToDivision(0);
-		yield return new WaitForSeconds(GameData.GameSpeed(0.5F));
+		//yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 
 		yield return StartCoroutine(UIManager.instance.Alert(1.25F, true, Name));
 
@@ -333,7 +334,93 @@ public class Wave : Unit {
 
 	protected virtual IEnumerator WaveEndRoutine()
 	{
-		yield return StartCoroutine(UIManager.instance.Alert(1.25F, false, ExitText));
+		yield return StartCoroutine(UIManager.instance.Alert(1.05F, false, ExitText));
+		if(ExplodeOnEnd)
+		{
+			for(int x = 0; x < TileMaster.Grid.Size[0]; x++)
+			{
+				for(int y = 0; y < TileMaster.Grid.Size[1]; y++)
+				{
+					if(TileMaster.Tiles[x,y].Type.isEnemy)
+					{
+						StartCoroutine(Cast(TileMaster.Tiles[x,y], 2));
+					}
+				}
+			}
+			TileMaster.instance.ClearQueuedTiles();
+			yield return new WaitForSeconds(GameData.GameSpeed(0.4F));
+		}
+	}
+
+	IEnumerator Cast(Tile target, int radius)
+	{
+		int targX = target.Point.Base[0];
+		int targY = target.Point.Base[1];
+
+		float particle_time = 0.4F;
+
+		int final_radius =  (radius);
+
+		if(target == null) yield break;
+
+		TileMaster.instance.SetAllTileStates(TileState.Locked, true);
+		Tile [,] _tiles = TileMaster.Tiles;
+		List<Tile> to_collect = new List<Tile>();
+
+		List<GameObject> particles = new List<GameObject>();
+
+		for(int x = 0; x < _tiles.GetLength(0); x++)
+		{
+			for(int y = 0; y < _tiles.GetLength(1); y++)
+			{
+				int distX = Mathf.Abs(x - targX);
+				int distY = Mathf.Abs(y - targY);
+				
+				
+					if(distX + distY < final_radius)
+					{
+						Tile tile = _tiles[x,y];
+						_tiles[x,y].SetState(TileState.Selected, true);
+						to_collect.Add(tile);
+
+						GameObject new_part = EffectManager.instance.PlayEffect(tile.transform, Effect.Fire);
+						
+						//new_part.transform.localScale *= 0.2F;
+						particles.Add(new_part);
+					}
+				
+			}
+		}
+
+		yield return new WaitForSeconds(Time.deltaTime * 10);
+
+		for(int i = 0; i < to_collect.Count; i++)
+		{
+			if(to_collect[i].Type.isEnemy)
+			{
+				to_collect[i].InitStats.TurnDamage += 10;
+			}
+			if(to_collect[i].IsType("", "Chicken"))
+			{
+				TileMaster.instance.ReplaceTile(to_collect[i].Point.Base[0], to_collect[i].Point.Base[1], TileMaster.Types["Health"]);
+				to_collect[i].AddValue(to_collect[i].Stats.Value * 10);
+				to_collect.RemoveAt(i);
+			}
+		}
+
+		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
+		yield return StartCoroutine(GameManager.instance.BeforeMatchRoutine());
+		yield return null;
+		yield return StartCoroutine(GameManager.instance.MatchRoutine(PlayerControl.instance.finalTiles));
+		yield return StartCoroutine(Player.instance.AfterMatch());
+
+		TileMaster.instance.ResetTiles(true);
+		TileMaster.instance.SetFillGrid(true);
+
+		for(int i = 0; i < particles.Count; i++)
+		{
+			Destroy(particles[i]);
+		}
 	}
 
 	public WaveReward GenerateWaveReward()
@@ -389,5 +476,7 @@ public enum WaveTileSpawn
 	XAtStart,
 	XPerTurn,
 	XChance,
+	XPsuedoChance,
 	XOnScreen
+
 }

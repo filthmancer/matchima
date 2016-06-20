@@ -10,9 +10,17 @@ public class WaveTile : WaveUnit
 	public string Species;
 
 	public WaveTileSpawn SpawnType;
+
+	
 	public int TotalToSpawn = -1;
 
-	public float SpawnFactor;
+	public float Factor
+	{
+		get{
+			return Random.Range(SpawnFactorField.x, SpawnFactorField.y);
+		}
+	}
+	public Vector2 SpawnFactorField = new Vector2(1.0F, 1.0F);
 	public IntVector Value;
 	public int FinalValue
 	{
@@ -23,6 +31,7 @@ public class WaveTile : WaveUnit
 	}
 	public int Scale = 1;
 	public bool HitByPresence = false;
+
 	public override void Setup(Wave p, int i)
 	{
 		Parent = p;
@@ -47,7 +56,7 @@ public class WaveTile : WaveUnit
 		if(SpawnType != WaveTileSpawn.XChance) return;
 
 		List<TileEffectInfo> effects = Parent.GetEffects();
-		TileMaster.instance.IncreaseChance(GenusString, Species, SpawnFactor);
+		TileMaster.instance.IncreaseChance(GenusString, Species, Factor);
 		SPECIES s = TileMaster.Types[Species];
 		GenusInfo g = s[GenusString];
 		if(Value.y > 0)
@@ -79,7 +88,7 @@ public class WaveTile : WaveUnit
 		bool [,] replacedtile = new bool [(int)TileMaster.instance.MapSize.x, (int)TileMaster.instance.MapSize.y];
 		List<TileEffectInfo> Effects = Parent.GetEffects();
 
-		for(int x = 0; x < (int)SpawnFactor; x++)
+		for(int x = 0; x < (int)Factor; x++)
 		{
 			int randx = (int)Random.Range(0, TileMaster.instance.MapSize.x);
 			int randy = (int)Random.Range(0, TileMaster.instance.MapSize.y);
@@ -131,10 +140,11 @@ public class WaveTile : WaveUnit
 		if(!Active || Ended) yield break;
 		//if(HitByPresence) AddPoints(-Player.Stats.Presence);
 	//Spawn per round
+
 		if(SpawnType != WaveTileSpawn.XPerTurn) yield break;
 
 		bool [,] replacedtile = new bool [(int)TileMaster.instance.MapSize.x, (int)TileMaster.instance.MapSize.y];
-		for(int x = 0; x < (int)SpawnFactor; x++)
+		for(int x = 0; x < (int)Factor; x++)
 		{
 			int randx = (int)Random.Range(0, TileMaster.instance.MapSize.x);
 			int randy = (int)Random.Range(0, TileMaster.instance.MapSize.y);
@@ -169,13 +179,39 @@ public class WaveTile : WaveUnit
 				});
 			yield return new WaitForSeconds(Time.deltaTime * 5);
 		}
-		yield return new WaitForSeconds(Time.deltaTime * 20);
+		//yield return new WaitForSeconds(Time.deltaTime * 5);
 	}
 
 	public override IEnumerator AfterTurn()
 	{
 		if(!Active) yield break;
 		Complete();
+		if(SpawnType == WaveTileSpawn.XOnScreen)
+		{
+			int onscreen = 0;
+			for(int x = 0; x < TileMaster.Grid.Size[0]; x++)
+			{
+				for(int y = 0; y < TileMaster.Grid.Size[1]; y++)
+				{
+					if(TileMaster.Tiles[x,y].IsType(GenusString, Species)) onscreen++;
+				}
+			}
+			while(onscreen < (int) Factor)
+			{
+				TileMaster.instance.QueueTile(TileMaster.Types[Species], TileMaster.Genus[GenusString]);
+				onscreen++;
+			}
+		}
+		
+		if(SpawnType == WaveTileSpawn.XPsuedoChance)
+		{
+			for(int i = 0; i < (int) Factor; i++)
+			{
+				TileMaster.instance.QueueTile(TileMaster.Types[Species], TileMaster.Genus[GenusString]);
+			}
+		}
+		
+		
 		yield return null;
 	}
 }

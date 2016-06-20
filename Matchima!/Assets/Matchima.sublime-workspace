@@ -4,44 +4,12 @@
 		"selected_items":
 		[
 			[
-				"SetReso",
-				"Screen.SetResolution(width, height, fullscreen, preferredRefreshRate)"
+				"Instan",
+				"InstantiateTileObj"
 			],
 			[
-				"Effec",
-				"EffectDescription"
-			],
-			[
-				"juice_time",
-				"juice_time_total"
-			],
-			[
-				"juice",
-				"juice_time_total"
-			],
-			[
-				"Seri",
-				"SerializeField"
-			],
-			[
-				"drag",
-				"drag_last_division"
-			],
-			[
-				"drag_",
-				"drag_closest_division"
-			],
-			[
-				"final",
-				"finalpoints"
-			],
-			[
-				"curr",
-				"currentIntensity"
-			],
-			[
-				"ori",
-				"originalMatch"
+				"prefa",
+				"prefabs_per_spec"
 			],
 			[
 				"Meter",
@@ -388,6 +356,14 @@
 	"buffers":
 	[
 		{
+			"file": "Scripts/PlayerControl.cs",
+			"settings":
+			{
+				"buffer_size": 13826,
+				"line_ending": "Unix"
+			}
+		},
+		{
 			"file": "Scripts/Player.cs",
 			"settings":
 			{
@@ -396,58 +372,26 @@
 			}
 		},
 		{
-			"file": "Scripts/GameManager.cs",
+			"file": "Scripts/Units/Wave.cs",
 			"settings":
 			{
-				"buffer_size": 36435,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Scripts/TileMaster.cs",
-			"settings":
-			{
-				"buffer_size": 44169,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Scripts/Tiles/Tile.cs",
-			"settings":
-			{
-				"buffer_size": 38107,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Scripts/UI/UISlotButton.cs",
-			"settings":
-			{
-				"buffer_size": 4215,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Scripts/UI/UIManager.cs",
-			"settings":
-			{
-				"buffer_size": 33272,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Scripts/UI/UIButton.cs",
-			"settings":
-			{
-				"buffer_size": 3522,
+				"buffer_size": 8328,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "Scripts/UI/UIClassButton.cs",
+			"file": "Scripts/UI/UIClassSelect.cs",
 			"settings":
 			{
-				"buffer_size": 5504,
+				"buffer_size": 1295,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Scripts/UI/UIMenu.cs",
+			"settings":
+			{
+				"buffer_size": 18601,
 				"line_ending": "Unix"
 			}
 		},
@@ -456,7 +400,50 @@
 			"settings":
 			{
 				"buffer_size": 6877,
-				"line_ending": "Windows"
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Scripts/UI/UIGear.cs",
+			"settings":
+			{
+				"buffer_size": 5134,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Scripts/UI/UIManager.cs",
+			"settings":
+			{
+				"buffer_size": 33272,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Scripts/UI/MiniAlertUI.cs",
+			"settings":
+			{
+				"buffer_size": 2303,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Scripts/GameManager.cs",
+			"settings":
+			{
+				"buffer_size": 36435,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "using UnityEngine;\nusing System.Collections;\nusing System.Collections.Generic;\nusing System;\nusing TMPro;\n\n\npublic class Tile : MonoBehaviour {\n\n	public string Name;\n	public virtual StCon _Name {\n		get{return new StCon(Info._TypeName, GameData.Colour(Genus));}\n	}\n	public int x{get{return Point.Base[0];}}\n	public int y{get{return Point.Base[1];}}\n\n	public StCon [] BaseDescription\n	{\n		get{\n			List<StCon> basic = new List<StCon>();\n			if(Stats.Resource != 0)\n			basic.Add(new StCon(\"+\" + Stats.GetValues()[0] + \" \"  + GameData.ResourceLong(Genus) + \" Mana\", GameData.Colour(Genus)));\n			if(Stats.Heal != 0)\n			basic.Add(new StCon(\"+\" + Stats.GetValues()[1] + \"% Health\", GameData.Colour(GENUS.STR)));\n			if(Stats.Armour != 0)\n			basic.Add(new StCon(\"+\" + Stats.GetValues()[2] + \" Armour\", GameData.Colour(GENUS.DEX)));\n			return basic.ToArray();\n		}\n	}\n	public virtual StCon [] Description\n	{\n		get{return null;}\n	}\n	public virtual StCon [] FullDescription\n	{\n		get{\n			List<StCon> final = new List<StCon>();\n			if(Genus == GENUS.OMG) final.Add(new StCon(\"Cannot be matched\", Color.grey));\n			final.AddRange(BaseDescription);\n			if(Description != null)	final.AddRange(Description);\n			foreach(TileEffect child in Effects)\n			{\n				final.AddRange(child.Description);\n			}\n			return final.ToArray();\n		}\n	}\n\n	[HideInInspector]\n	public string DescriptionOverride;\n\n	public TileStat InitStats;\n	public TileStat Stats;\n\n	public List<TileEffect> Effects = new List<TileEffect>();\n\n	public GENUS Genus{\n		get{return Info._GenusEnum;}\n	}\n	public SPECIES Type{\n		get{return Info._Type;}\n	}\n	[HideInInspector]\n	public TileInfo Info;\n\n	public Sprite Inner\n	{\n		get{return Params._render.sprite;}\n	}\n	public Sprite Outer\n	{\n		get{return Params._border.sprite;}\n	}\n	public TileState state;\n	[HideInInspector]\n	public TilePointContainer Point;\n\n	[HideInInspector]\n	public bool isMatching;\n	[HideInInspector]\n	public bool isFalling;\n	public bool BeforeMatchEffect;\n	public bool BeforeTurnEffect, AfterTurnEffect;\n	[HideInInspector]\n	public bool AfterTurnCheck = false;\n	[HideInInspector]\n	public bool originalMatch = false;\n\n	public TileParamContainer Params;\n\n	[HideInInspector]\n	public float collide_radius = 0.5F;\n	[HideInInspector]\n	public int matureTime = 0;\n\n	private float land_time = 0.0F, land_time_end = 0.8F;\n\n	protected Color def;\n	public Color targetColor;\n	private float gravity = 0.95F;\n	protected Animator _anim;\n\n	[HideInInspector]\n	public float speed;\n	[HideInInspector]\n	public float speed_max_falling = -18.5F;\n	private float speed_max_rising = 10F;\n	private float targetScale = 1.1F;\n	private float defaultScale = 1.1f;\n\n\n	Vector3 rotation = Vector3.zero;\n	//[HideInInspector]\n	public bool marked = false;\n\n	//[HideInInspector]\n	public bool Destroyed = false;\n	public bool UnlockedFromGrid = false;\n	private Vector3 linepos;\n	[HideInInspector]\n	public bool state_override = false;\n\n	protected List<GameObject> particles;\n\n	protected virtual TileUpgrade [] AddedUpgrades\n	{\n		get{\n			return new TileUpgrade [0];\n		}\n	}\n\n	protected virtual TileUpgrade [] BaseUpgrades\n	{\n		get\n		{\n			return new TileUpgrade []\n			{\n				new TileUpgrade(0.05F, 5, () => {InitStats.Hits += 1;}),\n				new TileUpgrade(1.0F, 1, () => {InitStats.Value += 1;}),\n				new TileUpgrade(0.1F, 2, () => {InitStats.Resource +=1;})\n			};\n		}\n	}\n\n	protected TileUpgrade [] Upgrades\n	{\n		get\n		{\n			List<TileUpgrade> final = new List<TileUpgrade>();\n			final.AddRange(BaseUpgrades);\n			final.AddRange(AddedUpgrades);\n			return final.ToArray();\n		}\n	}\n	protected float UpgradeChanceTotal{\n		get\n		{\n			float final = 0.0F;\n			foreach(TileUpgrade child in Upgrades)\n			{\n				final += child.Chance;\n			}\n			return final;\n		}\n	}\n\n	protected int _Scale = 1;\n	protected Tile LineTarget;\n	protected float LineTimer = 0.1F;\n\n	// Use this for initialization\n	public virtual void Start () {\n\n       \n	}\n\n	public void Setup(int x, int y)\n	{\n		//Setup(x,y, _Scale, Info, InitStats.Value-1);\n\n		Point = new TilePointContainer(x,y,_Scale, this);\n\n		if(!Info.ShiftOverride) InitStats.Shift = Player.Stats.Shift;\n		else InitStats.Shift = Info.Shift;\n		transform.name = Info.Name + \" | \" + Point.Base[0] + \":\" + Point.Base[1];\n		CheckStats();\n	}\n\n	public virtual void Setup(int x, int y, int scale, TileInfo inf, int value_inc = 0)\n	{\n		Point = new TilePointContainer(x,y,scale, this);\n\n		Info = new TileInfo(inf);\n\n		if(Params != null)\n		{\n			def = Params._render.material.color;\n			targetColor = def;\n			//_anim = GetComponent<Animator>();\n			//Params.lineIn.sortingLayerID = Params._render.sortingLayerID;\n			//Params.lineOut.sortingLayerID = Params._render.sortingLayerID;\n			//Params.lineIn.sortingOrder = 1;\n			//Params.lineOut.sortingOrder = 1;\n			//Params.lineIn.SetWidth(0.3F, 0.3F);\n			//Params.lineOut.SetWidth(0.1F, 0.1F);\n		}\n		\n\n		UnlockedFromGrid = false;\n		isMatching = false;\n		Destroyed = false;\n		marked = false;\n		originalMatch = false;\n		state_override = false;\n		GetComponent<SphereCollider>().enabled = true;\n		for(int i = 0; i < Effects.Count; i++)\n		{\n			TileEffect t = Effects[i];\n			Effects.RemoveAt(i);\n			Destroy(t.gameObject);\n		}\n\n		defaultScale = 1.1F * scale;\n		targetScale = defaultScale;\n		_Scale = scale;\n\n		Name = Info.Name;\n		if(!Info.ShiftOverride) InitStats.Shift = Player.Stats.Shift;\n		else InitStats.Shift = Info.Shift;\n		transform.name = Info.Name + \" | \" + Point.Base[0] + \":\" + Point.Base[1];\n\n		int val = value_inc;\n		for(int i = 1; i < scale; i++)\n		{\n			val *= 2;\n		}\n		InitStats.Value = Info.Value;\n		if(InitStats.Hits == 0) InitStats.Hits = 1;\n		AddUpgrades(val);\n		\n		InitStats.isNew = true;\n		InitStats.value_soft = (float) InitStats.Value;\n\n		if(Info.FinalEffects != null)\n		{\n			for(int i = 0; i < Info.FinalEffects.Count; i++)\n			{\n				AddEffect(Info.FinalEffects[i]);\n			}\n		}\n\n		CheckStats();\n		SetSprite();\n\n		if(GameManager.instance.EnemyTurn) SetState(TileState.Locked);\n		else SetState(TileState.Idle);\n	}\n\n\n	// Update is called once per frame\n	public virtual void Update () {\n		if(Destroyed || UnlockedFromGrid) return;\n		if(Stats.Shift != ShiftType.None && !Destroyed)\n		{\n			Velocity();\n		}\n		transform.name = Info.Name + \" | \" + Point.Base[0] + \":\" + Point.Base[1];\n		if(GameManager.inStartMenu) \n		{\n			if(Player.loaded && UIManager.loaded) Destroy(this.gameObject); \n			if(transform.position.y < -10) Destroy(this.gameObject);\n			return;\n		}\n		if(TileMaster.Tiles.GetLength(0) <= Point.Base[0] || TileMaster.Tiles.GetLength(1) <= Point.Base[1]) return;\n		if(TileMaster.Tiles[Point.Base[0], Point.Base[1]] != this && TileMaster.Tiles[Point.Base[0], Point.Base[1]] != null && !Destroyed) \n		{\n			//TileMaster.instance.SetFillGrid(true);\n			//DestroyThyself();\n		}\n\n		if(GameManager.instance.EnemyTurn && !IsState(TileState.Selected)) SetState(TileState.Locked);\n		//if(Params._render != null) Params._render.color = Color.Lerp(Params._render.color, targetColor, 0.6F);\n		//if(Params._border != null) Params._border.color = Color.Lerp(Params._border.color, targetColor, 0.6F);\n		//if(Params.HitCounter != null) Params.HitCounter.SetActive(Stats.Hits > 1);\n		//if(Params.HitCounterText != null) Params.HitCounterText.text = \"\" + Stats.Hits;\n			\n		if(!isMatching) transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one * targetScale, Time.deltaTime * 5);\n		Params._shiny.enabled = IsState(TileState.Selected);\n\n		\n		if(!IsState(TileState.Selected))\n		{\n			//Params.lineIn.enabled = false;\n			//Params.lineOut.enabled = false;	\n			linepos = PlayerControl.InputPos;\n			if(Player.Options.ViewTileStats) SetCounter(\"\" + Stats.Value);\n			else if(!GameManager.instance.EnemyTurn) SetCounter(\"\");\n\n			if(GameManager.instance.EnemyTurn) return;\n\n			if(PlayerControl.instance.focusTile == this && !PlayerControl.HoldingSlot)\n			{\n				if(IsGenus(PlayerControl.matchingTile) || PlayerControl.matchingTile == null)\n				{\n					if(Application.isEditor)\n					{\n						SetState(TileState.Hover);	\n					} \n\n					if(Input.GetMouseButton(0) || Input.GetKey(KeyCode.Space)) \n					{\n						Tile lastselected = PlayerControl.instance.LastSelected();\n						int [] diff;\n						if(lastselected!= null && lastselected != this)\n						{\n							lastselected.SetArrow(this);\n						}\n						if(lastselected == null || TileMaster.instance.AreNeighbours(lastselected, this, out diff))\n						{	\n							SetState(TileState.Selected);\n							PlayerControl.instance.GetSelectedTile(this);\n							AudioManager.instance.PlayClipOn(this.transform, \"Player\", \"Touch\");\n						}\n						else SetState(TileState.Idle);	\n					}		\n				}\n				else SetState(TileState.Locked);\n			}\n			else if(PlayerControl.matchingTile != null && !IsGenus(PlayerControl.matchingTile))\n			{\n				SetState(TileState.Locked);\n			}\n			else if(PlayerControl.instance.focusTile == this && PlayerControl.HoldingSlot) \n			{\n				if(Input.GetMouseButton(0) || Input.GetKey(KeyCode.Space)) \n				{\n					SetState(TileState.Selected);\n				}\n			}\n			else if(UIManager.InMenu)\n			{\n				SetState(TileState.Locked);\n			}\n			else  \n			{\n				SetState(TileState.Idle);\n			}\n		}	\n		else if(IsState(TileState.Selected))\n		{\n			if(PlayerControl.instance.focusTile == this && PlayerControl.instance.SecondLastSelected() == this)	\n			{\n				PlayerControl.instance.BackTo(this);\n				//Params.lineIn.enabled = false;\n				//Params.lineOut.enabled = false;			\n			}\n			else if(PlayerControl.instance.SecondLastSelected() == this && PlayerControl.instance.LastSelected() != null)\n			{\n				LineTarget = PlayerControl.instance.LastSelected();\n			}\n			if(PlayerControl.instance.LastSelected() == this && PlayerControl.instance.focusTile != null && !GameManager.instance.EnemyTurn && !UIManager.InMenu)\n			{\n				float softdist = 1.4F * Point.Scale;\n				float stretch = 1.0F;\n				float str_decay = 1.0F;\n\n				float dist = Vector3.Distance(PlayerControl.InputPos, transform.position);\n				Vector3 vel = PlayerControl.InputPos - transform.position;\n				Vector3 final = transform.position + vel.normalized * softdist;\n\n				if(dist > softdist)\n				{\n					stretch = dist/softdist - (dist-softdist)/(dist-softdist);\n					//Params._render.transform.position = Vector3.Lerp(Point.targetPos, final, 0.02F);\n					linepos = final;\n				}\n				else\n				{\n					linepos = PlayerControl.InputPos;\n					//Params._render.transform.position = Vector3.Lerp(Point.targetPos, transform.position + vel, 0.02F);\n				}\n				/*Vector3 [] points = LightningLine(this.transform.position, linepos, 5, 0.01F + PlayerControl.MatchCount * 0.005F);\n				for(int i = 0; i < points.Length; i++)\n				{\n					Params.lineIn.SetPosition(i, points[i]);\n					Params.lineOut.SetPosition(i, points[i] + Vector3.back);\n				}\n\n				Params.lineIn.enabled = true;\n				Params.lineIn.SetColors(GameData.instance.GetGENUSColour(Genus) * 0.9F, GameData.instance.GetGENUSColour(Genus) * 0.9F);\n\n				Params.lineOut.enabled = true;\n				Params.lineOut.SetColors(Color.white, Color.white);\n				*/\n				\n			}\n			else if(GameManager.instance.EnemyTurn || UIManager.InMenu)\n			{\n				//Params.lineIn.enabled = false;\n				//Params.lineOut.enabled = false;\n			}\n			else \n			{\n				if(LineTarget == null) \n				{\n					//Params.lineIn.enabled = false;\n					//Params.lineOut.enabled = false;\n					return;\n				}\n\n				/*Vector3 [] points = LightningLine(this.transform.position, LineTarget.transform.position, 5, 0.01F + PlayerControl.MatchCount * 0.005F);\n				for(int i = 0; i < points.Length; i++)\n				{\n					Params.lineIn.SetPosition(i, points[i]);\n					Params.lineOut.SetPosition(i, points[i] + Vector3.back);\n				}\n\n				Params.lineIn.enabled = true;\n				Params.lineIn.SetColors(GameData.instance.GetGENUSColour(Genus) * 0.9F, GameData.instance.GetGENUSColour(Genus) * 0.9F);\n\n				Params.lineOut.enabled = true;\n				Params.lineOut.SetColors(Color.white, Color.white);\n				*/\n			}\n		}		\n	}\n\n	void LateUpdate()\n	{\n		transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rotation), Time.deltaTime * 8);\n		Params.counter.transform.rotation = Quaternion.Euler(Vector3.zero);\n		Params.otherWarning.transform.rotation = Quaternion.Euler(Vector3.zero);\n	}\n\n	public void Velocity()\n	{\n		Vector3 velocity = Vector3.zero;\n		\n		if(Stats.Shift == ShiftType.Up) 		\n		{\n			velocity = new Vector3(0, -1, 0);\n			//rotation = new Vector3 (0,0,180);\n		}\n		else if(Stats.Shift == ShiftType.Down)\n		{\n		 	velocity = new Vector3(0, 1, 0);\n		 	//rotation = new Vector3 (0,0,0);\n		 }\n		else if(Stats.Shift == ShiftType.Left)\n		{\n			velocity = new Vector3(1, 0, 0);\n			//rotation = new Vector3 (0,0,-90);\n		}\n		else if(Stats.Shift == ShiftType.Right)\n		{\n		 	velocity = new Vector3(-1, 0, 0);\n		 	//rotation = new Vector3 (0,0,90);\n		}\n		else if(Stats.Shift == ShiftType.None)\n		{\n			velocity = Vector3.zero;\n			rotation = Vector3.zero;\n			speed = 0;\n			return;\n		}\n\n		/*Ray velRay = new Ray(transform.position, velocity);\n		RaycastHit hit;\n\n		if(Physics.Raycast(transform.position, -velocity, out hit, (speed + collide_radius) * Time.deltaTime * 80))\n		{\n			Tile hit_tile = hit.transform.gameObject.GetComponent<Tile>();\n\n			if(hit_tile != null)\n			{\n				Vector3 clamppos = transform.position;\n				if(Stats.Shift == ShiftType.Down && hit_tile.Point.Base[1] < Point.Base[1]) \n				{\n					clamppos.y = Mathf.Clamp(clamppos.y, hit_tile.transform.position.y + collide_radius * 2, 100);\n				}\n				else if(Stats.Shift == ShiftType.Up && hit_tile.Point.Base[1] > Point.Base[1])\n				{\n					clamppos.y = Mathf.Clamp(clamppos.y, -100, hit_tile.transform.position.y - collide_radius * 2);\n				}\n				if(Stats.Shift == ShiftType.Left && hit_tile.Point.Base[0] < Point.Base[0]) \n				{\n					clamppos.x = Mathf.Clamp(clamppos.x, hit_tile.transform.position.x + collide_radius * 2, 100);\n				}\n				else if(Stats.Shift == ShiftType.Right && hit_tile.Point.Base[0] > Point.Base[0])\n				{\n					clamppos.x = Mathf.Clamp(clamppos.x, -100, hit_tile.transform.position.x - collide_radius * 2);\n				}\n				speed = hit_tile.speed;\n\n			}\n			else \n			{\n				float finalspeed = speed - gravity;\n				speed = Mathf.Clamp(finalspeed, speed_max_falling, speed_max_rising);\n			}\n		}\n		else\n		{*/\n			float finalspeed = speed - gravity;\n			speed = Mathf.Clamp(finalspeed, speed_max_falling, speed_max_rising);\n		//}\n		if(!GameManager.inStartMenu && TileMaster.Grid != null)\n		{\n			if(Stats.Shift == ShiftType.Down && transform.position.y <= Point.targetPos.y - (speed*Time.deltaTime)) \n			{\n				velocity = Vector3.zero;\n				speed = 0.0F;\n				transform.position = new Vector3(Point.targetPos.x, Point.targetPos.y, transform.position.z);\n				OnLand();\n			}\n			else if(Stats.Shift == ShiftType.Up && transform.position.y >= Point.targetPos.y + (speed*Time.deltaTime)) \n			{\n				velocity = Vector3.zero;\n				speed = 0.0F;\n				\n				transform.position = new Vector3(transform.position.x, Point.targetPos.y, transform.position.z);\n				OnLand();\n			}\n			else if(Stats.Shift == ShiftType.Right && transform.position.x >= Point.targetPos.x + (speed * Time.deltaTime))\n			{\n				velocity = Vector3.zero;\n				speed = 0.0F;\n				\n				transform.position = new Vector3(Point.targetPos.x, transform.position.y, transform.position.z);\n				OnLand();\n			}\n			else if(Stats.Shift == ShiftType.Left && transform.position.x <= Point.targetPos.x - (speed * Time.deltaTime))\n			{\n				velocity = Vector3.zero;\n				speed = 0.0F;\n				\n				transform.position = new Vector3(Point.targetPos.x, transform.position.y, transform.position.z);\n				OnLand();\n			}\n			else \n			{\n				if(speed >= 0.0F) speed = -0.1F;\n				transform.localScale = new Vector3(defaultScale+speed/90, defaultScale,defaultScale);\n				isFalling = true;\n			}\n		}\n\n		transform.position += velocity * speed * Time.deltaTime;\n	}\n\n	public void SetState(TileState _state, bool _override = false)\n	{\n		if(state == _state || (state_override && !_override)) return;\n		state_override = _override;\n		state = _state;\n		switch(_state)\n		{\n			case TileState.Hover:\n			targetScale = defaultScale * 1.2F;\n			targetColor = def;\n			break;\n			case TileState.Idle:\n			targetScale = defaultScale;\n			targetColor = def;\n			SetCounter(\"\");\n			//Params._render.transform.position = Point.targetPos;\n			SetArrow(null, null, false);\n			break;\n			case TileState.Locked:\n			targetScale = defaultScale;\n			targetColor = def * 0.65F;\n			break;\n			case TileState.Selected:\n			targetScale = defaultScale * 1.2F;\n			targetColor = def;\n			SetArrow(null, PlayerControl.instance.LastSelected(), true);\n			break;\n		}	\n	}\n\n	public bool IsState(TileState _state)\n	{\n		return state == _state;\n	}\n\n	public virtual IEnumerator BeforeMatch(bool original)\n	{\n		yield break;\n	}\n\n	public void AddUpgrades(int v)\n	{\n		while(v > 0)\n		{\n			float c = 0.0F;\n			float f = UnityEngine.Random.value * UpgradeChanceTotal;\n			for(int i = 0; i < Upgrades.Length; i++)\n			{\n				if(f > c && f < c + Upgrades[i].Chance)\n				{\n					//if(v > Upgrades[i].Points)\n					//{\n						Upgrades[i].Method();\n						v -= Upgrades[i].Points;\n					//}\n					break;\n				}\n				c++;\n			}\n		}\n	}\n\n	public virtual bool Match(int resource)\n	{\n		if(this == null) return false;\n		InitStats.Hits -= 1;\n		CheckStats();\n		AudioManager.instance.PlayClipOn(this.transform, \"Player\", \"Match\");\n		if(Stats.Hits <= 0)\n		{\n			isMatching = true;\n\n			Stats.Value *=  resource;\n			\n			CollectThyself(true);\n			TileMaster.Tiles[Point.Base[0], Point.Base[1]] = null;\n			return true;			\n		}\n		else \n		{\n			isMatching = false;\n			EffectManager.instance.PlayEffect(this.transform,Effect.Attack);\n		}\n		return false;\n	}\n\n	public virtual bool Tap()\n	{\n		return false;\n	}\n\n	public virtual void OnLand()\n	{\n		if(isFalling) \n		{\n			land_time = 0.0F;			\n		}\n		\n		if(!isFalling && land_time < land_time_end)\n		{\n			if(Genus != GENUS.OMG) \n			{\n				Params._render.transform.localPosition += Juice._Squish.Position.Evaluate(land_time/land_time_end) * 0.7F;\n				Vector3 finalscale = Params._render.transform.localScale;\n				finalscale = Juice.instance.JuiceItNow(Juice._Squish.Scale, Params._render_defaultscale, land_time/land_time_end);\n				finalscale.x = Mathf.Lerp(Params._render.transform.localScale.x, Params._render_defaultscale.x, Time.deltaTime *15);\n				Params._render.transform.localScale = finalscale;\n			}\n			land_time += Time.deltaTime;\n			if(land_time >= land_time_end) \n			{\n				Params._render.transform.localPosition = Params._render_defaultpos;\n				Params._render.transform.localScale = Params._render_defaultscale;\n			}\n		}\n\n\n		isFalling = false;\n		if(!IsState(TileState.Selected) && !IsState(TileState.Locked))  {\n			SetState(TileState.Idle);\n		}\n	}\n\n	public virtual void CollectThyself(bool destroy)\n	{\n		if(this == null) return;\n\n		if(destroy)\n		{\n			TileMaster.instance.AddVelocityToColumn(Point.Base[0], Point.Base[1], 0.2F + Stats.Value * 0.5F);\n			Destroyed = true;\n			GetComponent<SphereCollider>().enabled = false;\n			\n		}\n		\n		TileMaster.instance.CollectTile(this, destroy);\n	}\n\n	public virtual void DestroyThyself(bool collapse = false)\n	{\n		if(this == null) return;\n\n		//TileMaster.instance.AddVelocityToColumn(Point.Base[0], Point.Base[1], 0.2F + Stats.Value * 0.5F);\n		Destroyed = true;\n		GetComponent<SphereCollider>().enabled = false;\n		StartCoroutine(Destroy_Thyself(collapse));\n	}\n\n\n	private IEnumerator Destroy_Thyself(bool collapse)\n	{\n		if(collapse)\n		{\n			bool dest = true;\n			float gravity = 0.03F;\n			float vel = -0.2F;\n			float life = 1.0F;\n	\n			float sidevel = UnityEngine.Random.value > 0.5F ? UnityEngine.Random.value * 0.1F : -UnityEngine.Random.value * 0.1F;\n			\n			while(dest)\n			{\n				transform.position += (Vector3.left * sidevel) + Vector3.down * vel;\n				vel += gravity;\n		\n				if(life < 0.0F) dest = false;\n				else life-= Time.deltaTime;\n				yield return null;\n			}\n		}\n		TileMaster.instance.DestroyTile(this);\n		yield return null;\n	}\n\n	public virtual IEnumerator Animate(string type, float time = 0.0F)\n	{\n		if(_anim == null) yield break;\n		_anim.SetTrigger(type);\n\n		if(time != 0.0F) yield return new WaitForSeconds(time);\n		else yield return null;\n	}\n\n	public virtual bool CanAttack() {return Type.isEnemy && Stats.Attack > 0;}\n	public virtual int GetAttack() {return Mathf.Max(Stats.Attack, 0);}\n	public virtual int GetHealth() {return Mathf.Max(Stats.Hits,0);}\n	public virtual void Stun(int Stun){}\n\n	public virtual void OnAttack(){}\n\n	public void SetArrow(Tile nextTile = null, Tile prevTile = null, bool Active = true)\n	{\n		return;\n		Params.lineOut.enabled = (Active && nextTile != null);\n		Params.lineIn.enabled = (Active && nextTile != null);\n		if(!Active)\n		{\n			return;\n		}\n		if(nextTile != null)\n		{\n			float dist = Vector3.Distance(nextTile.transform.position, transform.position);\n			Vector3 vel = nextTile.transform.position - transform.position;\n\n			Vector3 [] points = LightningLine(this.transform.position, nextTile.transform.position, 4, 0.1F);\n\n			for(int i = 0; i < points.Length; i++)\n			{\n				Params.lineIn.SetPosition(i, points[i]);\n				Params.lineOut.SetPosition(i, points[i] + Vector3.back);\n			}\n			//Params.lineIn.SetPosition(0, this.transform.position);\n			//Params.lineIn.SetPosition(1, nextTile.transform.position);\n			Params.lineIn.SetColors(GameData.instance.GetGENUSColour(Genus), GameData.instance.GetGENUSColour(nextTile.Genus));\n\n			Params.lineOut.SetColors(Color.white, Color.white);\n			//Params.lineOut.SetPosition(0, this.transform.position + Vector3.back);\n			//Params.lineOut.SetPosition(1, nextTile.transform.position + Vector3.back);\n		}\n	}\n\n	public Vector3 [] LightningLine(Vector3 start, Vector3 end, int segments, float power)\n	{\n		Vector3 [] final = new Vector3[segments];\n		Vector3 velocity = start - end;\n		velocity.Normalize();\n		Vector3 last = start;\n		for(int i = 0; i < segments; i++)\n		{\n			final[i] = Vector3.Lerp(last, end, (float)i/segments);\n			final[i] += Utility.RandomVectorInclusive(1, 1, 0) * power;\n\n			last = final[i];\n		}\n		return final;\n	}\n\n	public virtual bool IsGenus(Tile t)\n	{\n		if(t == null) return false;\n		if(Genus == GENUS.NONE || Genus == GENUS.OMG) return false;\n		return Genus == t.Genus || Genus == GENUS.ALL || t.Genus == GENUS.ALL;\n	}\n\n	public virtual bool IsGenus(GENUS g, bool collect_all = true, bool allow_alpha = true)\n	{\n		if(Genus == GENUS.NONE || (Genus == GENUS.OMG && g != GENUS.OMG)) return false;\n		return Genus == g || (collect_all && Genus == GENUS.ALL) || (allow_alpha && g == GENUS.ALL);\n	}\n\n	public bool IsType(Tile t)\n	{\n		return IsType(t.Info);\n	}\n\n	public bool IsType(TileInfo t)\n	{\n		return Genus == t._GenusEnum && Info._Type == t._Type;\n	}\n\n	public bool IsType(SPECIES s)\n	{\n		if(s == null || s == SPECIES.None) return true;\n		return Info._Type == s;\n	}\n\n	public bool IsType(string s)\n	{\n		return Type.IsType(s);\n	}\n\n	public bool IsType(string g, string s)\n	{\n		bool genus = false;\n		\n		if(g == string.Empty) genus = true;\n		if(g == \"Red\" && Genus == GENUS.STR) genus = true;\n		if(g == \"Blue\" && Genus == GENUS.DEX) genus = true;\n		if(g == \"Green\" && Genus == GENUS.WIS) genus = true;\n		if(g == \"Yellow\" && Genus == GENUS.CHA) genus = true;\n		if(g == \"Purple\" && Genus == GENUS.PRP) genus = true;\n		if((g == \"All\" || g == \"Prism\") && Genus == GENUS.ALL) genus = true;\n		if(g == \"Gray\" && Genus == GENUS.OMG) genus = true;\n\n		if(s == \"Enemy\" && Stats.isAlly) return false;\n		return genus && IsType(s);\n	}\n\n	public virtual void SetArgs(params string [] args)\n	{\n		\n	}\n\n	public virtual void Reset(bool idle = false)\n	{\n		if(Params.counter != null)\n		{\n			Params.counter.text = \"\";\n			Params.counter.color = Color.white;	\n			Params.otherWarning.text = \"\";\n		}\n		if(Info != null && Point != null) transform.name = Info.Name + \" | \" + Point.Base[0] + \":\" + Point.Base[1];\n		//if(!IsState(TileState.Locked) && \n		state_override = false;\n		originalMatch = false;\n		if(idle) SetState(TileState.Idle);\n	}\n\n	//For enemies to show possible damage inflicted\n	public virtual void SetDamageWarning(int amt)\n	{\n	}\n\n	public virtual void SetOtherWarning(string text)\n	{\n		Params.otherWarning.text = text;\n	}\n\n	public void SetCounter(string text, Color? col = null)\n	{\n		Params.counter.color = col ?? Color.white;\n		Params.counter.text = text;\n	}\n\n	public void SetCounterText(string text)\n	{\n		Params.counter.text = text;\n	}\n\n	public int PointToInt(int [] diff)\n	{\n		if(diff[1] == -1)\n		{\n			switch(diff[0])\n			{\n				case -1:\n				return 3;\n				case 0:\n				return 2;\n				case 1:\n				return 1;\n			}\n		}\n		else if(diff[1] == 1)\n		{\n			switch(diff[0])\n			{\n				case -1:\n				return 5;\n				case 0:\n				return 6;\n				case 1:\n				return 7;\n			}\n		}\n		else\n		{\n			if(diff[0] == -1) return 4;\n			else if(diff[0] == 1) return 8;\n		}\n		return 0;\n	}\n\n	public virtual void SetValue(int val)\n	{\n		Stats.Value = val;\n	}\n\n	public virtual void AddValue(float amt)\n	{\n		InitStats.value_soft = Mathf.Clamp(InitStats.value_soft += amt, 0, 999);\n\n		int diff = (int) InitStats.value_soft - InitStats.Value;\n		if(diff != 0)\n		{\n			InitStats.Value = (int) InitStats.value_soft;\n			CheckStats();\n			UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), \"\" + Stats.Value, 75, Color.white, 0.8F,0.00F);\n			\n			Animate(\"Alert\");\n			SetSprite();\n		}\n	}\n\n	public void CheckStats()\n	{\n		Stats = new TileStat(InitStats);\n		for(int i = 0; i < Effects.Count; i++)\n		{\n			if(Effects[i] == null) Effects.RemoveAt(i);\n			else Stats.Add(Effects[i].CheckStats(), false);\n		}\n	}\n\n	public virtual void BeforeTurn()\n	{\n\n	}\n\n	public virtual IEnumerator BeforeTurnRoutine(){\n\n		yield break;\n	}\n\n	public virtual void AfterTurn()\n	{\n		Reset();\n		\n		InitStats.TurnDamage = 0;\n		InitStats.Lifetime ++;\n		if(InitStats.Lifetime >= 1) \n		{\n			InitStats.isNew = false;\n		}\n		for(int i = 0; i < Effects.Count; i++)\n		{\n			if(Effects[i] == null) Effects.RemoveAt(i);\n			else if(Effects[i].CheckDuration()) \n			{\n				GameObject old = Effects[i].gameObject;\n				Effects.RemoveAt(i);\n				Destroy(old);\n			}\n		}\n		CheckStats();\n	}\n\n	public virtual IEnumerator AfterTurnRoutine()\n	{\n		Reset();\n		InitStats.TurnDamage = 0;\n		InitStats.Lifetime ++;\n		if(InitStats.Lifetime >= 1) \n		{\n			InitStats.isNew = false;\n		}\n		for(int i = 0; i < Effects.Count; i++)\n		{\n			bool destroy = false;\n			if(Effects[i] == null) Effects.RemoveAt(i);\n			else if(Effects[i].CheckDuration()) \n			{\n				destroy = true;\n			}\n			if(Effects[i] != null)\n			{\n				yield return StartCoroutine(Effects[i].StatusEffectRoutine());\n				if(i < Effects.Count-1)	yield return new WaitForSeconds(Time.deltaTime * 15);\n			}\n			if(destroy)\n			{\n				GameObject old = Effects[i].gameObject;\n				Effects.RemoveAt(i);\n				Destroy(old);\n			}\n\n		}\n		CheckStats();\n		\n		yield break;\n	}\n\n	public virtual void SetSprite()\n	{\n		int sprite = Stats.Value / 5;\n		SetBorder(Info.Outer);\n		if(Info.Inner.Length > 0)\n		{\n			if(sprite > Info.Inner.Length - 1) sprite = Info.Inner.Length - 1;\n		}\n		else return;//sprite = 0;\n\n		SetRender(Info.Inner[sprite]);\n		\n		if(Params._shiny != null && Params._render != null) Params._shiny.sprite = Params._render.sprite;\n		//transform.position = Point.targetPos;\n		Params.transform.position = transform.position;\n		Params._render.transform.localPosition = Vector3.zero;\n	}\n\n	public  void SetBorder(Sprite border)\n	{\n		if(Params._border != null) Params._border.sprite = border;\n	}\n	public  void SetRender(Sprite render)\n	{\n		if(Params._render!= null) Params._render.sprite = render;\n	}\n\n	public virtual TileEffect AddEffect(TileEffect init)\n	{\n		foreach(TileEffect child in Effects)\n		{\n			if(child.Name == init.Name)\n			{\n				child.Duration += init.Duration;\n				return child;\n			}\n		}\n\n		TileEffect e = init;\n		e.Setup(this);\n		e.transform.position = this.transform.position;\n		e.transform.parent = this.transform;\n		Effects.Add(e);\n		CheckStats();\n		return e;\n	}\n\n	public virtual TileEffect AddEffect(string name, int duration, params string [] args)\n	{\n		foreach(TileEffect child in Effects)\n		{\n			if(child.Name == name)\n			{\n				child.Duration += duration;\n				return child;\n			}\n		}\n		TileEffect e = (Status) (Instantiate(GameData.instance.GetTileEffectByName(name))) as TileEffect;\n		e.GetArgs(duration, args);\n		e.Setup(this);\n		e.transform.position = this.transform.position;\n		e.transform.parent = this.transform;\n		Effects.Add(e);\n		CheckStats();\n		return e;\n	}\n\n	public virtual TileEffect AddEffect(TileEffectInfo inf)\n	{\n		return AddEffect(inf.Name, inf.Duration, inf.Args);\n	}\n\n	public bool HasEffect(string name)\n	{\n		foreach(TileEffect child in Effects)\n		{\n			if(child.Name == name)return true;\n		}\n		return false;\n	}\n\n	\n	public void ChangeGenus(GENUS g)\n	{\n		Info.ChangeGenus(g);\n		SetSprite();\n	}\n\n	public void MoveToGridPoint(int x, int y, float arc = 0.0F)\n	{\n		Vector3 newpoint = TileMaster.Grid[x,y].position;\n		UnlockedFromGrid = true;\n\n		MoveToPoint mp = this.gameObject.AddComponent<MoveToPoint>();\n		mp.SetTarget(newpoint);\n		mp.SetPath(0.13F, arc);\n		mp.SetThreshold(0.1F);\n		mp.DontDestroy = true;\n\n		mp.SetMethod(() => {\n			transform.position = new Vector3(Point.targetPos.x, Point.targetPos.y, transform.position.z);\n			Params.transform.position = transform.position;\n			Params._render.transform.localPosition = Vector3.zero;\n			UnlockedFromGrid = false;\n			\n		});\n		TileMaster.Grid[x, y]._Tile = this;\n		Setup(x,y);\n	}\n\n}\n\n\npublic enum TileState{\n	Idle,\n	Hover,\n	Selected,\n	Locked,\n	Falling\n}\n\n[System.Serializable]\npublic class TileStat\n{\n	public string Name;\n	public int Value        = 0;\n	[HideInInspector]\n	public float value_soft = 0;\n\n	public int Resource  = 0;\n	public int Heal 	 = 0;\n	public int Armour 	 = 0;\n	\n	public int Hits      = 0;\n	public int Attack    = 0;\n	public int Lifetime  = 0;\n	public int Deathtime = 0;\n	\n	public bool isNew       = true;\n	public bool isFrozen    = false;\n	public bool isBroken    = false;\n	public bool isAlerted   = false;\n	public bool isAlly      = false;\n	public int  AllyAttackType = 0;\n\n	public int DOT = 0;\n	public int TurnDamage = 0;\n	public ShiftType Shift;\n\n	public void Add(TileStat t, bool _override = true)\n	{\n		if(t == null) return;\n		Value     += t.Value;\n\n		Resource  += t.Resource;\n		Heal 	  += t.Heal;\n		Armour 	  += t.Armour;\n		Hits      += t.Hits;\n		Attack    += t.Attack;\n		Lifetime  += t.Lifetime;\n		Deathtime += t.Deathtime;\n		DOT 	  += t.DOT;\n		TurnDamage += t.TurnDamage;\n\n		if(_override)\n		{\n			isFrozen = t.isFrozen;\n			isBroken = t.isBroken;\n			isAlerted = t.isAlerted;\n			isAlly 	= t.isAlly;\n			AllyAttackType = t.AllyAttackType;\n			isNew = t.isNew;\n		}\n		else\n		{\n			if(t.isFrozen) isFrozen    = true;\n			if(t.isBroken) isBroken    = true;\n			//if(!t.isAlerted) isAlerted = false;\n			if(t.isAlly)	\n			{\n				isAlly = true;\n				AllyAttackType = 0;\n			}\n		}\n		\n	}\n\n	public TileStat(TileStat t = null)\n	{\n		if(t != null)\n		{\n			Value     = t.Value;\n\n			Resource  = t.Resource;\n			Heal 	  = t.Heal;\n			Armour 	  = t.Armour;\n			Hits      = t.Hits;\n			Attack    = t.Attack;\n			Lifetime  = t.Lifetime;\n			Deathtime = t.Deathtime;\n			DOT 	  = t.DOT;\n			TurnDamage = t.TurnDamage;\n			isFrozen = t.isFrozen;\n			isBroken = t.isBroken;\n			isAlerted = t.isAlerted;\n			isAlly 	= t.isAlly;\n			AllyAttackType = t.AllyAttackType;\n			isNew = t.isNew;\n			Shift = t.Shift;\n		}\n	}\n\n	public int [] GetValues()\n	{\n		return new int [] {(int) (Resource * Value), (int)(Heal * Value), (int)(Armour * Value)};\n	}\n}\n\n[System.Serializable]\npublic class TilePointContainer\n{\n	public int BaseX, BaseY;\n	public List<int> AllX, AllY;\n	public int Scale;\n\n\n	public Vector3 targetPos;\n	public Tile parent;\n	public int TopX, TopY;\n\n	public int [] Point(int x)\n	{\n		return new int[]{AllX[x], AllY[x]};\n	}\n\n	public int [] Base{\n		get{return new int [] {BaseX, BaseY};}\n		set{BaseX = value[0]; \n			BaseY = value[1];\n			SetPoints();}\n	}\n\n	public int [] Top\n	{\n		get{return new int [] {TopX, TopY};}\n	}\n\n	public int Length{get{return AllX.Count;}}\n\n	public TilePointContainer(int x, int y, int sc, Tile p)\n	{\n		BaseX = x;\n		BaseY = y;\n		Scale = sc;\n		parent = p;\n		SetPoints();\n	}\n\n	public void SetPoints()\n	{\n		AllX = new List<int>();\n		AllY = new List<int>();\n		targetPos = Vector3.zero;\n		if(TileMaster.Tiles == null || TileMaster.Grid == null) \n		{\n			return;\n		}\n\n		TopX = BaseX + (Scale - 1);\n		TopY = BaseY + (Scale - 1);\n		\n		for(int xx = 0; xx < Scale; xx++)\n		{\n			for(int yy = 0; yy < Scale; yy++)\n			{\n				if(TileMaster.Tiles.GetLength(0) <= BaseX + xx || TileMaster.Tiles.GetLength(1) <= BaseY + yy) continue;\n				AllX.Add(BaseX + xx);\n				AllY.Add(BaseY + yy);\n				TileMaster.Tiles[BaseX+xx, BaseY+yy] = parent;\n			}\n			\n		}\n		int end = AllX.Count - 1;\n\n		Vector3 bottomleft = TileMaster.Grid.GetPoint(BaseX, BaseY);\n		Vector3 topright = TileMaster.Grid.GetPoint(TopX, TopY);\n		if(topright == Vector3.zero) topright = bottomleft;\n\n		//Debug.Log(BaseY + \":\" + AllY[end] + \":\" + TileMaster.Grid.Size[1]);\n		targetPos = Vector3.Lerp(bottomleft, topright, 0.5F);\n\n	}\n\n	public bool Contains(int x, int y, bool mutual = true)\n	{\n		for(int xx = 0; xx <AllX.Count; xx++)\n		{\n			for(int yy = 0; yy < AllY.Count; yy++)\n			{\n				if(AllX[xx] == x && AllY[yy] == y) return true;\n				if(!mutual)\n				{\n					if(AllX[xx] == x || AllY[yy] == y) return true;\n				}\n			}\n		}\n		return false;\n	}\n\n	public int [] Closest(int x, int y, out int shortest)\n	{\n		shortest = 100;\n		int [] point = new int[2];\n		for(int xx = 0; xx < AllX.Count; xx++)\n		{\n			for(int yy = 0; yy < AllY.Count; yy++)\n			{\n				int dist = Mathf.Abs(AllX[xx]-x) + Mathf.Abs(AllY[yy]-y);\n				if(dist < shortest) \n				{\n					point = new int [] {xx,yy};\n					shortest = dist;\n				}\n			}\n		}\n		return point;\n	}\n\n	public int [] Closest(int [] num, out int shortest)\n	{\n		int x = num[0], y = num[1];\n		shortest = 100;\n		int [] point = new int[2];\n		for(int xx = 0; xx < AllX.Count; xx++)\n		{\n			for(int yy = 0; yy < AllY.Count; yy++)\n			{\n				int dist = Mathf.Abs(AllX[xx]-x) + Mathf.Abs(AllY[yy]-y);\n				if(dist < shortest) \n				{\n					point = new int [] {AllX[xx],AllY[yy]};\n					shortest = dist;\n				}\n			}\n		}\n		return point;\n	}\n\n	public Tile [] GetNeighbours(bool diags = false)\n	{\n		List<Tile> final = new List<Tile>();\n		for(int xx = 0; xx < AllX.Count; xx++)\n		{\n			for(int yy = 0; yy < AllY.Count; yy++)\n			{\n				Tile a = TileMaster.instance.GetTile(AllX[xx]-1, AllY[yy]);\n				Tile b = TileMaster.instance.GetTile(AllX[xx]+1, AllY[yy]);\n				Tile c = TileMaster.instance.GetTile(AllX[xx], AllY[yy]-1);\n				Tile d = TileMaster.instance.GetTile(AllX[xx], AllY[yy]+1);\n				\n				if(a != null && !final.Contains(a) && a != parent) final.Add(a);\n				if(b != null && !final.Contains(b) && b != parent) final.Add(b);\n				if(c != null && !final.Contains(c) && c != parent) final.Add(c);\n				if(d != null && !final.Contains(d) && d != parent) final.Add(d);\n\n				if(diags)\n				{\n					Tile e = TileMaster.instance.GetTile(AllX[xx]+1, AllY[yy]+1);\n					Tile f = TileMaster.instance.GetTile(AllX[xx]-1, AllY[yy]-1);\n					if(e != null && !final.Contains(e) && e != parent) final.Add(e);\n					if(f != null && !final.Contains(f) && f != parent) final.Add(f);\n\n					Tile g = TileMaster.instance.GetTile(AllX[xx]+1, AllY[yy]-1);\n					Tile h = TileMaster.instance.GetTile(AllX[xx]-1, AllY[yy]+1);\n					if(g != null && !final.Contains(g) && g != parent) final.Add(g);\n					if(h != null && !final.Contains(h) && h != parent) final.Add(h);\n				}\n				\n			}\n		}\n		return final.ToArray();\n	}\n\n}\n\n\npublic class TileUpgrade\n{\n	public float Chance;\n	public int Points;\n	public Action Method;\n\n	public TileUpgrade(float c, int p, Action m)\n	{\n		Chance = c;\n		Points = p;\n		Method = m;\n	}\n}",
+			"file": "Scripts/Tiles/Tile.cs",
+			"file_size": 38110,
+			"file_write_time": 1465854412000000,
+			"settings":
+			{
+				"buffer_size": 35194,
+				"line_ending": "Unix"
 			}
 		}
 	],
@@ -496,94 +483,51 @@
 	},
 	"file_history":
 	[
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIObjTweener.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/MoveToPoint.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Bard.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Class.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Actives/Swap.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Actives/Fireball.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Heal.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UISlotButton.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIButton.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIManager.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIObj.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/MiniAlertUI.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/TileMaster.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIScoreWindowNew.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Minion.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Actives/Collect.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/GameManager.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Mimic.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Grunt.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/GameData.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Unit.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Tile.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Enemy.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Blob.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIObjects.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Special.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/PlayerControl.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UITooltip.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIGear.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIStatsbar.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIClassButton.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIAbilityButton.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIBonus.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIMenu.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Player.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Item.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Stat.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Neutral/ItemTile.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Neutral/Altar.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/WaveTileEndOnTileDestroy.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Sleep.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/TileEffect.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Zone.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/WardenWaveUnit.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/WaveUnit.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/WardenBattle.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Units/Class.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/GameManager.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Actives/Fireball.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Units/Zone.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Utilities/_GameSaveLoad.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/UI/UIManager.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Utilities/GridInfo.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/TileMaster.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Units/WaveGroup.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Units/Wave/Tutorial.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/UI/UIGear.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/UI/UIClassSelect.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/UI/UIObj.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/UI/UIClassButton.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/UI/UISlotButton.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Units/Classes/Wizard.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Enemy.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/TileTypes.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Tiles/Tile.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/GameData.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Units/Wave/WaveTile.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Utilities/CameraUtility.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Units/Wave/WardenBattle.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Units/Wave.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Slots/Item.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Status/Frenzy.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Status/Sleep.cs",
+		"/Users/Matt/Desktop/pluggy/pluggy/Assets/GameManager.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Player.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Units/Wave/WardenIntro.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Actives/Slash.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Units/Wave/GromWave.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Units/Wave/WaveTileEndOnTileDestroy.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Blob.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Minion.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Units/WaveUnit.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Slots/Items/ModContainer.cs",
+		"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts/Units/Wave/Grom_WaveUnit.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/WaveTile.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/TileTypes.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Mana.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Harp.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Items/ModContainer.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/WardenIntro.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Neutral/Health.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/GridInfo.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/Juice.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/_GameSaveLoad.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/CameraUtility.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Barbarian.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIKillScreen.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Thief.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Ability.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/ClassHealthUI.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Wizard.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIClassSelect.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/Utility.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Actives/Slash.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Soldier.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Actives/Banish.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/EffectManager.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Chicken.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Spawning.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Roaming.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/ClassSlotsUI.cs",
-		"/A/Projects/matchima/Matchima!/Assets/UITween/Scripts/ReferencedFrom.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UITopGear.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIMiddleGear.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIBottomGear.cs",
-		"/C/Users/MaxerJ/AppData/Roaming/Sublime Text 2/Packages/Zen Tabs/Default.sublime-keymap",
-		"/C/Users/MaxerJ/AppData/Roaming/Sublime Text 2/Packages/User/ZenTabs.sublime-settings",
-		"/C/Users/MaxerJ/AppData/Roaming/Sublime Text 2/Packages/Zen Tabs/ZenTabs.sublime-settings",
-		"/C/Users/MaxerJ/AppData/Roaming/Sublime Text 2/Packages/Zen Tabs/TODO.todo",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Healing.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Bomb.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Cross.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/WaveEffect.cs",
-		"/D/Games/Total.War.ROME.II.Emperor.Edition.MULTi9-PROPHET/prophet.nfo",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Bomb.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Harp.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Cross.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Lightning.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Actives/Fireball.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Swapper.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Flame.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Lens.cs",
@@ -591,23 +535,74 @@
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Collector.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/BlackHole.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Arcane.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Tile.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Enemy.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Player.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Vacuum.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/GameManager.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/PlayerControl.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Blob.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/_GameSaveLoad.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Class.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIManager.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/TileMaster.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Heal.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Grunt.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Actives/Slash.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Minion.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/GridInfo.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/Juice.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/CameraUtility.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Ability.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/EffectManager.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Bard.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/WardenIntro.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Slot.cs",
 		"/C/Users/MaxerJ/Desktop/MatchimaWebGL085/index.html",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Items/ModContainer.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Item.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIMenu.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/WaveGroup.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/GameData.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Stat.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Passives/Wizardry.cs",
 		"/C/Users/MaxerJ/AppData/LocalLow/Lambert _ Blinn/Matchima_/SaveData.xml",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Unit.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Roaming.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Chicken.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/WaveUnit.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/MoveToPoint.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Wizard.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIObj.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/TileEffect.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Spawning.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/WaveTileEndOnTileDestroy.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Status.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Barbarian.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Thief.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Mimic.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Sleep.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/WardenBattle.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIClassButton.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/IgnorePlayer.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/DamageInc.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/TileTypes.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/ClassEffect.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UISlotButton.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Passives/Backstab.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Neutral/Attack.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Soldier.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Merchant.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Jailer.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIObjects.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIObjTweener.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIBonus.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/WardenWaveUnit.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Passives/Gyromancy.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Passives/AddTileEffect.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Actives/ApplyEffectToTile.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIButton.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Frenzy.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Ward.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/Tutorial.cs",
@@ -615,15 +610,7 @@
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/WaveEffect.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Charm.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/WaveEnemy.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/ClassUpgradeUI.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Actives/Shield.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/TileParamContainer.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Passives/Thievery.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Warden.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Tutorial.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/Giant Grunt.cs",
-		"/C/Program Files (x86)/R.G. Mechanics/Freelancer/EXE/dacomsrv.ini",
-		"/C/Program Files (x86)/R.G. Mechanics/Freelancer/EXE/dacom.ini"
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/ClassUpgradeUI.cs"
 	],
 	"find":
 	{
@@ -634,6 +621,7 @@
 		"height": 0.0,
 		"where_history":
 		[
+			"/Users/Matt/Desktop/matchima/Matchima!/Assets/Scripts",
 			"A:\\Projects\\matchima\\Matchima!\\Assets\\Scripts",
 			"C:\\Program Files (x86)\\R.G. Mechanics\\Freelancer\\DATA",
 			"C:\\Program Files (x86)\\R.G. Mechanics\\Freelancer\\DLLS",
@@ -660,134 +648,134 @@
 		"case_sensitive": true,
 		"find_history":
 		[
-			"ShowZoneUI",
-			"ShowClassAbilities",
-			"HoverOver",
-			"StashUI",
-			"MouseOver",
-			"HoverOver",
-			"isFalling",
-			"AllLand",
-			"HoldingSlot",
-			"ShowStash",
-			"MiniAlertUI",
-			"ManaThisTurn",
-			"HealLoop",
-			"{\n",
-			"Tile",
-			"CompleteClasses",
-			"Complete",
-			"heal",
-			"m",
-			"Player.Stats.HealThisTurn",
-			"current_heal",
-			"ComboSize",
-			"0.4F",
-			"1.2F",
-			"ComboSizeBonus",
-			"BeginTurn",
-			"CollectResourcesRoutine",
-			"ParentTrans.transform.localRotation",
-			"er).transform",
-			"TxtTooltipObj",
-			"ParentObj.gameObject",
-			"ParentObj.transform",
-			"ParentObj",
-			"ParentObj.transform",
-			"Transform ParentObj",
-			"(Transform) ",
-			"Transform",
-			"HorizontalObj",
-			"BaseDescription",
-			"[1][1][3][0]",
-			"1][1][3][0]",
-			"GameObject",
-			"desc",
-			"ShowGearTooltip",
-			"Tooltip",
-			"LoadUI",
-			"ShowGearTooltip",
-			"ShowTooltip",
-			"ShowGearTooltip",
-			"Objects.TopGear[1][1][3][0]",
-			"0",
-			"Destroy(Objects.TopGear[1][1][3][1][i].gameObject);",
-			"0",
-			"rotation",
-			"Quaternion.identity",
-			"Count",
-			"EffectDescription",
-			"ShowTooltip",
-			"EffectDescription",
-			".Base",
-			"BaseDescription",
-			"desc",
-			"Tooltip",
-			"[1][3]",
-			"ShowTooltip",
-			"Tooltip",
-			"TopGear_lastdivision",
-			"Tooltip",
-			"ThisTurn_items",
-			"NewItems",
-			"Player.StashItems.Count > 0",
-			"ThisTurn_items",
-			"Item",
-			"TopLeftButton",
-			"ShowZoneUI",
-			"t",
-			"i",
-			"Player.Classes[(int)t.Genus]",
-			"t.Stats.GetValues()",
-			"movespeed",
-			"isMoving",
-			"isRes",
-			"Grid",
-			"Random",
-			"t.",
-			"Alerted",
-			"CanAttack",
-			"child",
-			"AddEffect",
-			"AddEffecrt",
-			"AddEffect",
-			"Setup",
-			"DestroyThyself",
-			"CurrentWave",
-			"ResetStats",
-			"_GetWave",
-			"Update",
-			"NewGrid",
-			"_GetWave",
-			"20",
-			"NewGrid",
-			"EscapeZone",
-			"MiddleGear[0]",
-			"MiddleGear[0][0]",
-			"Good",
-			"Zones",
-			"		\n",
-			"LoadUI",
-			"MiddleGear[2]",
-			"[2]",
-			"ShowZoneUI",
-			"ShowZoneMenu",
-			"EscapeZone",
-			"false",
-			"LoadUI",
-			"StartGame",
-			"MiddleGear[0][0]",
-			"NewGameActivate",
-			"NewGameActiv",
-			"NewGameActive",
-			"LoadGame",
-			"LoadUI",
-			"UIAction.MouseUp,",
-			"CurrentZone",
-			"_EnterZone",
-			"_EscapeZone",
+			"true",
+			"MiniAlert",
+			"isDragging",
+			"StoryMode",
 			"GetWave",
-			"EscapeZone"
+			"final_y",
+			"final_x",
+			"	\n",
+			"GetWave",
+			"0.7F",
+			"GetSlot",
+			"CameraUtility",
+			"Destroy",
+			"DestroyThyself",
+			"AfterTurn",
+			"Velocity",
+			"CreateTile",
+			"Velocity",
+			"ShiftTiles",
+			"Tiles[x,y]",
+			"DestroyTile",
+			"this",
+			"tile_temp",
+			"CreateTile",
+			"ObjectPool",
+			"GameObject",
+			"Type",
+			"Random",
+			"this",
+			"TileModel",
+			"TileObj",
+			"LoadAbilities",
+			"CreateTile",
+			"ShowKillUI",
+			"KillUI",
+			"Killed",
+			"IsKilled",
+			"BeginTurn",
+			"Turn",
+			"PlayStoryMode",
+			"AfterTurn",
+			"CompleteTurnRoutine",
+			"GetWave",
+			"ScaleType.RANK, 1.0F,",
+			"20",
+			"ReplaceTile",
+			"EnemyKilled",
+			"initialization",
+			"CollectThyself",
+			"sleep",
+			"_tiles",
+			"Grid.Tiles[x,y]",
+			"Ripple",
+			"selectedTiles",
+			"all_of_resource",
+			"BeforeMatch",
+			"CheckManaPower",
+			"BeginTurn",
+			"ClassUIObj",
+			"_tiles[x,y]",
+			"this",
+			"TurnDamage",
+			"BeforeMatch",
+			"0.3F",
+			"Time.deltaTime * 10",
+			"Time.deltaTime* 10",
+			"Time.deltaTime * 25",
+			"selectedTiles",
+			"newTiles",
+			"_newtiles",
+			"selectedTiles",
+			"finalTiles",
+			"oldTiles",
+			"newTiles",
+			"finalTiles",
+			"AddTilesToMatch",
+			"0.1F",
+			"0.2F",
+			"0.15F",
+			"CompleteTurnRoutine",
+			"i",
+			"child",
+			"Mode",
+			"Wave",
+			"Current",
+			"ModeChange",
+			"AfterTurn",
+			"CollectMatchesRoutine",
+			"AfterTurn",
+			"CheckForMatches",
+			"Matches",
+			"Diagona",
+			"CollectMatchesRoutine",
+			"m",
+			"AfterTurn",
+			"d",
+			"SetStates",
+			"CollectMatchesRoutine",
+			"AfterTurn",
+			"MatchContainer",
+			"Collect",
+			"CollectMatchesRoutine",
+			"AfterTurn",
+			"Collect",
+			"CollectMatches",
+			"CheckForMatches",
+			"AfterTurn",
+			"CreateTile",
+			"Load",
+			"LoadAssets_Routine",
+			"Spawner2",
+			"SetSprite",
+			"ClearGrid",
+			"ResetChances",
+			"level_to_load",
+			"level.Points",
+			"CreateTile",
+			"SetPointInfo",
+			"StartClass",
+			"Parent",
+			"SetupClass",
+			"_ArmourMax",
+			"Health",
+			"TileChance",
+			"GetIOSPath",
+			"_data",
+			"CreateXML",
+			"Count"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -795,9 +783,6 @@
 		"regex": false,
 		"replace_history":
 		[
-			"WaveAlert.SetTween(0,false",
-			"WaveAlert.SetTween(0,true",
-			"WaveAlert.SetTween(0,",
 			"AfterTurn",
 			"GENUS.OMG",
 			"TileMaster.Tiles",
@@ -855,473 +840,23 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 10,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "Scripts/Player.cs",
+					"file": "Scripts/PlayerControl.cs",
 					"settings":
 					{
-						"buffer_size": 17766,
+						"buffer_size": 13826,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								6969,
-								6969
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close"
-							],
-							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 6983.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "Scripts/GameManager.cs",
-					"settings":
-					{
-						"buffer_size": 36435,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3741,
-								3741
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close"
-							],
-							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 2337.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "Scripts/TileMaster.cs",
-					"settings":
-					{
-						"buffer_size": 44169,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1898,
-								1898
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close"
-							],
-							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 1074.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 3,
-					"file": "Scripts/Tiles/Tile.cs",
-					"settings":
-					{
-						"buffer_size": 38107,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								14908,
-								14908
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close"
-							],
-							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 10175.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 4,
-					"file": "Scripts/UI/UISlotButton.cs",
-					"settings":
-					{
-						"buffer_size": 4215,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2713,
-								2713
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close"
-							],
-							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 1710.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 5,
-					"file": "Scripts/UI/UIManager.cs",
-					"settings":
-					{
-						"buffer_size": 33272,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								32718,
-								32718
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close"
-							],
-							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 400.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "Scripts/UI/UIButton.cs",
-					"settings":
-					{
-						"buffer_size": 3522,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								698,
-								654
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1384,82 +919,115 @@
 					"type": "text"
 				},
 				{
-					"buffer": 7,
-					"file": "Scripts/UI/UIClassButton.cs",
+					"buffer": 1,
+					"file": "Scripts/Player.cs",
 					"settings":
 					{
-						"buffer_size": 5504,
+						"buffer_size": 17766,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4642,
-								4642
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close"
-							],
-							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
+							"syntax": "Packages/C#/C#.tmLanguage",
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 3021.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
-					"buffer": 8,
+					"buffer": 2,
+					"file": "Scripts/Units/Wave.cs",
+					"settings":
+					{
+						"buffer_size": 8328,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1490.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "Scripts/UI/UIClassSelect.cs",
+					"settings":
+					{
+						"buffer_size": 1295,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								162,
+								162
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 34.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "Scripts/UI/UIMenu.cs",
+					"settings":
+					{
+						"buffer_size": 18601,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 6283.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 5,
 					"file": "Scripts/UI/UIObj.cs",
 					"settings":
 					{
@@ -1470,65 +1038,152 @@
 						"selection":
 						[
 							[
-								3700,
-								3700
+								0,
+								0
 							]
 						],
 						"settings":
 						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close"
-							],
-							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
+							"syntax": "Packages/C#/C#.tmLanguage",
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 2519.0,
+						"translation.y": 2886.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "Scripts/UI/UIGear.cs",
+					"settings":
+					{
+						"buffer_size": 5134,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "Scripts/UI/UIManager.cs",
+					"settings":
+					{
+						"buffer_size": 33272,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 8453.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "Scripts/UI/MiniAlertUI.cs",
+					"settings":
+					{
+						"buffer_size": 2303,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "Scripts/GameManager.cs",
+					"settings":
+					{
+						"buffer_size": 36435,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 8745.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "Scripts/Tiles/Tile.cs",
+					"settings":
+					{
+						"buffer_size": 35194,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								6783,
+								6783
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C#/C#.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 6.0,
+						"translation.y": 3951.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1600,6 +1255,6 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 120.0,
+	"side_bar_width": 174.0,
 	"status_bar_visible": true
 }

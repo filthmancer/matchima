@@ -54,7 +54,7 @@ public class Cross : Tile {
 		for(int i = 0; i < Particles.Length; i++)
 		{
 			Particles[i].startSize = 2 * _Scale;
-			Particles[i].startSpeed = Stats.Value * 4;
+			Particles[i].startSpeed = CrossSize * 5;
 			Particles[i].emissionRate = Stats.Value * 25;
 			//Particles[i].Play();
 			Particles[i].enableEmission = true;

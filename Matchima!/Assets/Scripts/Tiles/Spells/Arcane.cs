@@ -31,7 +31,7 @@ public class Arcane : Tile {
 		get
 		{
 			CheckStats();
-			return 1 + Stats.Value/2;
+			return 2 + Stats.Value/2;
 		}
 	}
 
@@ -78,7 +78,8 @@ public class Arcane : Tile {
 		{
 			for(int yy = 0; yy < y; yy++)
 			{
-				if(TileMaster.Tiles[xx,yy].IsGenus(GENUS.OMG)) to_collect.Add(TileMaster.Tiles[xx,yy]);
+				if(TileMaster.Tiles[xx,yy].IsGenus(GENUS.OMG, false) &&
+					!TileMaster.Tiles[xx,yy].isMatching) to_collect.Add(TileMaster.Tiles[xx,yy]);
 			}
 		}
 
@@ -90,58 +91,23 @@ public class Arcane : Tile {
 
 		foreach(Tile child in to_collect)
 		{
-			child.SetState(TileState.Selected, true);
+			
 			PlayerControl.instance.RemoveTileToMatch(child);
 
 			GameObject part = Instantiate(ArcaneParticle);
 			part.transform.position = this.transform.position;
-			part.GetComponent<MoveToPoint>().SetTarget(child.transform.position);
-			part.GetComponent<MoveToPoint>().SetPath(0.5F, 0.2F);
+
+			MoveToPoint mp = part.GetComponent<MoveToPoint>();
+			mp.SetTarget(child.transform.position);
+			mp.SetPath(0.5F, 0.2F);
 			part.GetComponent<ParticleSystem>().startColor = GameData.Colour(Genus);
 
 			float dist = Vector3.Distance(child.transform.position, this.transform.position);
-			part.GetComponent<MoveToPoint>().Speed = 0.05F * dist;
-			part_time = 0.1F + (0.03F * dist);
-
-			
-			yield return new WaitForSeconds(part_time);
-
-			if(EndType == string.Empty)
+			mp.Speed = 0.1F + 0.05F * dist;
+			part_time = 0.2F + (0.03F * dist);
+			mp.SetTileMethod(child, (Tile c) =>
 			{
-				child.ChangeGenus(Genus);	
-				child.AddValue(EndValueAdded);
-			}
-			else if(EndGenus == string.Empty)
-			{
-				TileMaster.instance.ReplaceTile(child, TileMaster.Types[EndType], child.Genus, 1, EndValueAdded);
-			}
-			else TileMaster.instance.ReplaceTile(child, TileMaster.Types[EndType], TileMaster.Genus[EndGenus], 1, EndValueAdded);
-			
-			EffectManager.instance.PlayEffect(child.transform, Effect.Replace, "", GameData.instance.GetGENUSColour(child.Genus));	
-		}
-
-		int check = 0;
-		while(to_collect.Count < TilesCollected)
-		{
-			Tile c = TileMaster.Tiles[Utility.RandomInt(x), Utility.RandomInt(y)];
-			if(c != this && ((EndGenus != string.Empty && c.Genus != Genus) || (EndType != string.Empty && !c.IsType(EndType))))
-			{
-				c.SetState(TileState.Selected, true);
-				to_collect.Add(c);	
-				PlayerControl.instance.RemoveTileToMatch(c);
-
-				GameObject part = Instantiate(ArcaneParticle);
-				part.transform.position = this.transform.position;
-				part.GetComponent<MoveToPoint>().SetTarget(c.transform.position);
-				part.GetComponent<MoveToPoint>().SetPath(0.5F, 0.2F);
-				part.GetComponent<ParticleSystem>().startColor = GameData.Colour(Genus);
-
-				float dist = Vector3.Distance(c.transform.position, this.transform.position);
-				part.GetComponent<MoveToPoint>().Speed = 0.05F * dist;
-				part_time = 0.1F + (0.03F * dist);
-
-				
-				yield return new WaitForSeconds(part_time);
+				child.SetState(TileState.Selected, true);
 				if(EndType == string.Empty)
 				{
 					c.ChangeGenus(Genus);	
@@ -152,9 +118,56 @@ public class Arcane : Tile {
 					TileMaster.instance.ReplaceTile(c, TileMaster.Types[EndType], c.Genus, 1, EndValueAdded);
 				}
 				else TileMaster.instance.ReplaceTile(c, TileMaster.Types[EndType], TileMaster.Genus[EndGenus], 1, EndValueAdded);
-				
 				EffectManager.instance.PlayEffect(c.transform, Effect.Replace, "", GameData.instance.GetGENUSColour(c.Genus));	
-				}
+			});
+
+			yield return new WaitForSeconds(part_time);
+			
+		}
+
+		int check = 0;
+		while(to_collect.Count < TilesCollected)
+		{
+			Tile c = TileMaster.Tiles[Utility.RandomInt(x), Utility.RandomInt(y)];
+			if(c != this && 
+				((EndGenus != string.Empty && c.Genus != Genus) || (EndType != string.Empty && !c.IsType(EndType))) &&
+				!c.isMatching)
+			{
+				
+				to_collect.Add(c);	
+				//PlayerControl.instance.RemoveTileToMatch(c);
+
+				GameObject part = Instantiate(ArcaneParticle);
+				part.transform.position = this.transform.position;
+				MoveToPoint mp = part.GetComponent<MoveToPoint>();
+				mp.SetTarget(c.transform.position);
+				mp.SetPath(0.5F, 0.2F);
+				part.GetComponent<ParticleSystem>().startColor = GameData.Colour(Genus);
+
+				float dist = Vector3.Distance(c.transform.position, this.transform.position);
+				mp.Speed = 0.05F * dist;
+				part_time = 0.2F + (0.03F * dist);
+
+				
+				
+				mp.SetTileMethod(c, (Tile child) =>
+				{
+					c.SetState(TileState.Selected, true);
+					if(EndType == string.Empty)
+					{
+						child.ChangeGenus(Genus);	
+						child.AddValue(EndValueAdded);
+					}
+					else if(EndGenus == string.Empty)
+					{
+						TileMaster.instance.ReplaceTile(child, TileMaster.Types[EndType], child.Genus, 1, EndValueAdded);
+					}
+					else TileMaster.instance.ReplaceTile(child, TileMaster.Types[EndType], TileMaster.Genus[EndGenus], 1, EndValueAdded);
+					EffectManager.instance.PlayEffect(child.transform, Effect.Replace, "", GameData.instance.GetGENUSColour(child.Genus));	
+				});
+
+			yield return new WaitForSeconds(part_time);
+			}
 			else 
 			{
 				if(check >= (x*y)) break;

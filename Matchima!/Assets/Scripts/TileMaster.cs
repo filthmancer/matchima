@@ -55,10 +55,8 @@ public class TileMaster : MonoBehaviour {
 	public GameObject TileBasic;
 	public GameObject [] GroundBlocks;
 
-
 	public bool scaleup;
 
-	
 	public Sprite KillEffect;
 
 	public bool generated = false;
@@ -140,7 +138,7 @@ public class TileMaster : MonoBehaviour {
 			{
 				print("GENERATING LEVEL " + (level_to_load != null));
 			
-				QueuedTiles.Clear();
+				ClearQueuedTiles();
 				spawn_stack = new float [(int)MapSize.x];
 				GenerateGrid(level_to_load);
 				
@@ -658,6 +656,7 @@ public class TileMaster : MonoBehaviour {
 			else if(Player.Stats.Shift == ShiftType.Up) spawn_stack[x] = -(Camera.main.orthographicSize);
 		}
 		
+		ClearQueuedTiles();
 		ResetTiles();
 		CheckForEmptys();
 		if(!FillGrid) yield break;
@@ -935,6 +934,13 @@ public class TileMaster : MonoBehaviour {
 		QueuedTiles.Add(spec);
 		QueuedGenus.Add(g);
 		QueuedValue.Add(value);
+	}
+
+	public void ClearQueuedTiles()
+	{
+		QueuedTiles.Clear();
+		QueuedGenus.Clear();
+		QueuedValue.Clear();
 	}
 
 	private void CreateQueuedTiles(ref int tile_num, ref int? [] tile_start, Vector2 velocity)
