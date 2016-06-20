@@ -80,9 +80,17 @@ public class UIManager : MonoBehaviour {
 		}
 	}
 
+	float update_interval_current = 0.0F;
+	float update_interval_amount = 2;
+
 	void Update () {
 
 		if(!GameManager.instance.gameStart) return;
+		if(Time.time < update_interval_current)
+		{
+			update_interval_current += Time.deltaTime * update_interval_amount;
+			return;
+		}
 
 		if(!Application.isEditor)
 		{
@@ -801,9 +809,13 @@ public class UIManager : MonoBehaviour {
 		Objects.TopRightButton.AddAction(UIAction.MouseUp, () =>
 		{
 			//GameManager.instance.EscapeZone();
-			ShowZoneUI(false);
-			(Objects.MiddleGear[2] as UIObjTweener).SetTween(0, false);
-			UIManager.Objects.MiddleGear[1].Txt[0].text = GameManager.Zone.Name;
+			Objects.TopGear.SetActive(false);
+			Objects.MiddleGear.SetActive(false);
+			Objects.BotGear.SetActive(false);
+
+			//ShowZoneUI(false);
+			//(Objects.MiddleGear[2] as UIObjTweener).SetTween(0, false);
+			//UIManager.Objects.MiddleGear[1].Txt[0].text = GameManager.Zone.Name;
 		});
 
 		(Objects.TopGear as UIGear).DivisionActions.Add((int num) =>
