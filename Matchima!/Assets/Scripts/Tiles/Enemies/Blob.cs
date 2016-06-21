@@ -6,7 +6,7 @@ public class Blob : Enemy {
 
 	private bool stacker = false;
 
-	private int BlobHPAdded = 1;
+	private int BlobHPAdded = 2;
 	private int BlobATKAdded = 1;
 	public Tile merger;
 	private Tile [] nb = new Tile[4];

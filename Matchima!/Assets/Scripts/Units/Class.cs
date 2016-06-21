@@ -528,7 +528,7 @@ public class Class : Unit {
 		adding_to_meter = true;
 
 		float info_time = 0.95F;
-		float info_size = 100;
+		float info_size = 140;
 		float info_movespeed = 0.07F;
 		float info_finalscale = 0.5F;
 
@@ -536,7 +536,7 @@ public class Class : Unit {
 		Vector3 tpos = Vector3.up * 0.15F;
 		MiniAlertUI heal = UIManager.instance.MiniAlert(
 			UIManager.ClassButtons[Index].transform.position + tpos, 
-			" +" + current_meter, info_size,   GameData.Colour(Genus), 0.5F, 0.18F);
+			"+" + current_meter, info_size,   GameData.Colour(Genus), 0.5F, 0.18F);
 
 		heal.transform.SetParent(UIManager.ClassButtons[Index].transform);
 		heal.AddJuice(Juice.instance.BounceB, 0.5F);

@@ -45,7 +45,7 @@ public class Bard : Class {
 		harp = new TileChance();
 		harp.Genus = GameData.ResourceLong(Genus);
 		harp.Type = "harp";
-		harp.Chance = 0.3F;
+		harp.Chance = 0.15F;
 		InitStats.TileChances.Add(harp);
 
 

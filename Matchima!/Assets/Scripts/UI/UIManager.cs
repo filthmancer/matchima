@@ -81,25 +81,25 @@ public class UIManager : MonoBehaviour {
 	}
 
 	float update_interval_current = 0.0F;
-	float update_interval_amount = 2;
+	float update_interval_amount = 5;
 
 	void Update () {
 
 		if(!GameManager.instance.gameStart) return;
-		if(Time.time < update_interval_current)
+		if(Time.time > update_interval_current)
 		{
-			update_interval_current += Time.deltaTime * update_interval_amount;
-			return;
+			update_interval_current = Time.time + (Time.deltaTime * update_interval_amount);
 		}
+		else return;
 
 		if(!Application.isEditor)
 		{
 			if(Input.touches.Length == 0) ShowGearTooltip(false);
 		}
 
-		//Objects.TopRightButton.Txt[0].text = "" + GameManager.Floor;
-		//Objects.TopRightButton.Txt[1].text = "" + GameManager.ZoneNum;
-		//Objects.TopRightButton.Txt[2].enabled = Player.NewItems;
+		Objects.TopRightButton.Txt[0].text = "" + GameManager.Floor;
+		Objects.TopRightButton.Txt[1].text = "" + GameManager.ZoneNum;
+		Objects.TopRightButton.Txt[2].enabled = Player.NewItems;
 		Health.text = Player.Stats.Health + "/" + Player.Stats.HealthMax;
 
 		for(int i = 0; i < PlayerHealth.Length; i++)
@@ -126,7 +126,7 @@ public class UIManager : MonoBehaviour {
 		Objects.ArmourParent.Txt[0].text = Player.Stats._Armour > 0 ? Player.Stats.Armour : "";
 		Objects.ArmourParent.SetActive(Player.Stats._Armour > 0);
 
-		/*if(GameManager.Wave != null)
+		if(GameManager.Wave != null)
 		{
 			for(int i = 0; i < GameManager.Wave.Length; i++)
 			{
@@ -142,41 +142,23 @@ public class UIManager : MonoBehaviour {
 					w.Img[0].color = Color.white;
 					w.Img[2].enabled = true;
 					w.Img[2].sprite = GameManager.Wave[i].Outer;
-					w.Img[2].color = Color.white;
-
-					//if(GameManager.Wave[i].Current > -1)
-					//{
-					//	w.GetChild(0).SetActive(true);
-					//	w.GetChild(0).Txt[0].text = GameManager.Wave[i].Current+"";
-					//}
-					//else 
-					//w.GetChild(0).SetActive(false);
-					
+					w.Img[2].color = Color.white;					
 				}
 				else 
 				{
 					WaveButtons[i].SetActive(false);
-					//WaveButtons[i].Img[0].transform.gameObject.SetActive(//false);
-					//for(int s = 1; s < WaveButtons[i].Img.Length; s++)
-					//{
-					//	WaveButtons[i].Img[s].enabled = false;
-					//}
-					//WaveButtons[i].Txt[0].text = "";
-					//if(GameManager.Wave[i] != null && GameManager.Wave[i].Timer > 0) 
-					//	WaveTimer.text = "" + GameManager.Wave[i].Timer;
-					//else WaveTimer.text = "";
 				}
 			}
 						
-		}*/
+		}
 				
 		if(!ShowingHealth && Player.Stats.HealThisTurn > 0)
 		{
-			//StartCoroutine(HealLoop());
+			StartCoroutine(HealLoop());
 		}
 		if(!ShowingHit && Player.Stats.DmgThisTurn > 0)
 		{
-			//StartCoroutine(HitLoop());
+			StartCoroutine(HitLoop());
 		}
 	}
 

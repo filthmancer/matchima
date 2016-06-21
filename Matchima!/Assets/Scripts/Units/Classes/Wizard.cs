@@ -67,19 +67,19 @@ private int _currentmanapower = 100;
 		lightning = new TileChance();
 		lightning.Genus = GameData.ResourceLong(Genus);
 		lightning.Type = "lightning";
-		lightning.Chance = 0.3F;
+		lightning.Chance = 0.2F;
 		InitStats.TileChances.Add(lightning);
 
 		TileChance vanilla = new TileChance();
 		vanilla.Genus = string.Empty;
 		vanilla.Type = "lightning";
 		vanilla.Chance = 0.1F;
-		InitStats.TileChances.Add(vanilla);
+		//InitStats.TileChances.Add(vanilla);
 
 		TileChance arcane = new TileChance();
 		arcane.Genus = GameData.ResourceLong(Genus);
 		arcane.Type = "cross";
-		arcane.Chance = 0.25F;
+		arcane.Chance = 0.1F;
 		InitStats.TileChances.Add(arcane);
 
 		TileChance health = new TileChance();

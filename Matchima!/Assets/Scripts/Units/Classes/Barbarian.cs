@@ -28,7 +28,7 @@ public class Barbarian : Class {
 		TileChance sword = new TileChance();
 		sword.Genus = GameData.ResourceLong(Genus);
 		sword.Type = "bomb";
-		sword.Chance = 0.2F;
+		sword.Chance = 0.15F;
 		InitStats.TileChances.Add(sword);
 
 		base.StartClass();

@@ -35,6 +35,15 @@ public class Arcane : Tile {
 		}
 	}
 
+	public int final_damage 
+	{
+		get
+		{
+			CheckStats();
+			return 3 + (Stats.Value);
+		}
+	}
+
 	public GameObject ArcaneParticle;
 	public override StCon [] Description
 	{
@@ -125,13 +134,13 @@ public class Arcane : Tile {
 			
 		}
 
+		if(TileMaster.instance.EnemiesOnScreen == 0) yield break;
 		int check = 0;
 		while(to_collect.Count < TilesCollected)
 		{
 			Tile c = TileMaster.Tiles[Utility.RandomInt(x), Utility.RandomInt(y)];
 			if(c != this && 
-				((EndGenus != string.Empty && c.Genus != Genus) || (EndType != string.Empty && !c.IsType(EndType))) &&
-				!c.isMatching)
+				c.Type.isEnemy)
 			{
 				
 				to_collect.Add(c);	
@@ -145,35 +154,37 @@ public class Arcane : Tile {
 				part.GetComponent<ParticleSystem>().startColor = GameData.Colour(Genus);
 
 				float dist = Vector3.Distance(c.transform.position, this.transform.position);
-				mp.Speed = 0.05F * dist;
-				part_time = 0.2F + (0.03F * dist);
+				mp.Speed = 0.1F + 0.05F * dist;
+				part_time = 0.2F;// + (0.03F * dist);
 
-				
-				
 				mp.SetTileMethod(c, (Tile child) =>
 				{
-					c.SetState(TileState.Selected, true);
-					if(EndType == string.Empty)
-					{
-						child.ChangeGenus(Genus);	
-						child.AddValue(EndValueAdded);
-					}
-					else if(EndGenus == string.Empty)
-					{
-						TileMaster.instance.ReplaceTile(child, TileMaster.Types[EndType], child.Genus, 1, EndValueAdded);
-					}
-					else TileMaster.instance.ReplaceTile(child, TileMaster.Types[EndType], TileMaster.Genus[EndGenus], 1, EndValueAdded);
-					EffectManager.instance.PlayEffect(child.transform, Effect.Replace, "", GameData.instance.GetGENUSColour(child.Genus));	
+					child.SetState(TileState.Selected, true);
+					child.InitStats.Hits -= final_damage;
+					//child.InitStats.TurnDamage += final_damage;
+					PlayerControl.instance.AddTilesToSelected(child);
+
+					float init_rotation = Random.Range(-3,3);
+					float info_time = 0.4F;
+					float info_start_size = 100 + (final_damage*2);
+					float info_movespeed = 0.25F;
+					float info_finalscale = 0.65F;
+
+					Vector3 pos = TileMaster.Grid.GetPoint(child.Point.Point(0)) + Vector3.down * 0.3F;
+					MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + final_damage, info_start_size, GameData.Colour(Genus), info_time, 0.6F, false);
+					m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
+					m.SetVelocity(Utility.RandomVectorInclusive(0.2F) + (Vector3.up*0.4F));
+					m.Gravity = true;
+					m.AddJuice(Juice.instance.BounceB, info_time/0.8F);
+
+					CameraUtility.instance.ScreenShake(0.26F + 0.02F * final_damage,  GameData.GameSpeed(0.06F));
+					EffectManager.instance.PlayEffect(child.transform,Effect.Attack);
+					
 				});
 
-			yield return new WaitForSeconds(part_time);
+				yield return new WaitForSeconds(part_time);
 			}
-			else 
-			{
-				if(check >= (x*y)) break;
-				if(check % 10 == 0) yield return null;
-			}
-			check++;
+			//yield return null;
 		}
 		
 		yield return null;

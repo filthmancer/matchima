@@ -11,13 +11,13 @@ public class Thief : Class {
 		attack = new TileChance();
 		attack.Genus = "Alpha";
 		attack.Type = "sword";
-		attack.Chance = 0.25F;
+		attack.Chance = 0.2F;
 		InitStats.TileChances.Add(attack);
 
 		TileChance bomb = new TileChance();
 		bomb.Genus = GameData.ResourceLong(Genus);
 		bomb.Type = "arcane";
-		bomb.Chance = 0.3F;
+		bomb.Chance = 0.15F;
 		InitStats.TileChances.Add(bomb);
 
 		TileChance health = new TileChance();

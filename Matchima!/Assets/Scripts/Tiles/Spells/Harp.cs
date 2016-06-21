@@ -10,7 +10,7 @@ public class Harp : Tile {
 		get
 		{
 			CheckStats();
-			return 1 + (Stats.Value/3);
+			return 1 + (Stats.Value);
 		}
 	}
 
@@ -18,7 +18,7 @@ public class Harp : Tile {
 	{
 		get{
 			CheckStats();
-			return 2 + (Stats.Value/20);
+			return 1 + (Stats.Value/5);
 		}
 	}
 
@@ -58,8 +58,8 @@ public class Harp : Tile {
 		new_part.transform.position = transform.position;
 		new_part.transform.parent = transform;
 
-		TileMaster.instance.Ripple(this, to_collect, 2.4F*Stats.Value, GameData.GameSpeed(0.45F), 0.2F);
-		yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
+		TileMaster.instance.Ripple(this, to_collect, 2.1F*Stats.Value, GameData.GameSpeed(0.35F), 0.2F);
+		yield return new WaitForSeconds(GameData.GameSpeed(0.4F));
 		if(to_collect.Count > 0)
 		{
 			foreach(Tile child in to_collect)
@@ -72,6 +72,13 @@ public class Harp : Tile {
 						MiniAlertUI m = UIManager.instance.MiniAlert(child.Point.targetPos, " Sleep", 65, GameData.Colour(child.Genus), 0.3F, 0.1F);
 						child.AddEffect("Sleep", StunDuration);
 					}
+					//else
+					//{
+						child.ChangeGenus(Genus);
+						child.SetState(TileState.Selected, true);
+						EffectManager.instance.PlayEffect(child.transform, Effect.Replace, "", GameData.instance.GetGENUSColour(child.Genus));	
+						//c.AddValue(EndValueAdded);
+					//}
 					
 				}
 			}

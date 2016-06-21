@@ -4,17 +4,17 @@ using System.Collections;
 public class Grunt : Enemy {
 
 
-	private int GruntHPFactor = 9, GruntHPAdded = 1;
-	private int GruntATKFactor = 18, GruntATKAdded = 1;
+	private int GruntHPFactor = 7, GruntHPAdded = 1;
+	private int GruntATKFactor = 17, GruntATKAdded = 1;
 
-	private int CaptainHPFactor = 8, CaptainHPAdded = 1;
-	private int CaptainATKFactor = 18, CaptainATKAdded = 1;
+	private int CaptainHPFactor = 6, CaptainHPAdded = 1;
+	private int CaptainATKFactor = 17, CaptainATKAdded = 1;
 
-	private int ChiefHPFactor = 11, ChiefHPAdded = 2;
-	private int ChiefATKFactor = 18, ChiefATKAdded = 1;
+	private int ChiefHPFactor = 5, ChiefHPAdded = 1;
+	private int ChiefATKFactor = 17, ChiefATKAdded = 1;
 
-	private int TerrorHPFactor = 13, TerrorHPAdded = 5;
-	private int TerrorATKFactor = 16, TerrorATKAdded = 1;
+	private int TerrorHPFactor = 10, TerrorHPAdded = 5;
+	private int TerrorATKFactor = 17, TerrorATKAdded = 2;
 
 	public override StCon [] Description
 	{
