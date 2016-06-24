@@ -71,9 +71,9 @@ public class Swap : Ability {
 
 		if(g == GENUS.NONE)  g = target.Genus;
 
-		UIManager.ClassButtons[Parent.Index].ShowClass(true);
+		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(true);
 
-		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons[Parent.Index].transform.position + Vector3.up, 
+		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons.GetClass(Parent.Index).transform.position + Vector3.up, 
 			"SPELLSWORD", 55, GameData.Colour(Parent.Genus), 1.2F, 0.25F);
 		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[(int)Parent.Genus].transform, Effect.Force);
 		MoveToPoint mp = initpart.GetComponent<MoveToPoint>();

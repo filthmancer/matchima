@@ -10,11 +10,7 @@ public class ItemUI : UIObj {
 
 	public UISlotButton [] Slots;
 	public TextMeshProUGUI UpgradeObj;
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
+
 	// Update is called once per frame
 	void Update () {
 		if(Slots.Length > 0)

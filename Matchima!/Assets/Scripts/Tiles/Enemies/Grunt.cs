@@ -4,17 +4,17 @@ using System.Collections;
 public class Grunt : Enemy {
 
 
-	private int GruntHPFactor = 7, GruntHPAdded = 1;
-	private int GruntATKFactor = 17, GruntATKAdded = 1;
+	private int GruntHPFactor = 9, GruntHPAdded = 1;
+	private int GruntATKFactor = 19, GruntATKAdded = 1;
 
-	private int CaptainHPFactor = 6, CaptainHPAdded = 1;
-	private int CaptainATKFactor = 17, CaptainATKAdded = 1;
+	private int CaptainHPFactor = 8, CaptainHPAdded = 1;
+	private int CaptainATKFactor = 19, CaptainATKAdded = 1;
 
-	private int ChiefHPFactor = 5, ChiefHPAdded = 1;
-	private int ChiefATKFactor = 17, ChiefATKAdded = 1;
+	private int ChiefHPFactor =7, ChiefHPAdded = 1;
+	private int ChiefATKFactor = 19, ChiefATKAdded = 1;
 
-	private int TerrorHPFactor = 10, TerrorHPAdded = 5;
-	private int TerrorATKFactor = 17, TerrorATKAdded = 2;
+	private int TerrorHPFactor = 14, TerrorHPAdded = 5;
+	private int TerrorATKFactor = 19, TerrorATKAdded = 2;
 
 	public override StCon [] Description
 	{
@@ -140,6 +140,4 @@ public class Grunt : Enemy {
 			//sleep_part = EffectManager.instance.PlayEffect(this.transform, Effect.Sleep);
 		}
 	}
-
-
 }

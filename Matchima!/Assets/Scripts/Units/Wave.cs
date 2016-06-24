@@ -329,6 +329,8 @@ public class Wave : Unit {
 		}
 
 		GameManager.instance.paused = false;
+		UIManager.Objects.BotGear.SetTween(0, true);
+		UIManager.Objects.TopGear.SetTween(0, false);
 		UIManager.instance.ScreenAlert.SetTween(0,false);
 	}
 
@@ -411,7 +413,7 @@ public class Wave : Unit {
 		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
 		yield return StartCoroutine(GameManager.instance.BeforeMatchRoutine());
 		yield return null;
-		yield return StartCoroutine(GameManager.instance.MatchRoutine(PlayerControl.instance.finalTiles));
+		yield return StartCoroutine(GameManager.instance.MatchRoutine(PlayerControl.instance.finalTiles.ToArray()));
 		yield return StartCoroutine(Player.instance.AfterMatch());
 
 		TileMaster.instance.ResetTiles(true);

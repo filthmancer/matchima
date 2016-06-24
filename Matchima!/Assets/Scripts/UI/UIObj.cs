@@ -27,7 +27,7 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 			else return null;
 	}}
 
-	public void Start()
+	public virtual void Start()
 	{
 		if(Name == string.Empty) Name = gameObject.name;
 		else gameObject.name = Name;
@@ -123,7 +123,6 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 		{
 			time_over += Time.deltaTime;
 		}
-
 	}
 
 	void _GenerateEvents()

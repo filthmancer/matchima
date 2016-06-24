@@ -7,13 +7,5 @@ public class Unit : MonoBehaviour {
 	public GENUS Genus;
 	public string Name;
 	public List<ClassEffect> _Status = new List<ClassEffect>();
-	// Use this for initialization
-	public virtual void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	public virtual void Update () {
-	
-	}
+
 }

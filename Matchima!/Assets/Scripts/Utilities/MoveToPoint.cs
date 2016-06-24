@@ -27,6 +27,7 @@ public class MoveToPoint : MonoBehaviour {
 	private float delay = 0.0F;
 	private float threshold = 0.17F;
 	private float final_scale = 1.0F;
+	private float final_scale_time = 7.0F;
 	Action method;
 	Action<Tile> tilemethod;
 	Action<int[]> intmethod;
@@ -36,7 +37,7 @@ public class MoveToPoint : MonoBehaviour {
 		if(Point != Vector3.zero)
 		{
 			if(transform.localScale != Vector3.one * final_scale) 
-				transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one*final_scale, Time.deltaTime * 7);
+				transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one*final_scale, Time.deltaTime * final_scale_time);
 			if(LerpingMovement) transform.position = Vector3.Lerp(transform.position, Point, Speed * LerpingSpeed);
 			else 
 			{
@@ -122,6 +123,12 @@ public class MoveToPoint : MonoBehaviour {
 	{
 		Target_Int = i;
 		intmethod = a;
+	}
+
+	public void SetScale(float scale, float time = 7)
+	{
+		final_scale = scale;
+		final_scale_time = time;
 	}
 
 }

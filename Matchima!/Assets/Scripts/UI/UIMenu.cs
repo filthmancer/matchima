@@ -52,7 +52,8 @@ public class UIMenu : UIObj {
 
 	public MenuState State = MenuState.StartScreen;
 	private int top_division_last = 0;
-	void Start () {
+	public override void Start () {
+		base.Start();
 		UIManager.ShowClassButtons(false);
 		UIManager.ShowWaveButtons(false);
 		(UIManager.Objects.TopGear as UIObjTweener).SetTween(1,true);
@@ -117,7 +118,7 @@ public class UIMenu : UIObj {
 	{
 		for(int i = 0; i < UIManager.ClassButtons.Length; i++)
 		{
-			UIManager.ClassButtons[i].TweenClass(false);
+			UIManager.ClassButtons.GetClass(i).TweenClass(false);
 		}
 		
 		UIManager.Objects.MiddleGear.Img[0].enabled = true;
@@ -337,15 +338,15 @@ public class UIMenu : UIObj {
 	{
 		if(TargetSlot == i)
 		{
-			UIManager.ClassButtons[TargetSlot.Value].TweenClass(false);
+			UIManager.ClassButtons.GetClass(TargetSlot.Value).TweenClass(false);
 			TargetSlot = null;
 			return;
 		}
 		else
 		{
-			if(TargetSlot != null) UIManager.ClassButtons[TargetSlot.Value].TweenClass(false);
+			if(TargetSlot != null) UIManager.ClassButtons.GetClass(TargetSlot.Value).TweenClass(false);
 			TargetSlot = i;
-			if(TargetSlot != null) UIManager.ClassButtons[TargetSlot.Value].TweenClass(true);
+			if(TargetSlot != null) UIManager.ClassButtons.GetClass(TargetSlot.Value).TweenClass(true);
 		} 
 		
 	}

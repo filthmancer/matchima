@@ -9,13 +9,9 @@ public class ClassAbilityUI : UIObj {
 
 	bool open = false;
 	public Transform OpenTrans, ClosedTrans;
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
+
 	// Update is called once per frame
-	void Update () {
+	public void Update () {
 		
 		if(open)
 		{

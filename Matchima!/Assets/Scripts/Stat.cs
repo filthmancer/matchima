@@ -50,6 +50,7 @@ public class Stat
 	public StatContainer _Dexterity;
 	public StatContainer _Charisma;
 	public StatContainer _Wisdom;
+	public StatContainer _Luck;
 
 	public int Length
 	{
@@ -70,6 +71,8 @@ public class Stat
 				return _Wisdom;
 				case 3:
 				return _Charisma;
+				case 4:
+				return _Luck;
 			}
 			return null;
 		}
@@ -119,6 +122,7 @@ public class Stat
 	public int Dexterity {get{return _Dexterity.StatCurrent;}set{_Dexterity.StatCurrent = value;}}
 	public int Wisdom {get{return _Wisdom.StatCurrent;}set{_Wisdom.StatCurrent = value;}}
 	public int Charisma {get{return _Charisma.StatCurrent;}set{_Charisma.StatCurrent = value;}}
+	public int Luck {get{return _Luck.StatCurrent;}set{_Luck.StatCurrent = value;}}
 
 	[HideInInspector]
 	public List<StatContainer> AllStats;
@@ -126,6 +130,7 @@ public class Stat
 	public StatContainer DEX{get{return _Dexterity;}}
 	public StatContainer WIS{get{return _Wisdom;}}
 	public StatContainer CHA{get{return _Charisma;}}
+	public StatContainer LCK{get{return _Luck;}}
 
 	public StatContainer Red{get{return _Strength;}}
 	public StatContainer Blue{get{return _Dexterity;}}
@@ -147,6 +152,7 @@ public class Stat
 			_Dexterity         = new StatContainer();
 			_Wisdom            = new StatContainer();
 			_Charisma          = new StatContainer();
+			_Luck			   = new StatContainer();
 
 		}
 		AllStats = new List<StatContainer>();
@@ -154,6 +160,7 @@ public class Stat
 		AllStats.Add(_Dexterity);
 		AllStats.Add(_Wisdom);
 		AllStats.Add(_Charisma);
+		AllStats.Add(_Luck);
 	}
 
 	public void SetStats(Stat prev, bool GENUSs = true)
@@ -170,6 +177,7 @@ public class Stat
 		_Dexterity         = new StatContainer(prev._Dexterity, GENUSs);
 		_Wisdom            = new StatContainer(prev._Wisdom, GENUSs);
 		_Charisma          = new StatContainer(prev._Charisma, GENUSs);
+		_Luck 			   = new StatContainer(prev._Luck, GENUSs);
 
 		Class_Type 		  = prev.Class_Type;
 		Shift        = prev.Shift;
@@ -225,6 +233,7 @@ public class Stat
 		_Dexterity.AddValues(other._Dexterity);
 		_Wisdom.AddValues(other._Wisdom);
 		_Charisma.AddValues(other._Charisma);
+		_Luck.AddValues(other._Luck);
 
 		ComboCounter      += other.ComboCounter;
 		ComboBonus        += other.ComboBonus;
@@ -485,6 +494,7 @@ public class Stat
 		_Dexterity.Setup();
 		_Wisdom.Setup();
 		_Charisma.Setup();
+		_Luck.Setup();
 	}
 
 	public void LevelUp()
@@ -493,6 +503,7 @@ public class Stat
 		_Dexterity.LevelUp();
 		_Wisdom.LevelUp();
 		_Charisma.LevelUp();
+		_Luck.LevelUp();
 	}
 
 	public string GetStatIncBonusString(GENUS type)
@@ -581,7 +592,7 @@ public class StatContainer
 
 	public void LevelUp()
 	{
-		ToMeter = 8;
+		ToMeter = 10;
 		ToMult = 65;
 		StatCurrent += StatGain;
 
@@ -591,7 +602,7 @@ public class StatContainer
 
 	public void Setup()
 	{
-		ToMeter = 8;
+		ToMeter = 10;
 		ToMult = 65;
 
 		//MeterInc = StatCurrent / ToMeter;

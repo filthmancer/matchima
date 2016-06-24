@@ -10,13 +10,6 @@ using System.Text;
 public class Item : Slot {
 	public List<string> desc = new List<string>();
 
-	public string Description
-	{
-		get{
-			return ConvertStringArrayToString(desc.ToArray());
-		}
-	}
-
 	public override StCon [] Description_Tooltip
 	{
 		get{

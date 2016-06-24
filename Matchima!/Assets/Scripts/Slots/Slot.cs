@@ -171,6 +171,12 @@ public class Slot : MonoBehaviour {
 		
 	}
 
+	
+	public virtual IEnumerator ActiveRoutine()
+	{
+		yield break;
+	}
+
 	public virtual void CheckHealth()
 	{
 		

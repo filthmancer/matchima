@@ -13,17 +13,6 @@ public class UIKillScreen : UIObj {
 	public TextMeshProUGUI KillerInfo, BestCombo, NextSpecial;
 
 	public TextMeshProUGUI Class;
-
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
-
 	public void Activate(long alltokens, int tens, int hunds, int thous)
 	{
 		Child[0].ClearActions();

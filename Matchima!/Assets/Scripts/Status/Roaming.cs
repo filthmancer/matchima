@@ -21,7 +21,7 @@ public class Roaming : TileEffect {
 		return Duration == 0;
 	}
 
-	public virtual void Setup(Tile t)
+	public override void Setup(Tile t)
 	{
 		base.Setup(t);
 		_Tile.AfterTurnEffect = true;

@@ -42,6 +42,21 @@ public class TileMaster : MonoBehaviour {
 	public static bool FillGrid_Override = true;
 	
 	public int EnemiesOnScreen;
+	public static Tile [] Enemies
+	{
+		get
+		{
+			List<Tile> final = new List<Tile>();
+			for(int x = 0; x < Tiles.GetLength(0); x++)
+			{
+				for(int y = 0; y < Tiles.GetLength(1); y++)
+				{
+					if(Tiles[x,y].Type.isEnemy) final.Add(Tiles[x,y]);
+				}
+			}
+			return final.ToArray();
+		}
+	}
 
 	public Vector2 MapSize;
 	[HideInInspector]

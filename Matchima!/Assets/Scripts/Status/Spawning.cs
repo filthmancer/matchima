@@ -23,7 +23,7 @@ public class Spawning : TileEffect {
 		AddedValueRatio = GameData.StringToFloat(args[2]);
 	}
 
-	public virtual void Setup(Tile t)
+	public override void Setup(Tile t)
 	{
 		base.Setup(t);
 		_Tile.AfterTurnEffect = true;

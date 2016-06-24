@@ -41,7 +41,7 @@ public class Fireball : Ability {
 		radius = GameData.StringToInt(args[0]);
 	}
 
-	public override IEnumerator AfterTurn()
+	public override IEnumerator ActiveRoutine()
 	{
 		//if(activated) return;
 		//activated = true;
@@ -49,8 +49,8 @@ public class Fireball : Ability {
 		int yy = Random.Range(0, TileMaster.Grid.Size[1]);
 		Tile target = TileMaster.Tiles[xx,yy];
 
-		UIManager.ClassButtons[Parent.Index].ShowClass(true);
-		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons[Parent.Index].transform.position + Vector3.up, 
+		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(true);
+		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons.GetClass(Parent.Index).transform.position + Vector3.up, 
 													"Fireball", 55, GameData.Colour(Parent.Genus), 1.2F, 0.25F);
 		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[(int)Parent.Genus].transform, Effect.Force);
 
@@ -62,6 +62,9 @@ public class Fireball : Ability {
 				if(this != null) StartCoroutine(Cast(target));
 			});
 		yield return new WaitForSeconds(GameData.GameSpeed(0.6F));
+
+		
+		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(false);
 		//yield return StartCoroutine(CollectTiles(target));
 		//activated = false;
 	}
@@ -146,7 +149,7 @@ public class Fireball : Ability {
 		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
 		yield return StartCoroutine(GameManager.instance.BeforeMatchRoutine());
 		yield return null;
-		yield return StartCoroutine(GameManager.instance.MatchRoutine(PlayerControl.instance.finalTiles));
+		yield return StartCoroutine(GameManager.instance.MatchRoutine(PlayerControl.instance.finalTiles.ToArray()));
 		yield return StartCoroutine(Player.instance.AfterMatch());
 
 		TileMaster.instance.ResetTiles(true);

@@ -34,9 +34,9 @@ public class GameManager : MonoBehaviour {
 	public static float GlobalManaMult = 1.0F,
 						GlobalHealthMult = 1.0F,
 						GlobalArmourMult = 1.0F;
-	public static float GrowthRate_Easy = 0.19F,
-						GrowthRate_Normal = 0.26F,
-						GrowthRate_Hard = 0.40F;
+	public static float GrowthRate_Easy = 0.15F,
+						GrowthRate_Normal = 0.22F,
+						GrowthRate_Hard = 0.34F;
 
 	public static float [] MeterDecay
 	{
@@ -49,9 +49,9 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 	private float	MeterDecayLvl0 = 0.0F,
-					MeterDecayLvl1 = 1.12F, 
-					MeterDecayLvl2 = 1.25F, 
-					MeterDecayLvl3 = 1.20F;
+					MeterDecayLvl1 = 0.0F,//1.12F, 
+					MeterDecayLvl2 = 0.0F,//1.25F, 
+					MeterDecayLvl3 = 0.0F;//1.20F;
 
 	public Juice _Juice;
 	public AudioSource AudioObj;
@@ -254,10 +254,22 @@ public class GameManager : MonoBehaviour {
 			Cheat(9);
 		}
 
-		if(Input.GetKeyDown(KeyCode.U))			Player.Classes[0].AddToMeter(Player.Classes[0].MeterTop);
-		if(Input.GetKeyDown(KeyCode.I))			Player.Classes[1].AddToMeter(Player.Classes[1].MeterTop);
-		if(Input.GetKeyDown(KeyCode.O))			Player.Classes[2].AddToMeter(Player.Classes[2].MeterTop);
-		if(Input.GetKeyDown(KeyCode.P))			Player.Classes[3].AddToMeter(Player.Classes[3].MeterTop);
+		if(Input.GetKeyDown(KeyCode.U)) 
+		{
+			Player.Classes[0].AddToMeter(Player.Classes[0].MeterTop);
+		}
+		if(Input.GetKeyDown(KeyCode.I)) 
+		{
+			Player.Classes[1].AddToMeter(Player.Classes[1].MeterTop);
+		}
+		if(Input.GetKeyDown(KeyCode.O)) 
+		{
+			Player.Classes[2].AddToMeter(Player.Classes[2].MeterTop);
+		}
+		if(Input.GetKeyDown(KeyCode.P)) 
+		{
+			Player.Classes[3].AddToMeter(Player.Classes[3].MeterTop);
+		}
 
 		if(Input.GetKeyDown(KeyCode.H))			Player.Classes[0].LevelUp();
 		if(Input.GetKeyDown(KeyCode.J))			Player.Classes[1].LevelUp();
@@ -336,7 +348,6 @@ public class GameManager : MonoBehaviour {
 			break;
 			case 4: //V
 			//GetTurn();
-			int [] point = PlayerControl.instance.focusTile.Point.Base;
 			TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["lightning"], GENUS.STR,1, 50);
 			//(TileMaster.Tiles[point[0], point[1]] as Ward).Buff = "Frenzy";
 			//TileEffect effect = (TileEffect) Instantiate(GameData.instance.GetTileEffectByName("Fragile"));
@@ -611,7 +622,6 @@ public class GameManager : MonoBehaviour {
 
 	public void LoadClass(ClassContainer targetClass)
 	{
-		UIManager.instance.LoadScreen.SetActive(true);
 		StartCoroutine(UIManager.instance.LoadUI());
 	}
 
@@ -653,7 +663,7 @@ public class GameManager : MonoBehaviour {
 		
 		if(Player.instance.CompleteMatch) 
 		{
-			yield return StartCoroutine(MatchRoutine(PlayerControl.instance.finalTiles));
+			yield return StartCoroutine(MatchRoutine(PlayerControl.instance.finalTiles.ToArray()));
 		}
 		else EnemyTurn = false;
 
@@ -857,7 +867,7 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-	public IEnumerator MatchRoutine(List<Tile> tiles)
+	public IEnumerator MatchRoutine(params Tile [] tiles)
 	{
 		int [] resource = new int [6];
 		int [] health   = new int [6];
@@ -865,7 +875,7 @@ public class GameManager : MonoBehaviour {
 		int enemies_hit = 0;
 
 		float rate = 0.07F, num = 0;
-		for(int x = 0; x < tiles.Count; x++)
+		for(int x = 0; x < tiles.Length; x++)
 		{
 			Tile child = tiles[x];
 			if(child == null) continue;

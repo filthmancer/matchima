@@ -143,25 +143,25 @@ public class GameData : MonoBehaviour {
 		{
 			case ItemType.Basic: 
 			return _ItemColours.Basic;
-			break;
+			
 			case ItemType.Generator: 
 			return _ItemColours.Generator;
-			break;
+			
 			case ItemType.Shift: 
 			return _ItemColours.Shift;
-			break;
+			
 			case ItemType.Unstable:
 			return _ItemColours.Unstable;
-			break;
+			
 			case ItemType.Primal:
 			return _ItemColours.Primal;
-			break;
+			
 			case ItemType.Elegant:
 			return _ItemColours.Elegant;
-			break;
+			
 			case ItemType.Developers:
 			return _ItemColours.Developers;
-			break;
+			
 		}
 		return Color.white;
 	}
@@ -356,7 +356,6 @@ public class GameData : MonoBehaviour {
 		{
 			return -100;
 		}
-		return -100;
 	}
 
 	public static float StringToFloat(string num)
@@ -366,7 +365,6 @@ public class GameData : MonoBehaviour {
 
 	public static string PowerString(int num)
 	{
-		string final = "";
 		string suff = "";
 		int suffnum = 0;
 
@@ -452,7 +450,7 @@ public class GameData : MonoBehaviour {
 
 	public void Save()
 	{
-		bool finished_save = false;
+		//bool finished_save = false;
 		XmlDocument file = new XmlDocument();
 		
 		XmlElement data = (XmlElement) file.AppendChild(file.CreateElement("PlayerData"));
@@ -460,7 +458,7 @@ public class GameData : MonoBehaviour {
 		XmlElement build = (XmlElement) data.AppendChild(file.CreateElement("Build"));
 		build.InnerText = "" + AppVersion;
 
-		XmlElement classes = (XmlElement) data.AppendChild(file.CreateElement("Classes"));
+		//XmlElement classes = (XmlElement) data.AppendChild(file.CreateElement("Classes"));
 		/*foreach(ClassContainer child in Classes)
 		{
 			XmlElement title = (XmlElement) classes.AppendChild(file.CreateElement("Class"));
@@ -493,7 +491,7 @@ public class GameData : MonoBehaviour {
 		// Cleanup
 		WriteFileStream.Close();
 
-		finished_save = true;
+		//finished_save = true;
 		Debug.Log("Generated level at " + filepos +  "/PlayerData" + ".xml");	
 		
 	}

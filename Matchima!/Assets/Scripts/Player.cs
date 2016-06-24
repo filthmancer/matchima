@@ -398,16 +398,43 @@ public class Player : MonoBehaviour {
 			if(Classes[i] != null) Classes[i].CheckHealth();
 		}
 
-		if(Stats._Health < Stats._HealthMax / 5)
+		if(Stats._Health < Stats._HealthMax / 5 && Stats._Health > 0)
 		{
 			int randa = Random.Range(0,4);
 			StartCoroutine(UIManager.instance.Quote(Classes[randa].Quotes.Danger));
 		}
+
 		if(Stats._Health <= 0) 
 		{
-			int randa = Random.Range(0,4);
-			StartCoroutine(UIManager.instance.Quote(Classes[randa].Quotes.Death));
-			Stats.isKilled = true;
+		//Find all living characters
+			List<int> living_chars = new List<int>();
+			for(int i = 0; i < 4; i++)
+			{
+				if(!Classes[i].isKilled) living_chars.Add(i);
+			}
+
+			if(living_chars.Count == 0)
+			{
+				Stats.isKilled = true;
+				return;
+			}
+
+		//Target Char to be killed
+			int target = living_chars[Random.Range(0,living_chars.Count)];
+			
+		//ROLL LUCK STAT OF TARGET TO SEE IF THEY DIE
+			float luck_chance = (float) Classes[target].Stats.Luck / (GameManager.Difficulty * 5.0F);
+			if(Random.value > luck_chance)
+			{
+				Classes[target].isKilled = true;
+				StartCoroutine(UIManager.instance.Quote(Classes[target].Quotes.Death));
+				if(living_chars.Count == 1)
+				{
+					Stats.isKilled = true;
+					return;
+				}
+				else Stats.Heal(5);
+			}
 		}
 
 	}

@@ -141,7 +141,7 @@ public class MagicTile : Ability {
 		Start();
 	}
 
-	public void Setup()
+	protected override void Setup()
 	{
 		base.Setup();
 		if(RelativeStats)

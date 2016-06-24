@@ -36,7 +36,11 @@ public class UIClassButton : UIObj {
 		{
 			AddListener(_class);
 			AddAction(UIAction.MouseOver, () => {HoverOver();});
-			AddAction(UIAction.MouseDown, () => {PartialOpen.OpenCloseObjectAnimation();});
+			AddAction(UIAction.MouseDown, () => {
+				print("HIT");
+				if(_class.MeterLvl > 0) StartCoroutine(_class.UseManaPower());
+				//PartialOpen.OpenCloseObjectAnimation();
+				});
 			if(ClassInit.IsObjectOpened()) ClassInit.OpenCloseObjectAnimation();
 		}
 		else if(_class == null && ClassInit.IsObjectOpened()) ClassInit.OpenCloseObjectAnimation();
@@ -179,13 +183,18 @@ public class UIClassButton : UIObj {
 				SlotUI[i].Setup(_class._Slots[i]);
 				SlotUI[i].Txt[0].text = (_class._Slots[i] as Item).ScaleString;
 			}
-			
 		}
-		TweenClass(active);
+		TweenClass(active);		
+	}
+
+	public void ActivatePower()
+	{
+
 	}
 
 	public void TweenClass(bool? active = null)
 	{
+		print("TWEENING " + _class + " to " + active);
 		bool actual = active ?? !_class.activated;
 		if(actual != PartialOpen.IsObjectOpened())
 		{

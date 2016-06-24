@@ -19,11 +19,6 @@ public class UIButton : UIObj {
 	public ClassUpgrade Upgrade;
 
 	protected Vector3 init_pos;
-
-	// Use this for initialization
-	public virtual void Start () {
-		color_default = Img[0].color;
-	}
 	
 	// Update is called once per frame
 	public virtual  void Update () {

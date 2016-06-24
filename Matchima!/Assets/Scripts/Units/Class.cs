@@ -174,10 +174,11 @@ public class Class : Unit {
 	protected float MeterDecay_soft = 1.0F;
 	protected float [] MeterDecayInit = new float[]
 	{
-		0, 6, 10, 30
+		0, 0,0,0//6, 10, 30
 	};
 
 	public GameObject ManaPowerParticle;
+	public UIObj MinigameObj;
 
 	private bool LowHealthWarning = true, DeathWarning = true;
 	private float time_from_last_pulse = 0.0F;
@@ -194,11 +195,6 @@ public class Class : Unit {
 	public int Exp_Max, Exp_Current;
 	private float Exp_Max_soft;
 
-
-	// Use this for initialization
-	public virtual void Start () {
-		
-	}
 	
 	public virtual void StartClass()
 	{
@@ -352,51 +348,63 @@ public class Class : Unit {
 	{
 		if(Meter == 0 && MeterLvl > 0)
 		{
-			UIManager.ClassButtons[Index].ShowClass(true);
-			MeterLvl = 0;
-			MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons[(int)Genus].transform.position, "POWER\nDOWN", 75, GameData.Colour(Genus), 1.2F, 0.2F);
-			yield return new WaitForSeconds(0.1F);
-			MeterDecay_soft = MeterDecayInit[0];
-			MeterDecay = (int) MeterDecay_soft;
-			if(ManaPowerParticle != null) Destroy(ManaPowerParticle);
-			ManaPower(0);
+			yield return StartCoroutine(PowerDown());
 		}
 		else
 		{
-			
-			int newlvl = 0;
-			for(int i = 0; i < MeterMax_array.Length; i++)
-			{
-				if(Meter >= MeterMax_array[i]) newlvl = i;
-			}
-			if(MeterLvl < newlvl)
-			{
-				UIManager.ClassButtons[Index].ShowClass(true);
-				yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
-				
-				GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, "", GameData.Colour(Genus));
-				powerup.transform.position = UIManager.ClassButtons[(int)Genus].transform.position;
-
-				yield return new WaitForSeconds(GameData.GameSpeed(0.84F));
-				Destroy(powerup);
-
-				MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons[(int)Genus].transform.position, "POWER\nUP", 75, GameData.Colour(Genus), 1.2F, 0.2F);
-
-				MeterLvl = newlvl;
-				MeterDecay_soft = MeterDecayInit[MeterLvl];
-				MeterDecay = (int) MeterDecay_soft;
-				ManaPower(MeterLvl);
-
-				Effect e = MeterLvl == 1 ? Effect.ManaPowerLvl1 : (MeterLvl == 2 ? Effect.ManaPowerLvl2 : Effect.ManaPowerLvl3);
-				ParticleSystem part = EffectManager.instance.PlayEffect(this.transform, e, "", GameData.Colour(Genus)).GetComponent<ParticleSystem>();
-				if(ManaPowerParticle != null) Destroy(ManaPowerParticle);
-				ManaPowerParticle = part.gameObject;
-				ManaPowerParticle.transform.position = UIManager.ClassButtons[(int)Genus].transform.position;
-				yield return null;
-			}
+			yield return StartCoroutine(PowerUp());
 		}	
 	}
 
+	public IEnumerator PowerUp()
+	{
+		int newlvl = 0;
+		for(int i = 0; i < MeterMax_array.Length; i++)
+		{
+			if(Meter >= MeterMax_array[i]) newlvl = i;
+		}
+		if(MeterLvl < newlvl)
+		{
+			UIManager.ClassButtons.GetClass(Index).ShowClass(true);
+			yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+			
+			GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, "", GameData.Colour(Genus));
+			powerup.transform.SetParent(UIManager.ClassButtons[Index].transform);
+			powerup.transform.position = UIManager.ClassButtons[Index].transform.	position;
+			powerup.transform.localScale = Vector3.one;
+
+			yield return new WaitForSeconds(GameData.GameSpeed(0.84F));
+			Destroy(powerup);
+
+			MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons[Index].transform.position, "POWER\nUP", 75, GameData.Colour(Genus), 1.2F, 0.2F);
+
+			MeterLvl = newlvl;
+			MeterDecay_soft = MeterDecayInit[MeterLvl];
+			MeterDecay = (int) MeterDecay_soft;
+			//ManaPower(MeterLvl);
+
+			Effect e = MeterLvl == 1 ? Effect.ManaPowerLvl1 : (MeterLvl == 2 ? Effect.ManaPowerLvl2 : Effect.ManaPowerLvl3);
+			ParticleSystem part = EffectManager.instance.PlayEffect(this.transform, e, "", GameData.Colour(Genus)).GetComponent<ParticleSystem>();
+			if(ManaPowerParticle != null) Destroy(ManaPowerParticle);
+			ManaPowerParticle = part.gameObject;
+			ManaPowerParticle.transform.position = UIManager.ClassButtons[(int)Genus].transform.position;
+			yield return null;
+		}
+	}
+
+	public IEnumerator PowerDown()
+	{
+		//UIManager.ClassButtons[Index].ShowClass(true);
+		MeterLvl = 0;
+		Meter = 0;
+		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons[(int)Genus].transform.position, "POWER\nDOWN", 75, GameData.Colour(Genus), 1.2F, 0.2F);
+		yield return new WaitForSeconds(0.1F);
+		MeterDecay_soft = MeterDecayInit[0];
+		MeterDecay = (int) MeterDecay_soft;
+		if(ManaPowerParticle != null) Destroy(ManaPowerParticle);
+		ManaPower(0);
+		yield return null;
+	}
 
 	public IEnumerator CheckForBoon()
 	{
@@ -447,7 +455,6 @@ public class Class : Unit {
 			child.CheckHealth();
 		}
 
-
 		if(Player.Stats._Health > Player.Stats._HealthMax/5)
 		{
 			OnSafeHealth();
@@ -456,9 +463,8 @@ public class Class : Unit {
 		{
 			OnLowHealth();
 		}
-		else if(Player.Stats._Health <= 0 && !isKilled)
+		else if(isKilled)
 		{
-			isKilled = true;
 			LevelPoints = 0;
 			Meter = 0;
 			//Player.instance.ResetStats();
@@ -498,7 +504,7 @@ public class Class : Unit {
 			if(!adding_to_meter) StartCoroutine(MeterLoop());
 			if(time_from_last_pulse > 1.3F)
 			{
-				UIManager.ClassButtons[Index].GetComponent<Animator>().SetTrigger("Pulse");
+				UIManager.ClassButtons.GetClass(Index).GetComponent<Animator>().SetTrigger("Pulse");
 				time_from_last_pulse = 0.0F;			
 			}
 		}
@@ -573,6 +579,12 @@ public class Class : Unit {
 		yield return null;
 	}
 
+	public virtual IEnumerator UseManaPower()
+	{
+
+		yield return null;
+	}
+
 	public virtual void ManaPower(int lvl)
 	{
 
@@ -593,14 +605,14 @@ public class Class : Unit {
 
 	public void AddExp(Enemy e)
 	{
-		Exp_Current += e.Stats.Value;
-		while(Exp_Current > Exp_Max)
-		{
-			Exp_Current -= Exp_Max;
-			LevelUp();
-			Exp_Max_soft *= 1.5F;
-			Exp_Max = (int)Exp_Max_soft;
-		}
+		//Exp_Current += e.Stats.Value;
+		//while(Exp_Current > Exp_Max)
+		//{
+		//	Exp_Current -= Exp_Max;
+		//	LevelUp();
+		//	Exp_Max_soft *= 1.5F;
+		//	Exp_Max = (int)Exp_Max_soft;
+		//}
 	}
 
 	public void AddExp(int exp)
@@ -992,6 +1004,17 @@ public class Class : Unit {
 		AddUpgrades(DefaultClassUpgrades.DefaultBoons(InitStats, Genus));
 		AddCurses(DefaultClassUpgrades.DefaultCurses(InitStats, Genus));
 		/*AddUpgrades();*/
+	}
+
+	protected UIObj CreateMinigameObj()
+	{
+		UIObj obj = (UIObj)Instantiate(MinigameObj);
+		RectTransform rect = obj.GetComponent<RectTransform>();
+		obj.transform.SetParent(UIManager.Objects.MiddleGear.transform);
+		obj.transform.localScale = Vector3.one;
+		rect.sizeDelta = Vector2.one;
+		rect.anchoredPosition = Vector2.zero;
+		return obj;
 	}
 }
 

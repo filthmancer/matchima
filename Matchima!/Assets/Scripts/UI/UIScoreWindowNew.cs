@@ -55,7 +55,7 @@ public class UIScoreWindowNew : MonoBehaviour {
 		UIBonus Score = SetBonusObj[(int) Genus];
 		BonusComplete[(int) Genus] = false;
 		Score.gameObject.SetActive(true);
-		UIManager.ClassButtons[(int)Genus]._SpriteMask.enabled = true;
+		UIManager.ClassButtons.GetClass((int)Genus)._SpriteMask.enabled = true;
 		yield return StartCoroutine(Score.Setup(points, col, c));
 
 		yield return StartCoroutine(Score.SetupBonus(bonus));
@@ -92,7 +92,7 @@ public class UIScoreWindowNew : MonoBehaviour {
 
 
 		BonusComplete[(int) Genus] = true;
-		UIManager.ClassButtons[(int)Genus]._SpriteMask.enabled = false;
+		UIManager.ClassButtons.GetClass((int)Genus)._SpriteMask.enabled = false;
 		Score.Reset();
 		yield break;
 		

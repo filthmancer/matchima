@@ -11,15 +11,6 @@ public class AntiGravity : TileEffect {
 				new StCon((Shift == ShiftType.None ? "Tile is not affected by gravity " : "Tile gravity is " + Shift) + " " + DurationString, GameData.Colour(GENUS.PRP))};
 		}
 	}
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 
 	public override void Setup(Tile t)
 	{

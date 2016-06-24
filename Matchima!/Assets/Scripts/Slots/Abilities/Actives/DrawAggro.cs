@@ -28,7 +28,7 @@ public class DrawAggro : Ability {
 		float part_time = 1.2F;
 
 		GameObject part = (GameObject) Instantiate(Particle);
-		part.transform.position = UIManager.ClassButtons[Parent.Index].transform.position;
+		part.transform.position = UIManager.ClassButtons.GetClass(Parent.Index).transform.position;
 		yield return new WaitForSeconds(part_time);
 		Destroy(part);
 		yield return null;

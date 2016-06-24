@@ -82,6 +82,7 @@ public class PlayerControl : MonoBehaviour {
 	}
 
 	void Update () {
+		CheckTouch();
 		if(GameManager.instance.isPaused) return;
 		if(GameManager.instance.EnemyTurn) return;
 
@@ -267,6 +268,17 @@ public class PlayerControl : MonoBehaviour {
 		SwapButton = null;
 	}
 
+	public void CheckTouch()
+	{
+		Ray cursor = Camera.main.ScreenPointToRay(Input.mousePosition);
+		Debug.DrawRay(cursor.origin, cursor.direction*1000);
+
+		Plane baseplane = new Plane(Vector3.back, Vector3.zero);
+		float distance;
+		baseplane.Raycast(cursor, out distance);
+		InputPos = cursor.GetPoint(distance);
+	}
+
 	public void CheckInput()
 	{
 		if(Input.GetMouseButton(0) || Input.GetKey(KeyCode.Space)) TimeWithoutInput = 0.0F;
@@ -295,14 +307,7 @@ public class PlayerControl : MonoBehaviour {
 		}
 
 		Ray cursor = Camera.main.ScreenPointToRay(Input.mousePosition);
-		Debug.DrawRay(cursor.origin, cursor.direction*1000);
 		RaycastHit hit;
-
-		Plane baseplane = new Plane(Vector3.back, Vector3.zero);
-		float distance;
-		baseplane.Raycast(cursor, out distance);
-		InputPos = cursor.GetPoint(distance);
-
 		if(Physics.Raycast(cursor, out hit, Mathf.Infinity))
 		{
 			Tile nt = hit.transform.gameObject.GetComponent<Tile>();

@@ -48,12 +48,12 @@ public class Thievery : Ability {
 				for(int i = 0; i < stolen; i++)
 				{
 					//TileMaster.instance.CreateMiniTile(UIManager.ClassButtons[child.Index].transform.position,
-					//								UIManager.ClassButtons[Parent.Index].transform, 
+					//								UIManager.ClassButtons.GetClass(Parent.Index).transform, 
 					//								TileMaster.Genus.Frame[Parent.Index]);
 
 					MoveToPoint mini = TileMaster.instance.CreateMiniTile(	
 						UIManager.ClassButtons[child.Index].transform.position,
-						UIManager.ClassButtons[Parent.Index].transform, 
+						UIManager.ClassButtons.GetClass(Parent.Index).transform, 
 						TileMaster.Genus.Frame[Parent.Index]);
 					
 					mini.Target = Parent;
@@ -69,7 +69,7 @@ public class Thievery : Ability {
 		if(total_stolen > 0)
 		{
 			Parent.AddToMeter(total_stolen);
-			UIManager.instance.MiniAlert(UIManager.ClassButtons[Parent.Index].transform.position + Vector3.up*0.6F, "Stole " + total_stolen + " Mana!", 40, GameData.Colour(Parent.Genus), 0.8F, 0.1F, true);
+			UIManager.instance.MiniAlert(UIManager.ClassButtons.GetClass(Parent.Index).transform.position + Vector3.up*0.6F, "Stole " + total_stolen + " Mana!", 40, GameData.Colour(Parent.Genus), 0.8F, 0.1F, true);
 			if(Random.value < 0.15F) StartCoroutine(UIManager.instance.Quote(Parent.Quotes.GetSpecial("Stealing Mana").RandomQuote));
 		}		
 		yield return null;

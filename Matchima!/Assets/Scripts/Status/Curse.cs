@@ -17,15 +17,6 @@ public class Curse : TileEffect {
 			return st.ToArray();
 		}
 	}
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 
 
 	public override void Setup(Tile t)

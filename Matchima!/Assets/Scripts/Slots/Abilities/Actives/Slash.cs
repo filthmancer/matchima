@@ -48,8 +48,8 @@ public class Slash : Ability{
 
 	public IEnumerator SlashRoutine()
 	{
-		UIManager.ClassButtons[Parent.Index].ShowClass(true);
-		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons[Parent.Index].transform.position + Vector3.up, 
+		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(true);
+		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons.GetClass(Parent.Index).transform.position + Vector3.up, 
 													"Slash", 55, GameData.Colour(Parent.Genus), 1.2F, 0.25F);
 		yield return new WaitForSeconds(Time.deltaTime * 15);
 		TileMaster.instance.SetAllTileStates(TileState.Locked, true);
@@ -163,7 +163,7 @@ public class Slash : Ability{
 		
 		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
 		yield return StartCoroutine(GameManager.instance.BeforeMatchRoutine());
-		yield return StartCoroutine(GameManager.instance.MatchRoutine(PlayerControl.instance.finalTiles));
+		yield return StartCoroutine(GameManager.instance.MatchRoutine(PlayerControl.instance.finalTiles.ToArray()));
 		yield return StartCoroutine(Player.instance.AfterMatch());
 		
 		//if(Player.instance.CompleteMatch)

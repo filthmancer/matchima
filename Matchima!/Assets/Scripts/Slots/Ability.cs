@@ -17,6 +17,8 @@ public class Ability : Slot {
 	public ModType Type;
 	Ability_UpgradeInfo CostUp, CoolUp;
 
+	public UIObj MinigameObj;
+
 	public override StCon [] BaseDescription
 	{
 		get{
@@ -146,7 +148,7 @@ public class Ability : Slot {
 	public virtual int MagicFactor			{get{return Parent.Stats.MagicPower;}}
 
 	// Use this for initialization
-	public virtual void Start () {
+	public override void Start () {
 		if(UpgradeLevel > 1)
 		{
 			int num = UpgradeLevel-1;
@@ -160,7 +162,7 @@ public class Ability : Slot {
 	}
 	
 	// Update is called once per frame
-	public virtual void Update () {
+	public override void Update () {
 		if(!initialized) return;
 		if(cooldown_time < 0) cooldown_time = 0;
 
@@ -234,10 +236,6 @@ public class Ability : Slot {
 		activated = true;	
 	}
 
-	public virtual IEnumerator ActiveRoutine()
-	{
-		yield break;
-	}
 	public virtual void SetStatsRandom()
 	{
 		

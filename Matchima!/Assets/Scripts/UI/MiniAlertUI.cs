@@ -24,10 +24,7 @@ public class MiniAlertUI : UIObj {
 			return Gravity ? new Vector3(0.0F,-0.06F, 0.0F) : Vector3.zero;
 		}
 	}
-	// Use this for initialization
-	void Start () {
-	
-	}
+
 	
 	// Update is called once per frame
 	void Update () {
@@ -44,7 +41,7 @@ public class MiniAlertUI : UIObj {
 				if(juice_time_curr < juice_time_total)
 				{
 					Txt[0].transform.localScale = Juice.instance.ScaleItNow(
-						JuiceScale, Vector3.one, juice_time_curr/juice_time_total, 2.0F);
+						JuiceScale, Vector3.one, juice_time_curr/juice_time_total, 1.0F);
 					juice_time_curr += Time.deltaTime;
 				}
 				
@@ -91,7 +88,7 @@ public class MiniAlertUI : UIObj {
 		juice_time_total = total;
 		if(juice_time_total > lifetime) juice_time_total = lifetime;
 		Txt[0].transform.localScale = Juice.instance.ScaleItNow(
-			JuiceScale, Vector3.one, 0.0F, 2.0F);
+			JuiceScale, Vector3.one, 0.0F, 1.0F);
 
 		juice_time_curr = 0.0F;
 		DoJuiceScale = true;
