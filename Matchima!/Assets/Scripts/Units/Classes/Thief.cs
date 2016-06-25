@@ -188,11 +188,13 @@ public class Thief : Class {
 			yield return new WaitForSeconds(GameData.GameSpeed(0.35F));
 		}
 
-		//yield return StartCoroutine(GameManager.instance.BeforeMatchRoutine());
-		//yield return null;
-		yield return StartCoroutine(GameManager.instance.MatchRoutine(to_collect.ToArray()));
-		//yield return StartCoroutine(Player.instance.AfterMatch());
-
+		TileMaster.instance.SetFillGrid(false);
+		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
+		yield return StartCoroutine(GameManager.instance.BeforeMatchRoutine());
+		yield return null;
+		yield return StartCoroutine(GameManager.instance.MatchRoutine(PlayerControl.instance.finalTiles.ToArray()));
+		yield return StartCoroutine(Player.instance.AfterMatch());
+		TileMaster.instance.SetFillGrid(true);
 		TileMaster.instance.ResetTiles(true);
 		GameManager.instance.paused = false;
 	}

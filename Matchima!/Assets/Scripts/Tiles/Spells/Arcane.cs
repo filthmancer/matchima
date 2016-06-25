@@ -48,8 +48,7 @@ public class Arcane : Tile {
 	public override StCon [] Description
 	{
 		get{
-			return new StCon[]{new StCon("Changes " + TilesCollected + (TilesCollected > 1 ? " tiles" : " tile")
-										 + " to " + EndGenus + " " + EndType)};
+			return new StCon[]{new StCon("Attacks " + TilesCollected + " enemy tiles")};
 		}
 	}
 	public override void Setup(int x, int y, int scale, TileInfo inf, int value_inc)

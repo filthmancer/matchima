@@ -223,6 +223,8 @@ public class Player : MonoBehaviour {
 
 	public IEnumerator AfterMatch()
 	{
+		PlayerControl.instance.finalTiles.Clear();
+		PlayerControl.instance.selectedTiles.Clear();
 		yield break;
 	}
 
@@ -406,6 +408,12 @@ public class Player : MonoBehaviour {
 
 		if(Stats._Health <= 0) 
 		{
+			StartCoroutine(DeathRoll());
+		}
+	}
+
+	IEnumerator DeathRoll()
+	{
 		//Find all living characters
 			List<int> living_chars = new List<int>();
 			for(int i = 0; i < 4; i++)
@@ -416,7 +424,7 @@ public class Player : MonoBehaviour {
 			if(living_chars.Count == 0)
 			{
 				Stats.isKilled = true;
-				return;
+				yield break;
 			}
 
 		//Target Char to be killed
@@ -424,19 +432,20 @@ public class Player : MonoBehaviour {
 			
 		//ROLL LUCK STAT OF TARGET TO SEE IF THEY DIE
 			float luck_chance = (float) Classes[target].Stats.Luck / (GameManager.Difficulty * 5.0F);
-			if(Random.value > luck_chance)
-			{
-				Classes[target].isKilled = true;
-				StartCoroutine(UIManager.instance.Quote(Classes[target].Quotes.Death));
+
+			bool roll = Random.value > luck_chance;
+			yield return StartCoroutine(UIManager.instance.ShowDeathIcon(Classes[target], roll));
+
+			if(roll)
+			{				
+				//StartCoroutine(UIManager.instance.Quote(Classes[target].Quotes.Death));
 				if(living_chars.Count == 1)
 				{
 					Stats.isKilled = true;
-					return;
+					yield break;
 				}
-				else Stats.Heal(5);
+				else Stats.Heal(50);
 			}
-		}
-
 	}
 
 	public List<Bonus> CheckForBonus(GENUS g)

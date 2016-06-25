@@ -20,7 +20,7 @@ public class Bomb : Tile {
 			return new StCon[]{
 				new StCon("Collects in " + radius + " radius."),
 				new StCon("Deals ", Color.white, false),
-				new StCon(BombDamage + " damage", GameData.Colour(Genus))
+				new StCon(BombDamage + " damage to enemy tiles", GameData.Colour(Genus))
 			};
 		}
 	}

@@ -19,6 +19,7 @@ public class UIObjects : MonoBehaviour {
 	public UIObj Walls;
 
 	public UIObj ArmourParent;
+	public UIObj DeathIcon;
 
 	public GameObject Options;
 	public UIScoreWindowNew ScoreWindowB;

@@ -34,9 +34,9 @@ public class GameManager : MonoBehaviour {
 	public static float GlobalManaMult = 1.0F,
 						GlobalHealthMult = 1.0F,
 						GlobalArmourMult = 1.0F;
-	public static float GrowthRate_Easy = 0.15F,
-						GrowthRate_Normal = 0.22F,
-						GrowthRate_Hard = 0.34F;
+	public static float GrowthRate_Easy = 0.13F,
+						GrowthRate_Normal = 0.19F,
+						GrowthRate_Hard = 0.30F;
 
 	public static float [] MeterDecay
 	{
@@ -73,7 +73,7 @@ public class GameManager : MonoBehaviour {
 		}
 	}
 
-	private float Difficulty_init = 2.5F;
+	private float Difficulty_init = 1.1F;
 	public static float Difficulty = 1;
 	public float _Difficulty = 0;
 	public DiffMode DifficultyMode = DiffMode.Okay;
@@ -341,7 +341,8 @@ public class GameManager : MonoBehaviour {
 			//EscapeZone();
 			//GetWave(GameData.instance.GetRandomWave(), 2);
 			//CameraUtility.SetTurnOffset(camopen);
-			TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["chest"], GENUS.ALL, 1, 1);
+			
+			//TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["chest"], GENUS.ALL, 1, 1);
 			break;
 			case 3: //c
 			TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["lightning"], GENUS.DEX,1, 1);
@@ -674,10 +675,9 @@ public class GameManager : MonoBehaviour {
 		//Player.Stats.CompleteLeech(enemies_hit);
 		Player.Stats.CompleteRegen();
 		Player.instance.CompleteHealth();
-		Player.instance.CheckHealth();	
+		
 		
 		PlayerControl.matchingTile = null;
-		PlayerControl.instance.finalTiles.Clear();
 		//Player.instance.CheckForBestCombo(resource);
 
 		TileMaster.instance.SetFillGrid(true);

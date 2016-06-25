@@ -114,7 +114,6 @@ public class Stat
 	public int AbilitySlots =0;
 	public int PrevTurnKills = 0;
 	public int HealThisTurn = 0, DmgThisTurn = 0;
-	
 
 	public List<TileChance> TileChances = new List<TileChance>();
 

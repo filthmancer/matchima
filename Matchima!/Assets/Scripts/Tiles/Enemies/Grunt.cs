@@ -4,17 +4,17 @@ using System.Collections;
 public class Grunt : Enemy {
 
 
-	private int GruntHPFactor = 9, GruntHPAdded = 1;
-	private int GruntATKFactor = 19, GruntATKAdded = 1;
+	private int GruntHPScale = 9, GruntHPMult = 1;
+	private int GruntATKScale = 19, GruntATKMult = 1;
 
-	private int CaptainHPFactor = 8, CaptainHPAdded = 1;
-	private int CaptainATKFactor = 19, CaptainATKAdded = 1;
+	private int CaptainHPScale = 8, CaptainHPMult = 1;
+	private int CaptainATKScale = 19, CaptainATKMult = 1;
 
-	private int ChiefHPFactor =7, ChiefHPAdded = 1;
-	private int ChiefATKFactor = 19, ChiefATKAdded = 1;
+	private int ChiefHPScale = 7, ChiefHPMult = 1;
+	private int ChiefATKScale = 19, ChiefATKMult = 1;
 
-	private int TerrorHPFactor = 14, TerrorHPAdded = 5;
-	private int TerrorATKFactor = 19, TerrorATKAdded = 2;
+	private int TerrorHPScale = 12, TerrorHPMult = 4;
+	private int TerrorATKScale = 19, TerrorATKMult = 1;
 
 	public override StCon [] Description
 	{
@@ -105,26 +105,26 @@ public class Grunt : Enemy {
 			case 1:
 			Name        = "Grunt";
 			//InitStats.Value += (int)(factor/5);
-			hpfactor    *= GruntHPAdded + factor / GruntHPFactor;
-			atkfactor   *= GruntATKAdded + factor / GruntATKFactor;
+			hpfactor    *= GruntHPMult + factor / GruntHPScale;
+			atkfactor   *= GruntATKMult + factor / GruntATKScale;
 			break;
 			case 2:
 			Name        = "Captain";
 			InitStats.Value += 1 + (int)(factor/5);
-			hpfactor    *= CaptainHPAdded + factor / CaptainHPFactor;
-			atkfactor   *= CaptainATKAdded + factor / CaptainATKFactor;
+			hpfactor    *= CaptainHPMult + factor / CaptainHPScale;
+			atkfactor   *= CaptainATKMult + factor / CaptainATKScale;
 			break;
 			case 3:
 			Name        = "Chief";
 			InitStats.Value += 2 + (int)(factor/5);
-			hpfactor    *= ChiefHPAdded + factor / ChiefHPFactor;
-			atkfactor   *= ChiefATKAdded + factor / ChiefATKFactor;
+			hpfactor    *= ChiefHPMult + factor / ChiefHPScale;
+			atkfactor   *= ChiefATKMult + factor / ChiefATKScale;
 			break;
 			case 4:
 			Name        = "Terror";
 			InitStats.Value += 4 + (int)(factor/2);
-			hpfactor    *= TerrorHPAdded + factor / TerrorHPFactor;
-			atkfactor   *= TerrorATKAdded + factor / TerrorATKFactor;
+			hpfactor    *= TerrorHPMult + factor / TerrorHPScale;
+			atkfactor   *= TerrorATKMult + factor / TerrorATKScale;
 			break;
 		}
 		

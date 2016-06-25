@@ -14,7 +14,7 @@ public class WardenWaveUnit : WaveUnit {
 		if(!Active || Ended) yield break;
 		controllers = new List<Tile>();
 		bool [,] replacedtile = new bool [(int)TileMaster.instance.MapSize.x, (int)TileMaster.instance.MapSize.y];
-		for(int i = 0; i < 2; i++)
+		for(int i = 0; i < 3; i++)
 		{
 			int randx = (int)Random.Range(0, TileMaster.instance.MapSize.x);
 			int randy = (int)Random.Range(0, TileMaster.instance.MapSize.y);
@@ -27,22 +27,27 @@ public class WardenWaveUnit : WaveUnit {
 			}
 			replacedtile[randx,randy] = true;
 
-			GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Force);
-			MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
-			mp.SetTarget(TileMaster.Tiles[randx,randy].transform.position);
-			mp.SetPath(0.35F, 0.2F);
-			//mp.Target_Tile = TileMaster.Tiles[randx,randy];
-			mp.SetTileMethod(TileMaster.Tiles[randx,randy], (Tile t) => 
-				{
-					controllers.Add(TileMaster.instance.ReplaceTile(randx, randy, TileMaster.Types["ward"], GENUS.RAND, 1, 0));
-					TileMaster.Tiles[randx, randy].InitStats.Hits = 3;
-					TileMaster.Tiles[randx, randy].CheckStats();
-					TileMaster.Tiles[randx, randy].DescriptionOverride = "Enemies ignore the Warden";
-				});
+			CreateWard(randx, randy);
 		
 			yield return new WaitForSeconds(Time.deltaTime * 30);
 		}
 		yield return new WaitForSeconds(Time.deltaTime * 20);
+	}
+
+	void CreateWard(int x, int y)
+	{
+		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Force);
+		MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
+		mp.SetTarget(TileMaster.Tiles[x,y].transform.position);
+		mp.SetPath(0.35F, 0.2F);
+		//mp.Target_Tile = TileMaster.Tiles[x,y];
+		mp.SetTileMethod(TileMaster.Tiles[x,y], (Tile t) => 
+			{
+				controllers.Add(TileMaster.instance.ReplaceTile(x, y, TileMaster.Types["ward"], GENUS.RAND, 1, 0));
+				TileMaster.Tiles[x, y].InitStats.Hits = 3;
+				TileMaster.Tiles[x, y].CheckStats();
+				TileMaster.Tiles[x, y].DescriptionOverride = "Enemies ignore the Warden";
+			});
 	}
 
 	public override IEnumerator BeginTurn()

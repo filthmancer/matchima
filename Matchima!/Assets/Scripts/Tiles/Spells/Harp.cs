@@ -25,7 +25,8 @@ public class Harp : Tile {
 	public override StCon [] Description
 	{
 		get{
-			return new StCon[]{new StCon("Stuns all enemies for " + StunDuration + " turns", GameData.Colour(Genus))};
+			return new StCon[]{new StCon("Changes nearby tiles to " + GameData.ResourceLong(Genus), GameData.Colour(Genus)),
+				new StCon("Charms enemy tiles", GameData.Colour(GENUS.CHA))};
 		}
 	}
 
@@ -68,14 +69,14 @@ public class Harp : Tile {
 				{
 					if(child.Type.isEnemy) 
 					{					
-						child.SetState(TileState.Selected, true);
+						//child.SetState(TileState.Selected, true);
 						MiniAlertUI m = UIManager.instance.MiniAlert(child.Point.targetPos, " Sleep", 65, GameData.Colour(child.Genus), 0.3F, 0.1F);
 						child.AddEffect("Sleep", StunDuration);
 					}
 					//else
 					//{
 						child.ChangeGenus(Genus);
-						child.SetState(TileState.Selected, true);
+						//child.SetState(TileState.Selected, true);
 						EffectManager.instance.PlayEffect(child.transform, Effect.Replace, "", GameData.instance.GetGENUSColour(child.Genus));	
 						//c.AddValue(EndValueAdded);
 					//}

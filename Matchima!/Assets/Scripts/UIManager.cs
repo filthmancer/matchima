@@ -1079,6 +1079,45 @@ public class UIManager : MonoBehaviour {
 		Objects.MiddleGear[2][1].Child = newitems.ToArray();
 	}
 
+	public IEnumerator ShowDeathIcon(Class c, bool outcome_death)
+	{
+		Objects.DeathIcon.Img[0].enabled = true;
+		Transform death = Objects.DeathIcon.transform;
+		Transform classbutton = ClassButtons.GetClass(c.Index).Img[0].transform;
+		death.position = classbutton.position;
+
+		float rising_time = 0.8F;
+		float rising_acc = 0.35F, rising_decay = 0.02F;
+		while((rising_time -= Time.deltaTime) > 0.0F)
+		{
+			death.position += Vector3.up * rising_acc;
+			if(rising_acc > 0.0F) rising_acc -= rising_decay;
+			yield return null;
+		}
+
+		float spin_time = 1.3F;
+		float spin_acc = 35F, spin_decay = 0.7F;
+		while((spin_time -= Time.deltaTime) > 0.0F)
+		{
+			classbutton.Rotate(0,spin_acc, 0);
+			spin_acc -= spin_decay;
+			yield return null;
+		}
+		c.isKilled = outcome_death;
+		(ClassButtons.GetClass(c.Index) as UIClassButton).Death.enabled = outcome_death;
+		float falling_time = 0.8F;
+		float falling_acc = 0.5F;
+		while((falling_time -= Time.deltaTime) > 0.0F)
+		{
+			death.position += Vector3.down *falling_acc;
+			yield return null;
+		}
+		Objects.DeathIcon.Img[0].enabled = false;
+
+		
+		yield return null;
+	}
+
 
 
 	public void Reset()

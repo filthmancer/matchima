@@ -442,6 +442,7 @@ public class Class : Unit {
 		return true;
 	}
 
+	int killtimer = 0;
 	public virtual void CheckHealth()
 	{
 		foreach(Slot child in _Slots)
@@ -465,10 +466,17 @@ public class Class : Unit {
 		}
 		else if(isKilled)
 		{
-			LevelPoints = 0;
-			Meter = 0;
-			//Player.instance.ResetStats();
-			OnDeath();
+			if(killtimer == 0 && isKilled)
+			{
+				OnRevive();
+			}
+			else
+			{
+				killtimer -= 1;
+				LevelPoints = 0;
+				Meter = 0;
+			}
+			
 		}
 	}
 
@@ -752,12 +760,19 @@ public class Class : Unit {
 
 	public virtual void OnDeath()
 	{
+		isKilled = true;
+		killtimer = 4;
 		//if(DeathWarning)
 		//{
 		//	StartCoroutine(UIManager.instance.Quote(Quotes.Death));
 		//	DeathWarning = false;
 		//	LowHealthWarning = false;
 		//}
+	}
+
+	public virtual void OnRevive()
+	{
+		
 	}
 
 	public virtual void OnLowHealth()
