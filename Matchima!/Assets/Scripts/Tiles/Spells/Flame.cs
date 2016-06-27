@@ -19,9 +19,9 @@ public class Flame : Tile {
 	{
 		get{
 			return new StCon[]{
-				new StCon("Collects a " + total_cycles + "L cone", GameData.Colour(Genus)),
-				new StCon("Deals ", Color.white, false),
-				new StCon(damage + " damage", GameData.Colour(Genus))
+				new StCon("Collects a " + total_cycles + "L cone", GameData.Colour(Genus), true, 40),
+				new StCon("Deals ", Color.white, false, 40),
+				new StCon(damage + " damage", GameData.Colour(Genus), true, 40)
 			};
 		}
 	}

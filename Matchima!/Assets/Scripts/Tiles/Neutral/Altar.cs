@@ -18,7 +18,7 @@ public class Altar : Tile {
 	public override StCon [] Description
 	{
 		get{
-			return new StCon[]{new StCon("Disappears in " + (Stats.Deathtime - Stats.Lifetime) + " turns")};
+			return new StCon[]{new StCon("Disappears in " + (Stats.Deathtime - Stats.Lifetime) + " turns", Color.white,true, 40)};
 		}
 	}
 

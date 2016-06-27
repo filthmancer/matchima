@@ -37,7 +37,6 @@ public class UIClassButton : UIObj {
 			AddListener(_class);
 			AddAction(UIAction.MouseOver, () => {HoverOver();});
 			AddAction(UIAction.MouseDown, () => {
-				print("HIT");
 				if(_class.MeterLvl > 0) StartCoroutine(_class.UseManaPower());
 				//PartialOpen.OpenCloseObjectAnimation();
 				});
@@ -60,6 +59,7 @@ public class UIClassButton : UIObj {
 		if(_class)
 		{
 			Death.enabled = _class.isKilled;
+			Txt[0].text = _class.isKilled ? _class.killtimer + "": "";
 			Banner.SetActive(false);
 			//Banner._Text.text = _class.MeterString;//_class.LevelPoints + "\n" + _class.TurnLevelRate + ":" + _class.BonusLevelRate + ":" + _class.WaveLevelRate;
 			//Banner._Text.color =  GameData.Colour(_class.Genus);
@@ -71,12 +71,6 @@ public class UIClassButton : UIObj {
 			}
 			else */ //Banner.SetActive(false);
 
-			if(_class.LevelUpAlert) 
-			{
-				UIManager.instance.MiniAlert(transform.position + Vector3.up * 0.23F,
-											 "LVL UP!", 50, GameData.Colour(_class.Genus));
-				_class.LevelUpAlert = false;
-			}
 			GetCooldown();
 		}
 
@@ -194,7 +188,6 @@ public class UIClassButton : UIObj {
 
 	public void TweenClass(bool? active = null)
 	{
-		print("TWEENING " + _class + " to " + active);
 		bool actual = active ?? !_class.activated;
 		if(actual != PartialOpen.IsObjectOpened())
 		{

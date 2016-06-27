@@ -10,8 +10,8 @@ public class Minion : Enemy {
 	{
 		get{
 			return new StCon[]{
-			new StCon((_EnemyType + " Enemy")),
-			new StCon("A weak enemy with\n a strong attack")
+			new StCon((_EnemyType + " Enemy"), Color.white,true, 40),
+			new StCon("A weak enemy with\n a strong attack", Color.white,true, 40)
 			};
 		}
 	}

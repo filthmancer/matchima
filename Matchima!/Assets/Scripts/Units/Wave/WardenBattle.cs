@@ -10,22 +10,22 @@ public class WardenBattle : Wave {
 
 	int warden_actual_health; //Marker for warden's actual health while it is -1 (invisible)
 
-	public override string IntroText
+	public override StCon [] IntroText
 	{
 		get{
-			return "The Warden";
+			return new StCon []{new StCon("The Warden")};
 		}
 	} 
-	public override string EnterText 
+	public override StCon [] EnterText 
 	{
 		get {
-			return "The Warden";
+			return new StCon []{new StCon("The Warden")};
 		}
 	}
-	public override string ExitText 
+	public override StCon [] ExitText 
 	{
 		get {
-			return "Warden Defeated!";
+			return new StCon []{new StCon("Warden Defeated!")};
 		}
 	}
 
@@ -90,8 +90,8 @@ public class WardenBattle : Wave {
 
 		UIManager.Objects.TopGear.FreeWheelDrag = false;
 		UIManager.Objects.TopGear.MoveToDivision(0);
-
-		yield return StartCoroutine(UIManager.instance.Alert(1.25F, true, Name));
+		StCon [] namecon = new StCon[] {new StCon(Name)};
+		yield return StartCoroutine(UIManager.instance.Alert(1.25F, namecon));
 
 		UIManager.Objects.TopGear[2].SetActive(true);
 		for(int i = 0; i < AllSlots.Length; i++)
@@ -126,7 +126,7 @@ public class WardenBattle : Wave {
 		Slot3.Active = false;
 		Slot3.Ended = true;
 
-		yield return StartCoroutine(UIManager.instance.Alert(1.1F, false, ExitText));
+		yield return StartCoroutine(UIManager.instance.Alert(1.1F, ExitText));
 
 		int tx = ((TileMaster.Grid.Size[0]-1) / 2) - 1;
 		int ty = ((TileMaster.Grid.Size[1]-1) / 2) - 1;

@@ -21,9 +21,9 @@ public class Cross : Tile {
 	{
 		get{
 			return new StCon[]{
-				new StCon("Collects in " + Stats.Value + "L cross", GameData.Colour(Genus)),
-				new StCon("Deals ", Color.white, false),
-				new StCon(CrossDamage + " damage", GameData.Colour(Genus))
+				new StCon("Collects in " + Stats.Value + "L cross", GameData.Colour(Genus), true, 40),
+				new StCon("Deals ", Color.white, false, 40),
+				new StCon(CrossDamage + " damage", GameData.Colour(Genus), true, 40)
 			};
 		}
 	}

@@ -19,11 +19,11 @@ public class Tile : MonoBehaviour {
 		get{
 			List<StCon> basic = new List<StCon>();
 			if(Stats.Resource != 0)
-			basic.Add(new StCon("+" + Stats.GetValues()[0] + " Mana", GameData.Colour(Genus), false));
+			basic.Add(new StCon("+" + Stats.GetValues()[0] + " Mana", GameData.Colour(Genus), false, 40));
 			if(Stats.Heal != 0)
-			basic.Add(new StCon("+" + Stats.GetValues()[1] + "% Health", GameData.Colour(GENUS.STR), false));
+			basic.Add(new StCon("+" + Stats.GetValues()[1] + "% Health", GameData.Colour(GENUS.STR), false, 40));
 			if(Stats.Armour != 0)
-			basic.Add(new StCon("+" + Stats.GetValues()[2] + " Armour", GameData.Colour(GENUS.DEX), false));
+			basic.Add(new StCon("+" + Stats.GetValues()[2] + " Armour", GameData.Colour(GENUS.DEX), false, 40));
 			return basic.ToArray();
 		}
 	}
@@ -35,7 +35,7 @@ public class Tile : MonoBehaviour {
 	{
 		get{
 			List<StCon> final = new List<StCon>();
-			if(Genus == GENUS.OMG) final.Add(new StCon("Cannot be matched", Color.grey));
+			if(Genus == GENUS.OMG) final.Add(new StCon("Cannot be matched", Color.grey, false, 40));
 			//final.AddRange(BaseDescription);
 			if(Description != null)	final.AddRange(Description);
 			if(EffectDescription != null) final.AddRange(EffectDescription);
@@ -714,7 +714,10 @@ public class Tile : MonoBehaviour {
 	{
 		if(collapse)
 		{
-			bool dest = true;
+			MiniTile2 TileObj = (MiniTile2) Instantiate(TileMaster.instance.MiniTileObj);
+			TileObj.Setup(this);
+			TileObj.Explode();
+			/*bool dest = true;
 			float gravity = 0.03F;
 			float vel = -0.2F;
 			float life = 0.5F;
@@ -729,7 +732,7 @@ public class Tile : MonoBehaviour {
 				if(life < 0.0F) dest = false;
 				else life-= Time.deltaTime;
 				yield return null;
-			}
+			}*/
 		}
 		TileMaster.instance.DestroyTile(this);
 		yield return null;
@@ -1161,7 +1164,7 @@ public class Tile : MonoBehaviour {
 				TileEffect e = Effects[i];
 				Effects.RemoveAt(i);
 
-				e.OnDestroy();
+				e._OnDestroy();
 				Destroy(e.gameObject);
 			}
 		}
@@ -1209,6 +1212,8 @@ public class Tile : MonoBehaviour {
 		TileMaster.Grid[x, y]._Tile = this;
 		Setup(x,y);
 	}
+
+
 
 }
 

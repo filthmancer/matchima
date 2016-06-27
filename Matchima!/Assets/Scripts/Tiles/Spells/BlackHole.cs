@@ -13,7 +13,7 @@ public class BlackHole : Tile {
 	{
 		get{
 			return new StCon[] {
-				new StCon("Absorbs tile in " + radius, GameData.Colour(Genus))};
+				new StCon("Absorbs tile in " + radius, GameData.Colour(Genus),true, 40)};
 		}
 	}
 

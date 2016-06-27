@@ -25,8 +25,8 @@ public class Harp : Tile {
 	public override StCon [] Description
 	{
 		get{
-			return new StCon[]{new StCon("Changes nearby tiles to " + GameData.ResourceLong(Genus), GameData.Colour(Genus)),
-				new StCon("Charms enemy tiles", GameData.Colour(GENUS.CHA))};
+			return new StCon[]{new StCon("Changes nearby tiles to " + GameData.ResourceLong(Genus), GameData.Colour(Genus),true, 40),
+				new StCon("Charms enemy tiles", GameData.Colour(GENUS.CHA),true, 40)};
 		}
 	}
 

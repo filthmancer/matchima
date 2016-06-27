@@ -14,7 +14,7 @@ public class Class : Unit {
 		{
 			string name = "The " + Name;
 			//if(MeterLvl > 0) name += "  M-POWER: " + MeterLvl;
-			return new StCon(name, GameData.Colour(Genus));
+			return new StCon(name, GameData.Colour(Genus), true, 110);
 		}
 	}
 
@@ -32,21 +32,12 @@ public class Class : Unit {
 				final.Add(new StCon(Stats[i].StatCurrent+"", GameData.Colour((GENUS)i), last));
 				if(!last) final.Add(new StCon(" /", Color.white, false));
 			}
-		//	final.Add(new StCon(mainStat.StatCurrent + " " + GameData.StatLong(Genus), GameData.Colour(Genus)));
-			
-			//final.Add(new StCon("+" + Stats.HealthMax + " HP  ", Color.white, false));
-			//final.Add(new StCon("+" + Stats.Attack + " ATK", Color.white, true));
 
 			foreach(Slot child in AllMods)
 			{
 				if(child != null) final.AddRange(child.Description_Tooltip);
 			}
 
-			//for(int i = 0; i < Upgrades.Length; i++)
-			//{
-			//	bool newline = i % 2 == 0;
-			//	final.Add(new StCon(Upgrades[i], newline));
-			//}
 			
 			foreach(ClassEffect child in _Status)
 			{
@@ -121,9 +112,6 @@ public class Class : Unit {
 	public int ManaThisTurn = 0;
 	public bool CanCollectMana = true;
 
-	[HideInInspector]
-	public bool LevelUpAlert;
-
 	public StatContainer mainStat;
 
 	[HideInInspector]
@@ -195,6 +183,7 @@ public class Class : Unit {
 	public int Exp_Max, Exp_Current;
 	private float Exp_Max_soft;
 
+	public List<Upgrade> Mutations = new List<Upgrade>();
 	
 	public virtual void StartClass()
 	{
@@ -274,6 +263,12 @@ public class Class : Unit {
 			if(child == null) continue;
 			if(child.CheckStats()!= null) Stats.AddStats(child.CheckStats());
 			child.StatusEffect();
+		}
+
+		foreach(Upgrade child in Mutations)
+		{
+			if(child == null) continue;
+			child.Up(Stats, child.Rate);
 		}
 
 		Stats.ApplyStatInc();
@@ -442,9 +437,10 @@ public class Class : Unit {
 		return true;
 	}
 
-	int killtimer = 0;
+	public int killtimer = 4;
 	public virtual void CheckHealth()
 	{
+		print(isKilled);
 		foreach(Slot child in _Slots)
 		{
 			if(child == null) continue;
@@ -460,12 +456,14 @@ public class Class : Unit {
 		{
 			OnSafeHealth();
 		}
-		else if(Player.Stats._Health < Player.Stats._HealthMax/5 && Player.Stats._Health > 0) 
+		else if(Player.Stats._Health < Player.Stats._HealthMax/5 && Player.Stats._Health > 0 && !isKilled) 
 		{
 			OnLowHealth();
 		}
-		else if(isKilled)
+		
+		if(isKilled)
 		{
+
 			if(killtimer == 0 && isKilled)
 			{
 				OnRevive();
@@ -625,22 +623,112 @@ public class Class : Unit {
 
 	public void AddExp(int exp)
 	{
-		Exp_Current += exp;
-		while(Exp_Current > Exp_Max)
-		{
-			Exp_Current -= Exp_Max;
-			LevelUp();
-			Exp_Max_soft *= 1.5F;
-			Exp_Max = (int)Exp_Max_soft;
-		}
+		//Exp_Current += exp;
+		//while(Exp_Current > Exp_Max)
+		//{
+		//	Exp_Current -= Exp_Max;
+		//	LevelUp();
+		//	Exp_Max_soft *= 1.5F;
+		//	Exp_Max = (int)Exp_Max_soft;
+		//}
 	}
 
 
-	public void LevelUp()
+	protected IEnumerator LevelUp(int power)
 	{
+		GameManager.instance.paused = true;
+		UIManager.ClassButtons.GetClass(Index).ShowClass(false);
 		Level ++;
-		LevelUpAlert = true;
-		InitStats.LevelUp();
+		StCon [] title = InitStats.LevelUp();
+		StCon [] floor = new StCon [] {new StCon(Name + " Level"), new StCon(Level+"")};
+
+		yield return StartCoroutine(UIManager.instance.Alert(1.1F, floor, title, null, true));
+
+		Reset();
+
+		float mutation_chance = Stats.MutationChance - (0.05F * power);
+		if(UnityEngine.Random.value < mutation_chance)
+		{
+			yield return StartCoroutine(Mutate(power));
+		}
+		UIManager.ClassButtons.GetClass(Index).ShowClass(false);
+		yield return null;
+	}
+
+	public IEnumerator Mutate(int power)
+	{
+		UIManager.ClassButtons.GetClass(Index).ShowClass(true);
+		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, "", GameData.Colour(Genus));
+
+		StCon [] title = new StCon[]{
+			new StCon(_Name),
+			new StCon("is Mutating!", Color.white, true, 110)};
+		StCon [] floor = new StCon [] {new StCon("What?!")};
+		yield return StartCoroutine(UIManager.instance.Alert(1.1F, floor, title, null));
+
+		Destroy(powerup);
+
+	//Get Mutation
+		Upgrade u = null;
+
+		float cursechance = Stats.CurseChance - (0.07F * power);
+		bool Boon = UnityEngine.Random.value > cursechance;
+
+		if(Boon)
+		{
+			float chance = UnityEngine.Random.value * ModContainer.AllChance;
+			float current = 0.0F;
+			for(int i = 0; i < ModContainer.Boons.Length; i++)
+			{
+				if(chance >= current && chance < current + ModContainer.Boons[i].Chance)
+				{
+					GENUS g = (UnityEngine.Random.value > 0.9F ? GENUS.NONE : Genus);
+					u = new Upgrade(ModContainer.Boons[i].GetUpgrade(g));
+					break;
+				}
+				current += ModContainer.Boons[i].Chance;
+			}
+		}
+		else
+		{
+			float chance = UnityEngine.Random.value * ModContainer.CurseChance;
+			float current = 0.0F;
+			for(int i = 0; i < ModContainer.Curses.Length; i++)
+			{
+				if(chance >= current && chance < current + ModContainer.Curses[i].Chance)
+				{
+					GENUS g = (UnityEngine.Random.value > 0.9F ? GENUS.NONE : Genus);
+					u = new Upgrade(ModContainer.Curses[i].GetUpgrade(g));
+					break;
+				}
+				current += ModContainer.Curses[i].Chance;
+			}
+		}
+		
+
+		float final_rate = (1.7F*power);
+		final_rate *= UnityEngine.Random.Range(0.8F, 1.3F);
+
+		Upgrade prev = null;
+		foreach(Upgrade child in Mutations){
+			if(child != null && child.Index == u.Index) prev = child;
+		}
+
+		if(prev == null) 
+		{
+			u.Rate += final_rate;
+			Mutations.Add(u);
+		}
+		else prev.Rate += final_rate;
+
+		string boon = Name + " was ";
+		boon += (Boon ? " gifted!" : " cursed!");
+		title = new StCon[]{
+			new StCon(boon, GameData.Colour(Genus), true, 80),
+			new StCon(u.Title, Color.white, true, 80)};
+		yield return StartCoroutine(UIManager.instance.Alert(1.4F, null, title));
+
+		yield return null;
 	}
 
 	public Slot AddMod(string name, params string [] args)
@@ -772,7 +860,8 @@ public class Class : Unit {
 
 	public virtual void OnRevive()
 	{
-		
+		killtimer = 0;
+		isKilled = false;
 	}
 
 	public virtual void OnLowHealth()

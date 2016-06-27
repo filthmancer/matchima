@@ -28,11 +28,11 @@ public class Ward : Tile {
 	public override StCon [] Description
 	{
 		get{
-			if(DescriptionOverride != string.Empty) return new StCon [] {new StCon(DescriptionOverride, Color.white)};
+			if(DescriptionOverride != string.Empty) return new StCon [] {new StCon(DescriptionOverride, Color.white, true, 40)};
 			else return new StCon[]{
-				new StCon("Casts ", Color.white, false),
-				new StCon(Buff, GameData.Colour(Genus), false),
-				new StCon(" on " + target_name)
+				new StCon("Casts ", Color.white, false, 40),
+				new StCon(Buff, GameData.Colour(Genus), false, 40),
+				new StCon(" on " + target_name, Color.white,true, 40)
 			};
 		}
 	}

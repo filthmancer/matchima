@@ -10,7 +10,7 @@ public class ItemTile : Tile {
 	public override StCon [] Description
 	{
 		get{
-			return new StCon[]{new StCon("Contains an item.", GameData.Colour(Genus))};
+			return new StCon[]{new StCon("Contains an item.", GameData.Colour(Genus),true, 40)};
 		}
 	}
 

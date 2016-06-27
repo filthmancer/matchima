@@ -48,7 +48,12 @@ public class Arcane : Tile {
 	public override StCon [] Description
 	{
 		get{
-			return new StCon[]{new StCon("Attacks " + TilesCollected + " enemy tiles")};
+			return new StCon[]{
+				new StCon("Attacks " + TilesCollected + " enemy tiles", Color.white,true, 40),
+				new StCon("Deals ", Color.white, false, 40),
+				new StCon(final_damage+"", GameData.Colour(GENUS.WIS), false, 40),
+				new StCon(" damage", Color.white, true, 40)
+			};
 		}
 	}
 	public override void Setup(int x, int y, int scale, TileInfo inf, int value_inc)

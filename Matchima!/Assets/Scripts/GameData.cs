@@ -961,17 +961,20 @@ public class StCon
 	public string Value;
 	public Color Colour;
 	public bool NewLine = true;
-	public StCon(string v, Color? c = null, bool line = true)
+	public float Size = 80;
+	public StCon(string v, Color? c = null, bool line = true, float _size = 70)
 	{
 		Value = v;
 		Colour = c ?? Color.white;
 		NewLine = line;
+		Size = _size;
 	}
 
 	public StCon (StCon prev, bool line = true)
 	{
 		Value = prev.Value;
 		Colour = prev.Colour;
+		Size = prev.Size;
 		NewLine = line;
 	}
 }

@@ -68,12 +68,7 @@ public class UIManager : MonoBehaviour {
 	}
 
 	void Start () {
-		//Menu.gameObject.SetActive(true);
-		
-		//Objects.ShowObj(Objects.MenuUI, true);
-		//Objects.ShowObj(Objects.StatsbarUI, false);
 		Objects.MainUI.SetActive(false);	
-		//UpdatePlayerUI();
 		for(int i = 0; i < ClassButtons.Length; i++)
 		{
 			ClassButtons.GetClass(i)._Frame.sprite = TileMaster.Genus.Frame[i];
@@ -120,11 +115,10 @@ public class UIManager : MonoBehaviour {
 			}
 		}
 		
-		
-		//CameraUtility.instance.MainLight.color = Color.Lerp(
-			//CameraUtility.instance.MainLight.color, BackingTint, Time.deltaTime * 5);
-		//Objects.Walls.Img[0].color = Color.Lerp(
-			//Objects.Walls.Img[0].color, WallTint, Time.deltaTime * 5);
+		CameraUtility.instance.MainLight.color = Color.Lerp(
+			CameraUtility.instance.MainLight.color, BackingTint, Time.deltaTime * 5);
+		Objects.Walls.Img[0].color = Color.Lerp(
+			Objects.Walls.Img[0].color, WallTint, Time.deltaTime * 5);
 
 		Objects.ArmourParent.Txt[0].text = Player.Stats._Armour > 0 ? Player.Stats.Armour : "";
 		Objects.ArmourParent.SetActive(Player.Stats._Armour > 0);
@@ -163,24 +157,6 @@ public class UIManager : MonoBehaviour {
 		{
 			StartCoroutine(HitLoop());
 		}
-	}
-
-	public void UpdatePlayerUI()
-	{
-		//ClassArmourBanner.gameObject.SetActive(Player.Stats.Armour > 0);
-		int final = 0;
-		int steps = Player.Stats._Armour;
-		int scale = 1;
-		while(steps > 0)
-		{
-			steps -= scale;
-			scale *= 10;
-			final++;
-		}
-		float dist = 0.23F * (final);
-		dist += (Player.Stats._Armour > 0 ? 0.18F : 0.0F);
-		ClassArmourBanner_pos = (Vector3.right * dist);
-		
 	}
 
 	IEnumerator HealLoop()
@@ -340,7 +316,10 @@ public class UIManager : MonoBehaviour {
 				if(Objects.TopGear[1][1][3][0].GetChild(i) != null)
 					Destroy(Objects.TopGear[1][1][3][0].GetChild(i).gameObject);
 			}
-			List<UIObj> newchildren = new List<UIObj>();
+
+			Transform TopParent = Objects.TopGear[1][1][3][0].transform;
+			Objects.TopGear[1][1][3][0].Child = GenerateUIObjFromStCon(TopParent, t.BaseDescription);
+			/*List<UIObj> newchildren = new List<UIObj>();
 			
 			Transform TopParent = Objects.TopGear[1][1][3][0].transform;
 			UIObj ParentObj = (UIObj) Instantiate(Objects.HorizontalGrouper);
@@ -371,19 +350,25 @@ public class UIManager : MonoBehaviour {
 					newchildren.Add(ParentObj);
 				}
 				Objects.TopGear[1][1][3][0].Child = newchildren.ToArray();
-			}
+			}*/
 		}
 		else Objects.TopGear[1][1][3][0].SetActive(false);
 		
 		if(t.EffectDescription.Length > 0)
 		{
+
 			Objects.TopGear[1][1][3][1].SetActive(true);
+
 			for(int i = 0; i < Objects.TopGear[1][1][3][1].Length; i++)
 			{
 				if(Objects.TopGear[1][1][3][1].GetChild(i) != null)
 					Destroy(Objects.TopGear[1][1][3][1].GetChild(i).gameObject);
 			}
-			List<UIObj> newchildren = new List<UIObj>();
+
+			Transform TopParent = Objects.TopGear[1][1][3][1].transform;
+			Objects.TopGear[1][1][3][1].Child = GenerateUIObjFromStCon(TopParent, t.EffectDescription);
+
+			/*List<UIObj> newchildren = new List<UIObj>();
 			
 			Transform TopParent = Objects.TopGear[1][1][3][1].transform;
 			UIObj ParentObj = (UIObj) Instantiate(Objects.HorizontalGrouper);
@@ -414,7 +399,7 @@ public class UIManager : MonoBehaviour {
 					newchildren.Add(ParentObj);
 				}
 				Objects.TopGear[1][1][3][1].Child = newchildren.ToArray();
-			}
+			}*/
 		}
 		else Objects.TopGear[1][1][3][1].SetActive(false);
 
@@ -426,7 +411,11 @@ public class UIManager : MonoBehaviour {
 				if(Objects.TopGear[1][1][3][2].GetChild(i) != null)
 					Destroy(Objects.TopGear[1][1][3][2].GetChild(i).gameObject);
 			}
-			List<UIObj> newchildren = new List<UIObj>();
+
+			Transform TopParent = Objects.TopGear[1][1][3][2].transform;
+			Objects.TopGear[1][1][3][2].Child = GenerateUIObjFromStCon(TopParent, t.Description);
+
+			/*List<UIObj> newchildren = new List<UIObj>();
 			
 			Transform TopParent = Objects.TopGear[1][1][3][2].transform;
 			UIObj ParentObj = (UIObj) Instantiate(Objects.HorizontalGrouper);
@@ -457,7 +446,7 @@ public class UIManager : MonoBehaviour {
 					newchildren.Add(ParentObj);
 				}
 				Objects.TopGear[1][1][3][2].Child = newchildren.ToArray();
-			}
+			}*/
 		}
 		else Objects.TopGear[1][1][3][2].SetActive(false);		
 	}
@@ -778,7 +767,7 @@ public class UIManager : MonoBehaviour {
 	}
 
 	public bool AlertShowing = false;
-	public IEnumerator Alert(float time, bool show_floor, string title = null, string desc = null, string floor_override = null)
+	/*public IEnumerator Alert(float time, bool show_floor, string title = null, string desc = null, string floor_override = null)
 	{
 		while(AlertShowing) yield return null;
 		AlertShowing = true;
@@ -830,6 +819,128 @@ public class UIManager : MonoBehaviour {
 		GameManager.instance.paused = false;
 		AlertShowing = false;
 		yield break;
+	}*/
+
+	public IEnumerator Alert(float time, StCon [] floor = null, StCon [] title = null, StCon [] desc = null, bool wait_for_touch = false)
+	{
+		while(AlertShowing) yield return null;
+		AlertShowing = true;
+		GameManager.instance.paused = true;
+		ScreenAlert.SetActive(true);
+		ScreenAlert.SetTween(0,true);
+
+		
+		/*for(int i = 0; i < ScreenAlert.Child[2].Length; i++)
+		{
+			if(ScreenAlert.Child[2][0].GetChild(i) != null)
+				Destroy(ScreenAlert.Child[2].GetChild(i).gameObject);
+		}*/
+
+
+		if(floor != null)
+		{
+			(ScreenAlert[2] as UIObjTweener).Txt[0].text = floor[0].Value;
+			if(floor.Length > 1) (ScreenAlert[2] as UIObjTweener).Txt[1].text = floor[1].Value;
+			else (ScreenAlert[2] as UIObjTweener).Txt[1].text = "";
+
+			(ScreenAlert[2] as UIObjTweener).SetTween(0, true);
+			yield return new WaitForSeconds(GameData.GameSpeed(0.55F));
+		}
+
+		if(title != null)
+		{
+			Transform TopParent = ScreenAlert[0][0].transform;
+			ScreenAlert[0][0].Child = GenerateUIObjFromStCon(TopParent, title);
+			for(int i = 0; i < ScreenAlert[0][0].Length; i++)
+			{
+				ScreenAlert[0][0].GetChild(i).SetActive(false);
+			}
+			(ScreenAlert[0] as UIObjTweener).SetTween(0, true);
+			for(int i = 0; i < ScreenAlert[0][0].Length; i++)
+			{
+				ScreenAlert[0][0].GetChild(i).SetActive(true);
+				yield return new WaitForSeconds(GameData.GameSpeed(0.55F));
+			}
+		}
+
+		if(desc != null)
+		{
+			Transform TopParent = ScreenAlert.Child[1][0].transform;
+			ScreenAlert[1][0].Child = GenerateUIObjFromStCon(TopParent, title);
+			(ScreenAlert[1] as UIObjTweener).SetTween(0, true);
+		}
+
+
+		yield return new WaitForSeconds(GameData.GameSpeed(time));
+		
+		if(wait_for_touch)
+		{
+			bool has_touched = false;
+			while(!has_touched)
+			{
+				has_touched = Input.GetMouseButtonDown(0);
+				yield return null;
+			}
+		}
+
+		ScreenAlert.SetTween(0,false);
+		(ScreenAlert[0] as UIObjTweener).SetTween(0, false);
+		(ScreenAlert[1] as UIObjTweener).SetTween(0, false);
+		(ScreenAlert[2] as UIObjTweener).SetTween(0, false);
+
+		PlayerControl.instance.ResetSelected();
+		GameManager.instance.paused = false;
+		AlertShowing = false;
+
+		yield return new WaitForSeconds(0.1F);
+		for(int i = 0; i < ScreenAlert.Child[0][0].Length; i++)
+		{
+			if(ScreenAlert.Child[0][0].GetChild(i) != null)
+				Destroy(ScreenAlert.Child[0][0].GetChild(i).gameObject);
+		}
+
+		for(int i = 0; i < ScreenAlert.Child[1][0].Length; i++)
+		{
+			if(ScreenAlert.Child[1][0].GetChild(i) != null)
+				Destroy(ScreenAlert.Child[1][0].GetChild(i).gameObject);
+		}
+
+		yield break;
+	}
+
+	public UIObj [] GenerateUIObjFromStCon(Transform TopParent, params StCon [] title)
+	{
+		List<UIObj> final = new List<UIObj>();
+		UIObj ParentObj = (UIObj) Instantiate(Objects.HorizontalGrouper);
+		Transform ParentTrans = ParentObj.transform;
+		ParentTrans.SetParent(TopParent);
+		ParentTrans.position = Vector3.zero;
+		ParentTrans.localScale = Vector3.one;
+		ParentTrans.localRotation = Quaternion.Euler(0,0,0);
+		final.Add(ParentObj);
+		for(int i = 0; i < title.Length; i++)
+		{
+			UIObj new_desc = (UIObj) Instantiate(Objects.TextObj);
+			new_desc.transform.SetParent(ParentTrans);
+			new_desc.transform.position = Vector3.zero;
+			new_desc.transform.localScale = Vector3.one;
+			new_desc.transform.localRotation = Quaternion.Euler(0,0,0);
+			new_desc.Txt[0].text = title[i].Value;
+			new_desc.Txt[0].color = title[i].Colour;
+			new_desc.Txt[0].fontSize = title[i].Size;
+			if(title[i].NewLine && i < title.Length-1)
+			{
+				ParentObj = (UIObj) Instantiate(Objects.HorizontalGrouper);
+				ParentTrans = ParentObj.transform;
+				ParentTrans.SetParent(TopParent);
+				ParentTrans.position = Vector3.zero;
+				ParentTrans.localScale = Vector3.one;
+				ParentTrans.localRotation = Quaternion.Euler(0,0,0);
+				final.Add(ParentObj);
+			}
+		}
+
+		return final.ToArray();
 	}
 
 	public IEnumerator Quote(params Quote [] q)
@@ -1081,6 +1192,9 @@ public class UIManager : MonoBehaviour {
 
 	public IEnumerator ShowDeathIcon(Class c, bool outcome_death)
 	{
+		GameManager.instance.paused = true;
+		ScreenAlert.SetActive(true);
+		ScreenAlert.SetTween(0,true);
 		Objects.DeathIcon.Img[0].enabled = true;
 		Transform death = Objects.DeathIcon.transform;
 		Transform classbutton = ClassButtons.GetClass(c.Index).Img[0].transform;
@@ -1103,18 +1217,23 @@ public class UIManager : MonoBehaviour {
 			spin_acc -= spin_decay;
 			yield return null;
 		}
-		c.isKilled = outcome_death;
+		if(outcome_death) c.OnDeath();
+		MiniAlertUI m = UIManager.instance.MiniAlert(classbutton.position, (outcome_death ? "DEATH!" : "SAFE!"), 75, GameData.Colour(c.Genus), 1.2F, 0.2F);
 		(ClassButtons.GetClass(c.Index) as UIClassButton).Death.enabled = outcome_death;
 		float falling_time = 0.8F;
 		float falling_acc = 0.5F;
 		while((falling_time -= Time.deltaTime) > 0.0F)
 		{
+			classbutton.rotation = Quaternion.Slerp(classbutton.rotation, Quaternion.Euler(0,0,0), 0.2F);
 			death.position += Vector3.down *falling_acc;
 			yield return null;
 		}
 		Objects.DeathIcon.Img[0].enabled = false;
 
-		
+		GameManager.instance.paused = false;
+		ScreenAlert.SetActive(false);
+		ScreenAlert.SetTween(0,false);
+
 		yield return null;
 	}
 

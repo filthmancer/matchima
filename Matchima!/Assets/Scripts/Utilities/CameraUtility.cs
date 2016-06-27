@@ -22,14 +22,16 @@ public class CameraUtility : MonoBehaviour {
 	public static Vector3 TargetPos;
 	public static float TargetOrtho = 0.0F;
 
-	public Camera Cam;
+	public bool IgnoreTargetOrtho = false;
+
+	public tk2dCamera Cam;
+	public tk2dUICamera UICam;
 	private static float yOffset = 0.1F;
 
 	private static Vector3 TurnOffsetA, TurnOffsetB;
 	private static bool TurnOffset_enabled;
 
 	void Start() {
-		//Cam = GetComponent<Camera>();
 		TargetPos = Cam.transform.position;
 		TargetOrtho = 6.6F;
 	}
@@ -40,8 +42,11 @@ public class CameraUtility : MonoBehaviour {
 
 	void Update()
 	{
-		Cam.orthographicSize = Mathf.Lerp(Cam.orthographicSize, TargetOrtho, Time.deltaTime * 8);
-
+		if(!IgnoreTargetOrtho)
+		{
+			Cam.CameraSettings.orthographicSize = Mathf.Lerp(Cam.CameraSettings.orthographicSize, TargetOrtho, Time.deltaTime * 8);
+			UICam.HostCamera.orthographicSize = Mathf.Lerp(UICam.HostCamera.orthographicSize, TargetOrtho, Time.deltaTime * 8);
+		}
 		Vector3 final_pos = TargetPos + (TurnOffset_enabled ? TurnOffsetA:TurnOffsetB);
 		if(!isShaking && TileMaster.Grid != null) Cam.transform.position = Vector3.Lerp(Cam.transform.position, final_pos, Time.deltaTime * 8);
 	}

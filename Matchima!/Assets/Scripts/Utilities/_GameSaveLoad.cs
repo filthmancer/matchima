@@ -410,7 +410,7 @@ public class _GameSaveLoad: MonoBehaviour {
       	_s.ContainerData = new StatContainerData[4];
    		for(int i = 0; i < 4; i++)
    		{
-   			_s.ContainerData[i].StatCurrent = s[i].StatCurrent;
+   			_s.ContainerData[i].StatCurrent_soft = s[i].StatCurrent_soft;
    			_s.ContainerData[i].StatGain = s[i].StatGain;
    			_s.ContainerData[i].StatLeech = s[i].StatLeech;
    			_s.ContainerData[i].StatRegen = s[i].StatRegen;
@@ -470,7 +470,8 @@ public class _GameSaveLoad: MonoBehaviour {
  
    		for(int i = 0; i < 4; i++)
    		{
-   			_s[i].StatCurrent   = s.ContainerData[i].StatCurrent;
+   			_s[i].StatCurrent_soft   = s.ContainerData[i].StatCurrent_soft;
+        _s[i].StatCurrent = (int) _s[i].StatCurrent_soft;
    			_s[i].StatGain      = s.ContainerData[i].StatGain;
    			_s[i].StatLeech     = s.ContainerData[i].StatLeech;
    			_s[i].StatRegen     = s.ContainerData[i].StatRegen;
@@ -578,11 +579,11 @@ public struct ClassData
 
     public struct StatContainerData
    {
-   		public int StatCurrent;
-		public int StatGain;
+      public float StatCurrent_soft;
+		public float StatGain;
 	
-		public int StatLeech;
-		public int StatRegen;
+		public float StatLeech;
+		public float StatRegen;
 	
 		//public int ResCurrent;
 		//public int ResMax;

@@ -11,7 +11,7 @@ public class Chicken : Tile {
 	public override StCon [] Description
 	{
 		get{
-			return new StCon[]{new StCon("Disappears when hitting the bottom row")};
+			return new StCon[]{new StCon("Disappears when hitting the bottom row", Color.white,true, 40)};
 		}
 	}
 

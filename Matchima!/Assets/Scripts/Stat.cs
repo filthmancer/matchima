@@ -106,7 +106,18 @@ public class Stat
 
 	public float OverflowMulti = 0.0F;//0.4F;
 	public float AllColourMulti = 0.0F;//1.2F;
+	public float MutationChance
+	{
+		get
+		{
+			return MutationChance_init + MutationChance_added;
+		}
+	}
+	[SerializeField]
+	private float MutationChance_init = 0.6F;
+	private float MutationChance_added;
 
+	public float CurseChance = 0.4F;
 
 	[HideInInspector]
 	public bool isKilled;
@@ -496,13 +507,46 @@ public class Stat
 		_Luck.Setup();
 	}
 
-	public void LevelUp()
+	public StCon [] LevelUp()
 	{
-		_Strength.LevelUp();
-		_Dexterity.LevelUp();
-		_Wisdom.LevelUp();
-		_Charisma.LevelUp();
-		_Luck.LevelUp();
+		List<StCon> final = new List<StCon>();
+		final.Add(new StCon("Stats Up!", Color.white, true, 100));
+		StCon [] STR = _Strength.LevelUp();
+		if(STR != null)
+		{
+			final.Add(new StCon("Strength", GameData.Colour(GENUS.STR), false));
+			final.AddRange(STR);
+		}
+
+		StCon [] DEX = _Dexterity.LevelUp();
+		if(DEX != null)
+		{
+			final.Add(new StCon("Dexterity", GameData.Colour(GENUS.DEX), false));
+			final.AddRange(DEX);
+		}
+
+		StCon [] WIS = _Wisdom.LevelUp();
+		if(WIS != null)
+		{
+			final.Add(new StCon("Wisdom", GameData.Colour(GENUS.WIS), false));
+			final.AddRange(WIS);
+		}
+
+		StCon [] CHA = _Charisma.LevelUp();
+		if(CHA != null)
+		{
+			final.Add(new StCon("Charisma", GameData.Colour(GENUS.CHA), false));
+			final.AddRange(CHA);
+		}
+
+		StCon [] PRP = _Luck.LevelUp();
+		if(PRP != null)
+		{
+			final.Add(new StCon("Luck", GameData.Colour(GENUS.PRP), false));
+			final.AddRange(PRP);
+		}
+
+		return final.ToArray();
 	}
 
 	public string GetStatIncBonusString(GENUS type)
@@ -521,17 +565,19 @@ public class Stat
 		return "ERROR";
 	}
 
-
 }
+
+
 
 [System.Serializable]
 public class StatContainer
 {
 	public int StatCurrent = 10;
-	public int StatGain = 1;
+	public float StatCurrent_soft = 10;
+	public float StatGain = 1;
 
-	public int StatLeech = 0;
-	public int StatRegen = 0;
+	public float StatLeech = 0;
+	public float StatRegen = 0;
 
 	//public int ResCurrent = 0;
 	//public int ResMax = 20;
@@ -554,6 +600,7 @@ public class StatContainer
 		if(prev != null)
 		{
 			StatCurrent = prev.StatCurrent;
+			StatCurrent_soft = prev.StatCurrent;
 			StatGain = prev.StatGain;
 
 			StatLeech = prev.StatLeech;
@@ -571,6 +618,7 @@ public class StatContainer
 		else 
 		{
 			StatCurrent = 0;
+			StatCurrent_soft = 0;
 			StatGain = 0;
 			StatLeech = 0;
 			StatRegen = 0;
@@ -581,7 +629,8 @@ public class StatContainer
 
 	public void AddValues(StatContainer prev)
 	{
-		StatCurrent += prev.StatCurrent;
+		StatCurrent_soft += prev.StatCurrent_soft;
+		StatCurrent = (int) StatCurrent_soft;
 		StatGain += prev.StatGain;
 
 		StatLeech += prev.StatLeech;
@@ -589,28 +638,37 @@ public class StatContainer
 
 	}
 
-	public void LevelUp()
+	public StCon [] LevelUp()
 	{
+		int StatOld = StatCurrent;
 		ToMeter = 10;
 		ToMult = 65;
-		StatCurrent += StatGain;
+		StatCurrent_soft += StatGain;
+		StatCurrent = (int) StatCurrent_soft;
 
 		//MeterInc = StatCurrent / ToMeter;
 		ResMultiplier =  1.0F + (float)StatCurrent/(float)ToMult;
+
+		if(StatOld == StatCurrent) return null;
+		return new StCon [] {
+			new StCon(StatOld + "", Color.white, false),
+			new StCon("->", Color.white, false),
+			new StCon(StatCurrent + "", GameData.instance.GoodColour)};
 	}
 
 	public void Setup()
 	{
 		ToMeter = 10;
 		ToMult = 65;
-
+		StatCurrent_soft = StatCurrent;
 		//MeterInc = StatCurrent / ToMeter;
-		ResMultiplier = 1.0F +(float)StatCurrent/(float)ToMult;
+		ResMultiplier = 1.0F + StatCurrent_soft/(float)ToMult;
 	}
 
 	public void Regen()
 	{
-		StatCurrent += StatRegen;
+		StatCurrent_soft += StatRegen;
+		StatCurrent = (int) StatCurrent_soft;
 		ThisTurn += ResRegen;
 
 		//SHOW ALERT
@@ -618,7 +676,8 @@ public class StatContainer
 
 	public void Leech(int amt)
 	{
-		StatCurrent += amt * StatLeech;
+		StatCurrent_soft += amt * StatLeech;
+		StatCurrent = (int) StatCurrent_soft;
 		//ResCurrent = Mathf.Clamp(ResCurrent + (ResLeech * amt), 0, ResMax);
 
 		//SHOW ALERT

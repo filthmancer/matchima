@@ -35,8 +35,8 @@ public class Grunt : Enemy {
 				d = "A highly dangerous\n enemy. ";
 				break;
 			}
-			return new StCon[]{new StCon((_EnemyType + " Enemy")),
-							   new StCon(d)
+			return new StCon[]{new StCon(_EnemyType + " Enemy", Color.white, true, 40),
+				new StCon(d, Color.white, true, 40)
 							   };
 		}
 	}

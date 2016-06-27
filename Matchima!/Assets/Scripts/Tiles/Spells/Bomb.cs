@@ -18,9 +18,9 @@ public class Bomb : Tile {
 	{
 		get{
 			return new StCon[]{
-				new StCon("Collects in " + radius + " radius."),
-				new StCon("Deals ", Color.white, false),
-				new StCon(BombDamage + " damage to enemy tiles", GameData.Colour(Genus))
+				new StCon("Collects in " + radius + " radius.", Color.white,true, 40),
+				new StCon("Deals ", Color.white, false, 40),
+				new StCon(BombDamage + " damage to enemy tiles", GameData.Colour(Genus),true, 40)
 			};
 		}
 	}

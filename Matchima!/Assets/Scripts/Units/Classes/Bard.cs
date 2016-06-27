@@ -73,24 +73,27 @@ public class Bard : Class {
 		{
 			case 1:
 			yield return StartCoroutine(ActiveRoutine(6, 3));
-			LevelUp();
 			yield return StartCoroutine(PowerDown());
+			yield return StartCoroutine(LevelUp(1));
+			
 				//warcry_a = true;
 				//warcry_b = false;
 				//warcry_c = false;
 			break;
 			case 2:
 			yield return StartCoroutine(ActiveRoutine(12,3));
-			LevelUp();
 			yield return StartCoroutine(PowerDown());
+			yield return StartCoroutine(LevelUp(2));
+			
 				//warcry_a = false;
 				//warcry_b = true;
 				//warcry_c = false;
 			break;
 			case 3:
 			yield return StartCoroutine(ActiveRoutine(14, 2));
-			LevelUp();
 			yield return StartCoroutine(PowerDown());
+			yield return StartCoroutine(LevelUp(3));
+			
 				//warcry_a = false;
 				//warcry_b = false;
 				//warcry_c = true;

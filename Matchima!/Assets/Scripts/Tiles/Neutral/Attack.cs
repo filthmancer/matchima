@@ -6,7 +6,7 @@ public class Attack : Tile {
 	public override StCon [] Description
 	{
 		get{
-			return new StCon[]{new StCon("+" + Stats.Attack + " Attack")};
+			return new StCon[]{new StCon("+" + Stats.Attack + " Attack", Color.white,true, 40)};
 		}
 	}
 

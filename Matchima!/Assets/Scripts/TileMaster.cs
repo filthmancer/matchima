@@ -73,6 +73,7 @@ public class TileMaster : MonoBehaviour {
 	public bool scaleup;
 
 	public Sprite KillEffect;
+	public MiniTile2 MiniTileObj;
 
 	public bool generated = false;
 	public List<SPECIES> QueuedTiles = new List<SPECIES>();
@@ -266,8 +267,8 @@ public class TileMaster : MonoBehaviour {
 			spawn_stack = new float [Grid.Size[0]];
 			for(int sx = 0; sx < Grid.Size[0]; sx++)
 			{
-				if(Player.Stats.Shift == ShiftType.Down) spawn_stack[sx] = Camera.main.orthographicSize + 2.0F;
-				else if(Player.Stats.Shift == ShiftType.Up) spawn_stack[sx] = -(Camera.main.orthographicSize);
+				if(Player.Stats.Shift == ShiftType.Down) spawn_stack[sx] = CameraUtility.instance.Cam.CameraSettings.orthographicSize + 2.0F;
+				else if(Player.Stats.Shift == ShiftType.Up) spawn_stack[sx] = -(CameraUtility.instance.Cam.CameraSettings.orthographicSize);
 			}
 						
 			int x = 0, y = 0;
@@ -307,8 +308,8 @@ public class TileMaster : MonoBehaviour {
 			spawn_stack = new float [Grid.Size[0]];
 			for(int x = 0; x < Grid.Size[0]; x++)
 			{
-				if(Player.Stats.Shift == ShiftType.Down) spawn_stack[x] = Camera.main.orthographicSize + 2.0F;
-				else if(Player.Stats.Shift == ShiftType.Up) spawn_stack[x] = -(Camera.main.orthographicSize);
+				if(Player.Stats.Shift == ShiftType.Down) spawn_stack[x] = CameraUtility.instance.Cam.CameraSettings.orthographicSize + 2.0F;
+				else if(Player.Stats.Shift == ShiftType.Up) spawn_stack[x] = -(CameraUtility.instance.Cam.CameraSettings.orthographicSize);
 			}
 			Vector2 velocity = Vector2.zero;
 			if(Player.Stats.Shift == ShiftType.Down) velocity = new Vector2(0,1);
@@ -344,8 +345,8 @@ public class TileMaster : MonoBehaviour {
 		spawn_stack = new float [Grid.Size[0]];
 		for(int sx = 0; sx < Grid.Size[0]; sx++)
 		{
-			if(Player.Stats.Shift == ShiftType.Down) spawn_stack[sx] = Camera.main.orthographicSize + 2.0F;
-			else if(Player.Stats.Shift == ShiftType.Up) spawn_stack[sx] = -(Camera.main.orthographicSize);
+			if(Player.Stats.Shift == ShiftType.Down) spawn_stack[sx] = CameraUtility.instance.Cam.CameraSettings.orthographicSize + 2.0F;
+			else if(Player.Stats.Shift == ShiftType.Up) spawn_stack[sx] = -(CameraUtility.instance.Cam.CameraSettings.orthographicSize);
 		}
 		FillGrid = true;
 	}
@@ -372,8 +373,8 @@ public class TileMaster : MonoBehaviour {
 		spawn_stack = new float [Grid.Size[0]];
 		for(int sx = 0; sx < Grid.Size[0]; sx++)
 		{
-			if(Player.Stats.Shift == ShiftType.Down) spawn_stack[sx] = Camera.main.orthographicSize + 2.0F;
-			else if(Player.Stats.Shift == ShiftType.Up) spawn_stack[sx] = -(Camera.main.orthographicSize);
+			if(Player.Stats.Shift == ShiftType.Down) spawn_stack[sx] = CameraUtility.instance.Cam.CameraSettings.orthographicSize + 2.0F;
+			else if(Player.Stats.Shift == ShiftType.Up) spawn_stack[sx] = -(CameraUtility.instance.Cam.CameraSettings.orthographicSize);
 		}
 		FillGrid = true;
 	}
@@ -396,8 +397,8 @@ public class TileMaster : MonoBehaviour {
 		spawn_stack = new float [Grid.Size[0]];
 		for(int sx = 0; sx < Grid.Size[0]; sx++)
 		{
-			if(Player.Stats.Shift == ShiftType.Down) spawn_stack[sx] = Camera.main.orthographicSize + 2.0F;
-			else if(Player.Stats.Shift == ShiftType.Up) spawn_stack[sx] = -(Camera.main.orthographicSize);
+			if(Player.Stats.Shift == ShiftType.Down) spawn_stack[sx] = CameraUtility.instance.Cam.CameraSettings.orthographicSize + 2.0F;
+			else if(Player.Stats.Shift == ShiftType.Up) spawn_stack[sx] = -(CameraUtility.instance.Cam.CameraSettings.orthographicSize);
 		}
 		FillGrid = true;
 		yield return null;
@@ -625,8 +626,8 @@ public class TileMaster : MonoBehaviour {
 			spawn_stack = new float [Grid.Size[0]];
 			for(int x = 0; x < Grid.Size[0]; x++)
 			{
-				if(Player.Stats.Shift == ShiftType.Down) spawn_stack[x] = Camera.main.orthographicSize + 2.0F;
-				else if(Player.Stats.Shift == ShiftType.Up) spawn_stack[x] = -(Camera.main.orthographicSize);
+				if(Player.Stats.Shift == ShiftType.Down) spawn_stack[x] = CameraUtility.instance.Cam.CameraSettings.orthographicSize + 2.0F;
+				else if(Player.Stats.Shift == ShiftType.Up) spawn_stack[x] = -(CameraUtility.instance.Cam.CameraSettings.orthographicSize);
 			}
 
 			while(!AllLanded) 
@@ -667,8 +668,8 @@ public class TileMaster : MonoBehaviour {
 		spawn_stack = new float [Grid.Size[0]];
 		for(int x = 0; x < Grid.Size[0]; x++)
 		{
-			if(Player.Stats.Shift == ShiftType.Down) spawn_stack[x] = Camera.main.orthographicSize + 2.0F;
-			else if(Player.Stats.Shift == ShiftType.Up) spawn_stack[x] = -(Camera.main.orthographicSize);
+			if(Player.Stats.Shift == ShiftType.Down) spawn_stack[x] = CameraUtility.instance.Cam.CameraSettings.orthographicSize + 2.0F;
+			else if(Player.Stats.Shift == ShiftType.Up) spawn_stack[x] = -(CameraUtility.instance.Cam.CameraSettings.orthographicSize);
 		}
 		
 		ClearQueuedTiles();
@@ -737,6 +738,10 @@ public class TileMaster : MonoBehaviour {
 				}
 			}
 
+			/*MiniTile2 TileObj = (MiniTile2) Instantiate(MiniTileObj);
+			TileObj.Setup(Tiles[x,y]);
+			TileObj.Explode();*/
+
 			Tiles[x,y].Info._Type.TilePool.Unspawn(Tiles[x,y]);
 		}
 	}
@@ -755,6 +760,9 @@ public class TileMaster : MonoBehaviour {
 			}
 		}
 		Player.instance.OnTileDestroy(t);
+
+		
+
 		t.Info._Type.TilePool.Unspawn(t);
 		if(Player.Stats.Shift == ShiftType.None) ReplaceTile(t.Point.Base[0], t.Point.Base[1]);
 	}
@@ -762,6 +770,7 @@ public class TileMaster : MonoBehaviour {
 	public void CollectTile(Tile t, bool destroy)
 	{
 		CollectTileResource(t, destroy);
+
 		Player.instance.OnTileCollect(t);
 	}
 

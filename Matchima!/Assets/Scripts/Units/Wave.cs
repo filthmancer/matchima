@@ -48,22 +48,22 @@ public class Wave : Unit {
 
 	public bool IntroAlert = false, EnterAlert = false;
 
-	public virtual string IntroText
+	public virtual StCon [] IntroText
 	{
 		get{
-			return "";
+			return null;
 		}
 	} 
-	public virtual string EnterText 
+	public virtual StCon [] EnterText 
 	{
 		get {
-			return string.Empty;
+			return null;
 		}
 	}
-	public virtual string ExitText 
+	public virtual StCon [] ExitText 
 	{
 		get {
-			return "Floor Completed!";
+			return new StCon[]{new StCon("Floor Completed!")};
 		}
 	}
 
@@ -273,7 +273,8 @@ public class Wave : Unit {
 		PlayerControl.instance.ResetSelected();
 		if(IntroAlert)
 		{
-			yield return StartCoroutine(UIManager.instance.Alert(1.25F, false, IntroText));
+
+			yield return StartCoroutine(UIManager.instance.Alert(1.25F, IntroText));
 		}
 		yield return null;
 		Player.instance.ResetStats();
@@ -310,8 +311,9 @@ public class Wave : Unit {
 		UIManager.Objects.TopGear.FreeWheelDrag = false;
 		UIManager.Objects.TopGear.MoveToDivision(0);
 		//yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
-
-		yield return StartCoroutine(UIManager.instance.Alert(1.25F, true, Name));
+		StCon [] floor = new StCon[] {new StCon("Floor"), new StCon(GameManager.Floor + "")};
+		StCon [] namecon = new StCon[] {new StCon(Name, GameData.Colour(Genus), false, 110)};
+		yield return StartCoroutine(UIManager.instance.Alert(1.25F, floor, namecon));
 
 		UIManager.Objects.TopGear[2].SetActive(true);
 		for(int i = 0; i < AllSlots.Length; i++)
@@ -336,7 +338,7 @@ public class Wave : Unit {
 
 	protected virtual IEnumerator WaveEndRoutine()
 	{
-		yield return StartCoroutine(UIManager.instance.Alert(1.05F, false, ExitText));
+		yield return StartCoroutine(UIManager.instance.Alert(1.05F, ExitText));
 		if(ExplodeOnEnd)
 		{
 			for(int x = 0; x < TileMaster.Grid.Size[0]; x++)

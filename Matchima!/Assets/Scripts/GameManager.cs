@@ -271,10 +271,10 @@ public class GameManager : MonoBehaviour {
 			Player.Classes[3].AddToMeter(Player.Classes[3].MeterTop);
 		}
 
-		if(Input.GetKeyDown(KeyCode.H))			Player.Classes[0].LevelUp();
-		if(Input.GetKeyDown(KeyCode.J))			Player.Classes[1].LevelUp();
-		if(Input.GetKeyDown(KeyCode.K))			Player.Classes[2].LevelUp();
-		if(Input.GetKeyDown(KeyCode.L))			Player.Classes[3].LevelUp();
+		//if(Input.GetKeyDown(KeyCode.H))	Player.Classes[0].LevelUp();
+		//if(Input.GetKeyDown(KeyCode.J))	Player.Classes[1].LevelUp();
+		//if(Input.GetKeyDown(KeyCode.K))	Player.Classes[2].LevelUp();
+		//if(Input.GetKeyDown(KeyCode.L))	Player.Classes[3].LevelUp();
 
 		if(Input.GetKeyDown(KeyCode.F5)) PlayerControl.instance.focusTile.AddValue(5);
 		if(Input.GetKeyDown(KeyCode.F10)) OpenInFileBrowser.Open(Application.persistentDataPath);
@@ -464,7 +464,10 @@ public class GameManager : MonoBehaviour {
 			yield return null;
 			TileMaster.instance.NewGrid();
 		}
-		yield return StartCoroutine(UIManager.instance.Alert(1.2F, false, CurrentZone.Name, null, "Entered"));
+		StCon [] floor = new StCon[]{new StCon("Entered")};
+		StCon [] title = new StCon[]{new StCon(CurrentZone.Name, CurrentZone.WallTint * 1.5F, false, 110)};
+		
+		yield return StartCoroutine(UIManager.instance.Alert(1.2F, floor, title));
 		yield return StartCoroutine(_GetWave(w));
 		
 	}
@@ -920,9 +923,12 @@ public class GameManager : MonoBehaviour {
 
 	public IEnumerator CompleteTurnRoutine()
 	{
+		UIManager.instance.SetClassButtons(false);
+		UIManager.Objects.BotGear.SetTween(0, true);
+		UIManager.Objects.TopGear.SetTween(0, false);
 		//yield return StartCoroutine(Player.instance.CheckForBoonsRoutine());
 		Player.instance.CompleteHealth();
-		Player.instance.CheckHealth();	
+		yield return StartCoroutine(Player.instance.CheckHealth());	
 		Player.instance.ResetStats();
 
 		PlayerControl.instance.canMatch = true;
@@ -932,10 +938,6 @@ public class GameManager : MonoBehaviour {
 		PlayerControl.instance.finalTiles.Clear();
 		PlayerControl.matchingTile = null;
 
-		UIManager.instance.SetClassButtons(false);
-		
-		UIManager.Objects.BotGear.SetTween(0, true);
-		UIManager.Objects.TopGear.SetTween(0, false);
 		////CameraUtility.SetTurnOffset(false);
 
 		EnemyTurn = false;

@@ -88,18 +88,21 @@ public class Thief : Class {
 		{
 			case 1:
 				yield return StartCoroutine(ActiveRoutine(2));
-				LevelUp();
 				yield return StartCoroutine(PowerDown());
+				yield return StartCoroutine(LevelUp(1));
+				
 			break;
 			case 2:
 				yield return StartCoroutine(ActiveRoutine(4));
-				LevelUp();
 				yield return StartCoroutine(PowerDown());
+				yield return StartCoroutine(LevelUp(2));
+				
 			break;
 			case 3:
 				yield return StartCoroutine(ActiveRoutine(7));
-				LevelUp();
 				yield return StartCoroutine(PowerDown());
+				yield return StartCoroutine(LevelUp(3));
+				
 			break;
 		}
 		yield return null;
@@ -172,18 +175,21 @@ public class Thief : Class {
 
 		
 		UIManager.instance.ScreenAlert.SetTween(0,false);
-		Tile[] targets = TileMaster.Enemies;
-		if(targets.Length == 0 || CatchNum == 0)
+		to_collect.AddRange(TileMaster.Enemies);
+		if(to_collect.Count == 0 || CatchNum == 0)
 		{
 			GameManager.instance.paused = false;
 			yield break;
 		}
 
 		TileMaster.instance.SetAllTileStates(TileState.Locked, true);
-		to_collect = new List<Tile>();
 		for(int i = 0; i < CatchNum; i++)
 		{
-			Tile target = targets[Random.Range(0, targets.Length)];
+			int num = Random.Range(0, to_collect.Count);
+			Tile target = to_collect[num];
+
+			if(to_collect.Count > 1) to_collect.RemoveAt(num);
+
 			yield return StartCoroutine(ThrowKnife(target));
 			yield return new WaitForSeconds(GameData.GameSpeed(0.35F));
 		}

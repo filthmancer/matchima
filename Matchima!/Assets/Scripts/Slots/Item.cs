@@ -185,7 +185,6 @@ public class Item : Slot {
 			}
 			if(rate < 1.0F) rate = 1.0F;
 			child.Up(final, rate);	
-			
 		}
 		return final;
 	}

@@ -393,7 +393,7 @@ public class Player : MonoBehaviour {
 		ThisTurn_upgrades.Add(c);
 	}
 
-	public void CheckHealth()
+	public IEnumerator CheckHealth()
 	{
 		for(int i = 0; i < Classes.Length; i++)
 		{
@@ -408,8 +408,9 @@ public class Player : MonoBehaviour {
 
 		if(Stats._Health <= 0) 
 		{
-			StartCoroutine(DeathRoll());
+			yield return StartCoroutine(DeathRoll());
 		}
+		yield return null;
 	}
 
 	IEnumerator DeathRoll()

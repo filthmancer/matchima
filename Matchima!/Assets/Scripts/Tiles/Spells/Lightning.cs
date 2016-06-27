@@ -17,9 +17,10 @@ public class Lightning : Tile {
 	{
 		get{
 			return new StCon[]{
-				new StCon("Shoots lightning at a random tile"),
-				new StCon("Deals ", Color.white, false),
-				new StCon(final_damage + " damage to enemy tiles", GameData.Colour(Genus))
+				new StCon("Shoots lightning at a random tile", Color.white,true, 40),
+				new StCon("Deals ", Color.white, false, 40),
+				new StCon(final_damage+"", GameData.Colour(GENUS.WIS), false, 40),
+				new StCon(" damage", Color.white, true, 40)
 			};
 		}
 	}

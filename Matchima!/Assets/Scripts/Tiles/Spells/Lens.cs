@@ -9,7 +9,7 @@ public class Lens : Tile {
 	{
 		get{
 			return new StCon[]{
-				new StCon("Increases value\nof matched tiles.", GameData.Colour(Genus))
+				new StCon("Increases value\nof matched tiles.", GameData.Colour(Genus), true, 40)
 			};
 		}
 	}

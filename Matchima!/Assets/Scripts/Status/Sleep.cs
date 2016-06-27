@@ -22,7 +22,7 @@ public class Sleep : TileEffect {
 		}
 		else 
 		{
-			OnDestroy();
+			_OnDestroy();
 
 			yield return new WaitForSeconds(GameData.GameSpeed(0.05F));
 		}
@@ -35,7 +35,7 @@ public class Sleep : TileEffect {
 		_Tile.InitStats.isAlerted = false;
 	}
 
-	public override void OnDestroy()
+	public override void _OnDestroy()
 	{
 		_Tile.InitStats.isAlerted = true;
 		MiniAlertUI m = UIManager.instance.MiniAlert(_Tile.transform.position, "!", 180, Color.black);

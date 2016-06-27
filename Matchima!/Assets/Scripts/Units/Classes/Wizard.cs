@@ -128,19 +128,22 @@ private int _currentmanapower = 100;
 		switch(MeterLvl)
 		{
 			case 1:
-				yield return StartCoroutine(ActiveRoutine(0));
-				LevelUp();
+				yield return StartCoroutine(ActiveRoutine(1));
 				yield return StartCoroutine(PowerDown());
+				yield return StartCoroutine(LevelUp(1));
+				
 			break;
 			case 2:
 				yield return StartCoroutine(ActiveRoutine(2));
-				LevelUp();
 				yield return StartCoroutine(PowerDown());
+				yield return StartCoroutine(LevelUp(2));
+				
 			break;
 			case 3:
 				yield return StartCoroutine(ActiveRoutine(3));
-				LevelUp();
 				yield return StartCoroutine(PowerDown());
+				yield return StartCoroutine(LevelUp(3));
+				
 			break;
 		}
 
