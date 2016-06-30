@@ -119,6 +119,8 @@ public class Tile : MonoBehaviour {
 	private float targetScale = 1.1F;
 	private float defaultScale = 1.1f;
 
+	private SphereCollider collider;
+
 
 	Vector3 rotation = Vector3.zero;
 	//[HideInInspector]
@@ -184,6 +186,7 @@ public class Tile : MonoBehaviour {
 	// Use this for initialization
 	public virtual void Start () {
        trans = this.transform;
+
 	}
 
 	public void Setup(int x, int y)
@@ -208,13 +211,7 @@ public class Tile : MonoBehaviour {
 		{
 			def = Params._render.material.color;
 			targetColor = def;
-			//_anim = GetComponent<Animator>();
-			//Params.lineIn.sortingLayerID = Params._render.sortingLayerID;
-			//Params.lineOut.sortingLayerID = Params._render.sortingLayerID;
-			//Params.lineIn.sortingOrder = 1;
-			//Params.lineOut.sortingOrder = 1;
-			//Params.lineIn.SetWidth(0.3F, 0.3F);
-			//Params.lineOut.SetWidth(0.1F, 0.1F);
+
 		}
 		
 
@@ -224,7 +221,8 @@ public class Tile : MonoBehaviour {
 		marked = false;
 		originalMatch = false;
 		state_override = false;
-		GetComponent<SphereCollider>().enabled = true;
+		collider = GetComponent<SphereCollider>();
+		//collider.enabled = true;
 		for(int i = 0; i < Effects.Count; i++)
 		{
 			TileEffect t = Effects[i];
@@ -332,7 +330,7 @@ public class Tile : MonoBehaviour {
 						{	
 							SetState(TileState.Selected);
 							PlayerControl.instance.GetSelectedTile(this);
-							AudioManager.instance.PlayClipOn(trans, "Player", "Touch");
+							PlayAudio("touch");
 						}
 						else SetState(TileState.Idle);	
 					}		
@@ -436,6 +434,11 @@ public class Tile : MonoBehaviour {
 				*/
 			}
 		}		
+	}
+
+	public virtual AudioSource PlayAudio(string clip)
+	{
+		return AudioManager.instance.PlayTileAudio(this, clip);
 	}
 
 	void LateUpdate()
@@ -554,6 +557,7 @@ public class Tile : MonoBehaviour {
 			{
 				if(speed >= 0.0F) speed = -0.1F;
 				transform.localScale = new Vector3(defaultScale+speed/90, defaultScale,defaultScale);
+				if(collider.enabled) collider.enabled = false;
 				isFalling = true;
 			}
 		}
@@ -596,6 +600,14 @@ public class Tile : MonoBehaviour {
 		return state == _state;
 	}
 
+	public void OnAlert()
+	{
+		PlayAudio("alert");
+		InitStats.isAlerted = true;
+		MiniAlertUI m = UIManager.instance.MiniAlert(transform.position, "!", 180, Color.black);
+		m.Txt[0].outlineColor = GameData.Colour(Genus);
+	}
+
 	public virtual IEnumerator BeforeMatch(bool original)
 	{
 		yield break;
@@ -628,7 +640,7 @@ public class Tile : MonoBehaviour {
 		if(this == null) return false;
 		InitStats.Hits -= 1;
 		CheckStats();
-		AudioManager.instance.PlayClipOn(trans, "Player", "Match");
+		PlayAudio("match");
 		if(Stats.Hits <= 0)
 		{
 			isMatching = true;
@@ -678,7 +690,7 @@ public class Tile : MonoBehaviour {
 			}
 		}
 
-
+		collider.enabled = true;
 		isFalling = false;
 		if(!IsState(TileState.Selected) && !IsState(TileState.Locked))  {
 			SetState(TileState.Idle);
@@ -930,7 +942,7 @@ public class Tile : MonoBehaviour {
 
 	public void AttackPlayer()
 	{
-		AudioManager.instance.PlayClipOn(trans, "Enemy", "Attack");
+		PlayAudio("attack");
 		//UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), "" + GetAttack(), 95, Color.red, 0.8F,0.08F);
 
 		float init_size = UnityEngine.Random.Range(130, 170);
@@ -954,7 +966,7 @@ public class Tile : MonoBehaviour {
 		mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
 		mini.SetMethod(() =>{
 				Player.instance.OnHit(this);
-				AudioManager.instance.PlayClipOn(Player.instance.transform, "Player", "Hit");
+				PlayAudio("hit");
 				GameData.Log("Took " + this.GetAttack() + "damage from " + this);
 			}
 		);

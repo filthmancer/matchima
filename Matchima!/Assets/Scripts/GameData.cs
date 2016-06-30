@@ -765,8 +765,6 @@ public class GameData : MonoBehaviour {
 
 		TileModel = (GameObject) Resources.Load("TileModel");
 
-
-
 		UnityEngine.Object[] textures = Resources.LoadAll("Icons");
 		//Sprite [] textures = (Sprite[]) Resources.LoadAll("Icons");
 		_Icons = new ItemInfo[textures.Length];
@@ -801,7 +799,8 @@ public class GameData : MonoBehaviour {
 		yield return null;
 		//LoadAbilities();
 
-		yield return StartCoroutine(TileMaster.Types.LoadSprites());
+		yield return StartCoroutine(AudioManager.instance.LoadAudio("Tiles"));
+		yield return StartCoroutine(TileMaster.Types.LoadSprites("Tiles"));
 		yield return StartCoroutine(TileMaster.Types.LoadPrefabs());
 
 		print("FINISHED LOADING");

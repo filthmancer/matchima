@@ -184,7 +184,7 @@ public class Class : Unit {
 	private float Exp_Max_soft;
 
 	public List<Upgrade> Mutations = new List<Upgrade>();
-	
+	private AudioSource Manapower_audio;
 	public virtual void StartClass()
 	{
 		Exp_Current = 0;
@@ -227,7 +227,7 @@ public class Class : Unit {
 	public virtual void Update()
 	{
 		if(time_from_last_pulse < 5.0F) time_from_last_pulse += Time.deltaTime;
-		if(ManaPowerParticle != null)	ManaPowerParticle.transform.position = UIManager.ClassButtons[(int)Genus].transform.position;
+		if(ManaPowerParticle != null)	ManaPowerParticle.transform.position = UIManager.ClassButtons.GetClass(Index).transform.position;
 	}
 
 	public virtual float GetMeterRatio()
@@ -360,29 +360,36 @@ public class Class : Unit {
 		}
 		if(MeterLvl < newlvl)
 		{
+			if(Manapower_audio != null) Destroy(Manapower_audio.gameObject);
+			Manapower_audio = AudioManager.instance.PlayClip(this.transform, AudioManager.instance.Player, "Mana Powerup");
+			Manapower_audio.GetComponent<DestroyTimer>().enabled = false;
 			UIManager.ClassButtons.GetClass(Index).ShowClass(true);
 			yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 			
 			GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, "", GameData.Colour(Genus));
-			powerup.transform.SetParent(UIManager.ClassButtons[Index].transform);
-			powerup.transform.position = UIManager.ClassButtons[Index].transform.	position;
+			powerup.transform.SetParent(UIManager.ClassButtons.GetClass(Index).transform);
+			powerup.transform.position = UIManager.ClassButtons.GetClass(Index).transform.	position;
 			powerup.transform.localScale = Vector3.one;
 
+			
 			yield return new WaitForSeconds(GameData.GameSpeed(0.84F));
 			Destroy(powerup);
+			Destroy(Manapower_audio.gameObject);
 
-			MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons[Index].transform.position, "POWER\nUP", 75, GameData.Colour(Genus), 1.2F, 0.2F);
-
+			MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons.GetClass(Index).transform.position, "POWER\nUP", 75, GameData.Colour(Genus), 1.2F, 0.2F);
 			MeterLvl = newlvl;
 			MeterDecay_soft = MeterDecayInit[MeterLvl];
 			MeterDecay = (int) MeterDecay_soft;
-			//ManaPower(MeterLvl);
+			
+			Manapower_audio = AudioManager.instance.PlayClip(this.transform, AudioManager.instance.Player, "Mana Powerup Loop");
+			Manapower_audio.GetComponent<DestroyTimer>().enabled = false;
+			Manapower_audio.loop = true;
 
 			Effect e = MeterLvl == 1 ? Effect.ManaPowerLvl1 : (MeterLvl == 2 ? Effect.ManaPowerLvl2 : Effect.ManaPowerLvl3);
 			ParticleSystem part = EffectManager.instance.PlayEffect(this.transform, e, "", GameData.Colour(Genus)).GetComponent<ParticleSystem>();
 			if(ManaPowerParticle != null) Destroy(ManaPowerParticle);
 			ManaPowerParticle = part.gameObject;
-			ManaPowerParticle.transform.position = UIManager.ClassButtons[(int)Genus].transform.position;
+			ManaPowerParticle.transform.position = UIManager.ClassButtons.GetClass(Index).transform.position;
 			yield return null;
 		}
 	}
@@ -390,9 +397,10 @@ public class Class : Unit {
 	public IEnumerator PowerDown()
 	{
 		//UIManager.ClassButtons[Index].ShowClass(true);
+		if(Manapower_audio != null) Destroy(Manapower_audio.gameObject);
 		MeterLvl = 0;
 		Meter = 0;
-		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons[(int)Genus].transform.position, "POWER\nDOWN", 75, GameData.Colour(Genus), 1.2F, 0.2F);
+		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons.GetClass(Index).transform.position, "POWER\nDOWN", 75, GameData.Colour(Genus), 1.2F, 0.2F);
 		yield return new WaitForSeconds(0.1F);
 		MeterDecay_soft = MeterDecayInit[0];
 		MeterDecay = (int) MeterDecay_soft;
@@ -440,7 +448,6 @@ public class Class : Unit {
 	public int killtimer = 4;
 	public virtual void CheckHealth()
 	{
-		print(isKilled);
 		foreach(Slot child in _Slots)
 		{
 			if(child == null) continue;
@@ -534,6 +541,8 @@ public class Class : Unit {
 		//}
 	}
 
+	public bool MeterLoopActive {get{return adding_to_meter;}}
+
 	bool adding_to_meter = false;
 	IEnumerator MeterLoop()
 	{
@@ -545,17 +554,17 @@ public class Class : Unit {
 		float info_finalscale = 0.5F;
 
 		int current_meter = ManaThisTurn;
-		Vector3 tpos = Vector3.up * 0.15F;
+		Vector3 tpos = Vector3.up * 0.3F;
 		MiniAlertUI heal = UIManager.instance.MiniAlert(
-			UIManager.ClassButtons[Index].transform.position + tpos, 
+			UIManager.ClassButtons.GetClass(Index).transform.position + tpos, 
 			"+" + current_meter, info_size,   GameData.Colour(Genus), 0.5F, 0.18F);
 
-		heal.transform.SetParent(UIManager.ClassButtons[Index].transform);
-		heal.AddJuice(Juice.instance.BounceB, 0.5F);
+		heal.transform.SetParent(UIManager.ClassButtons.GetClass(Index).transform);
+		heal.AddJuice(Juice.instance.BounceB, 0.3F);
 		MoveToPoint mini = heal.GetComponent<MoveToPoint>();
 		heal.AddAction(() => {mini.enabled = true;});
 		heal.DestroyOnEnd = false;
-		mini.SetTarget(UIManager.ClassButtons[Index].transform.position);
+		mini.SetTarget(UIManager.ClassButtons.GetClass(Index).transform.position);
 		mini.SetPath(info_movespeed, 0.1F, 0.0F, info_finalscale);
 		mini.SetMethod(() =>{
 				Complete();
@@ -576,7 +585,7 @@ public class Class : Unit {
 				heal.lifetime += 0.1F;
 				heal.size = info_size + (current_meter * 0.9F);
 				heal.text = "+" + current_meter;
-				heal.ResetJuice(0.2F);
+				heal.ResetJuice(0.25F);
 			}
 			yield return null;
 		}
@@ -658,7 +667,8 @@ public class Class : Unit {
 	public IEnumerator Mutate(int power)
 	{
 		UIManager.ClassButtons.GetClass(Index).ShowClass(true);
-		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, "", GameData.Colour(Genus));
+		GameObject powerup = EffectManager.instance.PlayEffect(UIManager.ClassButtons.GetClass(Index).transform, Effect.ManaPowerUp, "", GameData.Colour(Genus));
+		powerup.transform.localScale = Vector3.one;
 
 		StCon [] title = new StCon[]{
 			new StCon(_Name),
@@ -723,8 +733,10 @@ public class Class : Unit {
 
 		string boon = Name + " was ";
 		boon += (Boon ? " gifted!" : " cursed!");
+		Color innercol = (Boon ? GameData.Colour(Genus) : GameData.instance.BadColour);
+		Color outercol = (Boon ? GameData.instance.BadColour : GameData.Colour(Genus));
 		title = new StCon[]{
-			new StCon(boon, GameData.Colour(Genus), true, 80),
+			new StCon(boon, innercol, true, 80),
 			new StCon(u.Title, Color.white, true, 80)};
 		yield return StartCoroutine(UIManager.instance.Alert(1.4F, null, title));
 
@@ -793,7 +805,7 @@ public class Class : Unit {
 		}
 		else
 		{
-			UIManager.ClassButtons[Index].GetChild(num.Value).SetActive(true);
+			UIManager.ClassButtons.GetClass(Index).GetChild(num.Value).SetActive(true);
 			s.transform.parent = this.transform;
 			_Slots[num.Value] = s;
 			s.Parent = this;

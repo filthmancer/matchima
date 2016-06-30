@@ -286,7 +286,7 @@ public class Wave : Unit {
 		UIManager.Objects.BotGear.SetTween(0, false);
 		UIManager.Objects.TopGear.SetTween(0, true);
 		UIManager.Objects.TopGear.FreeWheelDrag = true;
-
+		UIManager.instance.ShowGearTooltip(false);
 		GameManager.instance.paused = true;
 		UIManager.instance.ScreenAlert.SetTween(0,true);
 

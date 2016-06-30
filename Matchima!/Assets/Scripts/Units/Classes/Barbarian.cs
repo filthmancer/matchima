@@ -50,21 +50,21 @@ public class Barbarian : Class {
 		{
 			case 1:
 				//manapower = AddMod("Heal", "15");
-				yield return StartCoroutine(HealRoutine(15));
+				yield return StartCoroutine(HealRoutine(30));
 				yield return StartCoroutine(PowerDown());
 				yield return StartCoroutine(LevelUp(1));
 				
 			break;
 			case 2:
 				//manapower = AddMod("Heal", "25");
-				yield return StartCoroutine(HealRoutine(25));
+				yield return StartCoroutine(HealRoutine(45));
 				yield return StartCoroutine(PowerDown());
 				yield return StartCoroutine(LevelUp(2));
 				
 			break;
 			case 3:
 				//manapower = AddMod("Heal", "45");
-				yield return StartCoroutine(HealRoutine(60));
+				yield return StartCoroutine(HealRoutine(75));
 				yield return StartCoroutine(PowerDown());
 				yield return StartCoroutine(LevelUp(3));
 				

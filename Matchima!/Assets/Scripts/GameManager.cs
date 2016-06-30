@@ -650,23 +650,25 @@ public class GameManager : MonoBehaviour {
 	IEnumerator Turn()
 	{
 
-/* PLAYER TURN */////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+/* PLAYER TURN *///////////////////////////////////////////////////
 		EnemyTurn = true;
+		
 		TileMaster.instance.SetFillGrid(false);
 		UIManager.instance.current_class = null;
 		UIManager.instance.SetClassButtons(false);
 		UIManager.instance.ShowGearTooltip(false);
-
+		
 		UIManager.Objects.BotGear.SetTween(0, true);
 		UIManager.Objects.TopGear.SetTween(0, false);
-		yield return new WaitForSeconds(GameData.GameSpeed(0.06F));
+		
+		//yield return new WaitForSeconds(GameData.GameSpeed(0.06F));
 		UIManager.instance.MoveTopGear(0);
 		yield return StartCoroutine(BeforeMatchRoutine());
 		bool all_of_resource = false;
 		
 		if(Player.instance.CompleteMatch) 
 		{
+
 			yield return StartCoroutine(MatchRoutine(PlayerControl.instance.finalTiles.ToArray()));
 		}
 		else EnemyTurn = false;
@@ -691,7 +693,7 @@ public class GameManager : MonoBehaviour {
 		
 		yield return StartCoroutine(TileMaster.instance.BeforeTurn());
 		UIManager.instance.SetClassButtons(false);
-/* ENEMY TURN */////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/* ENEMY TURN *////////////////////////////////////////////////////
 		if(Player.instance.Turns % (int)Player.Stats.AttackRate == 0 && TileMaster.instance.EnemiesOnScreen > 0)
 		{
 			yield return StartCoroutine(EnemyTurnRoutine());
@@ -737,7 +739,6 @@ public class GameManager : MonoBehaviour {
 			{
 				Tile tile = TileMaster.Tiles[x,y];
 				if(tile == null) continue;
-				if(tile.AttackedThisTurn) print(tile);
 				if(tile.CanAttack())
 				{
 					tile.AttackedThisTurn = true;
@@ -857,8 +858,9 @@ public class GameManager : MonoBehaviour {
 		List<Tile> newTiles = new List<Tile>();
 		newTiles.AddRange(PlayerControl.instance.selectedTiles);
 		PlayerControl.instance.selectedTiles.Clear();
-
 		int combo_factor = 0; //Number of repeated combos made by tiles
+
+		
 		while(newTiles.Count > 0)
 		{
 			yield return StartCoroutine(Player.instance.BeforeMatch(newTiles, combo_factor==0));

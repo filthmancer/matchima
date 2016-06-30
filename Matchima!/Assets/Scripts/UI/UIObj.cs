@@ -16,6 +16,7 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 	public TextMeshProUGUI [] Txt;
 	public UIObj [] Child;
 
+	public bool SetInactiveAfterLoading;
 	public TextMeshProUGUI _Text
 	{get{
 			if(Txt.Length > 0) return Txt[0];
@@ -41,6 +42,8 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 		}
 
 		if(Img.Length > 0) init = Img[0].color;
+
+		if(SetInactiveAfterLoading) SetActive(false);
 	}
 
 

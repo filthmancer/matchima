@@ -151,6 +151,22 @@ private int _currentmanapower = 100;
 		yield return null;
 	}
 
+	int ClosestPoint(Vector3 pos)
+	{
+		float closest_dist = 100.0F;
+		int closest = 100;
+		for(int i = 0; i < TileMaster.Grid.Size[0]; i++)
+		{
+			float d = Vector3.Distance(TileMaster.Tiles[i,0].transform.position, pos);
+			if(d < closest_dist)
+			{
+				closest = i;
+				closest_dist = d;
+			}
+		}
+		return closest;
+	}
+
 	int? target_column = null;
 	IEnumerator ActiveRoutine(int lines)
 	{
@@ -187,51 +203,47 @@ private int _currentmanapower = 100;
 		float taptimer = 3.0F;
 		int nexttile_acc = 1;
 
-		UIObj [] MGame = new UIObj[TileMaster.Grid.Size[0]];
-		MGame[0] = CreateTarget(0);
-		MGame[0].AddAction(UIAction.MouseDown, () => 
+		UIObj [] MGame = new UIObj[lines];
+		int [] MGame_target = new int[lines];
+		float [] MGame_vel = new float[lines];
+		for(int i = 0; i < MGame.Length; i++)
 		{
-			if(Vector3.Distance(MGame[0].transform.position, TileMaster.Tiles[nexttile,0].transform.position) < 
-				Vector3.Distance(MGame[0].transform.position, TileMaster.Tiles[currtile, 0].transform.position))
-			{
-				target_column = nexttile;
-			}
-			else target_column = currtile;
-			
-			//m.AddJuice(Juice.instance.BounceB, 0.3F);
-		});
+			MGame[i] = CreateTarget(TileMaster.Grid.Size[0]/2);
+			MGame_vel[i] = Random.Range(0.03F, 0.09F * lines);
+			if(Random.value > 0.5F) MGame_vel[i] = -MGame_vel[i];
+			yield return null;
+		}
 
-		while(!target_column.HasValue)
+		while(!Input.GetMouseButtonDown(0))
 		{
-			MGame[0].transform.position = Vector3.Lerp(MGame[0].transform.position,
-				TileMaster.Tiles[nexttile,0].transform.position, Time.deltaTime * 6);
-			if(Vector3.Distance(MGame[0].transform.position,TileMaster.Tiles[nexttile,0].transform.position)<0.5F)
+			for(int i = 0; i < MGame.Length; i++)
 			{
-				currtile = nexttile;
-				if(nexttile >= TileMaster.Grid.Size[0]-1) nexttile_acc = -1;
-				else if(nexttile <= 0) nexttile_acc = 1;
-				nexttile += nexttile_acc;
+				MGame[i].transform.position += Vector3.right * MGame_vel[i];
+				MGame_target[i] = ClosestPoint(MGame[i].transform.position);
+
+				if(MGame[i].transform.position.x > TileMaster.Tiles[TileMaster.Grid.Size[0]-1,0].transform.position.x) MGame_vel[i] = -MGame_vel[i];
+				else if(MGame[i].transform.position.x < TileMaster.Tiles[0,0].transform.position.x) MGame_vel[i] = -MGame_vel[i];
 			}
 			yield return null;
 		}
-		Destroy(MGame[0].gameObject);
 
-		if(!target_column.HasValue)
-		{
-			target_column = Random.Range(0, TileMaster.Grid.Size[0]);
-		}
-
+		TileMaster.instance.SetAllTileStates(TileState.Locked, true);
 		UIManager.instance.ScreenAlert.SetTween(0,false);
-		Tile target = TileMaster.Tiles[target_column.Value,0];
-		yield return Cast(target, lines);
-		//GameObject initpart = EffectManager.instance.PlayEffect(UIManager.//ClassButtons.GetClass(Index).transform, Effect.Force);
-		//MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
-		//mp.SetTarget(target.transform.position);
-		//mp.SetPath(0.35F, 0.2F);
-		//mp.SetMethod(() => 
-		//	{
-		//		StartCoroutine(Cast(target, lines));
-		//	});
+		for(int i = 0; i < lines;i++)
+		{
+			Destroy(MGame[i].gameObject);
+			yield return Cast(TileMaster.Tiles[MGame_target[i],0]);
+		}
+		
+		TileMaster.instance.SetFillGrid(false);
+		yield return StartCoroutine(GameManager.instance.BeforeMatchRoutine());
+		yield return null;
+		yield return StartCoroutine(GameManager.instance.MatchRoutine(PlayerControl.instance.finalTiles.ToArray()));
+		yield return StartCoroutine(Player.instance.AfterMatch());
+		yield return new WaitForSeconds(Time.deltaTime * 10);
+		TileMaster.instance.ResetTiles(true);
+		TileMaster.instance.SetFillGrid(true);
+
 		yield return new WaitForSeconds(GameData.GameSpeed(0.6F));
 
 		GameManager.instance.paused = false;
@@ -251,58 +263,37 @@ private int _currentmanapower = 100;
 	}
 
 	int Damage = 20;
-	IEnumerator Cast(Tile target, int lines)
+	IEnumerator Cast(Tile target)
 	{
 		int targX = target.Point.Base[0];
 		int targY = target.Point.Base[1];
 
 		float particle_time = 0.7F;
 
-		int final_radius =  lines; //(radius + upgrade_radius + (int) StatBonus());
-
 		if(target == null) yield break;
 
-		TileMaster.instance.SetAllTileStates(TileState.Locked, true);
 		Tile [,] _tiles = TileMaster.Tiles;
 		List<Tile> to_collect = new List<Tile>();
 
 		List<GameObject> particles = new List<GameObject>();
 
-			for(int y = 0; y < TileMaster.Grid.Size[1]; y++)
-			{
-				Tile tile = _tiles[targX,y];
-				tile.SetState(TileState.Selected, true);
-				to_collect.Add(tile);
+		for(int y = 0; y < TileMaster.Grid.Size[1]; y++)
+		{
+			Tile tile = _tiles[targX,y];
+			tile.SetState(TileState.Selected, true);
+			to_collect.Add(tile);
 
-				GameObject new_part = EffectManager.instance.PlayEffect(tile.transform, Effect.Fire);
-				particles.Add(new_part);
-				yield return new WaitForSeconds(GameData.GameSpeed(0.02F));
+			GameObject new_part = EffectManager.instance.PlayEffect(tile.transform, Effect.Fire);
+			particles.Add(new_part);
+			yield return new WaitForSeconds(GameData.GameSpeed(0.025F));
 
-				for(int r = 0; r < final_radius; r++)
-				{
-					if(targX + r < TileMaster.Grid.Size[0])
-					{
-						tile = _tiles[targX + r,y];
-						tile.SetState(TileState.Selected, true);
-						to_collect.Add(tile);
+			tile = _tiles[targX,y];
+			tile.SetState(TileState.Selected, true);
+			to_collect.Add(tile);
 
-						new_part = EffectManager.instance.PlayEffect(tile.transform, Effect.Fire);
-						particles.Add(new_part);
-					}
-					
-					if(targX - r >= 0)
-					{
-						tile = _tiles[targX - r,y];
-						tile.SetState(TileState.Selected, true);
-						to_collect.Add(tile);
-
-						new_part = EffectManager.instance.PlayEffect(tile.transform, Effect.Fire);
-						particles.Add(new_part);
-						yield return new WaitForSeconds(GameData.GameSpeed(0.02F));
-					}
-					
-				}				
-			}
+			new_part = EffectManager.instance.PlayEffect(tile.transform, Effect.Fire);
+			particles.Add(new_part);			
+		}
 		
 		yield return new WaitForSeconds(Time.deltaTime * 10);
 
@@ -320,21 +311,14 @@ private int _currentmanapower = 100;
 			}
 
 		}
-		TileMaster.instance.SetFillGrid(false);
-		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
-		yield return StartCoroutine(GameManager.instance.BeforeMatchRoutine());
-		yield return null;
-		yield return StartCoroutine(GameManager.instance.MatchRoutine(PlayerControl.instance.finalTiles.ToArray()));
-		yield return StartCoroutine(Player.instance.AfterMatch());
-		yield return new WaitForSeconds(Time.deltaTime * 10);
-		TileMaster.instance.ResetTiles(true);
-		TileMaster.instance.SetFillGrid(true);
-
+		
 		for(int i = 0; i < particles.Count; i++)
 		{
 			Destroy(particles[i]);
 		}
 		particles.Clear();
+		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
+
 	}
 
 }

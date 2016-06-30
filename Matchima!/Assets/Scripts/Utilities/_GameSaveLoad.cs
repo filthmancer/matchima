@@ -184,14 +184,11 @@ public class _GameSaveLoad: MonoBehaviour {
           continue;
         }
         myData._iUser.Wave.Slot[i] = true;
-        myData._iUser.Wave.Current[i] = w.AllSlots[i].Current;
         myData._iUser.Wave.Timer[i] = w.AllSlots[i].Timer;
       }
 		}
 		
-
-		
-		// Time to creat our XML! 
+		// Time to create our XML! 
 		_data = SerializeObject(myData); 
 		// This is the final resulting XML from the serialization process 
 		CreateXML(); 

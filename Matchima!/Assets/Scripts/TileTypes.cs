@@ -126,9 +126,7 @@ public class TileTypes : MonoBehaviour {
 	public List<SPECIES> Spells;
 	public List<SPECIES> Enemies;
 	public List<SPECIES> Other;
-
-
-										 
+						 
 	// Use this for initialization
 	void Start () {
 	}
@@ -145,14 +143,15 @@ public class TileTypes : MonoBehaviour {
 	}
 
 	string [] SPS = new string [] {"red", "blue", "green", "yellow", "purple", "alpha", "grey"};
-	public IEnumerator LoadSprites()
+	public IEnumerator LoadSprites(string path)
 	{
 		foreach(SPECIES child in Species)
 		{
 			for(int i = 0; i < SPS.Length; i++)
 			{
-				string path = "Inners/" + child.Name + "/" + SPS[i];
-				Sprite[] textures =  Resources.LoadAll<Sprite>(path);
+				string pathfinal = path + "/" + child.Name + "/" + SPS[i];
+				//string pathfinal = path + "/" + child.Name + "/inners/" + child.Name + "atlas";
+				Sprite[] textures =  Resources.LoadAll<Sprite>(pathfinal);
 				child[i].Sprites = textures;
 			}
 		}

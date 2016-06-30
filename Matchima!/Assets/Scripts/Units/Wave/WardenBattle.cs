@@ -31,11 +31,11 @@ public class WardenBattle : Wave {
 
 	public override IEnumerator OnStart()
 	{
-		warden_actual_health = Slot1.Required;
+		warden_actual_health = 120;
 		
 		Slot1.Timer = 0;
 		Slot1.Activate();
-		Slot1.Current = -1;
+		Current = -1;
 		Timer = 0;
 
 		QuoteGroup tute = new QuoteGroup("Tute");
@@ -52,7 +52,7 @@ public class WardenBattle : Wave {
 		Slot3.Timer = 0;
 		Slot3.Activate();
 		
-		Slot1.Current = warden_actual_health;
+		Current = warden_actual_health;
 	}
 
 	public override IEnumerator BeginTurn()

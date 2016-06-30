@@ -36,6 +36,7 @@ public class Bomb : Tile {
 	{
 		if(isMatching) yield break;
 		isMatching = true;		
+		PlayAudio("cast");
 		
 		List<Tile> to_collect = new List<Tile>();
 		int xx = Point.Base[0], yy = Point.Base[1];

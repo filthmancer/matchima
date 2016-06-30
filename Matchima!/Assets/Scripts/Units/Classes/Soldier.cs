@@ -29,11 +29,11 @@ public class Soldier : Class {
 		if(GameManager.Wave != null && !first_wave)
 		{
 			first_wave = true;
-			if(GameManager.Wave[0].Required > 8)
+			/*if(GameManager.Wave[0].Required > 8)
 			{
 				GameManager.Wave[0].Required = 8;
 				GameManager.Wave[0].Current = 8;
-			}
+			}*/
 		}
 		/*if(GameManager.Wave != null && !GameManager.instance.WaveActive && !first_levelup)
 		{

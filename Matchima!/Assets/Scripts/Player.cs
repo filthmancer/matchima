@@ -443,6 +443,7 @@ public class Player : MonoBehaviour {
 				if(living_chars.Count == 1)
 				{
 					Stats.isKilled = true;
+					Stats.Heal(50);
 					yield break;
 				}
 				else Stats.Heal(50);
@@ -565,6 +566,8 @@ public class Player : MonoBehaviour {
 
 		Stats._Health = Stats._HealthMax;
 		yield return new WaitForSeconds(0.1F);
+
+		
 		loaded = true;
 
 		yield return null;

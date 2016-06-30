@@ -50,6 +50,8 @@ public class PlayerControl : MonoBehaviour {
 
 	public LineRenderer [] InnerLine, OuterLine;
 	private Vector3 linepos;
+	[SerializeField]
+	private AudioSource sound_hover;
 
 	public float ComboBonus
 	{
@@ -78,6 +80,8 @@ public class PlayerControl : MonoBehaviour {
 			InnerLine[x].SetWidth(0.2F, 0.2F);
 			OuterLine[x].SetWidth(0.05F, 0.05F);
 		}
+
+		
 		
 	}
 
@@ -290,6 +294,7 @@ public class PlayerControl : MonoBehaviour {
 		if(!Input.GetMouseButton(0) && !Input.GetKey(KeyCode.Space))
 		{
 			if(TouchParticle != null) Destroy(TouchParticle.gameObject);
+			if(sound_hover != null) sound_hover.enabled = false;
 			if(focusTile != null) 
 			{
 				tooltip_current = 0.0F;
@@ -322,6 +327,17 @@ public class PlayerControl : MonoBehaviour {
 					focusTile = TileMaster.Tiles[final[0], final[1]];
 				}
 				else focusTile = nt;
+				if(sound_hover == null)
+				{
+					PlayerControl.instance.sound_hover = AudioManager.instance.PlayClip(this.transform, AudioManager.instance.Tiles_Default, "hold_1");
+					if(sound_hover != null)
+					{
+						PlayerControl.instance.sound_hover.GetComponent<DestroyTimer>().enabled = false;
+						PlayerControl.instance.sound_hover.loop = true;
+					}
+					
+				}
+				else sound_hover.enabled = true;
 				tooltip_current = 0.0F;
 				tooltip_showing = false;
 				//UIManager.instance.ShowTooltip(false);
@@ -329,6 +345,7 @@ public class PlayerControl : MonoBehaviour {
 			else if(nt != null && focusTile == nt)
 			{
 				UIManager.instance.ShowGearTooltip(true, focusTile);
+
 				/*if(tooltip_current > tooltip_time && ! tooltip_showing)
 				{
 					
@@ -340,6 +357,7 @@ public class PlayerControl : MonoBehaviour {
 			else
 			{
 				focusTile = null;
+				if(sound_hover != null) sound_hover.enabled = false;
 				//UIManager.instance.ShowTooltip(false);
 				tooltip_current = 0.0F;
 				tooltip_showing = false;
@@ -378,7 +396,7 @@ public class PlayerControl : MonoBehaviour {
 			selectedTiles.RemoveRange(point+1, range);
 			PlayerControl.matchingTile = selectedTiles[point];
 
-			AudioManager.instance.PlayClipOn(this.transform, "Player", "Release");
+			//AudioManager.instance.PlayClipOn(this.transform, "Player", "Release");
 			for(int i = 0; i < selectedTiles.Count; i++)
 			{
 				if(PlayerControl.matchingTile.Genus == GENUS.ALL)
@@ -399,7 +417,10 @@ public class PlayerControl : MonoBehaviour {
 
 	public void CheckMatch()
 	{
-		if(focusTile == null) return;
+		if(focusTile == null) 
+		{
+			return;
+		}
 
 		for(int x = 0; x < InnerLine.Length; x++)
 		{
@@ -422,8 +443,10 @@ public class PlayerControl : MonoBehaviour {
 				child.originalMatch = true;
 			}
 		}
+
 		if(match)
 		{
+			//AudioManager.instance.PlayClip(this.transform, AudioManager.instance.Tiles_Default, "complete_1");
 			//finalTiles.AddRange(selectedTiles);
 			GameManager.instance.GetTurn();
 			TimeSinceLastMatch = 0.0F;
@@ -562,6 +585,11 @@ public class PlayerControl : MonoBehaviour {
 			if(child != null)	child.Reset(true);
 		}
 		selectedTiles.Clear();
+		for(int i = 0; i < InnerLine.Length; i++)
+		{
+			InnerLine[i].enabled = false;
+			OuterLine[i].enabled = false;
+		}
 		focusTile = null;
 		matchingTile = null;
 	}

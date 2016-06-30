@@ -293,7 +293,25 @@ public class UIManager : MonoBehaviour {
 	Tile uitarget = null;
 	public void ShowGearTooltip(bool active, Tile t = null)
 	{
-		if(!active) uitarget = null;
+		if(!active) 
+		{
+			uitarget = null;
+			for(int i = 0; i < Objects.TopGear[1][1][3][0].Length; i++)
+			{
+				if(Objects.TopGear[1][1][3][0].GetChild(i) != null)
+					Destroy(Objects.TopGear[1][1][3][0].GetChild(i).gameObject);
+			}
+			for(int i = 0; i < Objects.TopGear[1][1][3][1].Length; i++)
+			{
+				if(Objects.TopGear[1][1][3][1].GetChild(i) != null)
+					Destroy(Objects.TopGear[1][1][3][1].GetChild(i).gameObject);
+			}
+			for(int i = 0; i < Objects.TopGear[1][1][3][2].Length; i++)
+			{
+				if(Objects.TopGear[1][1][3][2].GetChild(i) != null)
+					Destroy(Objects.TopGear[1][1][3][2].GetChild(i).gameObject);
+			}
+		}
 
 		(Objects.TopGear as UIGear).DragLerpSpeed = active ? 15 : 5;
 		(Objects.TopGear as UIGear).DoDivisionLerpActions = !active;
@@ -699,6 +717,7 @@ public class UIManager : MonoBehaviour {
 		yield return new WaitForSeconds(0.2F);
 		//Menu.ClassMenu.SetActive(false);
 		//Objects.ShowObj(Objects.Options, false);
+		Objects.TopGear.DivisionActions.Clear();
 		Objects.ShowObj(Objects.MainUI, true);
 		(UIManager.Objects.TopLeftButton as UIObjTweener).SetTween(0, true);
 		(UIManager.Objects.TopRightButton as UIObjTweener).SetTween(0,true);
@@ -713,6 +732,7 @@ public class UIManager : MonoBehaviour {
 		}
 
 		UIObj zone = Objects.MiddleGear[1] as UIObj;
+
 		zone[0].AddAction(UIAction.MouseUp,() => {ShowStashUI();});
 		zone[1].AddAction(UIAction.MouseUp,() => {GameManager.instance.EnterZone(GameManager.ZoneChoiceA);});
 		zone[2].AddAction(UIAction.MouseUp,() => {GameManager.instance.EnterZone(GameManager.ZoneChoiceB);});
@@ -736,6 +756,16 @@ public class UIManager : MonoBehaviour {
 			GameManager.instance.SaveAndQuit();
 		});
 
+		Objects.MiddleGear[3][3].AddAction(UIAction.MouseUp, ()=>
+		{
+			AudioManager.PlaySFX = !AudioManager.PlaySFX;
+		});
+
+		Objects.MiddleGear[3][4].AddAction(UIAction.MouseUp, ()=>
+		{
+			AudioManager.PlayMusic = !AudioManager.PlayMusic;
+		});
+
 		Objects.MiddleGear[1].SetActive(false);
 		Objects.MiddleGear[2].SetActive(false);
 		Objects.MiddleGear[3].SetActive(false);
@@ -748,13 +778,13 @@ public class UIManager : MonoBehaviour {
 		Objects.TopRightButton.AddAction(UIAction.MouseUp, () =>
 		{
 			//GameManager.instance.EscapeZone();
-			Objects.TopGear.SetActive(false);
-			Objects.MiddleGear.SetActive(false);
-			Objects.BotGear.SetActive(false);
+			//Objects.TopGear.SetActive(false);
+			//Objects.MiddleGear.SetActive(false);
+			//Objects.BotGear.SetActive(false);
 
-			//ShowZoneUI(false);
-			//(Objects.MiddleGear[2] as UIObjTweener).SetTween(0, false);
-			//UIManager.Objects.MiddleGear[1].Txt[0].text = GameManager.Zone.Name;
+			ShowZoneUI(false);
+			(Objects.MiddleGear[2] as UIObjTweener).SetTween(0, false);
+			UIManager.Objects.MiddleGear[1].Txt[0].text = GameManager.Zone.Name;
 		});
 
 		(Objects.TopGear as UIGear).DivisionActions.Add((int num) =>

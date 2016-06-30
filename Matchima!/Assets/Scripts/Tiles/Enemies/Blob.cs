@@ -70,7 +70,7 @@ public class Blob : Enemy {
 				isMatching = true;
 				Player.Stats.PrevTurnKills ++;			
 				CollectThyself(true);
-
+				PlayAudio("dying");
 				float item_chance = (float)Stats.Value/32.0F;
 				if(Stats.Value > 10) item_chance += 0.4F;
 				if(Random.value < item_chance) 

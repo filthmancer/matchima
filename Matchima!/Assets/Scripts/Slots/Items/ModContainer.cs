@@ -99,23 +99,19 @@ public class ModContainer : MonoBehaviour {
 	public static UpgradeBracket Basic = new UpgradeBracket("Basic", ItemType.Basic, 1.0F, new GenusBracket []
 	{
 		new GenusBracket("Red",
-			new Upgrade("Wise", " Max MP", 1.0F, ScaleType.GRADIENT, 0.4F, (Stat s, float val) => {s.MeterMax += 5 + (int)val;}, 1, 5),
 			new Upgrade("Hearty", " Max HP", 1.0F, ScaleType.GRADIENT, 0.6F, (Stat s, float val) => {s._HealthMax += 10 + (int)val;}, 1, 10),
 			new Upgrade("Healing", " HP Regen", 1.0F, ScaleType.GRADIENT, 0.15F, (Stat s, float val) => {s.HealthRegen += 1 + (int) val;}, 1, 1)
 			),
 		
 		new GenusBracket("Blue",
-			new Upgrade("Wise", " Max MP", 1.0F, ScaleType.GRADIENT, 0.4F, (Stat s, float val) => {s.MeterMax += 5 + (int)val;}, 1, 5),
 			new Upgrade("Sharp", " Attack", 1.0F, ScaleType.GRADIENT, 0.12F, (Stat s, float val) => {s._Attack += 1 + (int)val;}, 1, 1)
 		
 		),
 		new GenusBracket("Green",
-			new Upgrade("Wise", " Max MP", 1.0F, ScaleType.GRADIENT, 0.4F, (Stat s, float val) => {s.MeterMax += 5 + (int)val;}, 1, 5),
 			new Upgrade("Addict's", "% Manapower Decay", 1.0F, ScaleType.GRADIENT, 0.08F,
 						(Stat s, float val) => {s.MeterDecay_Global -= (int)val;}, 4)
 		),
 		new GenusBracket("Yellow",
-			new Upgrade("Wise", " Max MP", 1.0F, ScaleType.GRADIENT, 0.4F, (Stat s, float val) => {s.MeterMax += 5 + (int)val;}, 1, 5),
 			new Upgrade("Spiked", " Spikes", 1.0F, ScaleType.GRADIENT, 0.09F, (Stat s, float val) => {s.Spikes += 1 + (int)val;}, 1, 1)
 		)
 		
@@ -310,46 +306,46 @@ public class ModContainer : MonoBehaviour {
 		)
 		});
 	
-	public static UpgradeBracket Developers = new UpgradeBracket("Developer's", ItemType.Developers, 0.25F, new GenusBracket[]
+	public static UpgradeBracket Developers = new UpgradeBracket("Developer's", ItemType.Developers, 5.25F, new GenusBracket[]
 	{
 		new GenusBracket("Red",
-			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.5F,
+			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.2F,
 						(Stat s, float value) => {
-							s.MapSize.x += (int) (1 * value);}
+							s.MapSize.x += 1 + (int) (1 * value);}, 1, 1
 						),
-			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.5F,
+			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.2F,
 				(Stat s, float value) => {
-					s.MapSize.y += (int) (1 * value);}
+					s.MapSize.y += 1 + (int) (1 * value);},1,1
 					)
 		),
 		new GenusBracket("Blue",
-			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.5F,
+			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.2F,
 						(Stat s, float value) => {
-							s.MapSize.x += (int) (1 * value);}
+							s.MapSize.x += 1 + (int) (1 * value);},1,1
 						),
-			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.5F,
+			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.2F,
 				(Stat s, float value) => {
-					s.MapSize.y += (int) (1 * value);}
+					s.MapSize.y += 1 + (int) (1 * value);},1,1
 				)
 		),
 		new GenusBracket("Green",
-			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.5F,
+			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.2F,
 						(Stat s, float value) => {
-							s.MapSize.x += (int) (1 * value);}
+							s.MapSize.x += 1 + (int) (1 * value);},1,1
 						),
-			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.5F,
+			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.2F,
 				(Stat s, float value) => {
-					s.MapSize.y += (int) (1 * value);}
+					s.MapSize.y += 1 + (int) (1 * value);},1,1
 				)
 		),
 		new GenusBracket("Yellow",
-			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.5F,
+			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.2F,
 						(Stat s, float value) => {
-							s.MapSize.x += (int) (1 * value);}
+							s.MapSize.x += 1 + (int) (1 * value);},1,1
 						),
-			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.5F,
+			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.2F,
 				(Stat s, float value) => {
-					s.MapSize.y += (int) (1 * value);}
+					s.MapSize.y += 1 + (int) (1 * value);},1,1
 				)
 		)
 		
@@ -360,17 +356,17 @@ public class ModContainer : MonoBehaviour {
 	{
 		new GenusBracket("Red",
 			new Upgrade("Wise", " Max MP", 1.0F, ScaleType.GRADIENT, 0.4F, (Stat s, float val) => {s.MeterMax += 5 + (int)val;}, 1, 5),
-			new Upgrade("Hearty", " Max HP", 1.0F, ScaleType.GRADIENT, 0.6F, (Stat s, float val) => {s._HealthMax -= (int)val;}, -1)
+			new Upgrade("Hearty", " Max HP", 1.0F, ScaleType.GRADIENT, 0.6F, (Stat s, float val) => {s._HealthMax -= 10 + (int)val;}, -1, -10)
 			),
 		
 		new GenusBracket("Blue",
 			new Upgrade("Wise", " Max MP", 1.0F, ScaleType.GRADIENT, 0.4F, (Stat s, float val) => {s.MeterMax += 5 + (int)val;}, 1, 5),
-			new Upgrade("Sharp", " Attack", 1.0F, ScaleType.GRADIENT, 0.12F, (Stat s, float val) => {s._Attack -= (int)val;}, -1)
+			new Upgrade("Sharp", " Attack", 1.0F, ScaleType.GRADIENT, 0.12F, (Stat s, float val) => {s._Attack -= 1 + (int)val;}, -1, -1)
 		
 		),
 		new GenusBracket("Green",
 			new Upgrade("Wise", " Max MP", 1.0F, ScaleType.GRADIENT, 0.4F, (Stat s, float val) => {s.MeterMax += 5 + (int)val;}, 1, 5),
-			new Upgrade("Addict's", " Mana Decay", 1.0F, ScaleType.GRADIENT, 0.08F, (Stat s, float val) => {s.MeterDecay_Global += (int)val;}, -1)
+			new Upgrade("Addict's", " Mana Decay", 1.0F, ScaleType.GRADIENT, 0.08F, (Stat s, float val) => {s.MeterDecay_Global += 1 + (int)val;}, -1, -1)
 		),
 		new GenusBracket("Yellow",
 			new Upgrade("Wise", " Max MP", 1.0F, ScaleType.GRADIENT, 0.4F, (Stat s, float val) => {s.MeterMax += 5 + (int)val;}, 1, 5)

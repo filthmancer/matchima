@@ -15,8 +15,6 @@ public class WaveUnit : Unit {
 
 	public bool Active = false, Ended = false;
 
-	public int Current;
-	public int Required;
 	public int PointsPerTurn = 3, PointsPerEnemy = 1;
 	private int PointsThisTurn = 0;
 
@@ -34,7 +32,6 @@ public class WaveUnit : Unit {
 
 	public void Activate()
 	{
-		Current = Required;
 		Active = true;
 		Randomise();
 		//OnStart();
@@ -42,7 +39,7 @@ public class WaveUnit : Unit {
 
 	public void Randomise()
 	{
-		Required += (int)Random.Range(DiffScale.x * GameManager.Difficulty, DiffScale.y * GameManager.Difficulty);
+
 	}
 
 	public virtual void GetChances()
@@ -95,7 +92,7 @@ public class WaveUnit : Unit {
 
 	public virtual int EnemyKilled(Enemy e)
 	{
-		if(!Active || Ended || Current == -1) return 0;
+		if(!Active || Ended) return 0;
 		if(PointsPerEnemy <= 0) return 0;
 		return PointsPerEnemy * e.Stats.Value;
 		

@@ -37,8 +37,7 @@ public class Sleep : TileEffect {
 
 	public override void _OnDestroy()
 	{
-		_Tile.InitStats.isAlerted = true;
-		MiniAlertUI m = UIManager.instance.MiniAlert(_Tile.transform.position, "!", 180, Color.black);
-		m.Txt[0].outlineColor = GameData.Colour(_Tile.Genus);
+		_Tile.OnAlert();
+		
 	}
 }
