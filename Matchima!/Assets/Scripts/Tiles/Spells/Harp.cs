@@ -10,7 +10,7 @@ public class Harp : Tile {
 		get
 		{
 			CheckStats();
-			return 1 + (Stats.Value);
+			return 2 + (Stats.Value);
 		}
 	}
 
@@ -70,8 +70,8 @@ public class Harp : Tile {
 					if(child.Type.isEnemy) 
 					{					
 						//child.SetState(TileState.Selected, true);
-						MiniAlertUI m = UIManager.instance.MiniAlert(child.Point.targetPos, " Sleep", 65, GameData.Colour(child.Genus), 0.3F, 0.1F);
-						child.AddEffect("Sleep", StunDuration);
+						MiniAlertUI m = UIManager.instance.MiniAlert(child.Point.targetPos, "Charmed!", 100, GameData.Colour(child.Genus), 0.3F, 0.1F);
+						child.AddEffect("Charm", StunDuration);
 					}
 					//else
 					//{

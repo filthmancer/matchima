@@ -83,7 +83,7 @@ public class Bomb : Tile {
 			if(to_collect[i].IsType("Enemy")) 
 			{
 				to_collect[i].InitStats.TurnDamage += BombDamage;
-				AudioManager.instance.PlayClipOn(to_collect[i].transform, "Enemy", "Hit");
+				to_collect[i].PlayAudio("hit");
 				EffectManager.instance.PlayEffect(to_collect[i].transform,Effect.Attack);
 			}
 		}

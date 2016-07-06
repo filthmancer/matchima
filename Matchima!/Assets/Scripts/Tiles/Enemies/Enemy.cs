@@ -144,7 +144,7 @@ public class Enemy : Tile {
 			threat_time -= Time.deltaTime;
 			if(threat_time <= 0.0F) 
 			{
-				AudioManager.instance.PlayClipOn(trans, "Enemy", "Threat");
+				AudioManager.instance.PlayTileAudio(this, "threat");
 			}
 		}
 	}
@@ -164,7 +164,7 @@ public class Enemy : Tile {
 
 		if(InitStats.TurnDamage == 0) yield break;
 
-		AudioManager.instance.PlayClipOn(trans, "Enemy", "Hit");
+		AudioManager.instance.PlayTileAudio(this, "hit");
 		GameObject part = EffectManager.instance.PlayEffect(trans, Effect.Attack);
 		yield return new WaitForSeconds(GameData.GameSpeed(0.03F));
 
@@ -203,10 +203,10 @@ public class Enemy : Tile {
 		MoveToPoint mini = TileMaster.instance.CreateMiniTile(pos,target.transform, Info.Outer);
 		mini.SetPath(0.3F, 0.5F, 0.0F, 0.08F);
 		mini.SetMethod(() =>{
-			if(target == null) return;
-			if(target != null) AudioManager.instance.PlayClipOn(target.transform, "Enemy", "Hit");
-				target.InitStats.TurnDamage += Stats.Attack;
-				target.Match(0);
+		  	if(target == null) return;
+		  	AudioManager.instance.PlayTileAudio(target, "hit");
+			target.InitStats.TurnDamage += Stats.Attack;
+			target.Match(0);
 				
 			});
 
@@ -216,8 +216,6 @@ public class Enemy : Tile {
 	}
 
 	public override bool Match(int resource) {
-
-		//if(isMatching || this == null) return false;
 
 		CheckStats();
 		int fullhit = 0;
@@ -232,10 +230,12 @@ public class Enemy : Tile {
 		if(Stats.Hits <= 0)
 		{
 			isMatching = true;
-			Player.Stats.PrevTurnKills ++;			
+			Player.Stats.PrevTurnKills ++;	
+			Stats.Value *= resource;
+					
 			CollectThyself(true);
 
-			PlayAudio("dying");
+			PlayAudio("death");
 			float item_chance = (float)Stats.Value/32.0F;
 			if(Stats.Value > 10) item_chance += 0.4F;
 			if(Random.value < item_chance) 

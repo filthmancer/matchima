@@ -204,13 +204,13 @@ public class Player : MonoBehaviour {
 		return 0;
 	}
 
-	public IEnumerator BeforeMatch(List<Tile> tiles, bool original = false)
+	public IEnumerator BeforeMatch(List<Tile> tiles)
 	{
 		PlayerControl.instance.AddTilesToFinal(tiles.ToArray());
 		for(int i = 0; i < tiles.Count; i++)
 		{
 			if(tiles[i] == null) continue;
-			if(tiles[i].BeforeMatchEffect) yield return StartCoroutine(tiles[i].BeforeMatch(original));
+			if(tiles[i].BeforeMatchEffect) yield return StartCoroutine(tiles[i].BeforeMatch(false));
 		}
 
 		foreach(Class child in Classes)
@@ -432,21 +432,19 @@ public class Player : MonoBehaviour {
 			int target = living_chars[Random.Range(0,living_chars.Count)];
 			
 		//ROLL LUCK STAT OF TARGET TO SEE IF THEY DIE
-			float luck_chance = (float) Classes[target].Stats.Luck / (GameManager.Difficulty * 5.0F);
+			float luck_chance = (float) Classes[target].Stats.Luck / (GameManager.Difficulty * 3.2F);
 
 			bool roll = Random.value > luck_chance;
 			yield return StartCoroutine(UIManager.instance.ShowDeathIcon(Classes[target], roll));
-
+			Stats.Heal(50);
 			if(roll)
 			{				
 				//StartCoroutine(UIManager.instance.Quote(Classes[target].Quotes.Death));
+				
 				if(living_chars.Count == 1)
 				{
 					Stats.isKilled = true;
-					Stats.Heal(50);
-					yield break;
 				}
-				else Stats.Heal(50);
 			}
 	}
 
@@ -648,12 +646,13 @@ public class Player : MonoBehaviour {
 		Spawner2.GetSpawnables(TileMaster.Types);
 	}
 
-	public List<int> ActiveDamage(int damage, List<Tile> selected)
+	public int [] ActiveDamage(int damage, Tile [] selected)
 	{
-		List<int> indiv_damage = new List<int>();
-		for(int i = 0; i < selected.Count; i++)
+		int[] indiv_damage = new int[selected.Length];
+		for(int i = 0; i < selected.Length; i++)
 		{
-			indiv_damage.Add(damage);
+			if(selected[i].Type.isEnemy) indiv_damage[i] = damage;
+			else indiv_damage[i] = 0;
 		}
 
 		foreach(Ability child in Abilities)
@@ -669,6 +668,8 @@ public class Player : MonoBehaviour {
 
 		return indiv_damage;
 	}
+
+
 
 	public void OnHit(params Tile[] attackers)
 	{

@@ -237,6 +237,11 @@ public class Class : Unit {
 		return (f-MeterBottom)/(MeterTop-MeterBottom);
 	}
 
+	public virtual AudioSource PlayAudio(string s)
+	{
+		return AudioManager.instance.PlayClassAudio(this, s);
+	}
+
 
 
 	public virtual void Reset()
@@ -268,7 +273,7 @@ public class Class : Unit {
 		foreach(Upgrade child in Mutations)
 		{
 			if(child == null) continue;
-			child.Up(Stats, child.Rate);
+			child.Up(Stats, child.RateFinal);
 		}
 
 		Stats.ApplyStatInc();
@@ -661,6 +666,7 @@ public class Class : Unit {
 			yield return StartCoroutine(Mutate(power));
 		}
 		UIManager.ClassButtons.GetClass(Index).ShowClass(false);
+		Player.instance.ResetStats();
 		yield return null;
 	}
 
@@ -726,10 +732,10 @@ public class Class : Unit {
 
 		if(prev == null) 
 		{
-			u.Rate += final_rate;
+			u._Rate += final_rate;
 			Mutations.Add(u);
 		}
-		else prev.Rate += final_rate;
+		else prev._Rate += final_rate;
 
 		string boon = Name + " was ";
 		boon += (Boon ? " gifted!" : " cursed!");

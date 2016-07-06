@@ -87,12 +87,12 @@ public class Boost : Ability {
 		return null;
 	}
 
-	public override void DamageIndicator(ref List<int> damage, List<Tile> selected)
+	public override void DamageIndicator(ref int[] damage, Tile [] selected)
 	{
 		damage = damage;
 		if(activated) 
 		{
-			for(int i = 0; i < damage.Count; i++)
+			for(int i = 0; i < damage.Length; i++)
 			{
 				damage[i] *= (valueMultiplier + (int) StatBonus());
 			}

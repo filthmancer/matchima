@@ -8,6 +8,7 @@ public class Chicken : Tile {
 	private bool scared;
 	private bool isleaving = false;
 	private int scared_count = 0;
+	private float idle_audio_time = 4.5F;
 	public override StCon [] Description
 	{
 		get{
@@ -19,6 +20,11 @@ public class Chicken : Tile {
 	{
 		base.Update();
 		if(GameManager.inStartMenu) return;
+		if((idle_audio_time -= Time.deltaTime) <= 0.0F)
+		{
+			PlayAudio("idle");
+			idle_audio_time = Random.Range(6.5F, 20.0F);
+		}
 		if(Point.Base[1] == 0 && !isleaving)
 		{
 			StartCoroutine(GoAway());
@@ -37,6 +43,7 @@ public class Chicken : Tile {
 		Reset();
 		if(scared)
 		{
+			PlayAudio("touch");
 			scared = false;
 			scared_count ++;
 			if(scared_count < 3)
@@ -77,8 +84,10 @@ public class Chicken : Tile {
 		//while(Destroyed) yield return null;
 		//yield return new WaitForSeconds(0.05F);
 		Animate("Attack");
+		PlayAudio("death");
 		yield return new WaitForSeconds(0.05F);
 		DestroyThyself();
+		TileMaster.instance.SetFillGrid(true);
 		yield return null;
 	}
 

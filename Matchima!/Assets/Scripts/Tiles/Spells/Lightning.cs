@@ -101,7 +101,7 @@ public class Lightning : Tile {
 			if(child.Type.isEnemy)
 			{
 				child.InitStats.TurnDamage += final_damage;
-				AudioManager.instance.PlayClipOn(child.transform, "Enemy", "Hit");
+				child.PlayAudio("Hit");
 				EffectManager.instance.PlayEffect(child.transform,Effect.Attack);
 			} 
 			if(child.IsType("","Altar"))

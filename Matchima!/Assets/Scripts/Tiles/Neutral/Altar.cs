@@ -49,4 +49,9 @@ public class Altar : Tile {
 		DestroyThyself(true);
 		yield return null;
 	}
+
+	public void Cast()
+	{
+		PlayAudio("cast");
+	}
 }

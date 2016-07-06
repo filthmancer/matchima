@@ -92,7 +92,7 @@ public class Cross : Tile {
 							m.Gravity = true;
 							m.AddJuice(Juice.instance.BounceB, info_time/0.8F);
 
-							AudioManager.instance.PlayClipOn(_tiles[x,y].transform, "Enemy", "Hit");
+							_tiles[x,y].PlayAudio("Hit");
 							EffectManager.instance.PlayEffect(_tiles[x,y].transform,Effect.Attack);
 						}
 						if(!_tiles[x,y].isMatching)
@@ -106,6 +106,7 @@ public class Cross : Tile {
 		}
 		//CameraUtility.instance.ScreenShake((float)Stats.Value/25, Time.deltaTime*15);
 		TileMaster.instance.Ripple(this, to_collect, 2.1F*Stats.Value, GameData.GameSpeed(0.4F), 0.5F);
+		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
 		yield return new WaitForSeconds(GameData.GameSpeed(0.4F));
 
 		for(int i = 0; i < Particles.Length; i++)
@@ -114,8 +115,8 @@ public class Cross : Tile {
 			Particles[i].enableEmission = false;
 		}
 
-		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
 		
-		yield break;
+		
+		yield return null;
 	}
 }

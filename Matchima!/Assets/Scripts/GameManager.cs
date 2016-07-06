@@ -361,8 +361,8 @@ public class GameManager : MonoBehaviour {
 			PlayerControl.instance.focusTile.Match(1000);
 			break;
 			case 6: //N
-			Player.instance.InitStats.MapSize.y-=1;
-			TileMaster.instance.IncreaseGrid(0,-1);
+			Player.instance.InitStats.MapSize.y+=1;
+			TileMaster.instance.IncreaseGrid(0,1);
 			break;
 			case 7: //M
 			Player.instance.InitStats.MapSize.x+=1;
@@ -663,12 +663,13 @@ public class GameManager : MonoBehaviour {
 		
 		//yield return new WaitForSeconds(GameData.GameSpeed(0.06F));
 		UIManager.instance.MoveTopGear(0);
+
+
 		yield return StartCoroutine(BeforeMatchRoutine());
 		bool all_of_resource = false;
 		
 		if(Player.instance.CompleteMatch) 
 		{
-
 			yield return StartCoroutine(MatchRoutine(PlayerControl.instance.finalTiles.ToArray()));
 		}
 		else EnemyTurn = false;
@@ -731,7 +732,7 @@ public class GameManager : MonoBehaviour {
 		UIManager.Objects.BotGear.SetTween(0, false);
 		UIManager.Objects.TopGear.SetTween(0, true);
 
-	//ENEMY ATTACKERS
+		//ENEMY ATTACKERS
 		for(int x = 0; x < TileMaster.instance.MapSize.x; x++)
 		{
 			column_attackers = new List<Tile>();
@@ -753,6 +754,7 @@ public class GameManager : MonoBehaviour {
 					
 				}
 			}
+
 			foreach(Tile child in column_attackers)
 			{
 				if(child == null) continue;
@@ -775,7 +777,7 @@ public class GameManager : MonoBehaviour {
 		} 
 
 
-	//ALLIED ATTACKERS
+		//ALLIED ATTACKERS
 		if(allied_attackers.Count > 0) 
 		{
 			TileMaster.instance.ResetTiles();
@@ -808,18 +810,6 @@ public class GameManager : MonoBehaviour {
 			
 			if(target != null)
 			{
-				/*Vector3 pos = child.transform.position + (GameData.RandomVector*1.4F);
-				MoveToPoint mini = TileMaster.instance.CreateMiniTile(pos, target.transform, child.Info.Outer);
-				mini.SetPath(0.2F, 0.5F, 0.0F, 0.1F);
-				mini.SetMethod(() =>{
-					if(target == null) return;
-					if(target != null) AudioManager.instance.PlayClipOn(target.transform, "Enemy", "Hit");
-						target.SetState(TileState.Selected);
-						target.InitStats.TurnDamage += child.GetAttack();
-						target.Match(0);
-						GameData.Log(child +  " dealt " + child.GetAttack() + "damage to " + target);
-					});*/
-
 				float init_size = Random.Range(130, 170);
 				float init_rotation = Random.Range(-7,7);
 				float info_time = 0.57F;
@@ -840,7 +830,7 @@ public class GameManager : MonoBehaviour {
 				mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
 				mini.SetMethod(() =>{
 						if(target == null) return;
-						if(target != null) AudioManager.instance.PlayClipOn(target.transform, "Enemy", "Hit");
+						if(target != null) target.PlayAudio("Hit");
 							target.SetState(TileState.Selected);
 							target.InitStats.TurnDamage += child.GetAttack();
 							target.Match(0);
@@ -859,11 +849,10 @@ public class GameManager : MonoBehaviour {
 		newTiles.AddRange(PlayerControl.instance.selectedTiles);
 		PlayerControl.instance.selectedTiles.Clear();
 		int combo_factor = 0; //Number of repeated combos made by tiles
-
 		
 		while(newTiles.Count > 0)
 		{
-			yield return StartCoroutine(Player.instance.BeforeMatch(newTiles, combo_factor==0));
+			yield return StartCoroutine(Player.instance.BeforeMatch(newTiles));
 			newTiles.Clear();
 			newTiles.AddRange(PlayerControl.instance.selectedTiles);
 			PlayerControl.instance.selectedTiles.Clear();
@@ -878,8 +867,10 @@ public class GameManager : MonoBehaviour {
 		int [] health   = new int [6];
 		int [] armour   = new int [6];
 		int enemies_hit = 0;
+		
 
 		float rate = 0.07F, num = 0;
+
 		for(int x = 0; x < tiles.Length; x++)
 		{
 			Tile child = tiles[x];
@@ -890,7 +881,8 @@ public class GameManager : MonoBehaviour {
 			int v = 1;
 			if(child.Type.isEnemy)
 			{
-				v = PlayerControl.instance.AttackValue;
+				//v = damage[x];
+				//print(damage[x]);
 				enemies_hit ++;
 			} 
 			
@@ -908,7 +900,7 @@ public class GameManager : MonoBehaviour {
 					}
 				}
 					resource[(int)child.Genus] += values[0] + added_res;
-					health[(int)child.Genus]   += values[1]; //(values[1] > 0 ? Player.Stats.Healer : 0);
+					health[(int)child.Genus]   += values[1];
 					armour[(int)child.Genus]   += values[2] + added_armour;
 			}
 

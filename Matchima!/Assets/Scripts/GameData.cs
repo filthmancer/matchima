@@ -734,20 +734,39 @@ public class GameData : MonoBehaviour {
 		return ab;
 	}
 
+	string [] classes_list = new string []
+	{
+		"barbarian",
+		"bard",
+		"rogue",
+		"wizard",
+		"warden",
+		"witchdoctor"
+	};
+
 	public void LoadClasses()
 	{
 		int num = 0;
-		UnityEngine.Object [] classes = Resources.LoadAll("Classes");
-		Classes = new Class[classes.Length];
-		for(int i = 0; i < classes.Length; i++)
+		string path_init = "classes";
+		List<Class> final = new List<Class>();
+		AudioManager.instance.Classes = new AudioGroup[classes_list.Length];
+		AudioManager.instance.Class_Default = AudioManager.GenerateGroup(path_init, "default");
+		for(int i = 0; i < classes_list.Length; i++)
 		{
-			GameObject cobj = classes[i] as GameObject;
-			Classes[i] = cobj.GetComponent<Class>();
-			if(Classes[i]) num++;
+			string path = path_init + "/" + classes_list[i];
+
+			string prefpath = path + "/" + classes_list[i] + "_prefab";
+			UnityEngine.Object cobj = Resources.Load(prefpath);
+			if(cobj == null) continue;
+			Class cfin = (cobj as GameObject).GetComponent<Class>();
+			final.Add(cfin);
+			num++;
+
+			AudioGroup audiogroup = AudioManager.GenerateGroup(path_init, classes_list[i]);
+			AudioManager.instance.Classes[i] = audiogroup;
+
 		}
 		print("Loaded " + num + " classes");
-		List<Class> final = new List<Class>();
-		final.AddRange(Classes);
 		final = final.OrderBy(o=>!o.Unlocked).ToList();
 		Classes = final.ToArray();
 	}

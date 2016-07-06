@@ -13,16 +13,18 @@ public class AudioManager : MonoBehaviour {
 	}
 	public AudioSource AudioObj;
 
-	public AudioGroup Enemy;
 	public AudioGroup Player;
 
 	public AudioGroup Tiles_Default;
-
 	public AudioGroup [] Tiles;
+
+	public AudioGroup Class_Default;
+	public AudioGroup [] Classes;
 
 	public AudioSource Music;
 
 	public static bool PlaySFX = true, PlayMusic = true;
+	public bool PrintLogs = false;
 
 	void Start()
 	{
@@ -41,7 +43,7 @@ public class AudioManager : MonoBehaviour {
 		AudioClipProperties prop = GetGroup(group).GetClip(clip);
 		if(prop == null) return;
 		AudioSource aud = (AudioSource) Instantiate(AudioObj);
-		aud.clip = prop.Clip;
+		aud.clip = prop.GetClip();
 		aud.volume = prop.Volume;
 		aud.Play();
 		aud.transform.position = t.position;
@@ -55,7 +57,7 @@ public class AudioManager : MonoBehaviour {
 		AudioClipProperties prop = group.GetClip(clip);
 		if(prop == null) return null;
 		AudioSource aud = (AudioSource) Instantiate(AudioObj);
-		aud.clip = prop.Clip;
+		aud.clip = prop.GetClip();
 		aud.volume = prop.Volume;
 		aud.Play();
 		aud.transform.position = t.position;
@@ -72,18 +74,39 @@ public class AudioManager : MonoBehaviour {
 		if(prop == null) return null;
 		
 		AudioSource aud = (AudioSource) Instantiate(AudioObj);
-		aud.clip = prop.Clip;
+		aud.clip = prop.GetClip();
 		aud.volume = prop.Volume;
 		aud.Play();
 		aud.transform.position = t.transform.position;
 		aud.transform.parent = this.transform;
+
+		if(PrintLogs) print("played " + prop.Name + " at " + t);
+		return aud;
+	}
+
+	public AudioSource PlayClassAudio(Class cl, string clip)
+	{
+		if(!PlaySFX) return null;
+		AudioGroup group = GetClass(cl.Name);
+		if(group == null) group = Class_Default;
+		AudioClipProperties prop = group.GetClip(clip);
+		if(prop == null) return null;
+
+		AudioSource aud = (AudioSource) Instantiate(AudioObj);
+		aud.clip = prop.GetClip();
+		aud.volume = prop.Volume;
+		aud.Play();
+		aud.transform.position = UIManager.ClassButtons.GetClass(cl.Index).transform.position;
+		aud.transform.parent = this.transform;
+
+		if(PrintLogs) print("played " + prop.Name + " at " + cl);
 		return aud;
 	}
 
 	public AudioGroup GetGroup(string name)
 	{
-		if(name == Enemy.Name) return Enemy;
-		else if(name == Player.Name) return Player;
+		//if(name == Enemy.Name) return Enemy;
+		if(name == Player.Name) return Player;
 		else return null;
 	}
 
@@ -92,6 +115,15 @@ public class AudioManager : MonoBehaviour {
 		for(int i = 0; i < Tiles.Length; i++)
 		{
 			if(Tiles[i].Name == name) return Tiles[i];
+		}
+		return null;
+	}
+
+	public AudioGroup GetClass(string name)
+	{
+		for(int i = 0; i < Classes.Length; i++)
+		{
+			if(Classes[i].Name == name) return Classes[i];
 		}
 		return null;
 	}
@@ -109,18 +141,20 @@ public class AudioManager : MonoBehaviour {
 	}
 
 
-	AudioGroup GenerateGroup(string path, string name)
+	public static AudioGroup GenerateGroup(string path, string name)
 	{
 		string pathfinal = path + "/" + name + "/audio";
 		AudioClip [] obj = Resources.LoadAll<AudioClip>(pathfinal);
-		print("loaded " + obj.Length + " clips at " + pathfinal);
+		if(AudioManager.instance.PrintLogs) print("loaded " + obj.Length + " clips at " + pathfinal);
 
 		AudioGroup groupfinal = new AudioGroup(obj.Length);
 		groupfinal.Name = name;
 		for(int i = 0; i < obj.Length; i++)
 		{
-			groupfinal.AddClip(i, obj[i].name, obj[i]);
+			string [] array = obj[i].name.Split('_');
+			groupfinal.AddClip(i, array[0], obj[i]);
 		}
+		groupfinal.Minimize();
 		return groupfinal;
 	}
 }
@@ -130,6 +164,11 @@ public class AudioGroup
 {
 	public string Name;
 	public AudioClipProperties [] Clips;
+
+	public int Length
+	{
+		get{return Clips.Length;}
+	}
 
 	public AudioGroup(int num)
 	{
@@ -147,11 +186,50 @@ public class AudioGroup
 
 	public void AddClip(int num, string name, AudioClip clip, float vol = 1.0f)
 	{
-		AudioClipProperties final = new AudioClipProperties();
-		final.Name = name;
-		final.Clip = clip;
-		final.Volume = vol;
-		Clips[num] = final;
+		AudioClipProperties addto = null;
+		foreach(AudioClipProperties child in Clips)
+		{
+			if(child == null || child.Name == string.Empty) continue;
+			if(child.Name == name)
+			{
+				addto = child;
+				break;
+			}
+		}
+		if(addto == null)
+		{
+			AudioClipProperties final = new AudioClipProperties();
+			final.Name = name;
+			final.Clip.Add(clip);
+			final.Volume = vol;
+			Clips[num] = final;
+		}
+		else
+		{
+			addto.Clip.Add(clip);
+		}
+		
+	}
+
+	public void Minimize()
+	{
+		List<AudioClipProperties> final = new List<AudioClipProperties>();
+		final.AddRange(Clips);
+
+		for(int i = 0; i < final.Count; i++)
+		{
+			if(final[i] != null) Debug.Log(this.Name + ":" +  final[i].Name);
+			if(final[i] == null || 
+				final[i].Name == string.Empty || 
+				final[i].Clip == null || 
+			    final[i].Clip.Count == 0)
+			    {
+			    	final.RemoveAt(i);
+			    	i--;
+			    } 
+			
+		}
+		Clips = final.ToArray();
 	}
 }
 
@@ -159,7 +237,19 @@ public class AudioGroup
 public class AudioClipProperties
 {
 	public string Name;
-	public AudioClip Clip;
+	public List<AudioClip> Clip;
+
+	public AudioClipProperties()
+	{
+		Clip = new List<AudioClip>();
+	}
+
+	public AudioClip GetClip()
+	{
+		if(Clip.Count == 0) return null;
+		else if(Clip.Count == 1) return Clip[0];
+		else return Clip[Random.Range(0, Clip.Count)];
+	}
 	public float Volume = 1.0F;
 	public float StopAtPercent = 1.0F;
 }

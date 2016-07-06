@@ -27,6 +27,16 @@ public class Wave : Unit {
 		}
 	}
 
+	public StCon _Name
+	{
+		get{
+			if(!GenerateName) return new StCon(Name, GameData.Colour(Genus));
+			else return new StCon(ModContainer.GenerateWaveName(true, true), GameData.Colour(Genus));
+		}
+	}
+
+	public bool GenerateName;
+
 
 	public bool Active;
 	public float Chance = 1.0F;
@@ -312,7 +322,9 @@ public class Wave : Unit {
 		UIManager.Objects.TopGear.MoveToDivision(0);
 		//yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 		StCon [] floor = new StCon[] {new StCon("Floor"), new StCon(GameManager.Floor + "")};
-		StCon [] namecon = new StCon[] {new StCon(Name, GameData.Colour(Genus), false, 110)};
+
+		
+		StCon [] namecon = new StCon[] {_Name};
 		yield return StartCoroutine(UIManager.instance.Alert(1.25F, floor, namecon));
 
 		UIManager.Objects.TopGear[2].SetActive(true);

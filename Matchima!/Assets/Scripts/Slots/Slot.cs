@@ -60,7 +60,7 @@ public class Slot : MonoBehaviour {
 		}
 	}
 
-	public virtual void DamageIndicator(ref List<int> damage, List<Tile> selected)
+	public virtual void DamageIndicator(ref int [] damage, Tile [] selected)
 	{
 		damage = damage;
 		//return damage;

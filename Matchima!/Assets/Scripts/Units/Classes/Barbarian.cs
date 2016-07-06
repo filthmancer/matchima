@@ -97,8 +97,8 @@ public class Barbarian : Class {
 		MiniAlertUI b = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "Heal", 170, GameData.Colour(Genus), step_time * 2, 0.2F);
 		b.AddJuice(Juice.instance.BounceB, 0.1F);
 		yield return new WaitForSeconds(GameData.GameSpeed(step_time));
-		MiniAlertUI c  = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.down * 2,
-			"Tap to fill!", 140, GameData.Colour(GENUS.STR), step_time, 0.2F);
+		MiniAlertUI c  = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.down * 3,
+			"Tap the heart!", 160, GameData.Colour(GENUS.STR), step_time, 0.2F);
 		c.AddJuice(Juice.instance.BounceB, 0.1F);
 		yield return new WaitForSeconds(GameData.GameSpeed(step_time));
 		UIManager.ClassButtons.GetClass(Index).ShowClass(false);
@@ -117,11 +117,16 @@ public class Barbarian : Class {
 		});
 
 		float taptimer = 3.0F;
-		while((taptimer -= Time.deltaTime) > 0.0F)
+		bool istapping = true;
+		while(istapping)
 		{
 			if(final_ratio > 0.0F) final_ratio -= 0.003F;
 			MGame.Img[1].fillAmount = Mathf.Lerp(MGame.Img[1].fillAmount, final_ratio, Time.deltaTime * 5);
 			MGame.Txt[0].text = "Healing\n" + (int)(final_ratio * HealTotal) + "%";
+
+			taptimer -= Time.deltaTime;
+
+			if(taptimer <= 0.0F || final_ratio >= 1.0F) istapping = false;
 			yield return null;
 		}
 		MGame.ClearActions(UIAction.MouseDown);

@@ -77,6 +77,7 @@ public class UIMenu : UIObj {
 		int wedge_num = 8;
 		for(int i = 0; i < wedge_num; i++)
 		{
+			if(GameData.instance.Classes.Length <= i) break;
 			Class child = GameData.instance.Classes[i];
 			UIClassSelect obj = (UIClassSelect) Instantiate(ClassPrefab);
 			UIManager.Objects.BotGear[3].GetChild(0).AddChild(obj);

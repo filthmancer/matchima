@@ -330,12 +330,18 @@ public class Tile : MonoBehaviour {
 						{	
 							SetState(TileState.Selected);
 							PlayerControl.instance.GetSelectedTile(this);
+
 							PlayAudio("touch");
 						}
 						else SetState(TileState.Idle);	
 					}		
 				}
-				else SetState(TileState.Locked);
+				else 
+				{
+					if(!IsState(TileState.Locked)) PlayAudio("touch");
+					SetState(TileState.Locked);
+
+				}
 			}
 			else if(PlayerControl.matchingTile != null && !IsGenus(PlayerControl.matchingTile))
 			{
@@ -438,6 +444,7 @@ public class Tile : MonoBehaviour {
 
 	public virtual AudioSource PlayAudio(string clip)
 	{
+		print(this + ":" + clip);
 		return AudioManager.instance.PlayTileAudio(this, clip);
 	}
 

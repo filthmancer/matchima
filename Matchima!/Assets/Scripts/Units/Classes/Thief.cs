@@ -87,19 +87,19 @@ public class Thief : Class {
 		switch(MeterLvl)
 		{
 			case 1:
-				yield return StartCoroutine(ActiveRoutine(2));
+				yield return StartCoroutine(ActiveRoutine(5, 10));
 				yield return StartCoroutine(PowerDown());
 				yield return StartCoroutine(LevelUp(1));
 				
 			break;
 			case 2:
-				yield return StartCoroutine(ActiveRoutine(4));
+				yield return StartCoroutine(ActiveRoutine(6, 25));
 				yield return StartCoroutine(PowerDown());
 				yield return StartCoroutine(LevelUp(2));
 				
 			break;
 			case 3:
-				yield return StartCoroutine(ActiveRoutine(7));
+				yield return StartCoroutine(ActiveRoutine(7, 50));
 				yield return StartCoroutine(PowerDown());
 				yield return StartCoroutine(LevelUp(3));
 				
@@ -114,7 +114,7 @@ public class Thief : Class {
 
 	private UIObj CatcherObjActual;
 	List<Tile> to_collect = new List<Tile>();
-	IEnumerator ActiveRoutine(int knives)
+	IEnumerator ActiveRoutine(int knives, int power)
 	{
 		activated = true;
 		CatchNum = 0;
@@ -190,7 +190,7 @@ public class Thief : Class {
 
 			if(to_collect.Count > 1) to_collect.RemoveAt(num);
 
-			yield return StartCoroutine(ThrowKnife(target));
+			yield return StartCoroutine(ThrowKnife(target, power));
 			yield return new WaitForSeconds(GameData.GameSpeed(0.35F));
 		}
 
@@ -230,7 +230,7 @@ public class Thief : Class {
 		knife.transform.position = UIManager.Objects.BotGear.transform.position;
 		float velx = Random.Range(0.09F, 0.17F);
 		if(Random.value < 0.5F) velx = -velx;
-		Vector3 vel = new Vector3(velx, 2F, 0.0F);
+		Vector3 vel = new Vector3(velx, 2.0F * TileMaster.YScale, 0.0F);
 		knife.GetComponent<Velocitizer>().SetVelocity(vel, 0.3F);
 		knife.GetComponent<Velocitizer>().SetRotation(new Vector3(0,0,Random.Range(-1.5F, 1.5F)));
 		knife.GetComponent<Velocitizer>().AddTimedAction(() =>
@@ -243,18 +243,16 @@ public class Thief : Class {
 				"Caught!", 100, GameData.Colour(Genus), 0.4F, 0.1F);
 				Destroy(knife.gameObject);
 			} 
-			
-			
 		}, TimerType.PostTimer, 0.2F);
 
 		return knife;
 	}
 
-	IEnumerator ThrowKnife(Tile target)
+	IEnumerator ThrowKnife(Tile target, int power)
 	{
 		target.SetState(TileState.Selected, true);
 		UIObj part = CreateMinigameObj();
-		part.transform.position = this.transform.position;
+		part.transform.position = UIManager.ClassButtons.GetClass(Index).transform.position;
 		part.transform.localScale *= 0.7F;
 		part.GetComponent<Velocitizer>().enabled = false;
 		MoveToPoint mp = part.GetComponent<MoveToPoint>();
@@ -262,10 +260,10 @@ public class Thief : Class {
 		mp.SetTarget(target.transform.position);
 		mp.SetPath(0.55F, 0.0F);
 
-		float dist = Vector3.Distance(target.transform.position, this.transform.position);
+		float dist = Vector3.Distance(target.transform.position, UIManager.ClassButtons.GetClass(Index).transform.position);
 		mp.Speed = 0.1F + 0.05F * dist;
 		float part_time = 0.2F;// + (0.03F * dist);
-		int final_damage = 50;
+		int final_damage = power;
 		bool add = true;
 		mp.SetTileMethod(target, (Tile child) =>
 		{

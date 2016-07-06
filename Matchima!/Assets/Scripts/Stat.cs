@@ -287,10 +287,10 @@ public class Stat
 	}
 
 	public void CheckStatInc() {
-		Stat_HealthInc = (float)Strength*3;
-		Stat_MeterInc = (float)Wisdom/4.0F;
-		Stat_AtkInc = (float)Dexterity / 10.0F;
-		Stat_ValueInc = (float)Charisma/30.0F;
+		Stat_HealthInc = (float)Strength*6;
+		Stat_MeterInc = (float)Wisdom / 4.0F;
+		Stat_AtkInc = (float)Dexterity / 7.0F;
+		Stat_ValueInc = (float)Charisma / 20.0F;
 	}
 	
 	public int GetGENUSStat(GENUS ab) {

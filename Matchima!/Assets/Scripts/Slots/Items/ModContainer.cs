@@ -4,6 +4,54 @@ using System;
 
 public class ModContainer : MonoBehaviour {
 
+	public static string [] Wave_Prefixes = new string []
+	{
+		"Red Hot",
+		"Glowing",
+		"The Evil",
+		"Hypothetical",
+		"Broken",
+		"Fruity",
+		"Ever-Hungry"
+	};
+
+	public static string [] Wave_Titles = new string []
+	{
+		"Gnarr",
+		"Rom",
+		"Shiik",
+		"Yiik",
+		"Ptn",
+		"Yth",
+		"Rggn"
+	};
+
+	public static string [] Wave_Suffixes = new string []
+	{
+		"the Cold",
+		"Shiny Devourer",
+		"Evil Friend",
+		"Sloveth",
+		"Smith"
+	};
+
+	public static string [] GenerateWaveNameArray(bool pref, bool suff)
+	{
+		string prefix = "", suffix = "";
+		string title = Wave_Titles[UnityEngine.Random.Range(0, Wave_Titles.Length)];
+		if(pref) prefix = Wave_Prefixes[UnityEngine.Random.Range(0, Wave_Prefixes.Length)];
+		if(suff) suffix = Wave_Suffixes[UnityEngine.Random.Range(0, Wave_Suffixes.Length)];
+		return new string [] {prefix, title, suffix};
+	}
+
+	public static string GenerateWaveName(bool pref, bool suff)
+	{
+		string prefix = "", suffix = "";
+		string title = Wave_Titles[UnityEngine.Random.Range(0, Wave_Titles.Length)];
+		if(pref) prefix = Wave_Prefixes[UnityEngine.Random.Range(0, Wave_Prefixes.Length)];
+		if(suff) suffix = Wave_Suffixes[UnityEngine.Random.Range(0, Wave_Suffixes.Length)];
+		return prefix + "\n" + title + (suff ? ",\n":"\n") + suffix;
+	}
 
 	public static UpgradeBracket [] Brackets
 	{
@@ -120,122 +168,122 @@ public class ModContainer : MonoBehaviour {
 	public static UpgradeBracket Generator = new UpgradeBracket("Generator", ItemType.Generator, 0.75F, new GenusBracket[]
 	{
 		new GenusBracket("Red",
-			new Upgrade("Bombers's", "% chance\n of Bomb", 0.45F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Bombers's", "% chance\n of Bomb", 0.45F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("", "bomb", 0.1F + 0.03F * value));}, 3, 10
 				),
-			new Upgrade("Soldier's", "% chance\n of Red Health", 1.0F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Soldier's", "% chance\n of Red Health", 1.0F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("Red", "health", 0.1F + 0.03F * value));}, 3, 10
 				),
-			new Upgrade("Soldier's", "% chance\n of Red Sword", 1.0F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Soldier's", "% chance\n of Red Sword", 1.0F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("red", "sword", 0.1F + 0.03F * value));}, 3, 10
 				),
-			new Upgrade("Smith's", "% chance\n of Red Armour", 1.0F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Smith's", "% chance\n of Red Armour", 1.0F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("red", "armour", 0.1F + 0.03F * value));}, 3, 10
 				),
-			new Upgrade("Cleric's", "% chance\n of Red Cross", 1.0F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Cleric's", "% chance\n of Red Cross", 1.0F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("Red", "cross", 0.1F + 0.03F * value));}, 3, 10
 				),
-			new Upgrade("Mages's", "% chance\n of Red Arcane", 1.0F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Mages's", "% chance\n of Red Arcane", 1.0F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("Red", "arcane", 0.1F + 0.03F * value));}, 3, 10
 				),
-			new Upgrade("Bombers's", "% chance\n of Red Lightning", 0.45F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Bombers's", "% chance\n of Red Lightning", 0.45F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("Red", "lightning", 0.1F + 0.03F * value));}, 3, 10
 				)
 			),
 		
 		new GenusBracket("Blue",
-			new Upgrade("Soldier's", "% chance\n of Sword", 0.45F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Soldier's", "% chance\n of Sword", 0.45F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("", "sword", 0.1F + 0.03F * value));}, 3, 10
 				),
-			new Upgrade("Soldier's", "% chance\n of Blue Health", 1.0F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Soldier's", "% chance\n of Blue Health", 1.0F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("Blue", "health", 0.1F + 0.03F * value));}, 3, 10
 				),
-			new Upgrade("Cleric's", "% chance\n of Blue Cross", 1.0F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Cleric's", "% chance\n of Blue Cross", 1.0F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("Blue", "cross", 0.1F + 0.03F * value));}, 3, 10
 				),
-			new Upgrade("Smith's", "% chance\n of Blue Armour", 1.0F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Smith's", "% chance\n of Blue Armour", 1.0F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("blue", "armour", 0.1F + 0.03F * value));}, 3, 10
 				),
-			new Upgrade("Mages's", "% chance\n of Blue Arcane", 1.0F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Mages's", "% chance\n of Blue Arcane", 1.0F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("Blue", "arcane", 0.1F + 0.03F * value));}, 3, 10
 				),
-			new Upgrade("Bombers's", "% chance\n of Blue Bomb", 1.0F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Bombers's", "% chance\n of Blue Bomb", 1.0F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("Blue", "bomb", 0.1F + 0.03F * value));}, 3, 10
 				),
-			new Upgrade("Bombers's", "% chance\n of Blue Lightning", 0.45F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Bombers's", "% chance\n of Blue Lightning", 0.45F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("Blue", "lightning", 0.1F + 0.03F * value));}, 3, 10
 				)
 		),
 		new GenusBracket("Green",
-			new Upgrade("Mage's", "% chance\n of Arcane", 0.45F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Mage's", "% chance\n of Arcane", 0.45F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("", "arcane", 0.1F + 0.03F * value));}
 				),
-			new Upgrade("Soldier's", "% chance\n of Green Health", 1.0F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Soldier's", "% chance\n of Green Health", 1.0F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("Green", "health", 0.1F + 0.03F * value));}, 3, 10
 				),
-			new Upgrade("Soldier's", "% chance\n of Green Sword", 1.0F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Soldier's", "% chance\n of Green Sword", 1.0F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("green", "sword", 0.1F + 0.03F * value));}, 3, 10
 				),
-			new Upgrade("Smith's", "% chance\n of Green Armour", 1.0F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Smith's", "% chance\n of Green Armour", 1.0F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("green", "armour", 0.1F + 0.03F * value));}, 3, 10
 				),
-			new Upgrade("Cleric's", "% chance\n of Green Cross", 1.0F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Cleric's", "% chance\n of Green Cross", 1.0F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("Green", "cross", 0.1F + 0.03F * value));}, 3, 10
 				),
-			new Upgrade("Bombers's", "% chance\n of Green Bomb", 1.0F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Bombers's", "% chance\n of Green Bomb", 1.0F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("Green", "bomb", 0.1F + 0.03F * value));}, 3, 10
 				),
-			new Upgrade("Bombers's", "% chance\n of Green Lightning", 0.45F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Bombers's", "% chance\n of Green Lightning", 0.45F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("Green", "lightning", 0.1F + 0.03F * value));}, 3, 10
 				)
 		),
 		new GenusBracket("Yellow",
-			new Upgrade("Cleric's", "% chance\n of Cross", 0.45F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Cleric's", "% chance\n of Cross", 0.45F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("", "cross", 0.1F + 0.03F * value));}, 3, 10
 				),
-			new Upgrade("Soldier's", "% chance\n of Yellow Health", 1.0F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Soldier's", "% chance\n of Yellow Health", 1.0F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("Yellow", "health", 0.1F + 0.03F * value));}, 3, 10
 				),
-			new Upgrade("Soldier's", "% chance\n of Yellow Sword", 1.0F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Soldier's", "% chance\n of Yellow Sword", 1.0F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("yellow", "sword", 0.1F + 0.03F * value));}, 3, 10
 				),
-			new Upgrade("Smith's", "% chance\n of Yellow Armour", 1.0F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Smith's", "% chance\n of Yellow Armour", 1.0F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("yellow", "armour", 0.1F + 0.03F * value));}, 3, 10
 				),
-			new Upgrade("Mages's", "% chance\n of Yellow Arcane", 1.0F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Mages's", "% chance\n of Yellow Arcane", 1.0F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("Yellow", "arcane", 0.1F + 0.03F * value));}, 3, 10
 				),
-			new Upgrade("Bombers's", "% chance\n of Yellow Bomb", 1.0F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Bombers's", "% chance\n of Yellow Bomb", 1.0F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("Yellow", "bomb", 0.1F + 0.03F * value));}, 3, 10
 				),
-			new Upgrade("Bombers's", "% chance\n of Yellow Lightning", 0.45F, ScaleType.GRADIENT, 0.06F,
+			new Upgrade("Bombers's", "% chance\n of Yellow Lightning", 0.45F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("Yellow", "lightning", 0.1F + 0.03F * value));}, 3, 10
 				)
@@ -306,46 +354,46 @@ public class ModContainer : MonoBehaviour {
 		)
 		});
 	
-	public static UpgradeBracket Developers = new UpgradeBracket("Developer's", ItemType.Developers, 5.25F, new GenusBracket[]
+	public static UpgradeBracket Developers = new UpgradeBracket("Developer's", ItemType.Developers, 0.35F, new GenusBracket[]
 	{
 		new GenusBracket("Red",
-			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.2F,
+			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.4F,
 						(Stat s, float value) => {
-							s.MapSize.x += 1 + (int) (1 * value);}, 1, 1
+							s.MapSize.x += (int) (1 * value);},1
 						),
-			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.2F,
+			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.4F,
 				(Stat s, float value) => {
-					s.MapSize.y += 1 + (int) (1 * value);},1,1
+					s.MapSize.y += (int) (1 * value);},1
 					)
 		),
 		new GenusBracket("Blue",
-			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.2F,
+			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.4F,
 						(Stat s, float value) => {
-							s.MapSize.x += 1 + (int) (1 * value);},1,1
+							s.MapSize.x += (int) (1 * value);},1
 						),
-			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.2F,
+			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.4F,
 				(Stat s, float value) => {
-					s.MapSize.y += 1 + (int) (1 * value);},1,1
+					s.MapSize.y += (int) (1 * value);},1
 				)
 		),
 		new GenusBracket("Green",
-			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.2F,
+			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.4F,
 						(Stat s, float value) => {
-							s.MapSize.x += 1 + (int) (1 * value);},1,1
+							s.MapSize.x += (int) (1 * value);},1
 						),
-			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.2F,
+			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.4F,
 				(Stat s, float value) => {
-					s.MapSize.y += 1 + (int) (1 * value);},1,1
+					s.MapSize.y += (int) (1 * value);},1
 				)
 		),
 		new GenusBracket("Yellow",
-			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.2F,
+			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.4F,
 						(Stat s, float value) => {
-							s.MapSize.x += 1 + (int) (1 * value);},1,1
+							s.MapSize.x += (int) (1 * value);},1
 						),
-			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.2F,
+			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.4F,
 				(Stat s, float value) => {
-					s.MapSize.y += 1 + (int) (1 * value);},1,1
+					s.MapSize.y += (int) (1 * value);},1
 				)
 		)
 		
@@ -487,41 +535,41 @@ public class ModContainer : MonoBehaviour {
 	public static UpgradeBracket Curse_Developers = new UpgradeBracket("Hacker's", ItemType.Developers, 0.25F, new GenusBracket[]
 	{
 		new GenusBracket("Red",
-			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.5F,
+			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.4F,
 						(Stat s, float value) => {
 							s.MapSize.x -= (int) (1 * value);}
 						),
-			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.5F,
+			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.4F,
 				(Stat s, float value) => {
 					s.MapSize.y -= (int) (1 * value);}
 					)
 		),
 		new GenusBracket("Blue",
-			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.5F,
+			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.4F,
 						(Stat s, float value) => {
 							s.MapSize.x -= (int) (1 * value);}
 						),
-			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.5F,
+			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.4F,
 				(Stat s, float value) => {
 					s.MapSize.y -= (int) (1 * value);}
 				)
 		),
 		new GenusBracket("Green",
-			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.5F,
+			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.4F,
 						(Stat s, float value) => {
 							s.MapSize.x -= (int) (1 * value);}
 						),
-			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.5F,
+			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.4F,
 				(Stat s, float value) => {
 					s.MapSize.y -= (int) (1 * value);}
 				)
 		),
 		new GenusBracket("Yellow",
-			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.5F,
+			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.4F,
 						(Stat s, float value) => {
 							s.MapSize.x -= (int) (1 * value);}
 						),
-			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.5F,
+			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.4F,
 				(Stat s, float value) => {
 					s.MapSize.y -= (int) (1 * value);}
 				)
@@ -679,7 +727,8 @@ public class Upgrade
 	public int Points 
 	{
 		get{
-			return (int)(((int)Points_total * Points_desc_mult + Points_desc_add) * Rate);
+
+			return (int)(RateFinal * Points_desc_mult + Points_desc_add);
 		}
 	}
 
@@ -697,7 +746,14 @@ public class Upgrade
 	public int Points_desc_add;
 
 	public Action <Stat, float> Method;
-	public float Rate = 1.0F;
+	public float _Rate;
+	public float RateFinal
+	{
+		get
+		{
+			return _Rate * scalerate;
+		}
+	}
 	
 
 	public Upgrade(string _prefix, string _suffix, float _chance, ScaleType _type, float _scalerate, Action<Stat, float> _method, 

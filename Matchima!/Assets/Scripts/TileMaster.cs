@@ -24,6 +24,20 @@ public class TileMaster : MonoBehaviour {
 		get{return TileMaster.Grid.Tiles;}
 	}
 
+	public static float YScale
+	{
+		get{
+			return 1.0F + (float)(TileMaster.Grid.Size[1] - 6)*0.14F;
+		}
+	}
+
+	public static float XScale
+	{
+		get{
+			return 1.0F + (float)(TileMaster.Grid.Size[0] - 5)*0.14F;
+		}
+	}
+
 	public Tile this[int x, int y]
 	{
 		get{

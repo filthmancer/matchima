@@ -37,9 +37,9 @@ public class Backstab : Ability {
 		}
 	}
 	
-	public override void DamageIndicator(ref List<int> damage, List<Tile> selected)
+	public override void DamageIndicator(ref int [] damage, Tile [] selected)
 	{
-		for(int i = 0; i < selected.Count; i++)
+		for(int i = 0; i < selected.Length; i++)
 		{
 			if(i == 0) continue;
 			if(selected[i].Type.isEnemy)

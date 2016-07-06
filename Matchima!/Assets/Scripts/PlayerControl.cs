@@ -179,24 +179,8 @@ public class PlayerControl : MonoBehaviour {
 					if(child.Genus != GENUS.ALL) PlayerControl.matchingTile = child;
 				}
 			}
-			AttackValue = Player.Stats._Attack;
-			AttackMatch = false;
-			foreach(Tile child in selectedTiles)
-			{
-				//If the match is an attack
-				//if(child.Type.isEnemy) AttackMatch = true;
-
-				//Sword Damage
-				if(!child.Type.isEnemy) 
-				{
-					AttackValue += Player.Stats._Attack * child.Stats.Attack;
-				}
-			}
-			//Adding Combo bonus multiplier to damage
-			AttackValue = (int)((float)AttackValue * ComboBonus);
-
 			//Adding ability, item and other values to attack
-			List<int> finaldamage = Player.instance.ActiveDamage(AttackValue, selectedTiles);
+			int [] finaldamage = GetAttackValues(selectedTiles.ToArray());
 
 			for(int i = 0; i < selectedTiles.Count; i++)
 			{
@@ -205,20 +189,6 @@ public class PlayerControl : MonoBehaviour {
 					selectedTiles[i].SetDamageWarning(finaldamage[i]);
 				}
 			}
-
-			/*foreach(Tile child in selectedTiles)
-			{
-				//How much damage will be dealt to enemies
-				if(child.Type.isEnemy) 
-				{
-					child.SetDamageWarning(AttackValue);
-				}
-			}*/
-		}
-		else 
-		{
-			AttackMatch = false;
-			AttackValue = 0;
 		}
 	}
 
@@ -235,6 +205,21 @@ public class PlayerControl : MonoBehaviour {
 
 			last = final[i];
 		}
+		return final;
+	}
+
+	public int [] GetAttackValues(Tile [] selected)
+	{
+		int [] final = new int[selected.Length];
+		int default_attack = Player.Stats._Attack;
+		for(int i = 0; i < selected.Length; i++)
+		{
+			if(!selected[i].Type.isEnemy)
+				default_attack += Player.Stats._Attack * selected[i].Stats.Attack;
+		}
+
+		final = Player.instance.ActiveDamage(default_attack, selected);
+
 		return final;
 	}
 
@@ -447,7 +432,12 @@ public class PlayerControl : MonoBehaviour {
 		if(match)
 		{
 			//AudioManager.instance.PlayClip(this.transform, AudioManager.instance.Tiles_Default, "complete_1");
-			//finalTiles.AddRange(selectedTiles);
+			int [] damage = GetAttackValues(selectedTiles.ToArray());
+			for(int i = 0; i < selectedTiles.Count; i++)
+			{
+				selectedTiles[i].InitStats.TurnDamage += damage[i];
+			}
+
 			GameManager.instance.GetTurn();
 			TimeSinceLastMatch = 0.0F;
 		}

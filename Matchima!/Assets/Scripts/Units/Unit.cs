@@ -8,4 +8,8 @@ public class Unit : MonoBehaviour {
 	public string Name;
 	public List<ClassEffect> _Status = new List<ClassEffect>();
 
+	void Awake()
+	{
+		Name = Name.Replace("!N", "\n");
+	}
 }
