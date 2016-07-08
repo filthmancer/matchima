@@ -99,6 +99,8 @@ public class Player : MonoBehaviour {
 		}
 	}
 
+	public int [] MeterThisTurn = new int[7];
+
 	public EquipmentContainer Equipment;
 	public List<Item> ThisTurn_items = new List<Item>();
 	public List<UpgradeGroup> ThisTurn_upgrades = new List<UpgradeGroup>();
@@ -230,13 +232,6 @@ public class Player : MonoBehaviour {
 
 	public IEnumerator BeginTurn()
 	{
-		//yield return new WaitForSeconds(0.1F);
-		//foreach(Ability child in Abilities)
-		//{
-		//	if(child == null) continue;
-		//	if(!child.initialized) child.initialized = true;
-		//	child.BeforeTurn();
-		//}
 		foreach(Class child in Classes)
 		{
 			if(child == null) continue;
@@ -277,8 +272,6 @@ public class Player : MonoBehaviour {
 		//		StartCoroutine(UIManager.instance.Quote(Classes[randb].Quotes.Start));
 		//	}
 		//}
-
-		//Tutorial();
 
 
 		//if(ThisTurn_items.Count > 0)
@@ -331,6 +324,8 @@ public class Player : MonoBehaviour {
 		Stats.PrevTurnKills = 0;
 		InitStats.PrevTurnKills = 0;
 		CompleteMatch = true;
+		//MeterThisTurn = new int[4];
+
 		yield return new WaitForSeconds(GameData.GameSpeed(0.3F));
 		yield return null;
 	}
@@ -433,6 +428,7 @@ public class Player : MonoBehaviour {
 			
 		//ROLL LUCK STAT OF TARGET TO SEE IF THEY DIE
 			float luck_chance = (float) Classes[target].Stats.Luck / (GameManager.Difficulty * 3.2F);
+			luck_chance += Classes[target].Stats.DeathSaveChance;
 
 			bool roll = Random.value > luck_chance;
 			yield return StartCoroutine(UIManager.instance.ShowDeathIcon(Classes[target], roll));
@@ -446,6 +442,7 @@ public class Player : MonoBehaviour {
 					Stats.isKilled = true;
 				}
 			}
+			ResetStats();
 	}
 
 	public List<Bonus> CheckForBonus(GENUS g)
@@ -704,12 +701,11 @@ public class Player : MonoBehaviour {
 		}
 	}
 
-
 	public void LevelUp()
 	{
 		Stats.Level += 1;
 
-		InitStats.LevelUp();
+		InitStats.LevelUp(1);
 
 		ResetStats();
 	}
@@ -801,6 +797,8 @@ public class Ops
 	public bool ShowNumbers = false;
 	public bool ShowIntroWaves;
 	public bool SkipAllStory;
+
+	public bool PowerupAlerted = false;
 }
 
 [System.Serializable]

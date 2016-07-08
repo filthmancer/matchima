@@ -218,7 +218,6 @@ public class AudioGroup
 
 		for(int i = 0; i < final.Count; i++)
 		{
-			if(final[i] != null) Debug.Log(this.Name + ":" +  final[i].Name);
 			if(final[i] == null || 
 				final[i].Name == string.Empty || 
 				final[i].Clip == null || 

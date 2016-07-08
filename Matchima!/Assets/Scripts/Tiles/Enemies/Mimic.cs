@@ -230,7 +230,7 @@ public class Mimic : Enemy {
 			
 			if(target != null)
 			{
-				StartCoroutine(AllyAttack(target));
+				//StartCoroutine(AllyAttack(target));
 			}
 		}
 	}

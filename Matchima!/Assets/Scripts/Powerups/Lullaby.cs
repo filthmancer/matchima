@@ -2,97 +2,47 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class Bard : Class {
-
-	TileChance harp;
-
-	bool warcry_a, warcry_b, warcry_c;
-	private int _currentmanapower;
-
-	public override StCon [] _Desc
-	{
-		get
-		{
-			List<StCon> final = new List<StCon>();
-			final.Add(new StCon(Meter + "/" + MeterTop + " Mana", GameData.Colour(Genus)));
-			final.Add(new StCon("Lvl " + Level + " ("+ Exp_Current + "/" + Exp_Max + " xp)", GameData.Colour(GENUS.WIS)));
-
-			for(int i = 0; i < Stats.Length; i++)
-			{
-				bool last = i==Stats.Length-1;
-				final.Add(new StCon(Stats[i].StatCurrent+"", GameData.Colour((GENUS)i), last));
-				if(!last) final.Add(new StCon(" /", Color.white, false));
-			}
-			
-			if(warcry_a) final.Add(new StCon("Applies Sleep to 1 Enemy Per Turn", Color.white));
-			if(warcry_b) final.Add(new StCon("Applies Charm to 1 Enemy Per Turn", Color.white));
-			if(warcry_c) final.Add(new StCon("Applies Sleep to 1 Enemy Per Turn", Color.white));
-			foreach(Slot child in AllMods)
-			{
-				if(child != null) final.AddRange(child.Description_Tooltip);
-			}
-			
-			foreach(ClassEffect child in _Status)
-			{
-				final.AddRange(child.Description);
-			}
-				
-			return final.ToArray();
-		}
-	}
-	public override void StartClass () {
-
-		harp = new TileChance();
-		harp.Genus = GameData.ResourceLong(Genus);
-		harp.Type = "harp";
-		harp.Chance = 0.15F;
-		InitStats.TileChances.Add(harp);
-
-
-
-		TileChance health = new TileChance();
-		health.Genus = GameData.ResourceLong(Genus);
-		health.Type = "health";
-		health.Chance = 0.15F;
-		InitStats.TileChances.Add(health);
-
-		PowerupSpell = GameData.instance.GetPowerup("Lullaby", this);
-
-		base.StartClass();
-	}
-
+public class Lullaby : Powerup {
 
 	public UIObj HarpObj;
 	UIObj Harp;
 
 	int notes_hit = 0;
 
-	IEnumerator ActiveRoutine(int notes_played, int sleep_ratio)
+	public int [] NotesPlayed = new int[]{
+		6,12,14
+	};
+	public int [] SleepRatio = new int[]{
+		3,3,2
+	};
+
+	protected override IEnumerator Minigame(int level)
 	{
+		int notes_played = NotesPlayed[level-1];
+		int sleep_ratio = SleepRatio[level-1];
 		notes_hit = 0;
-		activated = true;
 		GameManager.instance.paused = true;
 		UIManager.instance.ScreenAlert.SetTween(0,true);
-		UIManager.ClassButtons.GetClass(Index).ShowClass(true);
-		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, "", GameData.Colour(Genus));
-		powerup.transform.SetParent(UIManager.ClassButtons.GetClass(Index).transform);
-		powerup.transform.position = UIManager.ClassButtons.GetClass(Index).transform.position;
+		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(true);
+		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, "", GameData.Colour(Parent.Genus));
+		powerup.transform.SetParent(UIManager.ClassButtons.GetClass(Parent.Index).transform);
+		powerup.transform.position = UIManager.ClassButtons.GetClass(Parent.Index).transform.position;
 		powerup.transform.localScale = Vector3.one;
 
 		float step_time = 0.75F;
 		float total_time = step_time * 3;
 		MiniAlertUI a = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.up*2, 
-			"Bard Casts", 70, GameData.Colour(Genus), total_time, 0.2F);
+			"Bard Casts", 70, GameData.Colour(Parent.Genus), total_time, 0.2F);
 		a.AddJuice(Juice.instance.BounceB, 0.1F);
 		yield return new WaitForSeconds(GameData.GameSpeed(step_time));
-		MiniAlertUI b = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "Lullaby", 170, GameData.Colour(Genus), step_time * 2, 0.2F);
+		MiniAlertUI b = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "Lullaby", 170, GameData.Colour(Parent.Genus), step_time * 2, 0.2F);
 		b.AddJuice(Juice.instance.BounceB, 0.1F);
 		yield return new WaitForSeconds(GameData.GameSpeed(step_time));
 		MiniAlertUI c  = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.down * 2,
 			"Play the\nnotes!", 140, GameData.Colour(GENUS.STR), step_time, 0.2F);
 		c.AddJuice(Juice.instance.BounceB, 0.1F);
 		yield return new WaitForSeconds(GameData.GameSpeed(step_time));
-		UIManager.ClassButtons.GetClass(Index).ShowClass(false);
+		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(false);
 		Destroy(powerup);
 
 
@@ -106,7 +56,7 @@ public class Bard : Class {
 		yield return new WaitForSeconds(Time.deltaTime * 15);
 
 		MiniAlertUI alert  = UIManager.instance.MiniAlert(UIManager.Objects.BotGear.transform.position + Vector3.down * 1,
-			"Play the\nnotes!", 100, GameData.Colour(Genus), 7.0F, 0.2F);
+			"Play the\nnotes!", 100, GameData.Colour(Parent.Genus), 7.0F, 0.2F);
 		alert.AddJuice(Juice.instance.BounceB, 0.1F);
 
 		int sleep_duration = 0; //Duration of mass sleep
@@ -136,7 +86,7 @@ public class Bard : Class {
 		yield return new WaitForSeconds(GameData.GameSpeed(0.15F));
 		UIManager.instance.ScreenAlert.SetTween(0,false);
 		TileMaster.instance.SetAllTileStates(TileState.Locked, true);
-		UIManager.ClassButtons.GetClass(Index).ShowClass(true);
+		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(true);
 
 		sleep_duration = notes_hit/ sleep_ratio;
 		Tile [] targets  = TileMaster.Enemies;
@@ -148,14 +98,14 @@ public class Bard : Class {
 
 		yield return new WaitForSeconds(0.4F);
 		GameManager.instance.paused = false;
-		UIManager.ClassButtons.GetClass(Index).ShowClass(false);
+		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(false);
 		TileMaster.instance.ResetTiles(true);
 	}
 
 	UIObj CreateNote()
 	{
 		int line = Random.Range(0, 4);
-		UIObj note = CreateMinigameObj();
+		UIObj note = CreateMinigameObj(0);
 		note.transform.localScale = Vector3.one * 0.1F;
 		note.transform.position = Harp[line].transform.position;
 		note.AddAction(UIAction.MouseDown, () =>
@@ -176,7 +126,7 @@ public class Bard : Class {
 	{
 		
 		target.SetState(TileState.Selected, true);
-		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[(int)Genus].transform, Effect.Force);
+		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[Parent.Index].transform, Effect.Force);
 		MoveToPoint charm = initpart.GetComponent<MoveToPoint>();
 		charm.SetTarget(target.transform.position);
 		charm.SetPath(0.25F, 0.3F);
@@ -188,4 +138,6 @@ public class Bard : Class {
 			charm.Target_Tile.AddEffect("Sleep", duration);
 		});
 	}
+
+
 }

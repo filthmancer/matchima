@@ -690,7 +690,12 @@ public class GameManager : MonoBehaviour {
 		while(!TileMaster.AllLanded)	yield return null;
 		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 		yield return StartCoroutine(Player.instance.EndTurn());
-		StartCoroutine(SplashBonus(ComboSize));
+		
+		
+		while(UIManager.instance.IsShowingMeters) yield return null;
+		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+		
+		//StartCoroutine(SplashBonus(ComboSize));
 		
 		yield return StartCoroutine(TileMaster.instance.BeforeTurn());
 		UIManager.instance.SetClassButtons(false);
@@ -810,33 +815,7 @@ public class GameManager : MonoBehaviour {
 			
 			if(target != null)
 			{
-				float init_size = Random.Range(130, 170);
-				float init_rotation = Random.Range(-7,7);
-				float info_time = 0.57F;
-				float info_size = init_size + (child.Stats.Value * 2);
-				float info_movespeed = 0.22F;
-				float info_finalscale = 0.55F;
-
-				Vector3 pos = TileMaster.Grid.GetPoint(child.Point.Point(0)) + Vector3.down * 0.3F;
-				MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + child.GetAttack(), info_size, GameData.instance.BadColour, info_time, 0.03F, false);
-				m.Txt[0].outlineColor = GameData.instance.BadColourFill;
-				m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
-				MoveToPoint mini = m.GetComponent<MoveToPoint>();
-				m.AddJuice(Juice.instance.BounceB, info_time);
-				m.AddAction(() => {mini.enabled = true;});
-				m.DestroyOnEnd = false;
-
-				mini.SetTarget(target.transform.position);
-				mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
-				mini.SetMethod(() =>{
-						if(target == null) return;
-						if(target != null) target.PlayAudio("Hit");
-							target.SetState(TileState.Selected);
-							target.InitStats.TurnDamage += child.GetAttack();
-							target.Match(0);
-							GameData.Log(child +  " dealt " + child.GetAttack() + "damage to " + target);
-					}
-				);
+				child.AttackTile(target);
 				yield return StartCoroutine(child.Animate("Attack", 0.05F));
 			}
 		}
@@ -924,6 +903,7 @@ public class GameManager : MonoBehaviour {
 		Player.instance.CompleteHealth();
 		yield return StartCoroutine(Player.instance.CheckHealth());	
 		Player.instance.ResetStats();
+
 
 		PlayerControl.instance.canMatch = true;
 		PlayerControl.instance.isMatching = false;

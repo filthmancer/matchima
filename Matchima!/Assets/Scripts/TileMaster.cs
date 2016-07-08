@@ -65,6 +65,7 @@ public class TileMaster : MonoBehaviour {
 			{
 				for(int y = 0; y < Tiles.GetLength(1); y++)
 				{
+					if(Tiles[x,y] == null) continue;
 					if(Tiles[x,y].Type.isEnemy) final.Add(Tiles[x,y]);
 				}
 			}
@@ -788,6 +789,7 @@ public class TileMaster : MonoBehaviour {
 		Player.instance.OnTileCollect(t);
 	}
 
+	int [] points = new int [4];
 	private void CollectTileResource(Tile t, bool destroy)
 	{
 		RectTransform res = null;
@@ -829,11 +831,11 @@ public class TileMaster : MonoBehaviour {
 
 		Vector3 startpos = t.transform.position;
 		startpos.z = -8;
-		float init_size = Random.Range(120, 170);
+		float init_size = Random.Range(80, 120);
 		float init_rotation = Random.Range(-7,7);
 
 		float info_time = 0.45F;
-		float info_start_size = init_size + (t.Stats.Value * 2);
+		float info_start_size = init_size + (t.Stats.Value * 5);
 		float info_movespeed = 0.28F;
 		float info_finalscale = 0.65F;
 
@@ -846,16 +848,23 @@ public class TileMaster : MonoBehaviour {
 			Vector3 pos = Grid.GetPoint(t.Point.Point(0)) + Vector3.down * 0.3F;
 			MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + values[0], info_start_size, GameData.Colour(t.Genus), info_time, 0.04F, false);
 			m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
-			mini = m.GetComponent<MoveToPoint>();
+			mini = UIManager.instance.AttachMoverToAlert(ref m);
 			m.AddJuice(Juice.instance.BounceB, info_time);
-			m.AddAction(() => {mini.enabled = true;});
-			m.DestroyOnEnd = false;
 
-			mini.SetTarget(res.position);
+			mini.SetTarget(UIManager.Objects.MiddleGear[0].transform.position);
 			mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
-			mini.SetIntMethod( 
+
+			mini.SetIntMethod((int [] num) =>
+			{
+				UIManager.instance.GetMeterPoints(num[0], num[1]);
+
+			}, new int [] {(int)t.Genus, values[0]});
+
+
+			/*mini.SetIntMethod( 
 				(int [] num) =>
 				{
+					
 					if((GENUS)num[0] != GENUS.ALL) Player.Classes[num[0]].AddToMeter(num[1]);
 					else
 					{
@@ -867,6 +876,25 @@ public class TileMaster : MonoBehaviour {
 				},
 				new int []{(int)t.Genus,values[0]}
 			);
+
+			pos = Grid.GetPoint(t.Point.Point(0)) + Vector3.down * 0.3F;
+			m = UIManager.instance.MiniAlert(pos,  "" + values[0], info_start_size, GameData.Colour(t.Genus), info_time, 0.04F, false);
+			m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
+			mini = m.GetComponent<MoveToPoint>();
+			m.AddJuice(Juice.instance.BounceB, info_time);
+			mini = UIManager.instance.AttachMoverToAlert(ref m);
+
+			mini.SetTarget(UIManager.Objects.TopGear[1][0][0].transform.position);
+			mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
+			mini.SetIntMethod( 
+				(int [] num) =>
+				{
+					if(GameManager.Wave != null) GameManager.Wave.AddPoints(num[1]);
+				},
+				new int []{(int)t.Genus,values[0]}
+			);*/
+
+			
 		}
 		if(values[1] > 0)
 		{
@@ -908,7 +936,7 @@ public class TileMaster : MonoBehaviour {
 		}
 		if(t.Type.isEnemy)
 		{
-			Vector3 pos = Grid.GetPoint(t.Point.Point(0)) + Vector3.down * 0.3F;
+			/*Vector3 pos = Grid.GetPoint(t.Point.Point(0)) + Vector3.down * 0.3F;
 			
 			if(GameManager.Wave != null)
 			{
@@ -928,7 +956,7 @@ public class TileMaster : MonoBehaviour {
 				);				
 			}
 
-			/*if(Player.Classes.Length > (int)t.Genus)
+			if(Player.Classes.Length > (int)t.Genus)
 			{
 				MiniAlertUI manaalert = UIManager.instance.MiniAlert(pos,  "" + t.Stats.GetValues()[0], info_start_size, GameData.Colour(t.Genus), info_time, 0.04F, false);
 				manaalert.transform.rotation = Quaternion.Euler(0,0,init_rotation);

@@ -2,80 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class Thief : Class {
-
-	TileChance attack;
-	private Slot manapower;
-	private int _currentmanapower = 100;
-	public override void StartClass () {
-		
-		attack = new TileChance();
-		attack.Genus = "Alpha";
-		attack.Type = "sword";
-		attack.Chance = 0.2F;
-		InitStats.TileChances.Add(attack);
-
-		
-
-		TileChance health = new TileChance();
-		health.Genus = GameData.ResourceLong(Genus);
-		health.Type = "health";
-		health.Chance = 0.05F;
-		InitStats.TileChances.Add(health);
-
-	/*	ClassUpgrade b = new ClassUpgrade((int val) => {attack.Chance += 0.02F * val;});
-		b.BaseAmount = 2;
-		b.Name = "Sword Tiles";
-		b.ShortName = "SWRD";
-		b.Description = " chance of Sword Tiles";
-		b.Prefix = "+";
-		b.Suffix = "%";	
-		b.Rarity = Rarity.Uncommon;
-		AddUpgrades(new ClassUpgrade[] {b});*/
-
-		Barbarian barb = null;
-		foreach(Class child in Player.Classes) {if(child is Barbarian) barb = child as Barbarian;}
-		if(barb != null)
-		{
-			QuoteGroup barb_disgust = new QuoteGroup("Thief-Barb: Disgust");
-			barb_disgust.AddQuote("Keep that brute away from me!", this, false, 2.5F);
-			barb_disgust.AddQuote("You watch your tongue, shadow girl.", barb, false, 2.5F);
-			//barb_disgust.Unlocked = () => {foreach(Class child in Player.Classes){if(child.Name == "Barbarian") return true;} return false;};
-			Quotes.StartQuotes.Add(barb_disgust);
-		}
-
-		PowerupSpell = GameData.instance.GetPowerup("Throw Knives", this);
-
-		base.StartClass();
-	}
-
-
-	public override void GetSpellTile(int x, int y, GENUS g, int points)
-	{
-		int rand = 1;//Random.Range(0,4);
-		switch(rand)
-		{
-			case 0:
-				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["force"], g, 1, points);
-			break;
-			case 1:
-				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["bomb"], g, 1, points);	
-			break;
-			case 2:
-				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["sword"], GENUS.ALL, 1, points);	
-			break;
-			case 3:
-				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["arcane"], g, 1, points);
-				(TileMaster.Tiles[x,y] as Arcane).SetArgs("Genus", "", "", "Sword");
-			break;
-			case 4:
-
-			break;
-		}
-		
-	}
-
-
+public class ThrowKnives : Powerup {
 
 	public UIObj CatcherObj;
 	public float CatcherDist = 0.9F;
@@ -83,32 +10,44 @@ public class Thief : Class {
 
 	private UIObj CatcherObjActual;
 	List<Tile> to_collect = new List<Tile>();
-	IEnumerator ActiveRoutine(int knives, int power)
+
+	public int [] KnivesThrown = new int []
 	{
-		activated = true;
+		5, 8, 9
+	};
+
+	public int [] KnifeDamage = new int[]
+	{
+		10, 15, 30
+	};
+	protected override IEnumerator Minigame(int level)
+	{
+		int knives = KnivesThrown[level-1];
+		int power = KnifeDamage[level-1];
+
 		CatchNum = 0;
 		GameManager.instance.paused = true;
 		UIManager.instance.ScreenAlert.SetTween(0,true);
-		UIManager.ClassButtons.GetClass(Index).ShowClass(true);
-		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, "", GameData.Colour(Genus));
-		powerup.transform.SetParent(UIManager.ClassButtons.GetClass(Index).transform);
-		powerup.transform.position = UIManager.ClassButtons.GetClass(Index).transform.position;
+		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(true);
+		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, "", GameData.Colour(Parent.Genus));
+		powerup.transform.SetParent(UIManager.ClassButtons.GetClass(Parent.Index).transform);
+		powerup.transform.position = UIManager.ClassButtons.GetClass(Parent.Index).transform.position;
 		powerup.transform.localScale = Vector3.one;
 
 		float step_time = 0.75F;
 		float total_time = step_time * 3;
 		MiniAlertUI a = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.up*2, 
-			"Rogue Casts", 70, GameData.Colour(Genus), total_time, 0.2F);
+			"Rogue Casts", 70, GameData.Colour(Parent.Genus), total_time, 0.2F);
 		a.AddJuice(Juice.instance.BounceB, 0.1F);
 		yield return new WaitForSeconds(GameData.GameSpeed(step_time));
-		MiniAlertUI b = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "Knife Throw", 170, GameData.Colour(Genus), step_time * 2, 0.2F);
+		MiniAlertUI b = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "Knife Throw", 170, GameData.Colour(Parent.Genus), step_time * 2, 0.2F);
 		b.AddJuice(Juice.instance.BounceB, 0.1F);
 		yield return new WaitForSeconds(GameData.GameSpeed(step_time));
 		MiniAlertUI c  = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.down * 2,
 			"Catch the\nknives!", 140, GameData.Colour(GENUS.STR), step_time, 0.2F);
 		c.AddJuice(Juice.instance.BounceB, 0.1F);
 		yield return new WaitForSeconds(GameData.GameSpeed(step_time));
-		UIManager.ClassButtons.GetClass(Index).ShowClass(false);
+		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(false);
 		Destroy(powerup);
 		
 
@@ -139,7 +78,7 @@ public class Thief : Class {
 		Destroy(CatcherObjActual.gameObject);
 
 		UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, 
-		CatchNum + " Knives!", 100, GameData.Colour(Genus), 0.8F, 0.25F);
+		CatchNum + " Knives!", 100, GameData.Colour(Parent.Genus), 0.8F, 0.25F);
 		yield return new WaitForSeconds(GameData.GameSpeed(0.4F));
 
 		
@@ -195,7 +134,7 @@ public class Thief : Class {
 
 	UIObj CreateKnife()
 	{
-		UIObj knife = CreateMinigameObj();
+		UIObj knife = CreateMinigameObj(0);
 		knife.transform.position = UIManager.Objects.BotGear.transform.position;
 		float velx = Random.Range(0.09F, 0.17F);
 		if(Random.value < 0.5F) velx = -velx;
@@ -209,7 +148,7 @@ public class Thief : Class {
 			{
 				CatchNum ++;
 				UIManager.instance.MiniAlert(knife.transform.position, 
-				"Caught!", 100, GameData.Colour(Genus), 0.4F, 0.1F);
+				"Caught!", 100, GameData.Colour(Parent.Genus), 0.4F, 0.1F);
 				Destroy(knife.gameObject);
 			} 
 		}, TimerType.PostTimer, 0.2F);
@@ -220,8 +159,8 @@ public class Thief : Class {
 	IEnumerator ThrowKnife(Tile target, int power)
 	{
 		target.SetState(TileState.Selected, true);
-		UIObj part = CreateMinigameObj();
-		part.transform.position = UIManager.ClassButtons.GetClass(Index).transform.position;
+		UIObj part = CreateMinigameObj(0);
+		part.transform.position = UIManager.ClassButtons.GetClass(Parent.Index).transform.position;
 		part.transform.localScale *= 0.7F;
 		part.GetComponent<Velocitizer>().enabled = false;
 		MoveToPoint mp = part.GetComponent<MoveToPoint>();
@@ -229,7 +168,7 @@ public class Thief : Class {
 		mp.SetTarget(target.transform.position);
 		mp.SetPath(0.55F, 0.0F);
 
-		float dist = Vector3.Distance(target.transform.position, UIManager.ClassButtons.GetClass(Index).transform.position);
+		float dist = Vector3.Distance(target.transform.position, UIManager.ClassButtons.GetClass(Parent.Index).transform.position);
 		mp.Speed = 0.1F + 0.05F * dist;
 		float part_time = 0.2F;// + (0.03F * dist);
 		int final_damage = power;
@@ -251,7 +190,7 @@ public class Thief : Class {
 			float info_finalscale = 0.65F;
 
 			Vector3 pos = TileMaster.Grid.GetPoint(child.Point.Point(0)) + Vector3.down * 0.3F;
-			MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + final_damage, info_start_size, GameData.Colour(Genus), info_time, 0.6F, false);
+			MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + final_damage, info_start_size, GameData.Colour(Parent.Genus), info_time, 0.6F, false);
 			m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
 			m.SetVelocity(Utility.RandomVectorInclusive(0.2F) + (Vector3.up*0.4F));
 			m.Gravity = true;
@@ -263,5 +202,4 @@ public class Thief : Class {
 		});
 		yield return null;
 	}
-
 }

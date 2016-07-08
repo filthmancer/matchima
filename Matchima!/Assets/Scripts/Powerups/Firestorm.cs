@@ -2,127 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class Wizard : Class {
+public class Firestorm : Powerup {
 
-TileChance lightning;
-private Slot manapower;
-private int _currentmanapower = 100;
-
-	// Use this for initialization
-	public override void StartClass () {
-		
-		/*ClassUpgrade a = new ClassUpgrade((int val) => {InitStats.CooldownDecrease += 0.01F * val;});
-		a.Name = "Cooldowns";
-		a.ShortName = "CD%";
-		a.Description = " spell cooldowns";
-		a.BaseAmount = 1;
-		a.Prefix = "-";
-		a.Suffix = "%";
-		a.Rarity = Rarity.Common;
-
-		ClassUpgrade b = new ClassUpgrade((int val) => {InitStats.MagicPower += 1 * val;});
-		b.BaseAmount = 1;
-		b.Name = "Spell Power";
-		b.ShortName = "SP";
-		b.Description = " Spell Power.\nIncreases strength of spells";
-		b.Prefix = "+";
-		b.Rarity = Rarity.Uncommon;
-
-		wiz_cross = new TileChance();
-		wiz_cross.Genus = "Alpha";
-		wiz_cross.Type = "cross";
-		InitStats.TileChances.Add(wiz_cross);
-
-		ClassUpgrade c = new ClassUpgrade((int val) => {wiz_cross.Chance += 0.01F * val;});
-		c.Name = "Alpha Cross Tiles";
-		c.ShortName = "CRS";
-		c.BaseAmount = 1;
-		c.Description = " chance of Alpha Cross Tiles";
-		c.Prefix = "+";
-		c.Suffix = "%";
-		c.Rarity = Rarity.Magic;
-
-		wiz_arcane = new TileChance();
-		wiz_arcane.Genus = GameData.ResourceLong(Genus);
-		wiz_arcane.Type = "arcane";
-		InitStats.TileChances.Add(wiz_arcane);
-
-		ClassUpgrade wiz_arcane_up = new ClassUpgrade((int val) => {wiz_arcane.Chance += 0.02F * val;});
-		wiz_arcane_up.Name = GameData.ResourceLong(Genus) + " Arcane Tiles";
-		wiz_arcane_up.ShortName = GameData.Resource(Genus) + " ARC";
-		wiz_arcane_up.Description = " chance of\n" + GameData.ResourceLong(Genus) + " Arcane Tiles";
-		wiz_arcane_up.BaseAmount = 2;
-		wiz_arcane_up.Prefix = "+";
-		wiz_arcane_up.Suffix = "%";
-		wiz_arcane_up.Rarity = Rarity.Uncommon;
-
-		ClassUpgrade manamax = new ClassUpgrade((int val) => {InitStats.MeterMax += 5 * val;});
-		manamax.Name = "Mana Max";
-		manamax.ShortName = "MP MAX";
-		manamax.Description = " Maximum Mana";
-		manamax.BaseAmount = 5;
-		manamax.Prefix = "+";
-		manamax.Rarity = Rarity.Common;
-		AddUpgrades(new ClassUpgrade[] {a,b,c, wiz_arcane_up, manamax});*/
-
-		TileChance bomb = new TileChance();
-		bomb.Genus = GameData.ResourceLong(Genus);
-		bomb.Type = "arcane";
-		bomb.Chance = 0.15F;
-		InitStats.TileChances.Add(bomb);
-
-		/*lightning = new TileChance();
-		lightning.Genus = GameData.ResourceLong(Genus);
-		lightning.Type = "lightning";
-		lightning.Chance = 0.2F;
-		InitStats.TileChances.Add(lightning);*/
-
-		//TileChance vanilla = new TileChance();
-		//vanilla.Genus = string.Empty;
-		//vanilla.Type = "lightning";
-		//vanilla.Chance = 0.1F;
-		//InitStats.TileChances.Add(vanilla);
-
-		//TileChance arcane = new TileChance();
-		//arcane.Genus = GameData.ResourceLong(Genus);
-		//arcane.Type = "cross";
-		//arcane.Chance = 0.1F;
-		//InitStats.TileChances.Add(arcane);
-
-		TileChance health = new TileChance();
-		health.Genus = GameData.ResourceLong(Genus);
-		health.Type = "health";
-		health.Chance = 0.05F;
-		InitStats.TileChances.Add(health);
-
-		PowerupSpell = GameData.instance.GetPowerup("Firestorm", this);
-
-		base.StartClass();	
-	}
-
-
-	public override void GetSpellTile(int x, int y, GENUS g, int points)
+	public int [] _Lines = new int []
 	{
-		int rand = Random.Range(0,4);
-		switch(rand)
-		{
-			case 0:
-				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["bomb"], g, 1, points);
-			break;
-			case 1:
-				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["lightning"], g, 1, points);	
-			break;
-			case 2:
-				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["flame"], g, 1, points);	
-			break;
-			case 3:
-				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["cross"], g, 1, points);	
-			break;
-			case 4:
-
-			break;
-		}
-	}
+		1,2,5
+	};
 
 	int ClosestPoint(Vector3 pos)
 	{
@@ -141,33 +26,33 @@ private int _currentmanapower = 100;
 	}
 
 	int? target_column = null;
-	IEnumerator ActiveRoutine(int lines)
+	protected override IEnumerator Minigame(int level)
 	{
-		activated = true;
+		int lines = _Lines[level-1];
 		GameManager.instance.paused = true;
 		UIManager.instance.ScreenAlert.SetTween(0,true);
-		UIManager.ClassButtons.GetClass(Index).ShowClass(true);
-		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, "", GameData.Colour(Genus));
+		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(true);
+		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, "", GameData.Colour(Parent.Genus));
 		
-		powerup.transform.SetParent(UIManager.ClassButtons.GetClass(Index).transform);
-		powerup.transform.position = UIManager.ClassButtons.GetClass(Index).transform.position;
+		powerup.transform.SetParent(UIManager.ClassButtons.GetClass(Parent.Index).transform);
+		powerup.transform.position = UIManager.ClassButtons.GetClass(Parent.Index).transform.position;
 		powerup.transform.localScale = Vector3.one;
 
 		
 		float step_time = 0.75F;
 		float total_time = step_time * 3;
 		MiniAlertUI a = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.up*2, 
-			"Wizard Casts", 70, GameData.Colour(Genus), total_time, 0.2F);
+			"Wizard Casts", 70, GameData.Colour(Parent.Genus), total_time, 0.2F);
 		a.AddJuice(Juice.instance.BounceB, 0.1F);
 		yield return new WaitForSeconds(GameData.GameSpeed(step_time));
-		MiniAlertUI b = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "Fireball", 170, GameData.Colour(Genus), step_time * 2, 0.2F);
+		MiniAlertUI b = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "Fireball", 170, GameData.Colour(Parent.Genus), step_time * 2, 0.2F);
 		b.AddJuice(Juice.instance.BounceB, 0.1F);
 		yield return new WaitForSeconds(GameData.GameSpeed(step_time));
 		MiniAlertUI c  = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.down * 2,
 			"Press to cast!", 140, GameData.Colour(GENUS.STR), step_time, 0.2F);
 		c.AddJuice(Juice.instance.BounceB, 0.1F);
 		yield return new WaitForSeconds(GameData.GameSpeed(step_time));
-		UIManager.ClassButtons.GetClass(Index).ShowClass(false);
+		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(false);
 		Destroy(powerup);
 
 		target_column = null;
@@ -220,12 +105,12 @@ private int _currentmanapower = 100;
 		yield return new WaitForSeconds(GameData.GameSpeed(0.6F));
 
 		GameManager.instance.paused = false;
-		UIManager.ClassButtons.GetClass(Index).ShowClass(false);
+		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(false);
 	}
 
 	UIObj CreateTarget(int i)
 	{
-		UIObj obj = (UIObj)Instantiate(MinigameObj);
+		UIObj obj = (UIObj)Instantiate(MinigameObj[0]);
 		RectTransform rect = obj.GetComponent<RectTransform>();
 		obj.transform.SetParent(UIManager.Objects.MiddleGear.transform);
 		obj.transform.localScale = Vector3.one;
@@ -293,5 +178,4 @@ private int _currentmanapower = 100;
 		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
 
 	}
-
 }

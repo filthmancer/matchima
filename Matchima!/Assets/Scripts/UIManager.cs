@@ -24,11 +24,10 @@ public class UIManager : MonoBehaviour {
 	public UIKillScreen KillUI;
 	public UIObjTweener ScreenAlert;
 
-	public ClassUpgradeUI ClassUI;
-	public ClassAbilityUI ClassAbUI;
-
 	public Image [] PlayerHealth;
 	public Image [] WaveHealth;
+
+
 
 	public ClassSlotsUI _ClassButtons;
 	public static ClassSlotsUI ClassButtons{get{return UIManager.instance._ClassButtons;}}
@@ -83,6 +82,8 @@ public class UIManager : MonoBehaviour {
 
 		if(!GameManager.instance.gameStart) return;
 
+		if(MeterTimer <= 0.0F) CashMeterPoints();
+		else MeterTimer -= Time.deltaTime;
 
 		if(Time.time > update_interval_current)
 		{
@@ -107,7 +108,7 @@ public class UIManager : MonoBehaviour {
 		}
 		if(GameManager.Wave != null)
 		{
-			WaveHealthText.text = ""+ GameManager.Wave.Current;
+			WaveHealthText.text = GameManager.Wave.Current+"/"+GameManager.Wave.Required;
 			for(int i = 0; i < WaveHealth.Length; i++)
 			{
 				WaveHealth[i].fillAmount = Mathf.Lerp(WaveHealth[i].fillAmount, GameManager.Wave.GetRatio()*0.88F, Time.deltaTime * 15);
@@ -157,6 +158,7 @@ public class UIManager : MonoBehaviour {
 		{
 			StartCoroutine(HitLoop());
 		}
+
 	}
 
 	IEnumerator HealLoop()
@@ -230,6 +232,126 @@ public class UIManager : MonoBehaviour {
 		ShowingHit = false;
 		yield return null;
 	}
+
+	public bool IsShowingMeters
+	{
+		get
+		{
+			for(int i = 0; i < ShowingMeter.Length; i++)
+			{
+				if(ShowingMeter[i]) return true;
+			}
+			return false;
+		}
+	}
+	bool [] ShowingMeter = new bool[7];
+	int [] Meters = new int[7];
+	MiniAlertUI [] MeterObj = new MiniAlertUI[7];
+	float MeterTimer = 0.5F;
+	public void CashMeterPoints()
+	{
+		MeterTimer = 0.5F;
+		for(int i = 0; i < MeterObj.Length; i++)
+		{
+			if(MeterObj[i] == null) continue;
+			MeterObj[i].lifetime = 0.0F;
+		}
+	}
+	public void GetMeterPoints(int g, int points)
+	{
+		int init_font_size = 380;
+		GENUS genus = (GENUS) g;
+		if(ShowingMeter[g])
+		{
+			Meters[g] += points;
+			MeterObj[g].AddJuice(Juice.instance.BounceB, 0.32F);
+			//MeterObj[g].lifetime += 0.12F;
+			MeterTimer = 0.5F;
+			MeterObj[g].size = init_font_size + Meters[g] * 0.25F;
+			MeterObj[g].text = "" + Meters[g];
+		}
+		else
+		{
+			ShowingMeter[g] = true;
+			Meters[g] = points;
+			MeterTimer = 0.8F;
+			float init_rotation = Random.Range(-7,7);
+			float info_movespeed = 0.3F;
+			float info_finalscale = 0.55F;
+
+			MeterObj[g] = UIManager.instance.MiniAlert(
+				UIManager.Objects.MiddleGear[4].transform.position, 
+				"" + Meters[g], init_font_size,  GameData.Colour((GENUS)g), 15.0F, 0.01F);
+			MeterObj[g].transform.SetParent(UIManager.Objects.MiddleGear[4].transform);
+			MeterObj[g].transform.rotation = Quaternion.Euler(0,0,init_rotation);
+			MeterObj[g].AddJuice(Juice.instance.BounceB, 0.45F);
+
+			MeterObj[g].AddAction(() =>
+			{
+				MiniAlertUI wavetarget = (MiniAlertUI) Instantiate(MeterObj[g]);
+				wavetarget.transform.SetParent(UIManager.Objects.MiddleGear[4].transform);
+				wavetarget.transform.localScale = Vector3.one;
+				MoveToPoint wavetarget_mover = AttachMoverToAlert(ref wavetarget);
+				wavetarget_mover.SetTarget(Objects.TopGear[1][0][0].transform.position);
+				wavetarget_mover.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
+				wavetarget_mover.SetIntMethod( 
+					(int [] amt) =>
+					{
+						if(GameManager.Wave != null)
+							GameManager.Wave.AddPoints(Meters[g]);
+					},
+					new int []{g}
+				);
+
+				MiniAlertUI classtarget = (MiniAlertUI) Instantiate(MeterObj[g]);
+				classtarget.transform.SetParent(UIManager.Objects.MiddleGear[4].transform);
+				classtarget.transform.localScale = Vector3.one;
+				MoveToPoint classtarget_mover = AttachMoverToAlert(ref classtarget);
+				classtarget_mover.SetTarget(ClassButtons.GetClass(g).transform.position);
+				classtarget_mover.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
+				classtarget_mover.SetIntMethod( 
+					(int [] amt) =>
+					{
+						if((GENUS)amt[0] != GENUS.ALL) Player.Classes[amt[0]].AddToMeter(Meters[amt[0]]);
+						else
+						{
+							for(int cl = 0; cl < 4; cl++)
+							{
+								Player.Classes[cl].AddToMeter(Meters[amt[0]]);
+							}
+						}
+						ShowingMeter[amt[0]] = false;
+						Meters[amt[0]] = 0;
+					},
+					new int []{g}
+				);
+			});
+
+			/*MoveToPoint mover = AttachMoverToAlert(ref MeterObj[g]);
+			mover.SetTarget(ClassButtons.GetClass(g).transform.position);
+			mover.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
+			mover.SetIntMethod( 
+				(int [] amt) =>
+				{
+					if((GENUS)amt[0] != GENUS.ALL) Player.Classes[amt[0]].AddToMeter(Meters[amt[0]]);
+					else
+					{
+						for(int cl = 0; cl < 4; cl++)
+						{
+							Player.Classes[cl].AddToMeter(Meters[amt[0]]);
+						}
+					}
+					ShowingMeter[amt[0]] = false;
+					Meters[amt[0]] = 0;
+				},
+				new int []{g}
+			);*/
+		}
+	}
+
+
+
+
 	
 	public void SwapSlotButtons(UISlotButton a, Class c, int slot)
 	{
@@ -337,38 +459,6 @@ public class UIManager : MonoBehaviour {
 
 			Transform TopParent = Objects.TopGear[1][1][3][0].transform;
 			Objects.TopGear[1][1][3][0].Child = GenerateUIObjFromStCon(TopParent, t.BaseDescription);
-			/*List<UIObj> newchildren = new List<UIObj>();
-			
-			Transform TopParent = Objects.TopGear[1][1][3][0].transform;
-			UIObj ParentObj = (UIObj) Instantiate(Objects.HorizontalGrouper);
-			Transform ParentTrans = ParentObj.transform;
-			ParentTrans.SetParent(TopParent);
-			ParentTrans.position = Vector3.zero;
-			ParentTrans.localScale = Vector3.one;
-			ParentTrans.localRotation = Quaternion.Euler(0,0,0);
-			newchildren.Add(ParentObj);
-			for(int i = 0; i < t.BaseDescription.Length; i++)
-			{
-				UIObj new_desc = (UIObj) Instantiate(Objects.TextObj);
-				new_desc.transform.SetParent(ParentTrans);
-				new_desc.transform.position = Vector3.zero;
-				new_desc.transform.localScale = Vector3.one;
-				new_desc.transform.localRotation = Quaternion.Euler(0,0,0);
-				new_desc.Txt[0].text = t.BaseDescription[i].Value;
-				new_desc.Txt[0].color = t.BaseDescription[i].Colour;
-
-				if(t.BaseDescription[i].NewLine && i < t.BaseDescription.Length-1)
-				{
-					ParentObj = (UIObj) Instantiate(Objects.HorizontalGrouper);
-					ParentTrans = ParentObj.transform;
-					ParentTrans.SetParent(TopParent);
-					ParentTrans.position = Vector3.zero;
-					ParentTrans.localScale = Vector3.one;
-					ParentTrans.localRotation = Quaternion.Euler(0,0,0);
-					newchildren.Add(ParentObj);
-				}
-				Objects.TopGear[1][1][3][0].Child = newchildren.ToArray();
-			}*/
 		}
 		else Objects.TopGear[1][1][3][0].SetActive(false);
 		
@@ -640,8 +730,6 @@ public class UIManager : MonoBehaviour {
 		ResUIOpen = true;
 		Objects.ShowObj(Objects.ItemUI, false);
 		Objects.GetScoreWindow().gameObject.SetActive(false);
-
-		ClassUI.GetInfo(Player.Classes[0]);
 		current_class = Player.Classes[0];
 
 		foreach(Tile child in PlayerControl.instance.selectedTiles)
@@ -1292,6 +1380,19 @@ public class UIManager : MonoBehaviour {
 		alertobj.transform.localScale = Vector3.one;
 		alertobj.Setup(position, alert, life, size, col??Color.white, speed, background);
 		return alertobj;
+	}
+
+	public MoveToPoint AttachMoverToAlert(ref MiniAlertUI alert)
+	{
+
+		MoveToPoint mini = alert.GetComponent<MoveToPoint>();
+		alert.AddAction(() => {
+				mini.transform.SetParent(Canvas.transform);
+				mini.enabled = true;
+			});
+		alert.DestroyOnEnd = false;
+		alert = alert;
+		return mini;
 	}
 
 }

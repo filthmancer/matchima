@@ -32,6 +32,8 @@ public class UIObjects : MonoBehaviour {
 	//public UIObj [] WaveSlots;
 
 	public UISlotButton SlotObj;
+	public UIObjTweener PowerupAlert;
+
 
 	private bool IsWarning = false;
 	private float warningtime = 0.0F;

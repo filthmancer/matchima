@@ -7,7 +7,6 @@ using TMPro;
 
 public class Class : Unit {
 
-
 	public virtual StCon _Name
 	{
 		get
@@ -104,6 +103,8 @@ public class Class : Unit {
 
 	public ClassUpgrade [] AllBoons;
 	public ClassUpgrade [] AllCurses;
+
+	public Powerup PowerupSpell;
 
 	public int Level = 1;
 	public int LevelPoints = 0;
@@ -395,8 +396,26 @@ public class Class : Unit {
 			if(ManaPowerParticle != null) Destroy(ManaPowerParticle);
 			ManaPowerParticle = part.gameObject;
 			ManaPowerParticle.transform.position = UIManager.ClassButtons.GetClass(Index).transform.position;
+
+			
 			yield return null;
 		}
+	}
+
+	IEnumerator PowerupAlert()
+	{
+		yield return new WaitForSeconds(Time.deltaTime * 15);
+		UIManager.Objects.PowerupAlert.SetActive(true);
+		UIManager.Objects.PowerupAlert.SetTween(0, true);
+		float timer = 3.5F;
+		while((timer -= Time.deltaTime) > 0.0F)
+		{
+			if(Input.GetMouseButton(0)) break;
+			yield return null;
+		}
+
+		UIManager.Objects.PowerupAlert.SetTween(0, false);
+		yield return null;
 	}
 
 	public IEnumerator PowerDown()
@@ -472,6 +491,12 @@ public class Class : Unit {
 		{
 			OnLowHealth();
 		}
+
+		if(MeterLvl > 0 && !Player.Options.PowerupAlerted)
+		{
+			Player.Options.PowerupAlerted = true;
+			StartCoroutine(PowerupAlert());
+		}
 		
 		if(isKilled)
 		{
@@ -526,24 +551,6 @@ public class Class : Unit {
 				time_from_last_pulse = 0.0F;			
 			}
 		}
-		//if(Meter >= MeterTop)//while(Meter >= MeterTop)
-		//{
-			//LevelPoints ++;
-			//TurnLevelRate = (int) (MeterTop / 25);
-			//LevelPoints += TurnLevelRate + BonusLevelRate + WaveLevelRate;
-			//LevelPoints += Stats.BoonIncrease;
-			//TurnLevelRate = 0;
-			//BonusLevelRate = 0;
-			//WaveLevelRate = 0;
-
-		//NEW STYLE METER (MANA POWER)
-			//MeterLvl ++;
-			//MeterDecay_soft = MeterDecayInit[MeterLvl-1];
-			//MeterDecay = (int) MeterDecay_soft;
-			//MeterDecay_soft = GameManager.MeterDecay[MeterLvl-1] + Stats.MeterDecay[MeterLvl-1] + Stats.MeterDecay_Global;
-			//MeterDecay = (int)MeterDecay;
-			//Player.instance.ResetStats();
-		//}
 	}
 
 	public bool MeterLoopActive {get{return adding_to_meter;}}
@@ -601,8 +608,13 @@ public class Class : Unit {
 
 	public virtual IEnumerator UseManaPower()
 	{
+		UIManager.instance.ScreenAlert.SetTween(0,true);
+		int lvl = MeterLvl;
+		yield return StartCoroutine(PowerupSpell.Activate(lvl));
+		yield return StartCoroutine(PowerDown());
+		yield return StartCoroutine(LevelUp(lvl));
 
-		yield return null;
+		UIManager.instance.ScreenAlert.SetTween(0,false);
 	}
 
 	public virtual void ManaPower(int lvl)
@@ -653,7 +665,7 @@ public class Class : Unit {
 		GameManager.instance.paused = true;
 		UIManager.ClassButtons.GetClass(Index).ShowClass(false);
 		Level ++;
-		StCon [] title = InitStats.LevelUp();
+		StCon [] title = InitStats.LevelUp(power);
 		StCon [] floor = new StCon [] {new StCon(Name + " Level"), new StCon(Level+"")};
 
 		yield return StartCoroutine(UIManager.instance.Alert(1.1F, floor, title, null, true));
@@ -722,10 +734,11 @@ public class Class : Unit {
 		}
 		
 
-		float final_rate = (1.7F*power);
+		float final_rate = (1.4F*power);
 		final_rate *= UnityEngine.Random.Range(0.8F, 1.3F);
 
 		Upgrade prev = null;
+		string finaltitle = "";
 		foreach(Upgrade child in Mutations){
 			if(child != null && child.Index == u.Index) prev = child;
 		}
@@ -734,8 +747,13 @@ public class Class : Unit {
 		{
 			u._Rate += final_rate;
 			Mutations.Add(u);
+			finaltitle = u.Title;
 		}
-		else prev._Rate += final_rate;
+		else 
+		{
+			prev._Rate += final_rate;
+			finaltitle = prev.Title;
+		}
 
 		string boon = Name + " was ";
 		boon += (Boon ? " gifted!" : " cursed!");
@@ -743,7 +761,7 @@ public class Class : Unit {
 		Color outercol = (Boon ? GameData.instance.BadColour : GameData.Colour(Genus));
 		title = new StCon[]{
 			new StCon(boon, innercol, true, 80),
-			new StCon(u.Title, Color.white, true, 80)};
+			new StCon(finaltitle, Color.white, true, 80)};
 		yield return StartCoroutine(UIManager.instance.Alert(1.4F, null, title));
 
 		yield return null;

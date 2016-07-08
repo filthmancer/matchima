@@ -1,75 +1,46 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Barbarian : Class {
+public class Heal : Powerup {
 
-	TileChance health;
-
-	private Slot manapower;
-	private int _currentmanapower;
-
-
-	// Use this for initialization
-	public override void StartClass () {
-		
-		/*ClassUpgrade a = new ClassUpgrade((int val) => {InitStats._HealthMax += 10 * val;});
-		a.BaseAmount = 10;
-		a.Rarity = Rarity.Common;
-		a.Name = "Health Max";
-		a.ShortName = "HP MAX";
-		a.Description = " Maximum Health";
-		a.Prefix = "+";*/
-
-		health = new TileChance();
-		health.Genus = GameData.ResourceLong(Genus);
-		health.Type = "health";
-		health.Chance = 0.4F;
-		InitStats.TileChances.Add(health);
-
-		TileChance sword = new TileChance();
-		sword.Genus = GameData.ResourceLong(Genus);
-		sword.Type = "bomb";
-		sword.Chance = 0.15F;
-		InitStats.TileChances.Add(sword);
-
-		PowerupSpell = GameData.instance.GetPowerup("Heal", this);
-
-		base.StartClass();
-	}
-
-
-	public IEnumerator HealRoutine(int HealTotal)
+	public int [] HealPower = new int []
 	{
-		activated = true;
+		20,
+		45,
+		75
+	};
+	protected override IEnumerator Minigame(int Level)
+	{
+		int HealTotal = HealPower[Level-1];
 		GameManager.instance.paused = true;
 		UIManager.instance.ScreenAlert.SetTween(0,true);
-		UIManager.ClassButtons.GetClass(Index).ShowClass(true);
+		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(true);
 		
-		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, "", GameData.Colour(Genus));
+		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, "", GameData.Colour(Parent.Genus));
 		
-		powerup.transform.SetParent(UIManager.ClassButtons.GetClass(Index).transform);
-		powerup.transform.position = UIManager.ClassButtons.GetClass(Index).transform.position;
+		powerup.transform.SetParent(UIManager.ClassButtons.GetClass(Parent.Index).transform);
+		powerup.transform.position = UIManager.ClassButtons.GetClass(Parent.Index).transform.position;
 		powerup.transform.localScale = Vector3.one;
 
 		float step_time = 0.75F;
 		float total_time = step_time * 3;
 		MiniAlertUI a = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.up*2, 
-			"Barbarian Casts", 70, GameData.Colour(Genus), total_time, 0.2F);
+			"Barbarian Casts", 70, GameData.Colour(Parent.Genus), total_time, 0.2F);
 		a.AddJuice(Juice.instance.BounceB, 0.1F);
 		yield return new WaitForSeconds(GameData.GameSpeed(step_time));
-		MiniAlertUI b = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "Heal", 170, GameData.Colour(Genus), step_time * 2, 0.2F);
+		MiniAlertUI b = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "Heal", 170, GameData.Colour(Parent.Genus), step_time * 2, 0.2F);
 		b.AddJuice(Juice.instance.BounceB, 0.1F);
 		yield return new WaitForSeconds(GameData.GameSpeed(step_time));
 		MiniAlertUI c  = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.down * 3,
 			"Tap the heart!", 160, GameData.Colour(GENUS.STR), step_time, 0.2F);
 		c.AddJuice(Juice.instance.BounceB, 0.1F);
 		yield return new WaitForSeconds(GameData.GameSpeed(step_time));
-		UIManager.ClassButtons.GetClass(Index).ShowClass(false);
+		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(false);
 		Destroy(powerup);
 		
 		
 		float final_ratio = 0.0F;
-		UIObj MGame = (UIObj)Instantiate(MinigameObj);
+		UIObj MGame = (UIObj)Instantiate(MinigameObj[0]);
 		MGame.transform.SetParent(UIManager.Objects.MiddleGear.transform);
 		MGame.transform.localScale = Vector3.one;
 		MGame.GetComponent<RectTransform>().sizeDelta = Vector2.one;
@@ -109,11 +80,9 @@ public class Barbarian : Class {
 		Player.Stats.Heal((int)(HealTotal * final_ratio));
 		Player.Stats.CompleteHealth();
 
-		UIManager.ClassButtons.GetClass(Index).ShowClass(false);
-		activated = false;
+		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(false);
 		UIManager.instance.ScreenAlert.SetTween(0,false);
 		GameManager.instance.paused = false;
 		yield return null;
 	}
-
 }

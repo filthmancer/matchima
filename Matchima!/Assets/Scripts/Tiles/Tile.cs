@@ -444,7 +444,6 @@ public class Tile : MonoBehaviour {
 
 	public virtual AudioSource PlayAudio(string clip)
 	{
-		print(this + ":" + clip);
 		return AudioManager.instance.PlayTileAudio(this, clip);
 	}
 
@@ -1003,6 +1002,41 @@ public class Tile : MonoBehaviour {
 		mini.SetMethod(() =>{
 				w.AddPoints(-GetAttack());
 				//AudioManager.instance.PlayClipOn(Player.instance.transform, "Player", "Hit");
+			}
+		);
+	}
+
+	public void AttackTile(Tile t)
+	{
+		PlayAudio("attack");
+		//UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), "" + GetAttack(), 95, Color.red, 0.8F,0.08F);
+
+		float init_size = UnityEngine.Random.Range(130, 170);
+		float init_rotation = UnityEngine.Random.Range(-7,7);
+
+		float info_time = 0.43F;
+		float info_size = init_size + (GetAttack() * 2);
+		float info_movespeed = Time.deltaTime * 20;
+		float info_finalscale = 0.65F;
+
+		Vector3 pos = TileMaster.Grid.GetPoint(Point.Point(0));
+		MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + GetAttack(), info_size, GameData.instance.BadColour, info_time, 0.03F, false);
+		m.Txt[0].outlineColor = GameData.Colour(Genus);
+		m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
+		MoveToPoint mini = m.GetComponent<MoveToPoint>();
+		m.AddJuice(Juice.instance.BounceB, info_time);
+		m.AddAction(() => {mini.enabled = true;});
+		m.DestroyOnEnd = false;
+
+		mini.SetTarget(t.transform.position);
+		mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
+		mini.SetMethod(() =>{
+				if(t == null) return;
+				if(t != null) t.PlayAudio("Hit");
+					t.SetState(TileState.Selected);
+					t.InitStats.TurnDamage += GetAttack();
+					t.Match(0);
+					GameData.Log(this +  " dealt " + GetAttack() + "damage to " + t);
 			}
 		);
 	}

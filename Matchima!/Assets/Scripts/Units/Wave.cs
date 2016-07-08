@@ -47,9 +47,11 @@ public class Wave : Unit {
 	private int PointsThisTurn;
 	public int PointsPerTurn;
 
+
 	public WaveUnit Slot1, Slot2, Slot3;
 	public bool HasDialogue;
 	public bool ExplodeOnEnd;
+	public bool PointsFromTiles = true;
 	public Quote [] Quotes;
 	public WaveUnit [] AllSlots
 	{
@@ -107,7 +109,7 @@ public class Wave : Unit {
 
 	public void AddPoints(int p)
 	{
-		if(!Active || Ended || Current == -1) return;
+		if(!Active || Ended || Current == -1 || !PointsFromTiles) return;
 		PointsThisTurn += p;
 		Current = Mathf.Clamp(Current + p, 0, Required);
 		if(!ShowingHealth)
@@ -125,7 +127,7 @@ public class Wave : Unit {
 		Vector3 tpos = Vector3.down + Vector3.right * 0.4F;
 		MiniAlertUI heal = UIManager.instance.MiniAlert(
 			UIManager.instance.WaveHealthText.transform.position, 
-			prefix + current_heal, 42, GameData.instance.BadColour, 1.7F,	-0.08F);
+			prefix + current_heal, 65, GameData.instance.GoodColour, 1.7F,	-0.08F);
 		heal.transform.parent = UIManager.instance.WaveHealthText.transform;
 
 		while(heal.lifetime > 0.0F)
@@ -190,7 +192,7 @@ public class Wave : Unit {
 				AllSlots[i].Complete();
 			}
 		}
-		if(Current <= 0 && Active)
+		if(Current == Required && Active)
 		{
 			for(int i = 0; i < AllSlots.Length; i++)
 			{
@@ -202,10 +204,6 @@ public class Wave : Unit {
 			yield return StartCoroutine(WaveEndRoutine());
 			GameManager.instance.paused = false;
 			Ended = true;
-			foreach(Class child in Player.Classes)
-			{
-				child.AddExp((int) (Experience * GameManager.Difficulty));
-			}
 		}
 		yield return null;
 	}
@@ -253,7 +251,7 @@ public class Wave : Unit {
 		{
 			if(AllSlots[i] == null) continue;
 
-			AddPoints(-AllSlots[i].EnemyKilled(e));
+			AddPoints(AllSlots[i].EnemyKilled(e));
 		}
 	}
 
@@ -280,10 +278,10 @@ public class Wave : Unit {
 
 	protected virtual IEnumerator WaveStartRoutine()
 	{
+
 		PlayerControl.instance.ResetSelected();
 		if(IntroAlert)
 		{
-
 			yield return StartCoroutine(UIManager.instance.Alert(1.25F, IntroText));
 		}
 		yield return null;
@@ -323,7 +321,7 @@ public class Wave : Unit {
 		//yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 		StCon [] floor = new StCon[] {new StCon("Floor"), new StCon(GameManager.Floor + "")};
 
-		
+		Current = 0;
 		StCon [] namecon = new StCon[] {_Name};
 		yield return StartCoroutine(UIManager.instance.Alert(1.25F, floor, namecon));
 
@@ -359,7 +357,7 @@ public class Wave : Unit {
 				{
 					if(TileMaster.Tiles[x,y].Type.isEnemy)
 					{
-						StartCoroutine(Cast(TileMaster.Tiles[x,y], 2));
+						yield return StartCoroutine(Cast(TileMaster.Tiles[x,y], 2));
 					}
 				}
 			}

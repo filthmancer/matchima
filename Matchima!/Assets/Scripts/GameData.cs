@@ -40,6 +40,8 @@ public class GameData : MonoBehaviour {
 
 	public AbilityContainer [] Abilities, ClassAbilities;
 
+	public Powerup [] Powerups;
+
 	public Ability [] AbilityPrefabs;
 	public Ability [] TeamAbilities;
 	public ItemNameContainer ItemNames;
@@ -64,6 +66,7 @@ public class GameData : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		LoadClasses();
+		LoadPowerups();
 	}
 	
 	// Update is called once per frame
@@ -771,6 +774,53 @@ public class GameData : MonoBehaviour {
 		Classes = final.ToArray();
 	}
 
+	string [] powerups_list = new string []
+	{
+		"heal",
+		"firestorm",
+		"throwknives",
+		"lullaby",
+		"colorswap"
+	};
+
+	public void LoadPowerups()
+	{
+		int num = 0;
+		string path_init = "powerups";
+		List<Powerup> final = new List<Powerup>();
+
+		for(int i = 0; i < powerups_list.Length; i++)
+		{
+			string path = path_init + "/" + powerups_list[i];
+			string prefpath = path + "/" + powerups_list[i] + "_prefab";
+			UnityEngine.Object pobj = Resources.Load(prefpath);
+			if(pobj == null) continue;
+			Powerup pfin = (pobj as GameObject).GetComponent<Powerup>();
+			final.Add(pfin);
+			num ++;
+		}
+		print("Loaded " + num + " powerups");
+		Powerups = final.ToArray();
+	}
+
+	public Powerup GetPowerup(string name, Class c = null)
+	{
+		Powerup obj = null;
+		foreach(Powerup child in Powerups)
+		{
+			if(child.Name == name) obj = child;
+		}
+
+		if(obj == null) return null;
+		Powerup final = (Powerup) Instantiate(obj);
+		if(c != null)
+		{
+			final.transform.parent = c.transform;
+			final.Setup(c);
+		}
+		return final;
+	}
+
 
 	IEnumerator LoadAssets_Routine()
 	{
@@ -781,6 +831,7 @@ public class GameData : MonoBehaviour {
 		//	_Waves[i] = WaveParent.transform.GetChild(i).GetComponent<Wave>();
 		//	_Waves[i].Index = i;
 		//}
+		
 
 		TileModel = (GameObject) Resources.Load("TileModel");
 
@@ -797,7 +848,6 @@ public class GameData : MonoBehaviour {
 			if(i % 5 == 0) yield return null;
 		}
 
-		
 		_Abilities = new Ability[AbilityParent.transform.childCount];
 		for(int i = 0; i < AbilityParent.transform.childCount; i++)
 		{

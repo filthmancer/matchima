@@ -41,13 +41,13 @@ public class Enemy : Tile {
 		get{
 			List<StCon> basic = new List<StCon>();
 			if(Stats.Resource != 0)
-			basic.Add(new StCon("+" + Stats.GetValues()[0] + " Mana", GameData.Colour(Genus), false));
+			basic.Add(new StCon("+" + Stats.GetValues()[0] + " Mana", GameData.Colour(Genus), false, 40));
 			if(Stats.Heal != 0)
-			basic.Add(new StCon("+" + Stats.GetValues()[1] + "% Health", GameData.Colour(GENUS.STR), false));
+			basic.Add(new StCon("+" + Stats.GetValues()[1] + "% Health", GameData.Colour(GENUS.STR), false, 40));
 			if(Stats.Armour != 0)
-			basic.Add(new StCon("+" + Stats.GetValues()[2] + " Armour", GameData.Colour(GENUS.DEX), false));
-			basic.Add(new StCon((Stats.Hits > 0 ? Stats.Hits : 0) + " Health", GameData.Colour(GENUS.STR), false));
-			basic.Add(new StCon((Stats.Attack > 0 ? Stats.Attack : 0) + " Attack", GameData.Colour(GENUS.DEX), false));
+			basic.Add(new StCon("+" + Stats.GetValues()[2] + " Armour", GameData.Colour(GENUS.DEX), false, 40));
+			basic.Add(new StCon((Stats.Hits > 0 ? Stats.Hits : 0) + " Health", GameData.Colour(GENUS.STR), false,40));
+			basic.Add(new StCon((Stats.Attack > 0 ? Stats.Attack : 0) + " Attack", GameData.Colour(GENUS.DEX), false,40));
 			return basic.ToArray();
 		}
 	}
@@ -195,24 +195,6 @@ public class Enemy : Tile {
 			SetState(TileState.Idle, true);
 			if(_anim != null) _anim.SetBool("Sleep",false);
 		}
-	}
-
-	protected IEnumerator AllyAttack(Tile target)
-	{
-		Vector3 pos = transform.position + (GameData.RandomVector*1.4F);
-		MoveToPoint mini = TileMaster.instance.CreateMiniTile(pos,target.transform, Info.Outer);
-		mini.SetPath(0.3F, 0.5F, 0.0F, 0.08F);
-		mini.SetMethod(() =>{
-		  	if(target == null) return;
-		  	AudioManager.instance.PlayTileAudio(target, "hit");
-			target.InitStats.TurnDamage += Stats.Attack;
-			target.Match(0);
-				
-			});
-
-		yield return StartCoroutine(Animate("Attack", 0.05F));
-		
-		yield return null;
 	}
 
 	public override bool Match(int resource) {

@@ -98,6 +98,8 @@ public class Stat
 
 	public int Spikes = 0;
 
+	public float DeathSaveChance = 0.0F;
+
 	public float CooldownDecrease = 0.0F;
 	public float CostDecrease = 0.0F;
 	public int ValueInc = 0;
@@ -507,39 +509,39 @@ public class Stat
 		_Luck.Setup();
 	}
 
-	public StCon [] LevelUp()
+	public StCon [] LevelUp(int power)
 	{
 		List<StCon> final = new List<StCon>();
 		final.Add(new StCon("Stats Up!", Color.white, true, 100));
-		StCon [] STR = _Strength.LevelUp();
+		StCon [] STR = _Strength.LevelUp(power);
 		if(STR != null)
 		{
 			final.Add(new StCon("Strength", GameData.Colour(GENUS.STR), false));
 			final.AddRange(STR);
 		}
 
-		StCon [] DEX = _Dexterity.LevelUp();
+		StCon [] DEX = _Dexterity.LevelUp(power);
 		if(DEX != null)
 		{
 			final.Add(new StCon("Dexterity", GameData.Colour(GENUS.DEX), false));
 			final.AddRange(DEX);
 		}
 
-		StCon [] WIS = _Wisdom.LevelUp();
+		StCon [] WIS = _Wisdom.LevelUp(power);
 		if(WIS != null)
 		{
 			final.Add(new StCon("Wisdom", GameData.Colour(GENUS.WIS), false));
 			final.AddRange(WIS);
 		}
 
-		StCon [] CHA = _Charisma.LevelUp();
+		StCon [] CHA = _Charisma.LevelUp(power);
 		if(CHA != null)
 		{
 			final.Add(new StCon("Charisma", GameData.Colour(GENUS.CHA), false));
 			final.AddRange(CHA);
 		}
 
-		StCon [] PRP = _Luck.LevelUp();
+		StCon [] PRP = _Luck.LevelUp(power);
 		if(PRP != null)
 		{
 			final.Add(new StCon("Luck", GameData.Colour(GENUS.PRP), false));
@@ -638,12 +640,12 @@ public class StatContainer
 
 	}
 
-	public StCon [] LevelUp()
+	public StCon [] LevelUp(int power)
 	{
 		int StatOld = StatCurrent;
 		ToMeter = 10;
 		ToMult = 65;
-		StatCurrent_soft += StatGain;
+		StatCurrent_soft += StatGain * power;
 		StatCurrent = (int) StatCurrent_soft;
 
 		//MeterInc = StatCurrent / ToMeter;
