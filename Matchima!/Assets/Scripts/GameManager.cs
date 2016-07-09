@@ -674,18 +674,19 @@ public class GameManager : MonoBehaviour {
 		}
 		else EnemyTurn = false;
 
-		//if(TileMaster.FillGrid_Override) TileMaster.instance.SetFillGrid(true);
-
+		UIManager.instance.SetBonuses(GetBonuses(ComboSize));
 		yield return StartCoroutine(Player.instance.AfterMatch());
 
 		//Player.Stats.CompleteLeech(enemies_hit);
-		
 		//Player.instance.CheckForBestCombo(resource);
+		//StartCoroutine(SplashBonus(ComboSize));
+		
 
 		yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
+
 		yield return StartCoroutine(Player.instance.EndTurn());
 		
-		//StartCoroutine(SplashBonus(ComboSize));
+		
 		
 		yield return StartCoroutine(TileMaster.instance.BeforeTurn());
 		UIManager.instance.SetClassButtons(false);
@@ -909,6 +910,54 @@ public class GameManager : MonoBehaviour {
 		yield return null;
 	}
 
+	public Bonus [] GetBonuses(int combo)
+	{
+	 	List<Bonus> final = new List<Bonus>();
+
+
+	//Combo Bonus
+	 	float multi = 1.0F;
+	 	string title = "";
+	 	Color col = GameData.Colour(GENUS.STR);
+	 	if(combo >= 20)
+	 	{
+	 		title = "WOW!";
+	 		multi = 2.6F;
+	 		col = GameData.Colour(GENUS.PRP);
+	 	}
+	 	else if(combo >= 10)
+	 	{
+	 		title = "GREAT!";
+	 		multi = 1.7F;
+	 		col = GameData.Colour(GENUS.DEX);
+	 	}
+	 	else if(combo >= 5)
+	 	{
+	 		title = "GOOD!";
+	 		multi = 1.2F;
+	 		col = GameData.Colour(GENUS.WIS);
+	 	}
+	 	if(multi > 1.0F)
+	 		final.Add(new Bonus(multi,title,multi.ToString("0.0") + "x", col));
+
+
+	 	for(int i = 0; i < Player.Classes.Length; i++)
+	 	{
+	 		/*if(AllOfRes(i))
+	 		{
+	 			final.Add(new Bonus(
+	 				Player.Stats.AllColourMulti,
+	 				"ALL " + Player.Classes[i].Genus, 
+	 				Player.Stats.AllColourMulti.ToString("0.0") + "x",
+	 				GameData.Colour((GENUS)i), i));
+	 		}*/
+	 		final.AddRange(Player.instance.CheckForBonus((GENUS) i));
+	 	}
+
+	 	return final.ToArray();
+	 	
+	}
+
 	/*public void CollectResources(int [] resource, int [] health, int [] armour, Bonus [] added_bonuses = null, bool all_of_res = true)
 	{
 		UIManager.Objects.GetScoreWindow().Reset();
@@ -983,6 +1032,8 @@ public class GameManager : MonoBehaviour {
 			}
 		}
 	}*/
+
+
 
 	public IEnumerator CollectResourcesRoutine(int [] resource, int [] health, int [] armour, Bonus [] added_bonuses = null, bool all_of_res = true)
 	{
@@ -1162,8 +1213,32 @@ public class GameManager : MonoBehaviour {
 				//);
 				yield return new WaitForSeconds(GameData.GameSpeed(0.6F));
 			}*/
-			yield return StartCoroutine(AllOfResRoutine(i));	
+			//yield return StartCoroutine(AllOfResRoutine(i));	
 		}
+	}
+
+	public bool AllOfRes(int i)
+	{
+		bool all_of_res = true;
+		GENUS matchGENUS = Player.Classes[i].Genus;
+		if(matchGENUS != GENUS.ALL)
+		{
+			for(int x = 0; x < TileMaster.Tiles.GetLength(0); x ++)
+			{
+				for(int y = 0; y < TileMaster.Tiles.GetLength(1); y++)
+				{
+					Tile t = TileMaster.Tiles[x,y];
+					if(t)
+					{
+						if(t.Genus == matchGENUS && !t.Stats.isNew) 
+						{
+							all_of_res = false;
+						}
+					}
+				}
+			}
+		}
+		return all_of_res;
 	}
 
 	IEnumerator AllOfResRoutine(int i)
@@ -1367,12 +1442,14 @@ public class Bonus
 	public float Multiplier = 1.0F;
 	public string Name, Description;
 	public Color col;
-	public Bonus(float mult, string name, string desc, Color _col)
+	public int index;
+	public Bonus(float mult, string name, string desc, Color _col, int _index = 5)
 	{
 		Name = name;
 		Description = desc;
 		Multiplier = mult;
 		col = _col;
+		index = _index;
 	}
 }
 

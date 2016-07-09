@@ -277,8 +277,7 @@ public class UIManager : MonoBehaviour {
 			Meters[g] = points;
 			MeterTimer = MeterTimer_init;
 			float init_rotation = Random.Range(-7,7);
-			float info_movespeed = 0.4F;
-			float info_finalscale = 0.35F;
+			
 
 			MeterObj[g] = UIManager.instance.MiniAlert(
 				UIManager.Objects.MiddleGear[4][g].transform.position, 
@@ -286,72 +285,118 @@ public class UIManager : MonoBehaviour {
 			MeterObj[g].transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
 			MeterObj[g].transform.rotation = Quaternion.Euler(0,0,init_rotation);
 			MeterObj[g].AddJuice(Juice.instance.BounceB, 0.45F);
-
+			MeterObj[g].DestroyOnEnd = false;
 			MeterObj[g].AddAction(() =>
 			{
-				MiniAlertUI wavetarget = (MiniAlertUI) Instantiate(MeterObj[g]);
-				wavetarget.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
-				wavetarget.transform.position = UIManager.Objects.MiddleGear[4][g].transform.position;
-				wavetarget.transform.localScale = Vector3.one;
-
-				MoveToPoint wavetarget_mover = AttachMoverToAlert(ref wavetarget);
-				wavetarget_mover.SetTarget(Objects.TopGear[1][0][0].transform.position);
-				wavetarget_mover.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
-				wavetarget_mover.SetIntMethod( 
-					(int [] amt) =>
-					{
-						if(GameManager.Wave != null)
-							GameManager.Wave.AddPoints(amt[0]);
-					},
-					new int []{Meters[g]}
-				);
-
-				MiniAlertUI classtarget = (MiniAlertUI) Instantiate(MeterObj[g]);
-				classtarget.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
-				classtarget.transform.position = UIManager.Objects.MiddleGear[4][g].transform.position;
-				classtarget.transform.localScale = Vector3.one;
-
-				MoveToPoint classtarget_mover = AttachMoverToAlert(ref classtarget);
-				classtarget_mover.SetTarget(ClassButtons.GetClass(g).transform.position);
-				classtarget_mover.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
-				classtarget_mover.SetIntMethod( 
-					(int [] amt) =>
-					{
-						if((GENUS)amt[0] != GENUS.ALL) Player.Classes[amt[0]].AddToMeter(Meters[amt[0]]);
-						else
-						{
-							for(int cl = 0; cl < 4; cl++)
-							{
-								Player.Classes[cl].AddToMeter(amt[1]);
-							}
-						}
-						ShowingMeter[amt[0]] = false;
-						Meters[amt[0]] = 0;
-					},
-					new int []{g, Meters[g]}
-				);
+				StartCoroutine(ShowBonuses(g));
 			});
-
-			/*MoveToPoint mover = AttachMoverToAlert(ref MeterObj[g]);
-			mover.SetTarget(ClassButtons.GetClass(g).transform.position);
-			mover.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
-			mover.SetIntMethod( 
-				(int [] amt) =>
-				{
-					if((GENUS)amt[0] != GENUS.ALL) Player.Classes[amt[0]].AddToMeter(Meters[amt[0]]);
-					else
-					{
-						for(int cl = 0; cl < 4; cl++)
-						{
-							Player.Classes[cl].AddToMeter(Meters[amt[0]]);
-						}
-					}
-					ShowingMeter[amt[0]] = false;
-					Meters[amt[0]] = 0;
-				},
-				new int []{g}
-			);*/
 		}
+	}
+
+	public class BonusGroup
+	{
+		public List<Bonus> bonuses = new List<Bonus>();
+		public int Length{get{return bonuses.Count;}}
+		public void Add(Bonus b){bonuses.Add(b);}
+		public Bonus this[int i]{get{return bonuses[i];}}
+	}
+
+	public BonusGroup [] BonusGroups;
+
+	public void SetBonuses(Bonus [] b)
+	{
+		BonusGroups = new BonusGroup[Player.Classes.Length];
+		for(int bb = 0; bb < BonusGroups.Length; bb++)
+		{
+			BonusGroups[bb] = new BonusGroup();
+		}
+		for(int i = 0; i < b.Length; i++)
+		{
+
+			int index = b[i].index;
+			if(index == 5)
+			{
+				for(int x = 0; x < BonusGroups.Length; x++)
+				{
+					BonusGroups[x].Add(b[i]);
+				}
+				
+			}
+			else BonusGroups[index].Add(b[i]);
+		}
+	}
+
+	public IEnumerator ShowBonuses(int g)
+	{
+		float bonus_time = 0.5F;
+		float bonus_time_desc = 0.2F;
+		for(int i = 0; i < BonusGroups[g].Length; i++)
+		{
+			MiniAlertUI BonusObj = UIManager.instance.MiniAlert(
+				UIManager.Objects.MiddleGear[4][g].transform.position + Vector3.down*2, 
+				BonusGroups[g][i].Name, 110, BonusGroups[g][i].col, bonus_time+bonus_time_desc, 0.1F);
+			//BonusObj.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
+			BonusObj.transform.rotation = Quaternion.Euler(0,0,0);
+			BonusObj.AddJuice(Juice.instance.BounceB, 0.45F);
+			yield return new WaitForSeconds(bonus_time_desc);
+			MiniAlertUI BonusDesc = UIManager.instance.MiniAlert(
+				UIManager.Objects.MiddleGear[4][g].transform.position + Vector3.down*2.4F, 
+				BonusGroups[g][i].Description, 85, BonusGroups[g][i].col, bonus_time, 0.0F);
+			//BonusDesc.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
+			BonusDesc.transform.rotation = Quaternion.Euler(0,0,0);
+			BonusDesc.AddJuice(Juice.instance.BounceB, 0.45F);
+
+			Meters[g] = (int)((float)Meters[g] * BonusGroups[g][i].Multiplier);
+			MeterObj[g].AddJuice(Juice.instance.BounceB, 0.32F);
+			MeterObj[g].text = Meters[g] + "";
+			yield return new WaitForSeconds(bonus_time);
+		}
+
+		float info_movespeed = 0.4F;
+		float info_finalscale = 0.35F;
+
+		MiniAlertUI wavetarget = (MiniAlertUI) Instantiate(MeterObj[g]);
+		wavetarget.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
+		wavetarget.transform.position = UIManager.Objects.MiddleGear[4][g].transform.position;
+		wavetarget.transform.localScale = Vector3.one;
+
+		MoveToPoint wavetarget_mover = AttachMoverToAlert(ref wavetarget);
+		wavetarget_mover.SetTarget(Objects.TopGear[1][0][0].transform.position);
+		wavetarget_mover.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
+		wavetarget_mover.SetIntMethod( 
+			(int [] amt) =>
+			{
+				if(GameManager.Wave != null)
+					GameManager.Wave.AddPoints(amt[0]);
+			},
+			new int []{Meters[g]}
+		);
+
+		MiniAlertUI classtarget = (MiniAlertUI) Instantiate(MeterObj[g]);
+		classtarget.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
+		classtarget.transform.position = UIManager.Objects.MiddleGear[4][g].transform.position;
+		classtarget.transform.localScale = Vector3.one;
+
+		MoveToPoint classtarget_mover = AttachMoverToAlert(ref classtarget);
+		classtarget_mover.SetTarget(ClassButtons.GetClass(g).transform.position);
+		classtarget_mover.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
+		classtarget_mover.SetIntMethod( 
+			(int [] amt) =>
+			{
+				if((GENUS)amt[0] != GENUS.ALL) Player.Classes[amt[0]].AddToMeter(Meters[amt[0]]);
+				else
+				{
+					for(int cl = 0; cl < 4; cl++)
+					{
+						Player.Classes[cl].AddToMeter(amt[1]);
+					}
+				}
+				ShowingMeter[amt[0]] = false;
+				Meters[amt[0]] = 0;
+			},
+			new int []{g, Meters[g]}
+		);
+		Destroy(MeterObj[g].gameObject);
 	}
 
 

@@ -25,9 +25,20 @@ public class MiniAlertUI : UIObj {
 		}
 	}
 
-	
+	bool ended = false;
 	// Update is called once per frame
 	void Update () {
+		if(DoJuiceScale)
+		{
+			if(juice_time_curr < juice_time_total)
+			{
+				Txt[0].transform.localScale = Juice.instance.ScaleItNow(
+					JuiceScale, Vector3.one, juice_time_curr/juice_time_total, 1.0F);
+				juice_time_curr += Time.deltaTime;
+			}
+			
+		}
+		Txt[0].text = text;
 		if(lifetime < -1.0F) return;
 		if(lifetime > 0.0F){
 			transform.position += velocity * _speed;
@@ -35,21 +46,12 @@ public class MiniAlertUI : UIObj {
 
 			lifetime -= Time.deltaTime;
 			_speed = Mathf.Lerp(_speed, 0.0F, Time.deltaTime * 10);
-			Txt[0].text = text;
-			if(DoJuiceScale)
-			{
-				if(juice_time_curr < juice_time_total)
-				{
-					Txt[0].transform.localScale = Juice.instance.ScaleItNow(
-						JuiceScale, Vector3.one, juice_time_curr/juice_time_total, 1.0F);
-					juice_time_curr += Time.deltaTime;
-				}
-				
-			}
-			//else Txt[0].fontSize = Mathf.Lerp(Txt[0].fontSize, size, Time.deltaTime*10);
+			
 		}
 		else 
 		{
+			if(ended) return;
+			ended = true;
 			foreach(Action child in EndActions)
 			{
 				child();
