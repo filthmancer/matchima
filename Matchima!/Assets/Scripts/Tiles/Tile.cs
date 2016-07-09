@@ -956,8 +956,8 @@ public class Tile : MonoBehaviour {
 
 		float info_time = 0.43F;
 		float info_size = init_size + (GetAttack() * 2);
-		float info_movespeed = Time.deltaTime * 20;
-		float info_finalscale = 0.65F;
+		float info_movespeed = Time.deltaTime * 15;
+		float info_finalscale = 0.9F;
 
 		Vector3 pos = TileMaster.Grid.GetPoint(Point.Point(0));
 		MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + GetAttack(), info_size, Color.black, info_time, 0.03F, false);
@@ -985,8 +985,8 @@ public class Tile : MonoBehaviour {
 
 		float info_time = 0.43F;
 		float info_size = init_size + (GetAttack() * 2);
-		float info_movespeed = Time.deltaTime * 20;
-		float info_finalscale = 0.65F;
+		float info_movespeed = Time.deltaTime * 15;
+		float info_finalscale = 0.9F;
 
 		Vector3 pos = TileMaster.Grid.GetPoint(Point.Point(0));
 		MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + GetAttack(), info_size, GameData.instance.BadColour, info_time, 0.03F, false);
@@ -1016,8 +1016,8 @@ public class Tile : MonoBehaviour {
 
 		float info_time = 0.43F;
 		float info_size = init_size + (GetAttack() * 2);
-		float info_movespeed = Time.deltaTime * 20;
-		float info_finalscale = 0.65F;
+		float info_movespeed = Time.deltaTime * 15;
+		float info_finalscale = 0.9F;
 
 		Vector3 pos = TileMaster.Grid.GetPoint(Point.Point(0));
 		MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + GetAttack(), info_size, GameData.instance.BadColour, info_time, 0.03F, false);
