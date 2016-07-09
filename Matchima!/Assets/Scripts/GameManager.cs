@@ -679,21 +679,11 @@ public class GameManager : MonoBehaviour {
 		yield return StartCoroutine(Player.instance.AfterMatch());
 
 		//Player.Stats.CompleteLeech(enemies_hit);
-		Player.Stats.CompleteRegen();
-		Player.instance.CompleteHealth();
 		
-		
-		PlayerControl.matchingTile = null;
 		//Player.instance.CheckForBestCombo(resource);
 
-		TileMaster.instance.SetFillGrid(true);
-		while(!TileMaster.AllLanded)	yield return null;
-		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+		yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 		yield return StartCoroutine(Player.instance.EndTurn());
-		
-		
-		while(UIManager.instance.IsShowingMeters) yield return null;
-		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 		
 		//StartCoroutine(SplashBonus(ComboSize));
 		

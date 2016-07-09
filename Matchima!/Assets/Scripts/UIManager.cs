@@ -83,7 +83,7 @@ public class UIManager : MonoBehaviour {
 		if(!GameManager.instance.gameStart) return;
 
 		if(MeterTimer <= 0.0F) CashMeterPoints();
-		else MeterTimer -= Time.deltaTime;
+		else if(IsShowingMeters) MeterTimer -= Time.deltaTime;
 
 		if(Time.time > update_interval_current)
 		{
@@ -247,10 +247,11 @@ public class UIManager : MonoBehaviour {
 	bool [] ShowingMeter = new bool[7];
 	int [] Meters = new int[7];
 	MiniAlertUI [] MeterObj = new MiniAlertUI[7];
-	float MeterTimer = 0.5F;
+	public float MeterTimer = 0.6F;
+	float MeterTimer_init = 0.45F;
 	public void CashMeterPoints()
 	{
-		MeterTimer = 0.5F;
+		MeterTimer = MeterTimer_init;
 		for(int i = 0; i < MeterObj.Length; i++)
 		{
 			if(MeterObj[i] == null) continue;
@@ -266,7 +267,7 @@ public class UIManager : MonoBehaviour {
 			Meters[g] += points;
 			MeterObj[g].AddJuice(Juice.instance.BounceB, 0.32F);
 			//MeterObj[g].lifetime += 0.12F;
-			MeterTimer = 0.5F;
+			MeterTimer = Mathf.Clamp(MeterTimer + 0.15F, 0.0F, MeterTimer_init);
 			MeterObj[g].size = init_font_size + Meters[g] * 0.25F;
 			MeterObj[g].text = "" + Meters[g];
 		}
@@ -274,23 +275,25 @@ public class UIManager : MonoBehaviour {
 		{
 			ShowingMeter[g] = true;
 			Meters[g] = points;
-			MeterTimer = 0.8F;
+			MeterTimer = MeterTimer_init;
 			float init_rotation = Random.Range(-7,7);
-			float info_movespeed = 0.3F;
-			float info_finalscale = 0.55F;
+			float info_movespeed = 0.4F;
+			float info_finalscale = 0.35F;
 
 			MeterObj[g] = UIManager.instance.MiniAlert(
-				UIManager.Objects.MiddleGear[4].transform.position, 
+				UIManager.Objects.MiddleGear[4][g].transform.position, 
 				"" + Meters[g], init_font_size,  GameData.Colour((GENUS)g), 15.0F, 0.01F);
-			MeterObj[g].transform.SetParent(UIManager.Objects.MiddleGear[4].transform);
+			MeterObj[g].transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
 			MeterObj[g].transform.rotation = Quaternion.Euler(0,0,init_rotation);
 			MeterObj[g].AddJuice(Juice.instance.BounceB, 0.45F);
 
 			MeterObj[g].AddAction(() =>
 			{
 				MiniAlertUI wavetarget = (MiniAlertUI) Instantiate(MeterObj[g]);
-				wavetarget.transform.SetParent(UIManager.Objects.MiddleGear[4].transform);
+				wavetarget.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
+				wavetarget.transform.position = UIManager.Objects.MiddleGear[4][g].transform.position;
 				wavetarget.transform.localScale = Vector3.one;
+
 				MoveToPoint wavetarget_mover = AttachMoverToAlert(ref wavetarget);
 				wavetarget_mover.SetTarget(Objects.TopGear[1][0][0].transform.position);
 				wavetarget_mover.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
@@ -298,14 +301,16 @@ public class UIManager : MonoBehaviour {
 					(int [] amt) =>
 					{
 						if(GameManager.Wave != null)
-							GameManager.Wave.AddPoints(Meters[g]);
+							GameManager.Wave.AddPoints(amt[0]);
 					},
-					new int []{g}
+					new int []{Meters[g]}
 				);
 
 				MiniAlertUI classtarget = (MiniAlertUI) Instantiate(MeterObj[g]);
-				classtarget.transform.SetParent(UIManager.Objects.MiddleGear[4].transform);
+				classtarget.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
+				classtarget.transform.position = UIManager.Objects.MiddleGear[4][g].transform.position;
 				classtarget.transform.localScale = Vector3.one;
+
 				MoveToPoint classtarget_mover = AttachMoverToAlert(ref classtarget);
 				classtarget_mover.SetTarget(ClassButtons.GetClass(g).transform.position);
 				classtarget_mover.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
@@ -317,13 +322,13 @@ public class UIManager : MonoBehaviour {
 						{
 							for(int cl = 0; cl < 4; cl++)
 							{
-								Player.Classes[cl].AddToMeter(Meters[amt[0]]);
+								Player.Classes[cl].AddToMeter(amt[1]);
 							}
 						}
 						ShowingMeter[amt[0]] = false;
 						Meters[amt[0]] = 0;
 					},
-					new int []{g}
+					new int []{g, Meters[g]}
 				);
 			});
 

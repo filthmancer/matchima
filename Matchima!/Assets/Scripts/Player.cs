@@ -227,7 +227,13 @@ public class Player : MonoBehaviour {
 	{
 		PlayerControl.instance.finalTiles.Clear();
 		PlayerControl.instance.selectedTiles.Clear();
-		yield break;
+		Stats.CompleteRegen();
+		CompleteHealth();
+		PlayerControl.matchingTile = null;
+
+		TileMaster.instance.SetFillGrid(true);
+		while(!TileMaster.AllLanded)	yield return null;
+		while(UIManager.instance.IsShowingMeters) yield return null;
 	}
 
 	public IEnumerator BeginTurn()

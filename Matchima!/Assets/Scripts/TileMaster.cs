@@ -834,15 +834,15 @@ public class TileMaster : MonoBehaviour {
 		float init_size = Random.Range(80, 120);
 		float init_rotation = Random.Range(-7,7);
 
-		float info_time = 0.45F;
+		float info_time = 0.4F;
 		float info_start_size = init_size + (t.Stats.Value * 5);
-		float info_movespeed = 0.28F;
-		float info_finalscale = 0.65F;
+		float info_movespeed = 0.4F;
+		float info_finalscale = 0.35F;
 
 		MoveToPoint mini;
 
 		int [] values = t.Stats.GetValues();
-
+		int g = (int) t.Genus;
 		if(values[0] > 0)
 		{	
 			Vector3 pos = Grid.GetPoint(t.Point.Point(0)) + Vector3.down * 0.3F;
@@ -851,14 +851,14 @@ public class TileMaster : MonoBehaviour {
 			mini = UIManager.instance.AttachMoverToAlert(ref m);
 			m.AddJuice(Juice.instance.BounceB, info_time);
 
-			mini.SetTarget(UIManager.Objects.MiddleGear[0].transform.position);
+			mini.SetTarget(UIManager.Objects.MiddleGear[4][g].transform.position);
 			mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
 
 			mini.SetIntMethod((int [] num) =>
 			{
 				UIManager.instance.GetMeterPoints(num[0], num[1]);
 
-			}, new int [] {(int)t.Genus, values[0]});
+			}, new int [] {g, values[0]});
 
 
 			/*mini.SetIntMethod( 
