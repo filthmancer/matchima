@@ -43,10 +43,10 @@ public class WaveTile : WaveUnit
 		else GenusString = GenusOverride;
 
 		Genus = TileMaster.Genus[GenusString];
-		if(InnerOverride == null) Inner.SetSprite(TileMaster.Types[Species].Atlas, 0);
+		/*if(InnerOverride == null) Inner.SetSprite(TileMaster.Types[Species].Atlas, 0);
 		else Inner = InnerOverride;
-		if(OuterOverride == null) Outer.SetSprite(TileMaster.Genus.Frame[(int)Genus], 0);
-		else Outer = OuterOverride;
+		if(OuterOverride == null) Outer.SetSprite(TileMaster.Genus.Frames, (int)Genus);
+		else Outer = OuterOverride;*/
 
 	}
 

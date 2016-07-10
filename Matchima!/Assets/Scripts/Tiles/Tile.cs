@@ -1143,19 +1143,13 @@ public class Tile : MonoBehaviour {
 	public virtual void SetSprite()
 	{
 		int sprite = Stats.Value / 5;
-		print(Info.Outer + ":" + Info.Inner);
 		SetBorder(Info.Outer);
-		SetRender(Info.Inner);
+		SetRender(Info._GenusName);
 		
 		//if(Params._shiny != null && Params._render != null) Params._shiny.sprite = Inner;
 		//transform.position = Point.targetPos;
 		Params.transform.position = transform.position;
 		Params._render.transform.localPosition = Vector3.zero;
-	}
-
-	public  void SetRender(tk2dSpriteCollectionData render)
-	{
-		if(Params._render!= null) Params._render.SetSprite(render, 0);
 	}
 
 	public  void SetBorder(int border)
@@ -1164,7 +1158,12 @@ public class Tile : MonoBehaviour {
 	}
 	public  void SetRender(string render)
 	{
-		if(Params._render!= null) Params._render.SetSprite(render);
+		if(Params._render != null && Info.Inner != null) 
+		{
+			tk2dSpriteDefinition id = Info.Inner.GetSpriteDefinition(render);
+			if(id == null) render = "Alpha";
+			Params._render.SetSprite(Info.Inner, render);
+		}
 	}
 
 	public virtual TileEffect AddEffect(TileEffect init)

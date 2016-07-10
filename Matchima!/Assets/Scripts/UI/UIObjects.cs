@@ -16,7 +16,7 @@ public class UIObjects : MonoBehaviour {
 	public UIObj Alert_Button, Alert_ButtonParent;
 	public TextMeshProUGUI LevelInfo, Alert;
 	public UIObj BackingLight;
-	public UIObj Walls;
+	public tk2dSprite Walls;
 
 	public UIObj ArmourParent;
 	public UIObj DeathIcon;

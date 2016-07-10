@@ -70,8 +70,8 @@ public class UIManager : MonoBehaviour {
 		Objects.MainUI.SetActive(false);	
 		for(int i = 0; i < ClassButtons.Length; i++)
 		{
-			//ClassButtons.GetClass(i)._Frame.sprite = TileMaster.Genus.Frame[i];
-			//ClassButtons.GetClass(i)._FrameMask.sprite = TileMaster.Genus.Frame[i];
+			ClassButtons.GetClass(i)._Frame.SetSprite(TileMaster.Genus.Frames, i);
+			ClassButtons.GetClass(i)._FrameMask.SetSprite(TileMaster.Genus.Frames, i);
 		}
 	}
 
@@ -118,8 +118,8 @@ public class UIManager : MonoBehaviour {
 		
 		CameraUtility.instance.MainLight.color = Color.Lerp(
 			CameraUtility.instance.MainLight.color, BackingTint, Time.deltaTime * 5);
-		Objects.Walls.Img[0].color = Color.Lerp(
-			Objects.Walls.Img[0].color, WallTint, Time.deltaTime * 5);
+		Objects.Walls.color = Color.Lerp(
+			Objects.Walls.color, WallTint, Time.deltaTime * 5);
 
 		Objects.ArmourParent.Txt[0].text = Player.Stats._Armour > 0 ? Player.Stats.Armour : "";
 		Objects.ArmourParent.SetActive(Player.Stats._Armour > 0);
@@ -348,8 +348,8 @@ public class UIManager : MonoBehaviour {
 		for(int i = 0; i < BonusGroups[g].Length; i++)
 		{
 			MiniAlertUI BonusObj = UIManager.instance.MiniAlert(
-				UIManager.Objects.MiddleGear[4][g].transform.position + Vector3.up*1.5F, 
-				BonusGroups[g][i].Name, 180, BonusGroups[g][i].col, bonus_time+bonus_time_desc, 0.1F);
+				UIManager.Objects.MiddleGear[4][g].transform.position + Vector3.up*0.4F, 
+				BonusGroups[g][i].Name, 140, BonusGroups[g][i].col, bonus_time+bonus_time_desc, 0.2F);
 			//BonusObj.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
 			BonusObj.transform.rotation = Quaternion.Euler(0,0,0);
 			BonusObj.AddJuice(Juice.instance.BounceB, 0.45F);

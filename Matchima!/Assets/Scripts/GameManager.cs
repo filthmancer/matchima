@@ -543,8 +543,8 @@ public class GameManager : MonoBehaviour {
 
 		CameraUtility.instance.MainLight.color = Color.Lerp(
 			CameraUtility.instance.MainLight.color, UIManager.instance.BackingTint, Time.deltaTime * 5);
-		UIManager.Objects.Walls.Img[0].color = Color.Lerp(
-			UIManager.Objects.Walls.Img[0].color, UIManager.instance.WallTint, Time.deltaTime * 5);
+		UIManager.Objects.Walls.color = Color.Lerp(
+			UIManager.Objects.Walls.color, UIManager.instance.WallTint, Time.deltaTime * 5);
 	}
 
 	IEnumerator _GetWave(Wave w = null)

@@ -294,14 +294,18 @@ public class Enemy : Tile {
 		_Effect.enabled = false;
 	}
 
+
 	public override void SetSprite()
 	{
-		int sprite = Rank - 1;
-
-		SetRender(Info.Inner);
 		SetBorder(Info.Outer);
-	//	Params._shiny.sprite = Params._render.sprite;
+		SetRender(Info._GenusName + "_" + Rank);
+		
+		//if(Params._shiny != null && Params._render != null) Params._shiny.sprite = Inner;
+		//transform.position = Point.targetPos;
+		Params.transform.position = transform.position;
+		Params._render.transform.localPosition = Vector3.zero;
 	}
+
 
 	//public override bool IsGenus(_Species s)
 	//{

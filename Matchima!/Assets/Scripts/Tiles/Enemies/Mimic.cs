@@ -168,7 +168,7 @@ public class Mimic : Enemy {
 		if(revealed) sprite = 1;
 		else sprite = 0;
 
-		SetRender(Info.Inner);
+		SetRender(Info._GenusName);
 		
 		//if(Params._shiny != null && Params._render != null) Params._shiny.sprite = Params._render.sprite;
 	}
