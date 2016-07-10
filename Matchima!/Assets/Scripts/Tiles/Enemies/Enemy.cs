@@ -298,15 +298,9 @@ public class Enemy : Tile {
 	{
 		int sprite = Rank - 1;
 
-		if(Info.Inner.Length > 0)
-		{
-			if(sprite > Info.Inner.Length - 1) sprite = Info.Inner.Length - 1;
-		}
-		else return;
-
-		SetRender(Info.Inner[sprite]);
+		SetRender(Info.Inner);
 		SetBorder(Info.Outer);
-		Params._shiny.sprite = Params._render.sprite;
+	//	Params._shiny.sprite = Params._render.sprite;
 	}
 
 	//public override bool IsGenus(_Species s)

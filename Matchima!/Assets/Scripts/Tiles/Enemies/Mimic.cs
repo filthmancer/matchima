@@ -72,12 +72,12 @@ public class Mimic : Enemy {
 			{
 				UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), "MIMIC!", 62, Color.white, 0.8F,0.15F);
 				Vector3 pos = transform.position + (GameData.RandomVector*1.4F);
-				MoveToPoint mini = TileMaster.instance.CreateMiniTile(transform.position, UIManager.instance.Health.transform, Info.Outer);
+				/*MoveToPoint mini = TileMaster.instance.CreateMiniTile(transform.position, UIManager.instance.Health.transform, Info.Outer);
 				mini.SetPath(0.3F, 0.5F, 0.0F, 0.08F);
 				mini.SetMethod(() =>{
 						Player.Stats.Hit(GetAttack()*2);
 					}
-				);
+				);*/
 				StartCoroutine(Animate("Attack", 0.05F));
 				HasAttackedThisTurn = true;
 				Player.Stats.CompleteHealth();
@@ -168,9 +168,9 @@ public class Mimic : Enemy {
 		if(revealed) sprite = 1;
 		else sprite = 0;
 
-		SetRender(Info.Inner[sprite]);
+		SetRender(Info.Inner);
 		
-		if(Params._shiny != null && Params._render != null) Params._shiny.sprite = Params._render.sprite;
+		//if(Params._shiny != null && Params._render != null) Params._shiny.sprite = Params._render.sprite;
 	}
 
 	public override TileEffect AddEffect(TileEffect e)

@@ -200,7 +200,7 @@ public class Blob : Enemy {
 		SetState(TileState.Idle, true);
 
 		Vector3 pos = transform.position + (GameData.RandomVector*1.4F);
-		MoveToPoint mini = TileMaster.instance.CreateMiniTile(this.transform.position, m.transform, Inner);
+		/*MoveToPoint mini = TileMaster.instance.CreateMiniTile(this.transform.position, m.transform, Inner);
 		//mini.Target =  target;
 		mini.SetPath(0.1F, 0.0F, 0.0F, 0.14F);
 		mini.SetMethod(() =>{
@@ -209,7 +209,7 @@ public class Blob : Enemy {
 				m.InitStats.Attack += Stats.Attack;
 				m.CheckStats();
 			}
-			);
+			);*/
 
 
 		yield return new WaitForSeconds(0.5F);

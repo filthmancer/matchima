@@ -83,7 +83,7 @@ public class Concentrate : Ability {
 				if(tiles[i].IsType(first))
 				{
 					concentrate_value += tiles[i].Stats.Value + (int) (Player.Stats.GetGENUSStat(GENUS) / GENUSMultiplier);
-					TileMaster.instance.CreateMiniTile(tiles[i].transform.position, tiles[0].transform, tiles[i].Params._render.sprite);
+					//TileMaster.instance.CreateMiniTile(tiles[i].transform.position, tiles[0].transform, tiles[i].Params._render.sprite);
 					if(willstack) TileMaster.instance.QueueTile(first.Type, first.Genus);
 					//tiles[i].DestroyThyself(false);
 				}

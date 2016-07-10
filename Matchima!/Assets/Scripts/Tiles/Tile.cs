@@ -73,13 +73,13 @@ public class Tile : MonoBehaviour {
 	[HideInInspector]
 	public TileInfo Info;
 
-	public Sprite Inner
+	public tk2dSpriteCollectionData Inner
 	{
-		get{return Params._render.sprite;}
+		get{return Params._render.Collection;}
 	}
-	public Sprite Outer
+	public tk2dSpriteCollectionData Outer
 	{
-		get{return Params._border.sprite;}
+		get{return Params._border.Collection;}
 	}
 	public TileState state;
 	[HideInInspector]
@@ -209,9 +209,8 @@ public class Tile : MonoBehaviour {
 
 		if(Params != null)
 		{
-			def = Params._render.material.color;
+			def = Color.white;//Inner.material.color;
 			targetColor = def;
-
 		}
 		
 
@@ -1144,28 +1143,28 @@ public class Tile : MonoBehaviour {
 	public virtual void SetSprite()
 	{
 		int sprite = Stats.Value / 5;
+		print(Info.Outer + ":" + Info.Inner);
 		SetBorder(Info.Outer);
-		if(Info.Inner.Length > 0)
-		{
-			if(sprite > Info.Inner.Length - 1) sprite = Info.Inner.Length - 1;
-		}
-		else return;//sprite = 0;
-
-		SetRender(Info.Inner[sprite]);
+		SetRender(Info.Inner);
 		
-		if(Params._shiny != null && Params._render != null) Params._shiny.sprite = Params._render.sprite;
+		//if(Params._shiny != null && Params._render != null) Params._shiny.sprite = Inner;
 		//transform.position = Point.targetPos;
 		Params.transform.position = transform.position;
 		Params._render.transform.localPosition = Vector3.zero;
 	}
 
-	public  void SetBorder(Sprite border)
+	public  void SetRender(tk2dSpriteCollectionData render)
 	{
-		if(Params._border != null) Params._border.sprite = border;
+		if(Params._render!= null) Params._render.SetSprite(render, 0);
 	}
-	public  void SetRender(Sprite render)
+
+	public  void SetBorder(int border)
 	{
-		if(Params._render!= null) Params._render.sprite = render;
+		if(Params._border != null) Params._border.SetSprite(TileMaster.Genus.Frames, border);
+	}
+	public  void SetRender(string render)
+	{
+		if(Params._render!= null) Params._render.SetSprite(render);
 	}
 
 	public virtual TileEffect AddEffect(TileEffect init)

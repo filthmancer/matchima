@@ -7,8 +7,8 @@ public class WaveUnit : Unit {
 	public string Description;
 	protected Wave Parent;
 	[HideInInspector]
-	public Sprite Inner, Outer;
-	public Sprite InnerOverride, OuterOverride;
+	public tk2dSprite Inner, Outer;
+	public tk2dSprite InnerOverride, OuterOverride;
 	public IntVector PrepTime = new IntVector(0,0);
 	public int Timer = 0;
 	public int TimeActive = 0;

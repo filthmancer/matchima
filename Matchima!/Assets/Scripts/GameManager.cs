@@ -523,10 +523,10 @@ public class GameManager : MonoBehaviour {
 				wavebutton.Img[1].transform.gameObject.SetActive(true);
 				wavebutton.Img[1].enabled = true;	
 				wavebutton.Img[0].enabled = true;
-				wavebutton.Img[0].sprite = GameManager.Wave[i].Inner;
+				//wavebutton.Img[0].sprite = GameManager.Wave[i].Inner;
 				wavebutton.Img[0].color = Color.white;
 				wavebutton.Img[2].enabled = true;
-				wavebutton.Img[2].sprite = GameManager.Wave[i].Outer;
+				//wavebutton.Img[2].sprite = GameManager.Wave[i].Outer;
 				wavebutton.Img[2].color = Color.white;				
 			}
 			else 

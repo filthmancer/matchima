@@ -52,13 +52,15 @@ public class GenusTypes
 		return GENUS.NONE;
 	}
 
-	public Sprite [] Frame {
+	public tk2dSpriteCollectionData Frames;
+
+	public tk2dSpriteCollectionData [] Frame {
 		get{
-			return new Sprite [] {RedFrame, BlueFrame,GreenFrame, YellowFrame, PurpleFrame, AllFrame, GreyFrame};
+			return new tk2dSpriteCollectionData [] {RedFrame, BlueFrame,GreenFrame, YellowFrame, PurpleFrame, AllFrame, GreyFrame};
 			}
 		}
 
-	public Sprite RedFrame, BlueFrame,GreenFrame, YellowFrame, PurpleFrame, AllFrame, GreyFrame;
+	public tk2dSpriteCollectionData RedFrame, BlueFrame, GreenFrame, YellowFrame, PurpleFrame, AllFrame, GreyFrame;
 
 	public float [] ChancesAdded = new float [] {0.0F,
 												 0.0F,
@@ -145,16 +147,23 @@ public class TileTypes : MonoBehaviour {
 	string [] SPS = new string [] {"red", "blue", "green", "yellow", "purple", "alpha", "grey"};
 	public IEnumerator LoadSprites(string path)
 	{
+		
 		foreach(SPECIES child in Species)
 		{
-			for(int i = 0; i < SPS.Length; i++)
+			string spritefinal = path + "/" + child.Name + "/" + child.Name + "atlas";
+			UnityEngine.Object _atlas = Resources.Load(spritefinal);
+			if(_atlas == null) continue;
+			tk2dSpriteCollectionData atlas = (_atlas as GameObject).GetComponent<tk2dSpriteCollectionData>();
+			child.Atlas = atlas;
+			print("loaded " + atlas);
+			/*for(int i = 0; i < SPS.Length; i++)
 			{
 				string pathfinal = path + "/" + child.Name + "/" + SPS[i];
 				//string pathfinal = path + "/" + child.Name + "/inners/" + child.Name + "atlas";
 				Sprite[] textures =  Resources.LoadAll<Sprite>(pathfinal);
-				child[i].Sprites = textures;
+				//child[i].Sprites = textures;
 				
-			}
+			}*/ 
 			yield return null;
 		}
 		print("FINISHED SPRITES");
@@ -308,7 +317,8 @@ public class TileTypes : MonoBehaviour {
 
 	public Sprite [] SpriteOf(string name, int value = 0)
 	{
-		if(name == null || name == string.Empty || name == " ") return new Sprite[0];
+		return null;
+		/*if(name == null || name == string.Empty || name == " ") return new Sprite[0];
 		List<Sprite> sprites = new List<Sprite>();
 		string [] array = name.Split(' ');
 
@@ -344,7 +354,7 @@ public class TileTypes : MonoBehaviour {
 			}
 		}
 		
-		return sprites.ToArray();
+		return sprites.ToArray();*/
 	}
 
 
@@ -398,7 +408,7 @@ public class GenusInfo
 	[HideInInspector]
 	public GENUS Genus;
 	
-	public Sprite [] Sprites;
+	public tk2dSpriteCollectionData [] Sprites;
 	public List<TileEffectInfo> Effects;
 
 	public GenusInfo(GENUS g)
@@ -418,6 +428,7 @@ public class SPECIES
 	public TYPE Type;
 	public GameObject Prefab;
 	public ShiftType Shift = ShiftType.Down;
+	public tk2dSpriteCollectionData Atlas;
 
 	public GenusInfo Red = new GenusInfo(GENUS.STR),
 					 Blue = new GenusInfo(GENUS.DEX),
@@ -461,11 +472,12 @@ public class SPECIES
 		return ((int) _Rarity * (int) AllGenus[i]._Rarity);
 	}
 
-	public Sprite [] GetSprites(int g)
+	public tk2dSpriteCollectionData GetSprites(int g)
 	{
-		GenusInfo _genus = this[g];
-		if(_genus.Sprites.Length == 0) return All.Sprites;
-		return _genus.Sprites;
+		return null;
+		//GenusInfo _genus = this[g];
+		//if(_genus.Sprites.Length == 0) return All.Sprites;
+		//return _genus.Sprites;
 	}
 
 	//[Range (0, 1.0F)]
@@ -562,8 +574,8 @@ public class TileInfo
 	public TYPE _TypeEnum;
 	public string _TypeName;
 
-	public Sprite [] Inner;
-	public Sprite Outer;
+	public tk2dSpriteCollectionData Inner;
+	public int Outer;
 	public int Rarity;
 	
 	public ShiftType Shift;
@@ -593,8 +605,8 @@ public class TileInfo
 
 		_GenusEnum = g;
 		
-		Inner = s.GetSprites(i);
-		Outer = TileMaster.Genus.Frame[i];
+		Inner = s.Atlas;
+		Outer = TileMaster.Genus.Frames.GetSpriteIdByName(_GenusName);
 		Rarity = s.RARITY(i);
 		
 		Shift = s.Shift;
@@ -655,8 +667,7 @@ public class TileInfo
 	{
 		int i = (int)g;
 		_GenusEnum = g;
-		Outer = TileMaster.Genus.Frame[i];
-		Inner = _Type.GetSprites(i);
+		Outer = TileMaster.Genus.Frames.GetSpriteIdByName(_GenusName);
 	}
 }
 

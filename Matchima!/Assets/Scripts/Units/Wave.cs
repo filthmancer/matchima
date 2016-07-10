@@ -303,9 +303,9 @@ public class Wave : Unit {
 			int genus = Random.Range(0,4);
 			int num = TileMaster.Types.Length;
 			SPECIES t = TileMaster.Types[Random.Range(0,num)];
-			if(t.GetSprites(genus) == null || t.GetSprites(genus).Length == 0) continue;
-			UIManager.Objects.TopGear[1][i][0].Img[0].sprite = t.GetSprites(genus)[0];
-			UIManager.Objects.TopGear[1][i][0].Img[2].sprite = TileMaster.Genus.Frame[genus];
+			if(t.Atlas == null) continue;
+			//UIManager.Objects.TopGear[1][i][0].Img[0].sprite = t.GetSprites(genus)[0];
+			//UIManager.Objects.TopGear[1][i][0].Img[2].sprite = TileMaster.Genus.Frame[genus];
 			UIManager.Objects.TopGear[1][i][0].SetActive(true);
 		}
 

@@ -70,8 +70,8 @@ public class UIManager : MonoBehaviour {
 		Objects.MainUI.SetActive(false);	
 		for(int i = 0; i < ClassButtons.Length; i++)
 		{
-			ClassButtons.GetClass(i)._Frame.sprite = TileMaster.Genus.Frame[i];
-			ClassButtons.GetClass(i)._FrameMask.sprite = TileMaster.Genus.Frame[i];
+			//ClassButtons.GetClass(i)._Frame.sprite = TileMaster.Genus.Frame[i];
+			//ClassButtons.GetClass(i)._FrameMask.sprite = TileMaster.Genus.Frame[i];
 		}
 	}
 
@@ -136,10 +136,10 @@ public class UIManager : MonoBehaviour {
 					w.Img[1].transform.gameObject.SetActive(true);
 					w.Img[1].enabled = true;	
 					w.Img[0].enabled = true;
-					w.Img[0].sprite = GameManager.Wave[i].Inner;
+					//w.Img[0].sprite = GameManager.Wave[i].Inner;
 					w.Img[0].color = Color.white;
 					w.Img[2].enabled = true;
-					w.Img[2].sprite = GameManager.Wave[i].Outer;
+					//w.Img[2].sprite = GameManager.Wave[i].Outer;
 					w.Img[2].color = Color.white;					
 				}
 				else 
