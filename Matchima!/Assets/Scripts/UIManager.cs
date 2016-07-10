@@ -83,7 +83,7 @@ public class UIManager : MonoBehaviour {
 		if(!GameManager.instance.gameStart) return;
 
 		if(MeterTimer <= 0.0F) CashMeterPoints();
-		else if(IsShowingMeters) MeterTimer -= Time.deltaTime;
+		else if(IsShowingMeters && StartedMeter) MeterTimer -= Time.deltaTime;
 
 		if(Time.time > update_interval_current)
 		{
@@ -248,40 +248,55 @@ public class UIManager : MonoBehaviour {
 	int [] Meters = new int[7];
 	MiniAlertUI [] MeterObj = new MiniAlertUI[7];
 	public float MeterTimer = 0.6F;
-	float MeterTimer_init = 0.45F;
+	float MeterTimer_init = 0.5F;
 	public void CashMeterPoints()
 	{
+		StartedMeter = false;
 		MeterTimer = MeterTimer_init;
 		for(int i = 0; i < MeterObj.Length; i++)
 		{
 			if(MeterObj[i] == null) continue;
 			MeterObj[i].lifetime = 0.0F;
+
 		}
 	}
+
+	bool StartedMeter;
+	public void StartTimer()
+	{
+		StartedMeter = true;
+		MeterTimer = MeterTimer_init;
+	}
+
 	public void GetMeterPoints(int g, int points)
 	{
-		int init_font_size = 380;
+		int init_font_size = 280;
 		GENUS genus = (GENUS) g;
 		if(ShowingMeter[g])
 		{
 			Meters[g] += points;
-			MeterObj[g].AddJuice(Juice.instance.BounceB, 0.32F);
+			if(MeterObj[g] != null)
+			{
+				MeterObj[g].AddJuice(Juice.instance.BounceB, 0.32F);
+				MeterObj[g].size = init_font_size + Meters[g];
+				MeterObj[g].text = "" + Meters[g];	
+			}
+			
 			//MeterObj[g].lifetime += 0.12F;
-			MeterTimer = Mathf.Clamp(MeterTimer + 0.15F, 0.0F, MeterTimer_init);
-			MeterObj[g].size = init_font_size + Meters[g] * 0.25F;
-			MeterObj[g].text = "" + Meters[g];
+			MeterTimer = Mathf.Clamp(MeterTimer + 0.25F, 0.0F, MeterTimer_init);
+			
 		}
 		else
 		{
 			ShowingMeter[g] = true;
 			Meters[g] = points;
-			MeterTimer = MeterTimer_init;
+			//MeterTimer = MeterTimer_init;
 			float init_rotation = Random.Range(-7,7);
 			
 
 			MeterObj[g] = UIManager.instance.MiniAlert(
 				UIManager.Objects.MiddleGear[4][g].transform.position, 
-				"" + Meters[g], init_font_size,  GameData.Colour((GENUS)g), 15.0F, 0.01F);
+				"" + Meters[g], init_font_size,  GameData.Colour((GENUS)g), 2.0F, 0.01F);
 			MeterObj[g].transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
 			MeterObj[g].transform.rotation = Quaternion.Euler(0,0,init_rotation);
 			MeterObj[g].AddJuice(Juice.instance.BounceB, 0.45F);
@@ -328,23 +343,23 @@ public class UIManager : MonoBehaviour {
 
 	public IEnumerator ShowBonuses(int g)
 	{
-		float bonus_time = 0.5F;
-		float bonus_time_desc = 0.2F;
+		float bonus_time = 0.4F;
+		float bonus_time_desc = 0.15F;
 		for(int i = 0; i < BonusGroups[g].Length; i++)
 		{
 			MiniAlertUI BonusObj = UIManager.instance.MiniAlert(
-				UIManager.Objects.MiddleGear[4][g].transform.position + Vector3.down*2, 
-				BonusGroups[g][i].Name, 110, BonusGroups[g][i].col, bonus_time+bonus_time_desc, 0.1F);
+				UIManager.Objects.MiddleGear[4][g].transform.position + Vector3.up*1.5F, 
+				BonusGroups[g][i].Name, 180, BonusGroups[g][i].col, bonus_time+bonus_time_desc, 0.1F);
 			//BonusObj.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
 			BonusObj.transform.rotation = Quaternion.Euler(0,0,0);
 			BonusObj.AddJuice(Juice.instance.BounceB, 0.45F);
-			yield return new WaitForSeconds(bonus_time_desc);
-			MiniAlertUI BonusDesc = UIManager.instance.MiniAlert(
-				UIManager.Objects.MiddleGear[4][g].transform.position + Vector3.down*2.4F, 
+		//	yield return new WaitForSeconds(bonus_time_desc);
+		/*	MiniAlertUI BonusDesc = UIManager.instance.MiniAlert(
+				UIManager.Objects.MiddleGear[4][g].transform.position + Vector3.up*1.6F, 
 				BonusGroups[g][i].Description, 85, BonusGroups[g][i].col, bonus_time, 0.0F);
 			//BonusDesc.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
 			BonusDesc.transform.rotation = Quaternion.Euler(0,0,0);
-			BonusDesc.AddJuice(Juice.instance.BounceB, 0.45F);
+			BonusDesc.AddJuice(Juice.instance.BounceB, 0.45F);*/
 
 			Meters[g] = (int)((float)Meters[g] * BonusGroups[g][i].Multiplier);
 			MeterObj[g].AddJuice(Juice.instance.BounceB, 0.32F);
@@ -352,8 +367,8 @@ public class UIManager : MonoBehaviour {
 			yield return new WaitForSeconds(bonus_time);
 		}
 
-		float info_movespeed = 0.4F;
-		float info_finalscale = 0.35F;
+		float info_movespeed = 0.66F;
+		float info_finalscale = 0.3F;
 
 		MiniAlertUI wavetarget = (MiniAlertUI) Instantiate(MeterObj[g]);
 		wavetarget.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
@@ -367,9 +382,12 @@ public class UIManager : MonoBehaviour {
 			(int [] amt) =>
 			{
 				if(GameManager.Wave != null)
-					GameManager.Wave.AddPoints(amt[0]);
+					GameManager.Wave.AddPoints(amt[1]);
+
+				ShowingMeter[amt[0]] = false;
+				Meters[amt[0]] = 0;
 			},
-			new int []{Meters[g]}
+			new int []{g, Meters[g]}
 		);
 
 		MiniAlertUI classtarget = (MiniAlertUI) Instantiate(MeterObj[g]);
@@ -391,8 +409,7 @@ public class UIManager : MonoBehaviour {
 						Player.Classes[cl].AddToMeter(amt[1]);
 					}
 				}
-				ShowingMeter[amt[0]] = false;
-				Meters[amt[0]] = 0;
+				
 			},
 			new int []{g, Meters[g]}
 		);
@@ -852,17 +869,19 @@ public class UIManager : MonoBehaviour {
 
 	public IEnumerator LoadUI()
 	{
-		yield return new WaitForSeconds(0.2F);
+		while(!Player.loaded) yield return null;
+		
 		//Menu.ClassMenu.SetActive(false);
 		//Objects.ShowObj(Objects.Options, false);
 		Objects.TopGear.DivisionActions.Clear();
 		Objects.ShowObj(Objects.MainUI, true);
 		(UIManager.Objects.TopLeftButton as UIObjTweener).SetTween(0, true);
 		(UIManager.Objects.TopRightButton as UIObjTweener).SetTween(0,true);
-		loaded  = true;
+		
 		int i =0;
 
 		i = 0;
+		
 		foreach(UIClassButton child in ClassButtons.Class)
 		{
 			child.Setup(Player.Classes[i]);
@@ -874,6 +893,8 @@ public class UIManager : MonoBehaviour {
 		zone[0].AddAction(UIAction.MouseUp,() => {ShowStashUI();});
 		zone[1].AddAction(UIAction.MouseUp,() => {GameManager.instance.EnterZone(GameManager.ZoneChoiceA);});
 		zone[2].AddAction(UIAction.MouseUp,() => {GameManager.instance.EnterZone(GameManager.ZoneChoiceB);});
+
+		yield return null;
 
 		Objects.MiddleGear[2][0].AddAction(UIAction.MouseUp, ()=>
 		{
@@ -904,6 +925,16 @@ public class UIManager : MonoBehaviour {
 			AudioManager.PlayMusic = !AudioManager.PlayMusic;
 		});
 
+		Objects.MiddleGear[3][6].AddAction(UIAction.MouseUp, ()=>
+		{	
+			Objects.TopGear.SetActive(false);
+			});
+
+		Objects.MiddleGear[3][7].AddAction(UIAction.MouseUp, ()=>
+		{	
+			Objects.BotGear.SetActive(false);
+			});
+
 		Objects.MiddleGear[1].SetActive(false);
 		Objects.MiddleGear[2].SetActive(false);
 		Objects.MiddleGear[3].SetActive(false);
@@ -930,7 +961,8 @@ public class UIManager : MonoBehaviour {
 			TopGear_lastdivision = num;
 		});
 
-		
+		loaded  = true;
+
 		yield return null;
 	}
 

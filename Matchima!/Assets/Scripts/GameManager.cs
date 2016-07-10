@@ -341,7 +341,7 @@ public class GameManager : MonoBehaviour {
 			//EscapeZone();
 			//GetWave(GameData.instance.GetRandomWave(), 2);
 			//CameraUtility.SetTurnOffset(camopen);
-			
+			Wave.AddPoints(150);
 			//TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["chest"], GENUS.ALL, 1, 1);
 			break;
 			case 3: //c
@@ -587,6 +587,8 @@ public class GameManager : MonoBehaviour {
 		Player.instance.Load(c);
 
 		StartCoroutine(UIManager.instance.LoadUI());
+
+		
 	}
 
 	public void PlayStoryMode()
@@ -680,17 +682,15 @@ public class GameManager : MonoBehaviour {
 		//Player.Stats.CompleteLeech(enemies_hit);
 		//Player.instance.CheckForBestCombo(resource);
 		//StartCoroutine(SplashBonus(ComboSize));
-		
 
-		yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
+		//yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 
 		yield return StartCoroutine(Player.instance.EndTurn());
 		
-		
-		
 		yield return StartCoroutine(TileMaster.instance.BeforeTurn());
-		UIManager.instance.SetClassButtons(false);
+		//UIManager.instance.SetClassButtons(false);
 /* ENEMY TURN *////////////////////////////////////////////////////
+		while(UIManager.instance.IsShowingMeters)yield return null;
 		if(Player.instance.Turns % (int)Player.Stats.AttackRate == 0 && TileMaster.instance.EnemiesOnScreen > 0)
 		{
 			yield return StartCoroutine(EnemyTurnRoutine());
@@ -700,7 +700,7 @@ public class GameManager : MonoBehaviour {
 		yield return StartCoroutine(TileMaster.instance.AfterTurn());
 		yield return StartCoroutine(Player.instance.BeginTurn());
 
-		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+		//yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 		yield return StartCoroutine(CompleteTurnRoutine());
 		
 		yield return StartCoroutine(CurrentWave.AfterTurn());
@@ -724,7 +724,7 @@ public class GameManager : MonoBehaviour {
 
 		List<Tile> allied_attackers = new List<Tile>();
 	
-		yield return new WaitForSeconds(GameData.GameSpeed(0.3F));
+		yield return new WaitForSeconds(GameData.GameSpeed(0.08F));
 		UIManager.Objects.BotGear.SetTween(0, false);
 		UIManager.Objects.TopGear.SetTween(0, true);
 
@@ -914,7 +914,6 @@ public class GameManager : MonoBehaviour {
 	{
 	 	List<Bonus> final = new List<Bonus>();
 
-
 	//Combo Bonus
 	 	float multi = 1.0F;
 	 	string title = "";
@@ -922,16 +921,16 @@ public class GameManager : MonoBehaviour {
 	 	if(combo >= 20)
 	 	{
 	 		title = "WOW!";
-	 		multi = 2.6F;
+	 		multi = 2.2F;
 	 		col = GameData.Colour(GENUS.PRP);
 	 	}
-	 	else if(combo >= 10)
+	 	else if(combo >= 12)
 	 	{
 	 		title = "GREAT!";
-	 		multi = 1.7F;
+	 		multi = 1.5F;
 	 		col = GameData.Colour(GENUS.DEX);
 	 	}
-	 	else if(combo >= 5)
+	 	else if(combo >= 6)
 	 	{
 	 		title = "GOOD!";
 	 		multi = 1.2F;

@@ -233,6 +233,7 @@ public class Player : MonoBehaviour {
 
 		TileMaster.instance.SetFillGrid(true);
 		while(!TileMaster.AllLanded)	yield return null;
+		UIManager.instance.StartTimer();
 		while(UIManager.instance.IsShowingMeters) yield return null;
 	}
 
@@ -541,6 +542,10 @@ public class Player : MonoBehaviour {
 
 				Classes[i] = (Class) Instantiate(_Classes[i]);
 				Classes[i].transform.parent = this.transform;
+				Classes[i].Genus = (GENUS)i;
+				Classes[i].Index = i;
+				Classes[i].StartClass();
+				yield return null;
 			}
 		}
 		else 
@@ -551,22 +556,25 @@ public class Player : MonoBehaviour {
 				if(c[i] == null) continue;
 				Classes[i] = c[i];
 				Classes[i].transform.parent = this.transform;
-			}
-		}
-	
-		for(int i = 0; i < Classes.Length; i++)
-		{
-			if(Classes[i] !=null) 
-			{
 				Classes[i].Genus = (GENUS)i;
 				Classes[i].Index = i;
 				Classes[i].StartClass();
+				yield return null;
 			}
 		}
+	
+		/*for(int i = 0; i < Classes.Length; i++)
+		{
+			if(Classes[i] !=null) 
+			{
+				
+				//yield return null;
+			}
+		}*/
 		ResetStats();
 
 		Stats._Health = Stats._HealthMax;
-		yield return new WaitForSeconds(0.1F);
+		//yield return new WaitForSeconds(0.1F);
 
 		
 		loaded = true;

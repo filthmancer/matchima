@@ -542,6 +542,7 @@ public class GameData : MonoBehaviour {
 
 	public void LoadAbilities()
 	{
+		return;
 		XmlDocument xmldoc = new XmlDocument ();
 		//Ability Data
 		List<AbilityContainer> UnlockedAbilities = new List<AbilityContainer>();
@@ -824,6 +825,7 @@ public class GameData : MonoBehaviour {
 
 	IEnumerator LoadAssets_Routine()
 	{
+		
 		_Items = ItemNames;
 		//_Waves = new Wave[WaveParent.transform.childCount];
 		//for(int i = 0; i < WaveParent.transform.childCount; i++)
@@ -861,12 +863,15 @@ public class GameData : MonoBehaviour {
 		{
 			_Status[i] = TileEffectParent.transform.GetChild(i).GetComponent<Status>();
 			//_Abilities[i].Index = i;
+			yield return null;
 		}
 
 		TileEffectParent.SetActive(false);
 
 		yield return null;
 		//LoadAbilities();
+
+
 
 		yield return StartCoroutine(AudioManager.instance.LoadAudio("Tiles"));
 		yield return StartCoroutine(TileMaster.Types.LoadSprites("Tiles"));

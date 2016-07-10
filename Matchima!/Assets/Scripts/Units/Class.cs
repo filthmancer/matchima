@@ -668,7 +668,7 @@ public class Class : Unit {
 		StCon [] title = InitStats.LevelUp(power);
 		StCon [] floor = new StCon [] {new StCon(Name + " Level"), new StCon(Level+"")};
 
-		yield return StartCoroutine(UIManager.instance.Alert(1.1F, floor, title, null, true));
+		yield return StartCoroutine(UIManager.instance.Alert(0.7F, floor, title, null, true));
 
 		Reset();
 
@@ -692,14 +692,14 @@ public class Class : Unit {
 			new StCon(_Name),
 			new StCon("is Mutating!", Color.white, true, 110)};
 		StCon [] floor = new StCon [] {new StCon("What?!")};
-		yield return StartCoroutine(UIManager.instance.Alert(1.1F, floor, title, null));
+		yield return StartCoroutine(UIManager.instance.Alert(0.75F, floor, title, null));
 
 		Destroy(powerup);
 
 	//Get Mutation
 		Upgrade u = null;
 
-		float cursechance = Stats.CurseChance - (0.07F * power);
+		float cursechance = Stats.CurseChance - (0.09F * power);
 		bool Boon = UnityEngine.Random.value > cursechance;
 
 		if(Boon)

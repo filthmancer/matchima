@@ -136,6 +136,7 @@ public class AudioManager : MonoBehaviour {
 		for(int i = 0; i < TileMaster.Types.Species.Count; i++)
 		{
 			Tiles[i] = GenerateGroup(path, TileMaster.Types.Species[i].Name);
+			yield return null;
 		}
 		yield return null;
 	}

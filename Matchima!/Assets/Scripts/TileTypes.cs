@@ -153,8 +153,11 @@ public class TileTypes : MonoBehaviour {
 				//string pathfinal = path + "/" + child.Name + "/inners/" + child.Name + "atlas";
 				Sprite[] textures =  Resources.LoadAll<Sprite>(pathfinal);
 				child[i].Sprites = textures;
+				
 			}
+			yield return null;
 		}
+		print("FINISHED SPRITES");
 		yield return null;
 	}
 

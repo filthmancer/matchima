@@ -851,7 +851,10 @@ public class TileMaster : MonoBehaviour {
 			mini = UIManager.instance.AttachMoverToAlert(ref m);
 			m.AddJuice(Juice.instance.BounceB, info_time);
 
-			mini.SetTarget(UIManager.Objects.MiddleGear[4][g].transform.position);
+			Vector3 targ = Vector3.zero;
+			if(g > 3) targ = UIManager.instance.Health.transform.position;
+			else targ = UIManager.Objects.MiddleGear[4][g].transform.position;
+			mini.SetTarget(targ);
 			mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
 
 			mini.SetIntMethod((int [] num) =>

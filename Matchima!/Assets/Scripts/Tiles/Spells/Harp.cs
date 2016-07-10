@@ -83,7 +83,7 @@ public class Harp : Tile {
 					
 				}
 			}
-			yield return new WaitForSeconds(GameData.GameSpeed(0.3F));
+			yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 
 		}
 		

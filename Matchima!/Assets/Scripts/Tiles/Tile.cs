@@ -951,13 +951,13 @@ public class Tile : MonoBehaviour {
 		PlayAudio("attack");
 		//UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), "" + GetAttack(), 95, Color.red, 0.8F,0.08F);
 
-		float init_size = UnityEngine.Random.Range(130, 170);
+		float init_size = UnityEngine.Random.Range(160, 200);
 		float init_rotation = UnityEngine.Random.Range(-7,7);
 
 		float info_time = 0.43F;
 		float info_size = init_size + (GetAttack() * 2);
-		float info_movespeed = Time.deltaTime * 15;
-		float info_finalscale = 0.9F;
+		float info_movespeed = Time.deltaTime * 18;
+		float info_finalscale = 0.75F;
 
 		Vector3 pos = TileMaster.Grid.GetPoint(Point.Point(0));
 		MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + GetAttack(), info_size, Color.black, info_time, 0.03F, false);
@@ -980,13 +980,13 @@ public class Tile : MonoBehaviour {
 
 	public void AttackWaveUnit(Wave w)
 	{
-		float init_size = UnityEngine.Random.Range(130, 170);
+		float init_size = UnityEngine.Random.Range(160,200);
 		float init_rotation = UnityEngine.Random.Range(-7,7);
 
 		float info_time = 0.43F;
 		float info_size = init_size + (GetAttack() * 2);
-		float info_movespeed = Time.deltaTime * 15;
-		float info_finalscale = 0.9F;
+		float info_movespeed = Time.deltaTime * 18;
+		float info_finalscale = 0.75F;
 
 		Vector3 pos = TileMaster.Grid.GetPoint(Point.Point(0));
 		MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + GetAttack(), info_size, GameData.instance.BadColour, info_time, 0.03F, false);
@@ -1011,13 +1011,13 @@ public class Tile : MonoBehaviour {
 		PlayAudio("attack");
 		//UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), "" + GetAttack(), 95, Color.red, 0.8F,0.08F);
 
-		float init_size = UnityEngine.Random.Range(130, 170);
+		float init_size = UnityEngine.Random.Range(160,200);
 		float init_rotation = UnityEngine.Random.Range(-7,7);
 
 		float info_time = 0.43F;
 		float info_size = init_size + (GetAttack() * 2);
-		float info_movespeed = Time.deltaTime * 15;
-		float info_finalscale = 0.9F;
+		float info_movespeed = Time.deltaTime * 18;
+		float info_finalscale = 0.75F;
 
 		Vector3 pos = TileMaster.Grid.GetPoint(Point.Point(0));
 		MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + GetAttack(), info_size, GameData.instance.BadColour, info_time, 0.03F, false);

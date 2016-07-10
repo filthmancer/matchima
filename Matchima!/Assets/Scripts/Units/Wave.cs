@@ -355,12 +355,15 @@ public class Wave : Unit {
 			{
 				for(int y = 0; y < TileMaster.Grid.Size[1]; y++)
 				{
+					if(TileMaster.Tiles[x,y] == null) continue;
+					if(TileMaster.Tiles[x,y].Info.Scale > 1) continue;
 					if(TileMaster.Tiles[x,y].Type.isEnemy)
 					{
 						yield return StartCoroutine(Cast(TileMaster.Tiles[x,y], 2));
 					}
 				}
 			}
+			yield return StartCoroutine(Player.instance.AfterMatch());
 			TileMaster.instance.ClearQueuedTiles();
 			yield return new WaitForSeconds(GameData.GameSpeed(0.4F));
 		}
@@ -424,9 +427,7 @@ public class Wave : Unit {
 
 		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
 		yield return StartCoroutine(GameManager.instance.BeforeMatchRoutine());
-		yield return null;
 		yield return StartCoroutine(GameManager.instance.MatchRoutine(PlayerControl.instance.finalTiles.ToArray()));
-		yield return StartCoroutine(Player.instance.AfterMatch());
 
 		TileMaster.instance.ResetTiles(true);
 		TileMaster.instance.SetFillGrid(true);

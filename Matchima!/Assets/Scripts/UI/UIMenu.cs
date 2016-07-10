@@ -445,6 +445,7 @@ public class UIMenu : UIObj {
 			return;
 		}
 		
+		
 		GameManager.instance.LoadGame(false);
 	}
 

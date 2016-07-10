@@ -99,7 +99,7 @@ public class ThrowKnives : Powerup {
 			if(to_collect.Count > 1) to_collect.RemoveAt(num);
 
 			yield return StartCoroutine(ThrowKnife(target, power));
-			yield return new WaitForSeconds(GameData.GameSpeed(0.35F));
+			yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 		}
 
 		TileMaster.instance.SetFillGrid(false);
@@ -139,8 +139,8 @@ public class ThrowKnives : Powerup {
 		float velx = Random.Range(0.09F, 0.17F);
 		if(Random.value < 0.5F) velx = -velx;
 		Vector3 vel = new Vector3(velx, 2.0F * TileMaster.YScale, 0.0F);
-		knife.GetComponent<Velocitizer>().SetVelocity(vel, 0.3F);
-		knife.GetComponent<Velocitizer>().SetRotation(new Vector3(0,0,Random.Range(-1.5F, 1.5F)));
+		knife.GetComponent<Velocitizer>().SetVelocity(vel, 25 * Time.deltaTime);
+		knife.GetComponent<Velocitizer>().SetRotation(new Vector3(0,0,Random.Range(-1.2F, 1.2F)));
 		knife.GetComponent<Velocitizer>().AddTimedAction(() =>
 		{
 			float d = Vector3.Distance(knife.transform.position, CatcherObjActual.transform.position);
@@ -166,10 +166,10 @@ public class ThrowKnives : Powerup {
 		MoveToPoint mp = part.GetComponent<MoveToPoint>();
 		mp.enabled = true;
 		mp.SetTarget(target.transform.position);
-		mp.SetPath(0.55F, 0.0F);
+		mp.SetPath(GameData.GameSpeed(0.55F), 0.0F);
 
 		float dist = Vector3.Distance(target.transform.position, UIManager.ClassButtons.GetClass(Parent.Index).transform.position);
-		mp.Speed = 0.1F + 0.05F * dist;
+		//mp.Speed = 0.1F + 0.05F * dist;
 		float part_time = 0.2F;// + (0.03F * dist);
 		int final_damage = power;
 		bool add = true;

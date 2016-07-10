@@ -505,7 +505,7 @@ public class ModContainer : MonoBehaviour {
 		)
 	});
 
-	public static UpgradeBracket Curse_Shift = new UpgradeBracket("Mindless", ItemType.Shift, 7.56F, new GenusBracket [] {
+	public static UpgradeBracket Curse_Shift = new UpgradeBracket("Mindless", ItemType.Shift, 0.56F, new GenusBracket [] {
 		new GenusBracket("Red",
 			new Upgrade("Weakening", " Tile Per Match",
 						1.0F, ScaleType.RANK, 0.0F,
