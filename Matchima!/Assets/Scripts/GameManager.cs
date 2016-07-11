@@ -717,7 +717,7 @@ public class GameManager : MonoBehaviour {
 
 	IEnumerator EnemyTurnRoutine()
 	{
-		float per_column = 0.13F;
+		float per_column = 0.06F;
 		List<Tile> total_attackers = new List<Tile>();
 		int total_damage = 0;
 		List<Tile> column_attackers;
@@ -760,7 +760,7 @@ public class GameManager : MonoBehaviour {
 				total_damage += child.GetAttack();
 
 				child.AttackPlayer();
-				yield return StartCoroutine(child.Animate("Attack", 0.06F));
+				yield return StartCoroutine(child.Animate("Attack", 0.03F));
 			}
 
 			total_attackers.AddRange(column_attackers);
@@ -769,7 +769,7 @@ public class GameManager : MonoBehaviour {
 		if(total_attackers.Count > 0)
 		{
 			GameData.Log("Took " + total_damage + " damage from " + total_attackers.Count + " attackers");
-			yield return new WaitForSeconds(GameData.GameSpeed(0.23F));
+			yield return new WaitForSeconds(GameData.GameSpeed(0.08F));
 		} 
 
 

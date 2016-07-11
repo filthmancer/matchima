@@ -544,6 +544,7 @@ public class Class : Unit {
 		
 		if(res > 0) 
 		{
+			//Complete();
 			if(!adding_to_meter) StartCoroutine(MeterLoop());
 			if(time_from_last_pulse > 1.3F)
 			{

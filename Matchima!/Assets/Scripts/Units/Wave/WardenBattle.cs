@@ -52,7 +52,7 @@ public class WardenBattle : Wave {
 		Slot3.Timer = 0;
 		Slot3.Activate();
 		
-		Current = warden_actual_health;
+		//Current = warden_actual_health;
 	}
 
 	public override IEnumerator BeginTurn()

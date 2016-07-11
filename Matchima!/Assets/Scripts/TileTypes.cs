@@ -155,7 +155,7 @@ public class TileTypes : MonoBehaviour {
 			if(_atlas == null) continue;
 			tk2dSpriteCollectionData atlas = (_atlas as GameObject).GetComponent<tk2dSpriteCollectionData>();
 			child.Atlas = atlas;
-			print("loaded " + atlas);
+			//print("loaded " + atlas);
 			/*for(int i = 0; i < SPS.Length; i++)
 			{
 				string pathfinal = path + "/" + child.Name + "/" + SPS[i];
