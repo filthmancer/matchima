@@ -379,16 +379,16 @@
 			"file": "Scripts/UIManager.cs",
 			"settings":
 			{
-				"buffer_size": 42788,
+				"buffer_size": 44238,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "Scripts/Slots/Items/ModContainer.cs",
+			"file": "/A/Projects/matchima/.gitignore",
 			"settings":
 			{
-				"buffer_size": 24965,
-				"line_ending": "Unix"
+				"buffer_size": 324,
+				"line_ending": "Windows"
 			}
 		},
 		{
@@ -419,7 +419,7 @@
 			"file": "Scripts/TileTypes.cs",
 			"settings":
 			{
-				"buffer_size": 17691,
+				"buffer_size": 17693,
 				"line_ending": "Windows"
 			}
 		},
@@ -443,7 +443,7 @@
 			"file": "Scripts/Tiles/Enemies/Enemy.cs",
 			"settings":
 			{
-				"buffer_size": 8254,
+				"buffer_size": 7909,
 				"line_ending": "Windows"
 			}
 		},
@@ -492,6 +492,7 @@
 	},
 	"file_history":
 	[
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Items/ModContainer.cs",
 		"/A/Projects/matchima/Matchima!/Assets/TK2DROOT/tk2d/Code/Sprites/tk2dSpriteCollectionData.cs",
 		"/A/Projects/matchima/Matchima!/Assets/TK2DROOT/tk2d/Code/Sprites/tk2dSpriteCollection.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/TileMaster.cs",
@@ -517,7 +518,6 @@
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Wizard.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Thief.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/Lullaby.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Items/ModContainer.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/Powerup.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/ThrowKnives.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/Heal.cs",
@@ -851,7 +851,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 1,
 			"sheets":
 			[
 				{
@@ -859,15 +859,15 @@
 					"file": "Scripts/UIManager.cs",
 					"settings":
 					{
-						"buffer_size": 42788,
+						"buffer_size": 44238,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								10070,
-								10070
+								0,
+								0
 							]
 						],
 						"settings":
@@ -924,25 +924,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 6337.0,
+						"translation.y": 6451.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "Scripts/Slots/Items/ModContainer.cs",
+					"file": "/A/Projects/matchima/.gitignore",
 					"settings":
 					{
-						"buffer_size": 24965,
+						"buffer_size": 324,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								17547,
-								17516
+								181,
+								181
 							]
 						],
 						"settings":
@@ -995,11 +995,10 @@
 								"bh_single_quote_open",
 								"bh_single_quote_close"
 							],
-							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"syntax": "Packages/Text/Plain text.tmLanguage"
 						},
 						"translation.x": 0.0,
-						"translation.y": 1702.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1234,15 +1233,15 @@
 					"file": "Scripts/TileTypes.cs",
 					"settings":
 					{
-						"buffer_size": 17691,
+						"buffer_size": 17693,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								12111,
-								12135
+								0,
+								0
 							]
 						],
 						"settings":
@@ -1463,15 +1462,15 @@
 					"file": "Scripts/Tiles/Enemies/Enemy.cs",
 					"settings":
 					{
-						"buffer_size": 8254,
+						"buffer_size": 7909,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								7889,
-								7889
+								0,
+								0
 							]
 						],
 						"settings":
