@@ -8,7 +8,8 @@ public class TileParamContainer : MonoBehaviour {
 	public TextMeshPro counter, otherWarning, HitCounterText;
 	
 	public LineRenderer lineIn, lineOut;
-	public SpriteRenderer _render, _border, _shiny;
+	public tk2dSprite _render, _border;
+	public SpriteRenderer _shiny;
 
 	public SpriteRenderer _effect;
 

@@ -431,9 +431,8 @@ public class TileMaster : MonoBehaviour {
 
 		if(t == null) return null;
 
-		if(t.Inner == null || t.Inner.Length == 0) t.Inner = t._Type.GetSprites((int)t._GenusEnum);
-		if(t.Outer == null) t.Outer = TileMaster.Genus.Frame[(int)t._GenusEnum];
-
+		if(t.Inner == null) t.Inner = t._Type.Atlas;
+		if(t.Outer == null) t.Outer = TileMaster.Genus.Frames.GetSpriteIdByName(t._GenusName);
 		Tile new_tile = t._Type.TilePool.Spawn(); 
 		float ny = velocity.y == 0.0F ? Grid.GetPoint(x,y).y : spawn_stack[x];
 		float nx = velocity.x == 0.0F ? Grid.GetPoint(x,y).x : spawn_stack[y];
@@ -984,8 +983,9 @@ public class TileMaster : MonoBehaviour {
 	{
 		if(sprite == null)
 		{
+			return null;
 			int num = Random.Range(0,4);
-			sprite = Genus.Frame[num];
+			//sprite = Genus.Frame[num];
 		}
 
 		GameObject new_mini = Instantiate(ResMiniTile);

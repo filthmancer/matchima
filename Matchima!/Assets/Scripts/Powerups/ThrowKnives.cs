@@ -139,7 +139,7 @@ public class ThrowKnives : Powerup {
 		float velx = Random.Range(0.09F, 0.17F);
 		if(Random.value < 0.5F) velx = -velx;
 		Vector3 vel = new Vector3(velx, 2.0F * TileMaster.YScale, 0.0F);
-		knife.GetComponent<Velocitizer>().SetVelocity(vel, 25 * Time.deltaTime);
+		knife.GetComponent<Velocitizer>().SetVelocity(vel, 29 * Time.deltaTime);
 		knife.GetComponent<Velocitizer>().SetRotation(new Vector3(0,0,Random.Range(-1.2F, 1.2F)));
 		knife.GetComponent<Velocitizer>().AddTimedAction(() =>
 		{

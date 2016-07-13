@@ -93,7 +93,7 @@ public class Lullaby : Powerup {
 		for(int i = 0; i < targets.Length; i++)
 		{
 			Sleep(targets[i], sleep_duration);
-			yield return new WaitForSeconds(GameData.GameSpeed(0.35F));
+			yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 		}
 
 		yield return new WaitForSeconds(0.4F);

@@ -107,9 +107,10 @@ public class Wave : Unit {
 		yield return StartCoroutine(WaveActivateRoutine());
 	}
 
-	public void AddPoints(int p)
+	public void AddPoints(int p, bool overridepoints = false)
 	{
-		if(!Active || Ended || Current == -1 || !PointsFromTiles) return;
+		if(!Active || Ended || Current == -1) return;
+		if(!PointsFromTiles && !overridepoints) return;
 		PointsThisTurn += p;
 		Current = Mathf.Clamp(Current + p, 0, Required);
 		if(!ShowingHealth)
@@ -163,7 +164,7 @@ public class Wave : Unit {
 
 	public virtual IEnumerator BeginTurn()
 	{
-		AddPoints(PointsPerTurn);
+		AddPoints(PointsPerTurn, true);
 		for(int i = 0; i < AllSlots.Length; i++)
 		{
 			if(AllSlots[i] == null) continue;
@@ -171,7 +172,7 @@ public class Wave : Unit {
 			{
 				AllSlots[i].Timer ++;
 
-				AddPoints(-AllSlots[i].PointsPerTurn);
+				AddPoints(AllSlots[i].PointsPerTurn, true);
 				yield return StartCoroutine(AllSlots[i].BeginTurn());
 			}
 		}
@@ -303,9 +304,9 @@ public class Wave : Unit {
 			int genus = Random.Range(0,4);
 			int num = TileMaster.Types.Length;
 			SPECIES t = TileMaster.Types[Random.Range(0,num)];
-			if(t.GetSprites(genus) == null || t.GetSprites(genus).Length == 0) continue;
-			UIManager.Objects.TopGear[1][i][0].Img[0].sprite = t.GetSprites(genus)[0];
-			UIManager.Objects.TopGear[1][i][0].Img[2].sprite = TileMaster.Genus.Frame[genus];
+			if(t.Atlas == null) continue;
+			//UIManager.Objects.TopGear[1][i][0].Img[0].sprite = t.GetSprites(genus)[0];
+			//UIManager.Objects.TopGear[1][i][0].Img[2].sprite = TileMaster.Genus.Frame[genus];
 			UIManager.Objects.TopGear[1][i][0].SetActive(true);
 		}
 

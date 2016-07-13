@@ -88,13 +88,13 @@ public class BlackHole : Tile {
 		{
 			tiles[i].isMatching = true;
 			Vector3 pos = transform.position + (GameData.RandomVector*1.4F);
-			MoveToPoint mini = TileMaster.instance.CreateMiniTile(tiles[i].transform.position, this.transform, tiles[i].Inner);
+			/*MoveToPoint mini = TileMaster.instance.CreateMiniTile(tiles[i].transform.position, this.transform, tiles[i].Inner);
 			//mini.Target =  target;
 			mini.SetMethod(() =>{
 					this.AddValue(tiles[i].Stats.Value);
 					tiles[i].DestroyThyself();
 				}
-			);
+			);*/
 		}
 
 		yield return new WaitForSeconds(0.25F);

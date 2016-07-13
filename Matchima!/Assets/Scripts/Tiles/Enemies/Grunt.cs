@@ -140,4 +140,19 @@ public class Grunt : Enemy {
 			//sleep_part = EffectManager.instance.PlayEffect(this.transform, Effect.Sleep);
 		}
 	}
+
+	public override void SetSprite()
+	{
+
+		SetBorder(Info.Outer);
+
+		string rankrender = Info._GenusName;
+		if(Rank > 1) rankrender += "_"+Rank;
+		SetRender(rankrender);
+		
+		//if(Params._shiny != null && Params._render != null) Params._shiny.sprite = Inner;
+		//transform.position = Point.targetPos;
+		Params.transform.position = transform.position;
+		Params._render.transform.localPosition = Vector3.zero;
+	}
 }

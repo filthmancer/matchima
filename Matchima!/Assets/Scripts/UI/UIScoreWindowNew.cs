@@ -60,7 +60,7 @@ public class UIScoreWindowNew : MonoBehaviour {
 
 		yield return StartCoroutine(Score.SetupBonus(bonus));
 		
-		Sprite tile = TileMaster.Genus.Frame[(int)Genus];
+		Sprite tile = null; //TileMaster.Genus.Frame[(int)Genus];
 		RectTransform trans = UIManager.ClassButtons[(int)Genus].transform as RectTransform;//UIManager.instance.Wheel.GetResourceRect(Genus);
 
 		if(trans != null)

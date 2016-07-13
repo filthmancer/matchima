@@ -6,7 +6,9 @@ using UnityEngine.UI;
 public class UIClassButton : UIObj {
 
 	public TextMeshProUGUI LevelUp;
-	public Image Back, _Frame, _FrameMask, _Sprite, _SpriteMask;
+	public Image Back, _Sprite, _SpriteMask;
+	public tk2dSprite _Frame;
+	public tk2dClippedSprite _FrameMask;
 	public Image Target, Death;
 	public UIObj Banner;
 	public UIObj Health;
@@ -109,7 +111,7 @@ public class UIClassButton : UIObj {
 		_Sprite.enabled = true;
 		_SpriteMask.sprite = ab.Icon;
 		_SpriteMask.enabled = false;
-		_FrameMask.fillAmount = 0.0F;
+		_FrameMask.clipTopRight = new Vector2(1,1);
 
 		for(int i = 0; i < _class._Slots.Length; i++)
 		{
@@ -141,7 +143,8 @@ public class UIClassButton : UIObj {
 	void GetCooldown()
 	{
 		if(float.IsNaN(_class.GetMeterRatio())) return;
-		_FrameMask.fillAmount = Mathf.Lerp(_FrameMask.fillAmount, 1.0F - _class.GetMeterRatio(), 0.3F);
+		float curr = _FrameMask.clipBottomLeft.y;
+		_FrameMask.clipBottomLeft = new Vector2(0,Mathf.Lerp(curr, _class.GetMeterRatio(), 0.3F));
 	}
 
 	public void Activate(Class ab)

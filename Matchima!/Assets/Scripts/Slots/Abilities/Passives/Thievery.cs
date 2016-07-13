@@ -51,17 +51,17 @@ public class Thievery : Ability {
 					//								UIManager.ClassButtons.GetClass(Parent.Index).transform, 
 					//								TileMaster.Genus.Frame[Parent.Index]);
 
-					MoveToPoint mini = TileMaster.instance.CreateMiniTile(	
-						UIManager.ClassButtons[child.Index].transform.position,
-						UIManager.ClassButtons.GetClass(Parent.Index).transform, 
-						TileMaster.Genus.Frame[Parent.Index]);
+				//	MoveToPoint mini = TileMaster.instance.CreateMiniTile(	
+				//		UIManager.ClassButtons[child.Index].transform.position,
+				//		UIManager.ClassButtons.GetClass(Parent.Index).transform, 
+				//		TileMaster.Genus.Frame[Parent.Index]);
 					
-					mini.Target = Parent;
-					mini.SetPath(0.35F, 0.0F, 0.0F, 0.08F);
-					mini.SetMethod(() =>{
-							if(mini.Target != null) (mini.Target as Class).AddToMeter(stolen);
-						}
-					);
+				//	mini.Target = Parent;
+				//	mini.SetPath(0.35F, 0.0F, 0.0F, 0.08F);
+				//	mini.SetMethod(() =>{
+				//			if(mini.Target != null) (mini.Target as Class).AddToMeter(stolen);
+				//		}
+				//	);
 				}
 			}
 		}

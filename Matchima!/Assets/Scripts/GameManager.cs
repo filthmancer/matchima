@@ -523,10 +523,10 @@ public class GameManager : MonoBehaviour {
 				wavebutton.Img[1].transform.gameObject.SetActive(true);
 				wavebutton.Img[1].enabled = true;	
 				wavebutton.Img[0].enabled = true;
-				wavebutton.Img[0].sprite = GameManager.Wave[i].Inner;
+				//wavebutton.Img[0].sprite = GameManager.Wave[i].Inner;
 				wavebutton.Img[0].color = Color.white;
 				wavebutton.Img[2].enabled = true;
-				wavebutton.Img[2].sprite = GameManager.Wave[i].Outer;
+				//wavebutton.Img[2].sprite = GameManager.Wave[i].Outer;
 				wavebutton.Img[2].color = Color.white;				
 			}
 			else 
@@ -543,8 +543,8 @@ public class GameManager : MonoBehaviour {
 
 		CameraUtility.instance.MainLight.color = Color.Lerp(
 			CameraUtility.instance.MainLight.color, UIManager.instance.BackingTint, Time.deltaTime * 5);
-		UIManager.Objects.Walls.Img[0].color = Color.Lerp(
-			UIManager.Objects.Walls.Img[0].color, UIManager.instance.WallTint, Time.deltaTime * 5);
+		UIManager.Objects.Walls.color = Color.Lerp(
+			UIManager.Objects.Walls.color, UIManager.instance.WallTint, Time.deltaTime * 5);
 	}
 
 	IEnumerator _GetWave(Wave w = null)
@@ -717,7 +717,7 @@ public class GameManager : MonoBehaviour {
 
 	IEnumerator EnemyTurnRoutine()
 	{
-		float per_column = 0.13F;
+		float per_column = 0.06F;
 		List<Tile> total_attackers = new List<Tile>();
 		int total_damage = 0;
 		List<Tile> column_attackers;
@@ -760,7 +760,7 @@ public class GameManager : MonoBehaviour {
 				total_damage += child.GetAttack();
 
 				child.AttackPlayer();
-				yield return StartCoroutine(child.Animate("Attack", 0.06F));
+				yield return StartCoroutine(child.Animate("Attack", 0.03F));
 			}
 
 			total_attackers.AddRange(column_attackers);
@@ -769,7 +769,7 @@ public class GameManager : MonoBehaviour {
 		if(total_attackers.Count > 0)
 		{
 			GameData.Log("Took " + total_damage + " damage from " + total_attackers.Count + " attackers");
-			yield return new WaitForSeconds(GameData.GameSpeed(0.23F));
+			yield return new WaitForSeconds(GameData.GameSpeed(0.08F));
 		} 
 
 

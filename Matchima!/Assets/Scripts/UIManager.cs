@@ -24,7 +24,7 @@ public class UIManager : MonoBehaviour {
 	public UIKillScreen KillUI;
 	public UIObjTweener ScreenAlert;
 
-	public Image [] PlayerHealth;
+	public tk2dClippedSprite [] PlayerHealth;
 	public Image [] WaveHealth;
 
 
@@ -70,8 +70,8 @@ public class UIManager : MonoBehaviour {
 		Objects.MainUI.SetActive(false);	
 		for(int i = 0; i < ClassButtons.Length; i++)
 		{
-			ClassButtons.GetClass(i)._Frame.sprite = TileMaster.Genus.Frame[i];
-			ClassButtons.GetClass(i)._FrameMask.sprite = TileMaster.Genus.Frame[i];
+			ClassButtons.GetClass(i)._Frame.SetSprite(TileMaster.Genus.Frames, i);
+			ClassButtons.GetClass(i)._FrameMask.SetSprite(TileMaster.Genus.Frames, i);
 		}
 	}
 
@@ -103,7 +103,8 @@ public class UIManager : MonoBehaviour {
 
 		for(int i = 0; i < PlayerHealth.Length; i++)
 		{
-			PlayerHealth[i].fillAmount = Mathf.Lerp(PlayerHealth[i].fillAmount, Player.Stats.GetHealthRatio()*0.88F, Time.deltaTime * 15);
+			float curr = PlayerHealth[i].clipBottomLeft.x;
+			PlayerHealth[i].clipBottomLeft = new Vector2(Mathf.Lerp(curr, 1.0f - Player.Stats.GetHealthRatio() + 0.26F, Time.deltaTime * 15), 0);
 			PlayerHealth[i].color = Color.Lerp(GameData.instance.ShieldEmpty, GameData.instance.ShieldFull, Player.Stats.GetHealthRatio());
 		}
 		if(GameManager.Wave != null)
@@ -118,8 +119,8 @@ public class UIManager : MonoBehaviour {
 		
 		CameraUtility.instance.MainLight.color = Color.Lerp(
 			CameraUtility.instance.MainLight.color, BackingTint, Time.deltaTime * 5);
-		Objects.Walls.Img[0].color = Color.Lerp(
-			Objects.Walls.Img[0].color, WallTint, Time.deltaTime * 5);
+		Objects.Walls.color = Color.Lerp(
+			Objects.Walls.color, WallTint, Time.deltaTime * 5);
 
 		Objects.ArmourParent.Txt[0].text = Player.Stats._Armour > 0 ? Player.Stats.Armour : "";
 		Objects.ArmourParent.SetActive(Player.Stats._Armour > 0);
@@ -130,17 +131,26 @@ public class UIManager : MonoBehaviour {
 			{
 				if(GameManager.Wave[i] != null && GameManager.Wave[i].Active && Objects.TopGear[1].Length > i)
 				{
-					UIObj w = WaveButtons[i];
+					UIObjtk w = WaveButtons[i] as UIObjtk;
 					w.SetActive(true);
 					w.Txt[0].text = "";	
-					w.Img[1].transform.gameObject.SetActive(true);
-					w.Img[1].enabled = true;	
-					w.Img[0].enabled = true;
-					w.Img[0].sprite = GameManager.Wave[i].Inner;
-					w.Img[0].color = Color.white;
-					w.Img[2].enabled = true;
-					w.Img[2].sprite = GameManager.Wave[i].Outer;
-					w.Img[2].color = Color.white;					
+					//w.Imgtk[1].transform.gameObject.SetActive(true);
+					//w.Imgtk[1].enabled = true;	
+					w.Imgtk[0].enabled = true;
+					w.Imgtk[1].enabled = true;
+					WaveTile wtile = GameManager.Wave[i] as WaveTile;
+					if(wtile)
+					{
+
+						string render = wtile.GenusString;
+
+						tk2dSpriteDefinition id = TileMaster.Types[wtile.Species].Atlas.GetSpriteDefinition(render);
+						if(id == null) render = "Alpha";
+						w.Imgtk[1].SetSprite(TileMaster.Types[wtile.Species].Atlas, render);
+						w.Imgtk[0].SetSprite(TileMaster.Genus.Frames, wtile.GenusString);
+					}
+					
+								
 				}
 				else 
 				{
@@ -247,18 +257,19 @@ public class UIManager : MonoBehaviour {
 	bool [] ShowingMeter = new bool[7];
 	int [] Meters = new int[7];
 	MiniAlertUI [] MeterObj = new MiniAlertUI[7];
-	public float MeterTimer = 0.6F;
-	float MeterTimer_init = 0.5F;
+	public float MeterTimer = 0.4F;
+	float MeterTimer_init = 0.4F;
 	public void CashMeterPoints()
 	{
 		StartedMeter = false;
 		MeterTimer = MeterTimer_init;
-		for(int i = 0; i < MeterObj.Length; i++)
-		{
-			if(MeterObj[i] == null) continue;
-			MeterObj[i].lifetime = 0.0F;
-
-		}
+		StartCoroutine(ShowBonuses());
+		//for(int i = 0; i < MeterObj.Length; i++)
+		//{
+		//	if(MeterObj[i] == null) continue;
+		//	MeterObj[i].lifetime = 0.0F;
+//
+		//}
 	}
 
 	bool StartedMeter;
@@ -270,8 +281,9 @@ public class UIManager : MonoBehaviour {
 
 	public void GetMeterPoints(int g, int points)
 	{
-		int init_font_size = 280;
+		int init_font_size = 340;
 		GENUS genus = (GENUS) g;
+		if(g >= 4) return;
 		if(ShowingMeter[g])
 		{
 			Meters[g] += points;
@@ -283,7 +295,7 @@ public class UIManager : MonoBehaviour {
 			}
 			
 			//MeterObj[g].lifetime += 0.12F;
-			MeterTimer = Mathf.Clamp(MeterTimer + 0.25F, 0.0F, MeterTimer_init);
+			MeterTimer = Mathf.Clamp(MeterTimer + 0.2F, 0.0F, MeterTimer_init);
 			
 		}
 		else
@@ -303,7 +315,7 @@ public class UIManager : MonoBehaviour {
 			MeterObj[g].DestroyOnEnd = false;
 			MeterObj[g].AddAction(() =>
 			{
-				StartCoroutine(ShowBonuses(g));
+				
 			});
 		}
 	}
@@ -327,9 +339,9 @@ public class UIManager : MonoBehaviour {
 		}
 		for(int i = 0; i < b.Length; i++)
 		{
-
 			int index = b[i].index;
-			if(index == 5)
+			BonusGroups[0].Add(b[i]);
+			/*if(index == 5)
 			{
 				for(int x = 0; x < BonusGroups.Length; x++)
 				{
@@ -337,19 +349,41 @@ public class UIManager : MonoBehaviour {
 				}
 				
 			}
-			else BonusGroups[index].Add(b[i]);
+			else BonusGroups[index].Add(b[i]);*/
 		}
 	}
 
-	public IEnumerator ShowBonuses(int g)
+	public IEnumerator ShowBonuses()
 	{
-		float bonus_time = 0.4F;
-		float bonus_time_desc = 0.15F;
-		for(int i = 0; i < BonusGroups[g].Length; i++)
+		float bonus_time = 0.3F;
+		float bonus_time_desc = 0.22F;
+
+
+		for(int i = 0; i < BonusGroups[0].Length; i++)
 		{
 			MiniAlertUI BonusObj = UIManager.instance.MiniAlert(
-				UIManager.Objects.MiddleGear[4][g].transform.position + Vector3.up*1.5F, 
-				BonusGroups[g][i].Name, 180, BonusGroups[g][i].col, bonus_time+bonus_time_desc, 0.1F);
+				UIManager.Objects.MiddleGear[4][4].transform.position + Vector3.up*0.4F, 
+				BonusGroups[0][i].Name, 190, BonusGroups[0][i].col, bonus_time+bonus_time_desc, 0.2F);
+			//BonusObj.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
+			BonusObj.transform.rotation = Quaternion.Euler(0,0,0);
+			BonusObj.AddJuice(Juice.instance.BounceB, 0.45F);
+
+			for(int g = 0; g < Meters.Length; g++)
+			{
+				if(Meters[g] == 0 || MeterObj[g] == null) continue;
+				Meters[g] = (int)((float)Meters[g] * BonusGroups[0][i].Multiplier);
+				MeterObj[g].AddJuice(Juice.instance.BounceB, 0.45F);
+				MeterObj[g].text = Meters[g] + "";	
+			}
+			
+			yield return new WaitForSeconds(bonus_time);
+		}
+
+		/*for(int i = 0; i < BonusGroups[g].Length; i++)
+		{
+			MiniAlertUI BonusObj = UIManager.instance.MiniAlert(
+				UIManager.Objects.MiddleGear[4][g].transform.position + Vector3.up*0.4F, 
+				BonusGroups[g][i].Name, 140, BonusGroups[g][i].col, bonus_time+bonus_time_desc, 0.2F);
 			//BonusObj.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
 			BonusObj.transform.rotation = Quaternion.Euler(0,0,0);
 			BonusObj.AddJuice(Juice.instance.BounceB, 0.45F);
@@ -361,59 +395,69 @@ public class UIManager : MonoBehaviour {
 			BonusDesc.transform.rotation = Quaternion.Euler(0,0,0);
 			BonusDesc.AddJuice(Juice.instance.BounceB, 0.45F);*/
 
-			Meters[g] = (int)((float)Meters[g] * BonusGroups[g][i].Multiplier);
-			MeterObj[g].AddJuice(Juice.instance.BounceB, 0.32F);
+		/*	Meters[g] = (int)((float)Meters[g] * BonusGroups[g][i].Multiplier);
+			MeterObj[g].AddJuice(Juice.instance.BounceB, 0.45F);
 			MeterObj[g].text = Meters[g] + "";
 			yield return new WaitForSeconds(bonus_time);
-		}
+		}*/
 
 		float info_movespeed = 0.66F;
 		float info_finalscale = 0.3F;
 
-		MiniAlertUI wavetarget = (MiniAlertUI) Instantiate(MeterObj[g]);
-		wavetarget.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
-		wavetarget.transform.position = UIManager.Objects.MiddleGear[4][g].transform.position;
-		wavetarget.transform.localScale = Vector3.one;
+		for(int g = 0; g < Meters.Length; g++)
+		{
+			if(Meters[g] == 0 || MeterObj[g] == null) continue;
+			MiniAlertUI wavetarget = (MiniAlertUI) Instantiate(MeterObj[g]);
+			wavetarget.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
+			wavetarget.transform.position = UIManager.Objects.MiddleGear[4][g].transform.position;
+			wavetarget.transform.localScale = Vector3.one;
 
-		MoveToPoint wavetarget_mover = AttachMoverToAlert(ref wavetarget);
-		wavetarget_mover.SetTarget(Objects.TopGear[1][0][0].transform.position);
-		wavetarget_mover.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
-		wavetarget_mover.SetIntMethod( 
-			(int [] amt) =>
-			{
-				if(GameManager.Wave != null)
-					GameManager.Wave.AddPoints(amt[1]);
 
-				ShowingMeter[amt[0]] = false;
-				Meters[amt[0]] = 0;
-			},
-			new int []{g, Meters[g]}
-		);
-
-		MiniAlertUI classtarget = (MiniAlertUI) Instantiate(MeterObj[g]);
-		classtarget.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
-		classtarget.transform.position = UIManager.Objects.MiddleGear[4][g].transform.position;
-		classtarget.transform.localScale = Vector3.one;
-
-		MoveToPoint classtarget_mover = AttachMoverToAlert(ref classtarget);
-		classtarget_mover.SetTarget(ClassButtons.GetClass(g).transform.position);
-		classtarget_mover.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
-		classtarget_mover.SetIntMethod( 
-			(int [] amt) =>
-			{
-				if((GENUS)amt[0] != GENUS.ALL) Player.Classes[amt[0]].AddToMeter(Meters[amt[0]]);
-				else
+			MoveToPoint wavetarget_mover = AttachMoverToAlert(ref wavetarget);
+			wavetarget_mover.SetTarget(Objects.TopGear[1][0][0].transform.position);
+			wavetarget_mover.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
+			wavetarget_mover.SetIntMethod( 
+				(int [] amt) =>
 				{
-					for(int cl = 0; cl < 4; cl++)
+					if(GameManager.Wave != null)
+						GameManager.Wave.AddPoints(amt[1]);
+
+					ShowingMeter[amt[0]] = false;
+					Meters[amt[0]] = 0;
+				},
+				new int []{g, Meters[g]}
+			);
+			wavetarget.lifetime = 0.0F;
+
+			MiniAlertUI classtarget = (MiniAlertUI) Instantiate(MeterObj[g]);
+			classtarget.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
+			classtarget.transform.position = UIManager.Objects.MiddleGear[4][g].transform.position;
+			classtarget.transform.localScale = Vector3.one;
+
+			MoveToPoint classtarget_mover = AttachMoverToAlert(ref classtarget);
+			classtarget_mover.SetTarget(ClassButtons.GetClass(g).transform.position);
+			classtarget_mover.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
+			classtarget_mover.SetIntMethod( 
+				(int [] amt) =>
+				{
+					if((GENUS)amt[0] != GENUS.ALL) Player.Classes[amt[0]].AddToMeter(Meters[amt[0]]);
+					else
 					{
-						Player.Classes[cl].AddToMeter(amt[1]);
+						for(int cl = 0; cl < 4; cl++)
+						{
+							Player.Classes[cl].AddToMeter(amt[1]);
+						}
 					}
-				}
-				
-			},
-			new int []{g, Meters[g]}
-		);
-		Destroy(MeterObj[g].gameObject);
+					
+				},
+				new int []{g, Meters[g]}
+			);
+			classtarget.lifetime = 0.0F;
+			Destroy(MeterObj[g].gameObject);
+			yield return null;
+		}
+
+		
 	}
 
 

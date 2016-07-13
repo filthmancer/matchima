@@ -43,10 +43,10 @@ public class WaveTile : WaveUnit
 		else GenusString = GenusOverride;
 
 		Genus = TileMaster.Genus[GenusString];
-		if(InnerOverride == null) Inner = TileMaster.Types[Species].GetSprites((int)Genus)[0];
+		/*if(InnerOverride == null) Inner.SetSprite(TileMaster.Types[Species].Atlas, 0);
 		else Inner = InnerOverride;
-		if(OuterOverride == null) Outer = TileMaster.Genus.Frame[(int)Genus];
-		else Outer = OuterOverride;
+		if(OuterOverride == null) Outer.SetSprite(TileMaster.Genus.Frames, (int)Genus);
+		else Outer = OuterOverride;*/
 
 	}
 
@@ -108,7 +108,7 @@ public class WaveTile : WaveUnit
 			GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Force);
 			MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
 			mp.SetTarget(TileMaster.Tiles[randx,randy].transform.position);
-			mp.SetPath(0.35F, 0.2F);
+			mp.SetPath(0.45F, 0.2F);
 			mp.SetTileMethod(TileMaster.Tiles[randx,randy], (Tile t) => 
 				{
 					Tile newtile = TileMaster.instance.ReplaceTile(t, TileMaster.Types[Species], Genus, Scale, FinalValue);
@@ -166,7 +166,7 @@ public class WaveTile : WaveUnit
 			GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Force);
 			MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
 			mp.SetTarget(TileMaster.Tiles[randx,randy].transform.position);
-			mp.SetPath(0.35F, 0.2F);
+			mp.SetPath(0.45F, 0.2F);
 			mp.SetTileMethod(TileMaster.Tiles[randx,randy], (Tile t) => 
 				{
 					Tile newtile = TileMaster.instance.ReplaceTile(t, TileMaster.Types[Species], Genus, Scale, FinalValue);

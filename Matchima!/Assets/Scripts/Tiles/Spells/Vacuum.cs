@@ -63,12 +63,12 @@ public class Vacuum : Tile {
 			int val = child.Stats.Value;
 			child.isMatching = true;
 
-			MoveToPoint mini = TileMaster.instance.CreateMiniTile(child.transform.position, target.transform,child.Inner);
+			/*MoveToPoint mini = TileMaster.instance.CreateMiniTile(child.transform.position, target.transform,child.Inner);
 			mini.SetMethod(() => 
 			{
 				if(undead_attack) target.InitStats.TurnDamage += val;
 				else target.AddValue(val);
-			});
+			});*/
 			yield return new WaitForSeconds(Time.deltaTime * 5);
 			PlayerControl.instance.RemoveTileToMatch(child);
 

@@ -3,14 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class MiniTile2 : MonoBehaviour {
-	public SpriteRenderer _Border, _Render;
+	public tk2dSprite _Border, _Render;
 	
 	public void Setup(Tile t)
 	{
 		transform.position = t.transform.position;
 		transform.position -= Vector3.forward * 2;
-		_Border.sprite = t.Outer;
-		_Render.sprite = t.Inner;
+		_Border = t.Params._render;
+		_Render = t.Params._border;
 	}
 
 	public void Explode()
