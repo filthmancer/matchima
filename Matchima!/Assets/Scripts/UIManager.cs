@@ -112,8 +112,8 @@ public class UIManager : MonoBehaviour {
 			WaveHealthText.text = GameManager.Wave.Current+"/"+GameManager.Wave.Required;
 			for(int i = 0; i < WaveHealth.Length; i++)
 			{
-				float curr = WaveHealth[i].clipTopRight.y;
-				WaveHealth[i].clipTopRight = new Vector2(Mathf.Lerp(curr, GameManager.Wave.GetRatio()*0.88F, Time.deltaTime * 15),0);
+				float curr = WaveHealth[i].clipTopRight.x;
+				WaveHealth[i].clipTopRight = new Vector2(Mathf.Lerp(curr, GameManager.Wave.GetRatio()*0.88F, Time.deltaTime * 15),1);
 				WaveHealth[i].color = Color.Lerp(GameData.instance.ShieldEmpty, GameData.instance.ShieldFull, GameManager.Wave.GetRatio());
 			}
 		}
