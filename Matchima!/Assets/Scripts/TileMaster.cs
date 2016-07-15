@@ -668,10 +668,9 @@ public class TileMaster : MonoBehaviour {
 					if(Tiles[xx,yy].AfterTurnCheck) continue;
 					Tiles[xx,yy].AfterTurnCheck = true;
 					
-					//Tiles[xx,yy].AfterTurn();
-					//if(Tiles[xx,yy].AfterTurnEffect)
-					
-					yield return StartCoroutine(Tiles[xx,yy].AfterTurnRoutine());
+					Tiles[xx,yy].AfterTurn();
+					if(Tiles[xx,yy].AfterTurnEffect)
+						yield return StartCoroutine(Tiles[xx,yy].AfterTurnRoutine());
 					
 					if(Tiles[xx,yy].Type.isEnemy) EnemiesOnScreen ++;
 				}

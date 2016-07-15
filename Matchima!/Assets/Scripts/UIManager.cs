@@ -25,7 +25,7 @@ public class UIManager : MonoBehaviour {
 	public UIObjTweener ScreenAlert;
 
 	public tk2dClippedSprite [] PlayerHealth;
-	public Image [] WaveHealth;
+	public tk2dClippedSprite [] WaveHealth;
 
 
 
@@ -112,7 +112,8 @@ public class UIManager : MonoBehaviour {
 			WaveHealthText.text = GameManager.Wave.Current+"/"+GameManager.Wave.Required;
 			for(int i = 0; i < WaveHealth.Length; i++)
 			{
-				WaveHealth[i].fillAmount = Mathf.Lerp(WaveHealth[i].fillAmount, GameManager.Wave.GetRatio()*0.88F, Time.deltaTime * 15);
+				float curr = WaveHealth[i].clipTopRight.y;
+				WaveHealth[i].clipTopRight = new Vector2(Mathf.Lerp(curr, GameManager.Wave.GetRatio()*0.88F, Time.deltaTime * 15),0);
 				WaveHealth[i].color = Color.Lerp(GameData.instance.ShieldEmpty, GameData.instance.ShieldFull, GameManager.Wave.GetRatio());
 			}
 		}
@@ -258,7 +259,7 @@ public class UIManager : MonoBehaviour {
 	int [] Meters = new int[7];
 	MiniAlertUI [] MeterObj = new MiniAlertUI[7];
 	public float MeterTimer = 0.4F;
-	float MeterTimer_init = 0.4F;
+	float MeterTimer_init = 0.05F;
 	public void CashMeterPoints()
 	{
 		StartedMeter = false;
@@ -355,15 +356,14 @@ public class UIManager : MonoBehaviour {
 
 	public IEnumerator ShowBonuses()
 	{
-		float bonus_time = 0.3F;
-		float bonus_time_desc = 0.22F;
+		float bonus_time = 0.34F;
 
 
 		for(int i = 0; i < BonusGroups[0].Length; i++)
 		{
 			MiniAlertUI BonusObj = UIManager.instance.MiniAlert(
 				UIManager.Objects.MiddleGear[4][4].transform.position + Vector3.up*0.4F, 
-				BonusGroups[0][i].Name, 190, BonusGroups[0][i].col, bonus_time+bonus_time_desc, 0.2F);
+				BonusGroups[0][i].Name, 190, BonusGroups[0][i].col, bonus_time, 0.2F);
 			//BonusObj.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
 			BonusObj.transform.rotation = Quaternion.Euler(0,0,0);
 			BonusObj.AddJuice(Juice.instance.BounceB, 0.45F);
@@ -379,6 +379,7 @@ public class UIManager : MonoBehaviour {
 			yield return new WaitForSeconds(bonus_time);
 		}
 
+		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 		/*for(int i = 0; i < BonusGroups[g].Length; i++)
 		{
 			MiniAlertUI BonusObj = UIManager.instance.MiniAlert(

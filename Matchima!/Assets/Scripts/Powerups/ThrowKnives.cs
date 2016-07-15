@@ -110,6 +110,8 @@ public class ThrowKnives : Powerup {
 		yield return StartCoroutine(Player.instance.AfterMatch());
 		TileMaster.instance.SetFillGrid(true);
 		TileMaster.instance.ResetTiles(true);
+		yield return StartCoroutine(GameManager.instance.CompleteTurnRoutine());
+
 		GameManager.instance.paused = false;
 	}
 

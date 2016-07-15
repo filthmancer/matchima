@@ -353,53 +353,53 @@ public class Class : Unit {
 		}
 		else
 		{
-			yield return StartCoroutine(PowerUp());
+			int newlvl = 0;
+			for(int i = 0; i < MeterMax_array.Length; i++)
+			{
+				if(Meter >= MeterMax_array[i]) newlvl = i;
+			}
+			if(MeterLvl < newlvl)
+			{
+				yield return StartCoroutine(PowerUp(newlvl));
+			}
 		}	
 	}
 
-	public IEnumerator PowerUp()
+	public IEnumerator PowerUp(int newlvl)
 	{
-		int newlvl = 0;
-		for(int i = 0; i < MeterMax_array.Length; i++)
-		{
-			if(Meter >= MeterMax_array[i]) newlvl = i;
-		}
-		if(MeterLvl < newlvl)
-		{
-			if(Manapower_audio != null) Destroy(Manapower_audio.gameObject);
-			Manapower_audio = AudioManager.instance.PlayClip(this.transform, AudioManager.instance.Player, "Mana Powerup");
-			Manapower_audio.GetComponent<DestroyTimer>().enabled = false;
-			UIManager.ClassButtons.GetClass(Index).ShowClass(true);
-			yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
-			
-			GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, "", GameData.Colour(Genus));
-			powerup.transform.SetParent(UIManager.ClassButtons.GetClass(Index).transform);
-			powerup.transform.position = UIManager.ClassButtons.GetClass(Index).transform.	position;
-			powerup.transform.localScale = Vector3.one;
+		if(Manapower_audio != null) Destroy(Manapower_audio.gameObject);
+		Manapower_audio = AudioManager.instance.PlayClip(this.transform, AudioManager.instance.Player, "Mana Powerup");
+		Manapower_audio.GetComponent<DestroyTimer>().enabled = false;
+		UIManager.ClassButtons.GetClass(Index).ShowClass(true);
+		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+		
+		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, "", GameData.Colour(Genus));
+		powerup.transform.SetParent(UIManager.ClassButtons.GetClass(Index).transform);
+		powerup.transform.position = UIManager.ClassButtons.GetClass(Index).transform.	position;
+		powerup.transform.localScale = Vector3.one;
 
-			
-			yield return new WaitForSeconds(GameData.GameSpeed(0.84F));
-			Destroy(powerup);
-			Destroy(Manapower_audio.gameObject);
+		
+		yield return new WaitForSeconds(GameData.GameSpeed(0.84F));
+		Destroy(powerup);
+		Destroy(Manapower_audio.gameObject);
 
-			MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons.GetClass(Index).transform.position, "POWER\nUP", 75, GameData.Colour(Genus), 1.2F, 0.2F);
-			MeterLvl = newlvl;
-			MeterDecay_soft = MeterDecayInit[MeterLvl];
-			MeterDecay = (int) MeterDecay_soft;
-			
-			Manapower_audio = AudioManager.instance.PlayClip(this.transform, AudioManager.instance.Player, "Mana Powerup Loop");
-			Manapower_audio.GetComponent<DestroyTimer>().enabled = false;
-			Manapower_audio.loop = true;
+		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons.GetClass(Index).transform.position, "POWER\nUP", 75, GameData.Colour(Genus), 1.2F, 0.2F);
+		MeterLvl = newlvl;
+		MeterDecay_soft = MeterDecayInit[MeterLvl];
+		MeterDecay = (int) MeterDecay_soft;
+		
+		Manapower_audio = AudioManager.instance.PlayClip(this.transform, AudioManager.instance.Player, "Mana Powerup Loop");
+		Manapower_audio.GetComponent<DestroyTimer>().enabled = false;
+		Manapower_audio.loop = true;
 
-			Effect e = MeterLvl == 1 ? Effect.ManaPowerLvl1 : (MeterLvl == 2 ? Effect.ManaPowerLvl2 : Effect.ManaPowerLvl3);
-			ParticleSystem part = EffectManager.instance.PlayEffect(this.transform, e, "", GameData.Colour(Genus)).GetComponent<ParticleSystem>();
-			if(ManaPowerParticle != null) Destroy(ManaPowerParticle);
-			ManaPowerParticle = part.gameObject;
-			ManaPowerParticle.transform.position = UIManager.ClassButtons.GetClass(Index).transform.position;
+		Effect e = MeterLvl == 1 ? Effect.ManaPowerLvl1 : (MeterLvl == 2 ? Effect.ManaPowerLvl2 : Effect.ManaPowerLvl3);
+		ParticleSystem part = EffectManager.instance.PlayEffect(this.transform, e, "", GameData.Colour(Genus)).GetComponent<ParticleSystem>();
+		if(ManaPowerParticle != null) Destroy(ManaPowerParticle);
+		ManaPowerParticle = part.gameObject;
+		ManaPowerParticle.transform.position = UIManager.ClassButtons.GetClass(Index).transform.position;
 
-			
-			yield return null;
-		}
+		
+		yield return null;
 	}
 
 	IEnumerator PowerupAlert()
@@ -544,7 +544,6 @@ public class Class : Unit {
 		
 		if(res > 0) 
 		{
-			//Complete();
 			if(!adding_to_meter) StartCoroutine(MeterLoop());
 			if(time_from_last_pulse > 1.3F)
 			{
@@ -563,14 +562,14 @@ public class Class : Unit {
 
 		float info_time = 0.95F;
 		float info_size = 140;
-		float info_movespeed = 0.07F;
+		float info_movespeed = 0.11F;
 		float info_finalscale = 0.5F;
 
 		int current_meter = ManaThisTurn;
 		Vector3 tpos = Vector3.up * 0.3F;
 		MiniAlertUI heal = UIManager.instance.MiniAlert(
 			UIManager.ClassButtons.GetClass(Index).transform.position + tpos, 
-			"+" + current_meter, info_size,   GameData.Colour(Genus), 0.5F, 0.18F);
+			"+" + current_meter, info_size,   GameData.Colour(Genus), 0.2F, 0.18F);
 
 		heal.transform.SetParent(UIManager.ClassButtons.GetClass(Index).transform);
 		heal.AddJuice(Juice.instance.BounceB, 0.3F);
@@ -579,10 +578,11 @@ public class Class : Unit {
 		heal.DestroyOnEnd = false;
 		mini.SetTarget(UIManager.ClassButtons.GetClass(Index).transform.position);
 		mini.SetPath(info_movespeed, 0.1F, 0.0F, info_finalscale);
-		mini.SetMethod(() =>{
-				Complete();
+		/*mini.SetMethod(() =>{
+				
 			}
-		);
+		);*/
+		Complete();
 		while(heal.lifetime > 0.0F)
 		{
 			if(ManaThisTurn == 0)
@@ -599,6 +599,7 @@ public class Class : Unit {
 				heal.size = info_size + (current_meter * 0.9F);
 				heal.text = "+" + current_meter;
 				heal.ResetJuice(0.25F);
+				Complete();
 			}
 			yield return null;
 		}

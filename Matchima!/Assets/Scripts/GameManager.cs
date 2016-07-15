@@ -660,12 +660,10 @@ public class GameManager : MonoBehaviour {
 		UIManager.instance.SetClassButtons(false);
 		UIManager.instance.ShowGearTooltip(false);
 		
-		UIManager.Objects.BotGear.SetTween(0, true);
+		UIManager.Objects.BotGear.SetTween(0, false);
 		UIManager.Objects.TopGear.SetTween(0, false);
 		
-		//yield return new WaitForSeconds(GameData.GameSpeed(0.06F));
 		UIManager.instance.MoveTopGear(0);
-
 
 		yield return StartCoroutine(BeforeMatchRoutine());
 		bool all_of_resource = false;
@@ -676,7 +674,7 @@ public class GameManager : MonoBehaviour {
 		}
 		else EnemyTurn = false;
 
-		UIManager.instance.SetBonuses(GetBonuses(ComboSize));
+
 		yield return StartCoroutine(Player.instance.AfterMatch());
 
 		//Player.Stats.CompleteLeech(enemies_hit);
@@ -686,29 +684,25 @@ public class GameManager : MonoBehaviour {
 		//yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 
 		yield return StartCoroutine(Player.instance.EndTurn());
-		
 		yield return StartCoroutine(TileMaster.instance.BeforeTurn());
-		//UIManager.instance.SetClassButtons(false);
+
 /* ENEMY TURN *////////////////////////////////////////////////////
-		while(UIManager.instance.IsShowingMeters)yield return null;
+		yield return StartCoroutine(CurrentWave.BeginTurn());
 		if(Player.instance.Turns % (int)Player.Stats.AttackRate == 0 && TileMaster.instance.EnemiesOnScreen > 0)
 		{
 			yield return StartCoroutine(EnemyTurnRoutine());
 		}
 		
-		yield return StartCoroutine(CurrentWave.BeginTurn());
 		yield return StartCoroutine(TileMaster.instance.AfterTurn());
-		yield return StartCoroutine(Player.instance.BeginTurn());
-
-		//yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 		yield return StartCoroutine(CompleteTurnRoutine());
-		
 		yield return StartCoroutine(CurrentWave.AfterTurn());
-		
+
 		if(CurrentWave.Ended && !Player.Stats.isKilled)
 		{
 			yield return StartCoroutine(_GetWave());
 		}
+	
+		yield return StartCoroutine(Player.instance.BeginTurn());
 		TileMaster.instance.ResetTiles(true);
 		UIManager.instance.ResetTopGear();
 		yield return null;
@@ -887,6 +881,10 @@ public class GameManager : MonoBehaviour {
 
 	public IEnumerator CompleteTurnRoutine()
 	{
+		UIManager.instance.SetBonuses(GetBonuses(ComboSize));
+		UIManager.instance.StartTimer();
+		while(UIManager.instance.IsShowingMeters) yield return null;
+
 		UIManager.instance.SetClassButtons(false);
 		UIManager.Objects.BotGear.SetTween(0, true);
 		UIManager.Objects.TopGear.SetTween(0, false);
@@ -942,14 +940,14 @@ public class GameManager : MonoBehaviour {
 
 	 	for(int i = 0; i < Player.Classes.Length; i++)
 	 	{
-	 		/*if(AllOfRes(i))
+	 		if(AllOfRes(i))
 	 		{
 	 			final.Add(new Bonus(
 	 				Player.Stats.AllColourMulti,
-	 				"ALL " + Player.Classes[i].Genus, 
+	 				"ALL " + GameData.Resource(Player.Classes[i].Genus),
 	 				Player.Stats.AllColourMulti.ToString("0.0") + "x",
 	 				GameData.Colour((GENUS)i), i));
-	 		}*/
+	 		}
 	 		final.AddRange(Player.instance.CheckForBonus((GENUS) i));
 	 	}
 

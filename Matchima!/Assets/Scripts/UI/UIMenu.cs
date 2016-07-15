@@ -192,7 +192,6 @@ public class UIMenu : UIObj {
 		UIManager.Objects.TopGear.MoveToDivision(top_division_last);
 		GetMiddleGearInfo(top_division_last);
 		UIManager.Objects.BotGear[3][0].SetActive(true);
-		UIManager.Objects.TopGear.Img[2].enabled = false;
 		UIManager.Objects.TopGear.Txt[0].text = "";
 		UIManager.Objects.BotGear.Txt[0].text = "";	
 

@@ -364,8 +364,14 @@ public class Wave : Unit {
 					}
 				}
 			}
+			yield return StartCoroutine(GameManager.instance.BeforeMatchRoutine());
+			yield return StartCoroutine(GameManager.instance.MatchRoutine(PlayerControl.instance.finalTiles.ToArray()));
+
+			TileMaster.instance.ResetTiles(true);
+			TileMaster.instance.SetFillGrid(true);
 			yield return StartCoroutine(Player.instance.AfterMatch());
 			TileMaster.instance.ClearQueuedTiles();
+			yield return StartCoroutine(GameManager.instance.CompleteTurnRoutine());
 			yield return new WaitForSeconds(GameData.GameSpeed(0.4F));
 		}
 	}
@@ -410,7 +416,7 @@ public class Wave : Unit {
 			}
 		}
 
-		yield return new WaitForSeconds(Time.deltaTime * 10);
+		yield return new WaitForSeconds(Time.deltaTime * 30);
 
 		for(int i = 0; i < to_collect.Count; i++)
 		{
@@ -427,11 +433,7 @@ public class Wave : Unit {
 		}
 
 		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
-		yield return StartCoroutine(GameManager.instance.BeforeMatchRoutine());
-		yield return StartCoroutine(GameManager.instance.MatchRoutine(PlayerControl.instance.finalTiles.ToArray()));
-
-		TileMaster.instance.ResetTiles(true);
-		TileMaster.instance.SetFillGrid(true);
+		
 
 		for(int i = 0; i < particles.Count; i++)
 		{

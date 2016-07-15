@@ -233,8 +233,7 @@ public class Player : MonoBehaviour {
 
 		TileMaster.instance.SetFillGrid(true);
 		while(!TileMaster.AllLanded)	yield return null;
-		UIManager.instance.StartTimer();
-		while(UIManager.instance.IsShowingMeters) yield return null;
+		
 	}
 
 	public IEnumerator BeginTurn()
@@ -332,8 +331,6 @@ public class Player : MonoBehaviour {
 		InitStats.PrevTurnKills = 0;
 		CompleteMatch = true;
 		//MeterThisTurn = new int[4];
-
-		yield return new WaitForSeconds(GameData.GameSpeed(0.3F));
 		yield return null;
 	}
 

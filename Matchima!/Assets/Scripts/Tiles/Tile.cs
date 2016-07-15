@@ -1082,6 +1082,11 @@ public class Tile : MonoBehaviour {
 		yield break;
 	}
 
+	public bool HasAfterTurnEffect()
+	{
+		return AfterTurnEffect || Effects.Count > 0;
+	}
+
 	public virtual void AfterTurn()
 	{
 		Reset();
@@ -1092,7 +1097,7 @@ public class Tile : MonoBehaviour {
 		{
 			InitStats.isNew = false;
 		}
-		for(int i = 0; i < Effects.Count; i++)
+		/*for(int i = 0; i < Effects.Count; i++)
 		{
 			if(Effects[i] == null) Effects.RemoveAt(i);
 			else if(Effects[i].CheckDuration()) 
@@ -1101,19 +1106,12 @@ public class Tile : MonoBehaviour {
 				Effects.RemoveAt(i);
 				Destroy(old);
 			}
-		}
+		}*/
 		CheckStats();
 	}
 
 	public virtual IEnumerator AfterTurnRoutine()
 	{
-		Reset();
-		InitStats.TurnDamage = 0;
-		InitStats.Lifetime ++;
-		if(InitStats.Lifetime >= 1) 
-		{
-			InitStats.isNew = false;
-		}
 		for(int i = 0; i < Effects.Count; i++)
 		{
 			bool destroy = false;
@@ -1135,7 +1133,6 @@ public class Tile : MonoBehaviour {
 			}
 
 		}
-		CheckStats();
 		
 		yield break;
 	}

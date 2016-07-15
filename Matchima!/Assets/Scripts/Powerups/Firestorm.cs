@@ -102,7 +102,8 @@ public class Firestorm : Powerup {
 		TileMaster.instance.ResetTiles(true);
 		TileMaster.instance.SetFillGrid(true);
 
-		yield return new WaitForSeconds(GameData.GameSpeed(0.6F));
+		yield return StartCoroutine(GameManager.instance.CompleteTurnRoutine());
+		yield return new WaitForSeconds(GameData.GameSpeed(0.4F));
 
 		GameManager.instance.paused = false;
 		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(false);
