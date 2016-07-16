@@ -45,7 +45,7 @@ public class Blob : Enemy {
 
 		if(Stats.isNew)
 		{
-			AddEffect("Sleep", 1);
+			AddEffect("Sleep", 2);
 		}
 	}
 

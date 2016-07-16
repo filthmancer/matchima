@@ -136,7 +136,7 @@ public class Grunt : Enemy {
 
 		if(Stats.isNew)
 		{
-			AddEffect("Sleep", 1);
+			AddEffect("Sleep", 2);
 			//sleep_part = EffectManager.instance.PlayEffect(this.transform, Effect.Sleep);
 		}
 	}

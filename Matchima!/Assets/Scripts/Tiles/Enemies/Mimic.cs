@@ -58,7 +58,7 @@ public class Mimic : Enemy {
 		{
 			Params.HitCounter.SetActive(false);	
 		}
-		else AddEffect("Sleep", 1);
+		else AddEffect("Sleep", 2);
 		
 	}
 
@@ -70,7 +70,7 @@ public class Mimic : Enemy {
 
 			if(originalMatch)
 			{
-				UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), "MIMIC!", 62, Color.white, 0.8F,0.15F);
+				UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), "MIMIC!", 72, Color.white, 0.8F,0.15F);
 				Vector3 pos = transform.position + (GameData.RandomVector*1.4F);
 				/*MoveToPoint mini = TileMaster.instance.CreateMiniTile(transform.position, UIManager.instance.Health.transform, Info.Outer);
 				mini.SetPath(0.3F, 0.5F, 0.0F, 0.08F);

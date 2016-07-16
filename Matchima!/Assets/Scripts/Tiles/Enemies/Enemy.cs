@@ -87,7 +87,7 @@ public class Enemy : Tile {
 		SetSprite();
 		if(Stats.isNew)
 		{
-			AddEffect("Sleep", 1);
+			AddEffect("Sleep", 2);
 		}
 	}
 
