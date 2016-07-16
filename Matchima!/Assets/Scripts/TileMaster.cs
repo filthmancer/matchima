@@ -252,6 +252,12 @@ public class TileMaster : MonoBehaviour {
 		} 
 	}
 
+	public void SetOrtho()
+	{
+		float ortho = Mathf.Max(Grid.Size[0] * 1.55F, Grid.Size[1] *1.55F);
+		CameraUtility.TargetOrtho = Mathf.Clamp(ortho, 7, Mathf.Infinity);
+	}
+
 //Generates a grid
 	private IEnumerator _GenerateGrid(GridInfo level, float wait)
 	{
@@ -273,8 +279,7 @@ public class TileMaster : MonoBehaviour {
 			int [] tile_size = new int [2] {(int)Grid.Size[0], (int)Grid.Size[1]};
 
 
-			float ortho = Mathf.Max(Grid.Size[0] * 1.4F, Grid.Size[1] *1.35F);
-			CameraUtility.TargetOrtho = Mathf.Clamp(ortho, 7, Mathf.Infinity);
+			SetOrtho();
 
 			CameraUtility.SetTargetPos(Vector3.Lerp( Grid[0,0].position, 
 													Grid[Grid.Size[0]-1, Grid.Size[1]-1].position,
@@ -313,8 +318,7 @@ public class TileMaster : MonoBehaviour {
 			Grid = new GridInfo();
 			Grid.SetUp(MapSize);
 
-			float ortho = Mathf.Max(Grid.Size[0] * 1.4F, Grid.Size[1] *1.35F);
-			CameraUtility.TargetOrtho = Mathf.Clamp(ortho, 7, Mathf.Infinity);
+			SetOrtho();
 
 			CameraUtility.SetTargetPos(Vector3.Lerp( Grid[0,0].position, 
 													Grid[Grid.Size[0]-1, Grid.Size[1]-1].position,
@@ -350,8 +354,7 @@ public class TileMaster : MonoBehaviour {
 		Grid.ChangeBy(diff);
 
 		MapSize = final;
-		float ortho = Mathf.Max(Grid.Size[0] * 1.4F, Grid.Size[1] *1.2F);
-		CameraUtility.TargetOrtho = Mathf.Clamp(ortho, 7, Mathf.Infinity);
+		SetOrtho();
 		//print(Grid.Size[0] + ":" + Grid.Points.GetLength(0) + " -- " + Grid.Size[1] + ":" + Grid.Points.GetLength(1));
 		CameraUtility.SetTargetPos(Vector3.Lerp(Grid[0,0].position, 
 												Grid[Grid.Size[0]-1, Grid.Size[1]-1].position,
@@ -378,8 +381,7 @@ public class TileMaster : MonoBehaviour {
 
 		Grid.ChangeBy(new Vector2(x,y));
 
-		float ortho = Mathf.Max(Grid.Size[0] * 1.4F, Grid.Size[1] * 1.35F);
-		CameraUtility.TargetOrtho = Mathf.Clamp(ortho, 7, Mathf.Infinity);
+		SetOrtho();
 
 		CameraUtility.SetTargetPos(Vector3.Lerp(Grid[0,0].position, 
 												Grid[Grid.Size[0]-1, Grid.Size[1]-1].position,
@@ -402,8 +404,7 @@ public class TileMaster : MonoBehaviour {
 		
 		yield return null;
 
-		float ortho = Mathf.Max(Grid.Size[0] * 1.4F, Grid.Size[1] *1.35F);
-		CameraUtility.TargetOrtho = Mathf.Clamp(ortho, 7, Mathf.Infinity);
+		SetOrtho();
 
 		CameraUtility.SetTargetPos(Vector3.Lerp( Grid[0,0].position, 
 												Grid[Grid.Size[0]-1, Grid.Size[1]-1].position,

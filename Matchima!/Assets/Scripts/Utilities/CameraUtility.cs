@@ -26,7 +26,7 @@ public class CameraUtility : MonoBehaviour {
 
 	public tk2dCamera Cam;
 	public tk2dUICamera UICam;
-	private static float yOffset = 0.05F;
+	private static float yOffset = 0.00F;
 
 	private static Vector3 TurnOffsetA, TurnOffsetB;
 	private static bool TurnOffset_enabled;

@@ -4,13 +4,13 @@ using System.Collections;
 public class Grunt : Enemy {
 
 
-	private int GruntHPScale = 9, GruntHPMult = 1;
+	private int GruntHPScale = 7, GruntHPMult = 1;
 	private int GruntATKScale = 19, GruntATKMult = 1;
 
-	private int CaptainHPScale = 8, CaptainHPMult = 1;
+	private int CaptainHPScale = 5, CaptainHPMult = 1;
 	private int CaptainATKScale = 19, CaptainATKMult = 1;
 
-	private int ChiefHPScale = 7, ChiefHPMult = 1;
+	private int ChiefHPScale = 3, ChiefHPMult = 1;
 	private int ChiefATKScale = 19, ChiefATKMult = 1;
 
 	private int TerrorHPScale = 12, TerrorHPMult = 4;

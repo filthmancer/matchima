@@ -362,8 +362,8 @@ public class UIManager : MonoBehaviour {
 		for(int i = 0; i < BonusGroups[0].Length; i++)
 		{
 			MiniAlertUI BonusObj = UIManager.instance.MiniAlert(
-				UIManager.Objects.MiddleGear[4][4].transform.position + Vector3.up*0.4F, 
-				BonusGroups[0][i].Name, 190, BonusGroups[0][i].col, bonus_time, 0.2F);
+				UIManager.Objects.MiddleGear[4][4].transform.position, 
+				BonusGroups[0][i].Name, 230, BonusGroups[0][i].col, bonus_time, 0.1F);
 			//BonusObj.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
 			BonusObj.transform.rotation = Quaternion.Euler(0,0,0);
 			BonusObj.AddJuice(Juice.instance.BounceB, 0.45F);
