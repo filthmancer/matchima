@@ -6,9 +6,8 @@ public class WaveUnit : Unit {
 
 	public string Description;
 	protected Wave Parent;
-	[HideInInspector]
-	public tk2dSprite Inner, Outer;
-	public tk2dSprite InnerOverride, OuterOverride;
+	public tk2dSpriteCollectionData InnerOverrideData;
+	public string InnerOverride;
 	public IntVector PrepTime = new IntVector(0,0);
 	public int Timer = 0;
 	public int TimeActive = 0;
@@ -26,8 +25,9 @@ public class WaveUnit : Unit {
 		Index = i;
 		Active = false;
 		Timer = Random.Range(PrepTime.x, PrepTime.y);
-		Inner = InnerOverride;
-		Outer = OuterOverride;
+		
+		//Inner.SetSprite(InnerOverride);
+		//Outer.SetSprite(OuterOverride);
 	}
 
 	public void Activate()

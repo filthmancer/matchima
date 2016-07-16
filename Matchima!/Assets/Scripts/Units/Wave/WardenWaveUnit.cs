@@ -140,7 +140,7 @@ public class WardenWaveUnit : WaveUnit {
 			{
 				if(child == null) continue;
 
-				AudioManager.instance.PlayClipOn(child.transform, "Enemy", "Attack");
+				//AudioManager.instance.PlayClipOn(child.transform, "Enemy", "Attack");
 
 				child.AttackWaveUnit(Parent);
 				yield return StartCoroutine(child.Animate("Attack", 0.05F));

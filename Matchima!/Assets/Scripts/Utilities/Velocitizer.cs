@@ -23,7 +23,7 @@ public class Velocitizer : ActiveTimer {
 	public override void Update () {
 		base.Update();
 		if(trans == null) trans = this.transform;
-		trans.position += Velocity * Speed;
+		trans.position += Velocity * Speed * Time.deltaTime;
 		trans.Rotate(Rotation);
 		if(Gravity) Velocity += gravity_velocity;
 	}

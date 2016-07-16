@@ -35,7 +35,7 @@ public class WardenBattle : Wave {
 		
 		Slot1.Timer = 0;
 		Slot1.Activate();
-		Current = -1;
+		Current = 0;
 		Timer = 0;
 
 		QuoteGroup tute = new QuoteGroup("Tute");

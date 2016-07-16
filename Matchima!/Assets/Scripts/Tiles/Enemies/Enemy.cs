@@ -185,11 +185,10 @@ public class Enemy : Tile {
 		yield return new WaitForSeconds(GameData.GameSpeed(0.18F));
 	}
 
-	public override IEnumerator AfterTurnRoutine(){
-		yield return StartCoroutine(base.AfterTurnRoutine());
-		
+	public override void AfterTurn()
+	{
+		base.AfterTurn();
 		HasAttackedThisTurn = false;
-
 		if(Stats.isAlerted)
 		{
 			SetState(TileState.Idle, true);

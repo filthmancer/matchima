@@ -608,8 +608,11 @@ public class Class : Unit {
 		yield return null;
 	}
 
+	bool UsingManaPower = false;
 	public virtual IEnumerator UseManaPower()
 	{
+		if(UsingManaPower) yield break;
+		UsingManaPower = true;
 		UIManager.instance.ScreenAlert.SetTween(0,true);
 		int lvl = MeterLvl;
 		yield return StartCoroutine(PowerupSpell.Activate(lvl));
@@ -617,6 +620,7 @@ public class Class : Unit {
 		yield return StartCoroutine(LevelUp(lvl));
 
 		UIManager.instance.ScreenAlert.SetTween(0,false);
+		UsingManaPower = false;
 	}
 
 	public virtual void ManaPower(int lvl)

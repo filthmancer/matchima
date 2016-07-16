@@ -142,12 +142,17 @@ public class UIManager : MonoBehaviour {
 					WaveTile wtile = GameManager.Wave[i] as WaveTile;
 					if(wtile)
 					{
-
 						string render = wtile.GenusString;
-
-						tk2dSpriteDefinition id = TileMaster.Types[wtile.Species].Atlas.GetSpriteDefinition(render);
-						if(id == null) render = "Alpha";
-						w.Imgtk[1].SetSprite(TileMaster.Types[wtile.Species].Atlas, render);
+						if(wtile.InnerOverrideData != null)
+						{
+							w.Imgtk[1].SetSprite(wtile.InnerOverrideData, wtile.InnerOverride);
+						}
+						else
+						{
+							tk2dSpriteDefinition id = TileMaster.Types[wtile.Species].Atlas.GetSpriteDefinition(render);
+							if(id == null) render = "Alpha";
+							w.Imgtk[1].SetSprite(TileMaster.Types[wtile.Species].Atlas, render);
+						}
 						w.Imgtk[0].SetSprite(TileMaster.Genus.Frames, wtile.GenusString);
 					}
 					

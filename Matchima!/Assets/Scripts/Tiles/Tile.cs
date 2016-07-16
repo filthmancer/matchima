@@ -607,7 +607,7 @@ public class Tile : MonoBehaviour {
 
 	public void OnAlert()
 	{
-		PlayAudio("alert");
+		//PlayAudio("alert");
 		InitStats.isAlerted = true;
 		MiniAlertUI m = UIManager.instance.MiniAlert(transform.position, "!", 180, Color.black);
 		m.Txt[0].outlineColor = GameData.Colour(Genus);
@@ -955,7 +955,7 @@ public class Tile : MonoBehaviour {
 
 		float info_time = 0.43F;
 		float info_size = init_size + (GetAttack() * 2);
-		float info_movespeed = Time.deltaTime * 18;
+		float info_movespeed = Time.deltaTime * 20;
 		float info_finalscale = 0.75F;
 
 		Vector3 pos = TileMaster.Grid.GetPoint(Point.Point(0));
@@ -971,7 +971,7 @@ public class Tile : MonoBehaviour {
 		mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
 		mini.SetMethod(() =>{
 				Player.instance.OnHit(this);
-				PlayAudio("hit");
+				//PlayAudio("hit");
 				GameData.Log("Took " + this.GetAttack() + "damage from " + this);
 			}
 		);
@@ -984,7 +984,7 @@ public class Tile : MonoBehaviour {
 
 		float info_time = 0.43F;
 		float info_size = init_size + (GetAttack() * 2);
-		float info_movespeed = Time.deltaTime * 18;
+		float info_movespeed = Time.deltaTime * 20;
 		float info_finalscale = 0.75F;
 
 		Vector3 pos = TileMaster.Grid.GetPoint(Point.Point(0));
@@ -999,7 +999,7 @@ public class Tile : MonoBehaviour {
 		mini.SetTarget(UIManager.Objects.TopGear[1][0][0].transform.position);
 		mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
 		mini.SetMethod(() =>{
-				w.AddPoints(-GetAttack());
+				w.AddPoints(GetAttack());
 				//AudioManager.instance.PlayClipOn(Player.instance.transform, "Player", "Hit");
 			}
 		);
@@ -1015,7 +1015,7 @@ public class Tile : MonoBehaviour {
 
 		float info_time = 0.43F;
 		float info_size = init_size + (GetAttack() * 2);
-		float info_movespeed = Time.deltaTime * 18;
+		float info_movespeed = Time.deltaTime * 20;
 		float info_finalscale = 0.75F;
 
 		Vector3 pos = TileMaster.Grid.GetPoint(Point.Point(0));
