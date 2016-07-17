@@ -619,6 +619,7 @@ public class Class : Unit {
 		yield return StartCoroutine(PowerDown());
 		yield return StartCoroutine(LevelUp(lvl));
 
+		GameManager.instance.paused = false;
 		UIManager.instance.ScreenAlert.SetTween(0,false);
 		UsingManaPower = false;
 	}

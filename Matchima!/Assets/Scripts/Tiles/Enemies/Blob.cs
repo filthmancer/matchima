@@ -95,6 +95,13 @@ public class Blob : Enemy {
 				for(int xx = 0; xx < scale; xx++)
 				{
 					TileMaster.instance.ReplaceTile(basex+xx, basey, TileMaster.Types["blob"], Genus, 1, Stats.Value/2, true);
+					foreach(TileEffect child in Effects)
+					{
+						if(child == this) continue;
+						TileEffect neweff = (TileEffect) Instantiate(child);
+						TileMaster.Tiles[basex+xx, basey].AddEffect(neweff);
+					}
+
 					//for(int yy = 1; yy < scale; yy++)
 					//{
 					//	TileMaster.instance.ReplaceTile(basex+xx,basey + yy, TileMaster.Types["resource"], GENUS.RAND, 1, Stats.Value/6,true);	

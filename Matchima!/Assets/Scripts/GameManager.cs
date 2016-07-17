@@ -893,7 +893,6 @@ public class GameManager : MonoBehaviour {
 		yield return StartCoroutine(Player.instance.CheckHealth());	
 		Player.instance.ResetStats();
 
-
 		PlayerControl.instance.canMatch = true;
 		PlayerControl.instance.isMatching = false;
 		PlayerControl.instance.focusTile = null;

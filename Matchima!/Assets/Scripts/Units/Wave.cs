@@ -372,7 +372,7 @@ public class Wave : Unit {
 			yield return StartCoroutine(Player.instance.AfterMatch());
 			TileMaster.instance.ClearQueuedTiles();
 			yield return StartCoroutine(GameManager.instance.CompleteTurnRoutine());
-			yield return new WaitForSeconds(GameData.GameSpeed(0.4F));
+			yield return new WaitForSeconds(GameData.GameSpeed(0.3F));
 		}
 	}
 
@@ -416,7 +416,7 @@ public class Wave : Unit {
 			}
 		}
 
-		yield return new WaitForSeconds(Time.deltaTime * 30);
+		yield return new WaitForSeconds(Time.deltaTime * 15);
 
 		for(int i = 0; i < to_collect.Count; i++)
 		{

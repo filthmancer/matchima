@@ -115,10 +115,8 @@ public class UIGear : UIObjTweener {
 						Time.deltaTime*DragLerpSpeed);
 				}
 			}
-			else gearTrans.Rotate(new Vector3(0,0,FlipDrag ? -dragAcc.x : dragAcc.x));
-			
+			else gearTrans.Rotate(new Vector3(0,0,FlipDrag ? -dragAcc.x : dragAcc.x));	
 		}
-		
 	}
 
 	public void MoveToDivision(int i)
