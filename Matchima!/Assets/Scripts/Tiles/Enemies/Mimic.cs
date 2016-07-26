@@ -58,7 +58,7 @@ public class Mimic : Enemy {
 		{
 			Params.HitCounter.SetActive(false);	
 		}
-		else AddEffect("Sleep", 2);
+		else AddEffect("Sleep", 1);
 		
 	}
 

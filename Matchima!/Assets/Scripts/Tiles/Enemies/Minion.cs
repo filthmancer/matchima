@@ -42,7 +42,7 @@ public class Minion : Enemy {
 		if(Stats.isNew)
 		{
 
-			AddEffect("Sleep", 2);
+			AddEffect("Sleep", 1);
 			//sleep_part = EffectManager.instance.PlayEffect(this.transform, Effect.Sleep);
 		}
 	}

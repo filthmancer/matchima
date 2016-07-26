@@ -93,10 +93,10 @@ public class Lullaby : Powerup {
 		for(int i = 0; i < targets.Length; i++)
 		{
 			Sleep(targets[i], sleep_duration);
-			yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
+			yield return new WaitForSeconds(GameData.GameSpeed(0.13F));
 		}
 
-		yield return new WaitForSeconds(0.4F);
+		yield return new WaitForSeconds(0.3F);
 		GameManager.instance.paused = false;
 		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(false);
 		TileMaster.instance.ResetTiles(true);
@@ -116,7 +116,7 @@ public class Lullaby : Powerup {
 		MoveToPoint mp = note.GetComponent<MoveToPoint>();
 		mp.enabled = true;
 		mp.SetTarget(Harp.Img[line].transform.position);
-		mp.SetPath(0.2F, 0.0F, 0.0F);
+		mp.SetPath(0.2F * CameraUtility.OrthoFactor, 0.0F, 0.0F);
 		mp.SetScale(0.5F, 0.4F);
 
 		return note;

@@ -1536,6 +1536,16 @@ public class TilePointContainer
 		return final.ToArray();
 	}
 
+	public Tile GetNeighbour(int x, int y)
+	{
+		int dist = 0;
+		int [] init = new int [] {BaseX+x, BaseY+y};
+		int [] point = Closest(init[0], init[1], out dist);
+
+
+		return TileMaster.Tiles[point[0] + x, point[1]+y];
+	}
+
 }
 
 

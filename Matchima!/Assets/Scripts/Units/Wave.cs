@@ -349,9 +349,13 @@ public class Wave : Unit {
 
 	protected virtual IEnumerator WaveEndRoutine()
 	{
+
 		yield return StartCoroutine(UIManager.instance.Alert(1.05F, ExitText));
+
 		if(ExplodeOnEnd)
 		{
+			
+			TileMaster.instance.SetAllTileStates(TileState.Locked, true);
 			for(int x = 0; x < TileMaster.Grid.Size[0]; x++)
 			{
 				for(int y = 0; y < TileMaster.Grid.Size[1]; y++)
@@ -378,6 +382,7 @@ public class Wave : Unit {
 
 	IEnumerator Cast(Tile target, int radius)
 	{
+		GameManager.instance.paused = true;
 		int targX = target.Point.Base[0];
 		int targY = target.Point.Base[1];
 
@@ -387,7 +392,8 @@ public class Wave : Unit {
 
 		if(target == null) yield break;
 
-		TileMaster.instance.SetAllTileStates(TileState.Locked, true);
+		AudioManager.instance.PlayClip(this.transform, AudioManager.instance.GetTile("bomb"), "cast");
+
 		Tile [,] _tiles = TileMaster.Tiles;
 		List<Tile> to_collect = new List<Tile>();
 
@@ -416,7 +422,8 @@ public class Wave : Unit {
 			}
 		}
 
-		yield return new WaitForSeconds(Time.deltaTime * 15);
+		CameraUtility.instance.ScreenShake((float)target.Stats.Value/5,  GameData.GameSpeed(particle_time));
+		yield return new WaitForSeconds( GameData.GameSpeed(particle_time));
 
 		for(int i = 0; i < to_collect.Count; i++)
 		{
@@ -431,14 +438,8 @@ public class Wave : Unit {
 				to_collect.RemoveAt(i);
 			}
 		}
-
+		GameManager.instance.paused = true;
 		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
-		
-
-		for(int i = 0; i < particles.Count; i++)
-		{
-			Destroy(particles[i]);
-		}
 	}
 
 	public WaveReward GenerateWaveReward()
@@ -484,6 +485,20 @@ public class Wave : Unit {
 	{
 		public string Title;
 		public float value;
+	}
+
+	public bool IsWaveTarget(Tile t)
+	{
+		for(int i = 0; i < AllSlots.Length; i++)
+		{
+			if(AllSlots[i].IsWaveTarget(t)) return true;
+		}
+		return false;
+	}
+
+	public void AddTargets(List<Tile> new_targs)
+	{
+		if(AllSlots[0] is WaveTileEndOnTileDestroy) (AllSlots[0] as WaveTileEndOnTileDestroy).AddTargets(new_targs);
 	}
 
 

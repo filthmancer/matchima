@@ -686,6 +686,7 @@ public class GameManager : MonoBehaviour {
 		yield return StartCoroutine(Player.instance.EndTurn());
 		yield return StartCoroutine(TileMaster.instance.BeforeTurn());
 
+		print("ENEMY TURN");
 /* ENEMY TURN *////////////////////////////////////////////////////
 		yield return StartCoroutine(CurrentWave.BeginTurn());
 		if(Player.instance.Turns % (int)Player.Stats.AttackRate == 0 && TileMaster.instance.EnemiesOnScreen > 0)
@@ -845,8 +846,6 @@ public class GameManager : MonoBehaviour {
 			int v = 1;
 			if(child.Type.isEnemy)
 			{
-				//v = damage[x];
-				//print(damage[x]);
 				enemies_hit ++;
 			} 
 			
@@ -881,13 +880,14 @@ public class GameManager : MonoBehaviour {
 
 	public IEnumerator CompleteTurnRoutine()
 	{
-		UIManager.instance.SetBonuses(GetBonuses(ComboSize));
-		UIManager.instance.StartTimer();
-		while(UIManager.instance.IsShowingMeters) yield return null;
-
 		UIManager.instance.SetClassButtons(false);
 		UIManager.Objects.BotGear.SetTween(0, true);
 		UIManager.Objects.TopGear.SetTween(0, false);
+
+		/*UIManager.instance.SetBonuses(GetBonuses(ComboSize));
+		UIManager.instance.StartTimer();
+		while(UIManager.instance.IsShowingMeters) yield return null;*/
+
 		//yield return StartCoroutine(Player.instance.CheckForBoonsRoutine());
 		Player.instance.CompleteHealth();
 		yield return StartCoroutine(Player.instance.CheckHealth());	

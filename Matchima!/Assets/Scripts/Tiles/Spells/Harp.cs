@@ -67,12 +67,7 @@ public class Harp : Tile {
 			{
 				if(child != null)
 				{
-					if(child.Type.isEnemy) 
-					{					
-						//child.SetState(TileState.Selected, true);
-						MiniAlertUI m = UIManager.instance.MiniAlert(child.Point.targetPos, "Charmed!", 100, GameData.Colour(child.Genus), 0.3F, 0.1F);
-						child.AddEffect("Charm", StunDuration);
-					}
+					
 					//else
 					//{
 						child.ChangeGenus(Genus);
@@ -80,6 +75,12 @@ public class Harp : Tile {
 						EffectManager.instance.PlayEffect(child.transform, Effect.Replace, "", GameData.instance.GetGENUSColour(child.Genus));	
 						//c.AddValue(EndValueAdded);
 					//}
+					if(child.Type.isEnemy) 
+					{					
+						//child.SetState(TileState.Selected, true);
+						MiniAlertUI m = UIManager.instance.MiniAlert(child.Point.targetPos, "Charmed!", 120, GameData.Colour(child.Genus), 0.3F, 0.1F);
+						child.AddEffect("Charm", StunDuration);
+					}
 					
 				}
 			}

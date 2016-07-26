@@ -45,7 +45,7 @@ public class Blob : Enemy {
 
 		if(Stats.isNew)
 		{
-			AddEffect("Sleep", 2);
+			AddEffect("Sleep", 1);
 		}
 	}
 
@@ -92,23 +92,27 @@ public class Blob : Enemy {
 				int scale = Point.Scale;
 				int basex = Point.BaseX;
 				int basey = Point.BaseY;
+				bool add_to_wavetargets = GameManager.Wave.IsWaveTarget(this);
+
+				DestroyThyself();
+				List<TileEffect> old_eff = new List<TileEffect>();
+				old_eff.AddRange(Effects);
+
+				List<Tile> new_blobs = new List<Tile>();
+
 				for(int xx = 0; xx < scale; xx++)
 				{
-					TileMaster.instance.ReplaceTile(basex+xx, basey, TileMaster.Types["blob"], Genus, 1, Stats.Value/2, true);
-					foreach(TileEffect child in Effects)
+					new_blobs.Add(TileMaster.instance.ReplaceTile(basex+xx, basey, TileMaster.Types["blob"], Genus, 1, Stats.Value/2, true));
+
+					foreach(TileEffect child in old_eff)
 					{
 						if(child == this) continue;
 						TileEffect neweff = (TileEffect) Instantiate(child);
 						TileMaster.Tiles[basex+xx, basey].AddEffect(neweff);
 					}
-
-					//for(int yy = 1; yy < scale; yy++)
-					//{
-					//	TileMaster.instance.ReplaceTile(basex+xx,basey + yy, TileMaster.Types["resource"], GENUS.RAND, 1, Stats.Value/6,true);	
-					//}
-					//TileMaster.instance.ReplaceTile(Point.BaseX+xx, Point.BaseY + scale, TileMaster.Types["blob"], Genus, 1, Stats.Value/6, false);
 				}
-				DestroyThyself();
+			
+				if(add_to_wavetargets) GameManager.Wave.AddTargets(new_blobs);
 
 			}
 		}

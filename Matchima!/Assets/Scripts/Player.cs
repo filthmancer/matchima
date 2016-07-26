@@ -233,7 +233,12 @@ public class Player : MonoBehaviour {
 
 		TileMaster.instance.SetFillGrid(true);
 		while(!TileMaster.AllLanded)	yield return null;
+
 		
+		UIManager.instance.SetBonuses(GameManager.instance.GetBonuses(GameManager.ComboSize));
+		UIManager.instance.StartTimer();
+
+		while(UIManager.instance.IsShowingMeters) yield return null;
 	}
 
 	public IEnumerator BeginTurn()

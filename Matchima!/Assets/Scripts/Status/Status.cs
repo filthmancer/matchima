@@ -21,7 +21,7 @@ public class Status : MonoBehaviour {
 	}
 	public string DurationString
 	{
-		get{return (Duration <= -1 ? "" : "(" + Duration + (Duration > 1 ? " TURNS)" : " TURN)"));}
+		get{return (Duration <= -1 ? "" : "(" + Duration + "T)");}//(Duration > 1 ? " T)" : " TURN)"));}
 	}
 	public string FX;
 	// Use this for initialization
@@ -36,13 +36,18 @@ public class Status : MonoBehaviour {
 
 	public virtual bool CheckDuration()
 	{
-		Duration -= 1;
+		if(Duration > 0) Duration -= 1;
 		return Duration == 0;
 	}
 
 	public virtual void OnAdd()
 	{
 		
+	}
+
+	public virtual bool CanAttack()
+	{
+		return true;
 	}
 
 

@@ -12,6 +12,9 @@ public class Utility : MonoBehaviour {
 	public static int RandomInt(float a){
 		return (int) UnityEngine.Random.Range(0, a);
 	}
+	public static int RandomIntInclusive(float a){
+		return (int) UnityEngine.Random.Range(-a, a);
+	}
 
 	public static Vector3 RandomVector(float x = 0.0F, float y = 0.0F, float z = 0.0F)
 	{

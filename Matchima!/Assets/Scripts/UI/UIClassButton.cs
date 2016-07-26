@@ -101,8 +101,7 @@ public class UIClassButton : UIObj {
 
 		_class = ab;
 	
-		color_default = GameData.instance.GetGENUSColour(_class.Genus);
-		
+		color_default = Color.white;//GameData.instance.GetGENUSColour(_class.Genus);
 
 		LevelUp.color = color_default;
 		
@@ -127,10 +126,7 @@ public class UIClassButton : UIObj {
 				SlotUI[i].Setup(_class._Slots[i]);
 				SlotUI[i].Txt[0].text = (_class._Slots[i] as Item).ScaleString;
 			}
-			
 		}
-
-		
 	}
 
 	public void Remove()

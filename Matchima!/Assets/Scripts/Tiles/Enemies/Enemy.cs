@@ -87,7 +87,7 @@ public class Enemy : Tile {
 		SetSprite();
 		if(Stats.isNew)
 		{
-			AddEffect("Sleep", 2);
+			AddEffect("Sleep",1);
 		}
 	}
 
@@ -152,7 +152,12 @@ public class Enemy : Tile {
 	public override bool CanAttack()
 	{
 		CheckStats();
-		return !Stats.isNew && !Stats.isFrozen && Stats.isAlerted && !HasAttackedThisTurn;
+		bool effects = true;
+		foreach(TileEffect child in Effects)
+		{
+			if(!child.CanAttack()) effects = false;
+		}
+		return effects && !Stats.isNew && !Stats.isFrozen && Stats.isAlerted && !HasAttackedThisTurn;
 	}
 
 	public override IEnumerator BeforeMatch(bool original)

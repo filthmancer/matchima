@@ -8,6 +8,7 @@ public class WaveTile : WaveUnit
 	[HideInInspector]
 	public string GenusString;
 	public string Species;
+	public string [] SpeciesChoice;
 
 	public WaveTileSpawn SpawnType;
 
@@ -43,20 +44,19 @@ public class WaveTile : WaveUnit
 		else GenusString = GenusOverride;
 
 		Genus = TileMaster.Genus[GenusString];
-		/*if(InnerOverride == null) Inner.SetSprite(TileMaster.Types[Species].Atlas, 0);
-		else Inner = InnerOverride;
-		if(OuterOverride == null) Outer.SetSprite(TileMaster.Genus.Frames, (int)Genus);
-		else Outer = OuterOverride;*/
+
+		if(SpeciesChoice == null) SpeciesChoice = new string []{Species};
 
 	}
 
 	public override void GetChances()
 	{
 		if(!Active || Ended) return;
-		if(SpawnType != WaveTileSpawn.XChance) return;
-
+		if(SpawnType == WaveTileSpawn.XChance)
+		{
+			TileMaster.instance.IncreaseChance(GenusString, Species, Factor);
+		}
 		List<TileEffectInfo> effects = Parent.GetEffects();
-		TileMaster.instance.IncreaseChance(GenusString, Species, Factor);
 		SPECIES s = TileMaster.Types[Species];
 		GenusInfo g = s[GenusString];
 		if(Value.y > 0)
@@ -85,6 +85,7 @@ public class WaveTile : WaveUnit
 		
 	//Spawn at start
 		if(SpawnType != WaveTileSpawn.XAtStart) yield break;
+		GameManager.instance.paused = true;
 		bool [,] replacedtile = new bool [(int)TileMaster.instance.MapSize.x, (int)TileMaster.instance.MapSize.y];
 		List<TileEffectInfo> Effects = Parent.GetEffects();
 
@@ -108,7 +109,7 @@ public class WaveTile : WaveUnit
 			GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Force);
 			MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
 			mp.SetTarget(TileMaster.Tiles[randx,randy].transform.position);
-			mp.SetPath(0.45F, 0.2F);
+			mp.SetPath(0.55F, 0.2F);
 			mp.SetTileMethod(TileMaster.Tiles[randx,randy], (Tile t) => 
 				{
 					Tile newtile = TileMaster.instance.ReplaceTile(t, TileMaster.Types[Species], Genus, Scale, FinalValue);
@@ -124,6 +125,7 @@ public class WaveTile : WaveUnit
 			yield return new WaitForSeconds(Time.deltaTime * 20);
 		}
 		yield return new WaitForSeconds(Time.deltaTime * 20);
+		GameManager.instance.paused = false;
 	}
 
 
@@ -142,7 +144,7 @@ public class WaveTile : WaveUnit
 	//Spawn per round
 
 		if(SpawnType != WaveTileSpawn.XPerTurn) yield break;
-
+		GameManager.instance.paused = true;
 		bool [,] replacedtile = new bool [(int)TileMaster.instance.MapSize.x, (int)TileMaster.instance.MapSize.y];
 		for(int x = 0; x < (int)Factor; x++)
 		{
@@ -166,7 +168,7 @@ public class WaveTile : WaveUnit
 			GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Force);
 			MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
 			mp.SetTarget(TileMaster.Tiles[randx,randy].transform.position);
-			mp.SetPath(0.45F, 0.2F);
+			mp.SetPath(0.55F, 0.2F);
 			mp.SetTileMethod(TileMaster.Tiles[randx,randy], (Tile t) => 
 				{
 					Tile newtile = TileMaster.instance.ReplaceTile(t, TileMaster.Types[Species], Genus, Scale, FinalValue);
@@ -180,6 +182,7 @@ public class WaveTile : WaveUnit
 			yield return new WaitForSeconds(Time.deltaTime * 5);
 		}
 		//yield return new WaitForSeconds(Time.deltaTime * 5);
+		GameManager.instance.paused = false;
 	}
 
 	public override IEnumerator AfterTurn()
@@ -214,4 +217,6 @@ public class WaveTile : WaveUnit
 		
 		yield return null;
 	}
+
+	
 }

@@ -4,13 +4,13 @@ using System.Collections.Generic;
 
 public class WaveTileEndOnTileDestroy : WaveTile {
 	public List<Tile> targets;
-	private List<Vector2> targetpoints;
 	public bool DestroyOnWaveEnd = true;
 	public int PointsPerTarget = 1;
 	public override IEnumerator OnStart()
 	{
 		if(!Active || Ended) yield break;
 		targets = new List<Tile>();
+		GameManager.instance.paused = true;
 	//Spawn at start
 		if(SpawnType != WaveTileSpawn.XAtStart) yield break;
 
@@ -37,7 +37,7 @@ public class WaveTileEndOnTileDestroy : WaveTile {
 			GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Force);
 			MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
 			mp.SetTarget(TileMaster.Tiles[randx,randy].transform.position);
-			mp.SetPath(0.35F, 0.2F);
+			mp.SetPath(0.55F, 0.2F);
 			//mp.Target_Tile = TileMaster.Tiles[randx,randy];
 			mp.SetTileMethod(TileMaster.Tiles[randx,randy], (Tile t) => 
 				{
@@ -56,6 +56,7 @@ public class WaveTileEndOnTileDestroy : WaveTile {
 			yield return new WaitForSeconds(Time.deltaTime * 5);
 		}
 		yield return new WaitForSeconds(Time.deltaTime * 20);
+		GameManager.instance.paused = false;
 	}
 
 	public override IEnumerator AfterTurn()
@@ -70,10 +71,10 @@ public class WaveTileEndOnTileDestroy : WaveTile {
 				end = false;
 			}	
 		}
-		if(end) 
+		if(end && !Ended) 
 		{
-			Parent.AddPoints(-PointsPerTarget);
-			OnEnd();
+			Ended = true;
+			Parent.AddPoints(PointsPerTarget,true);
 		}
 		Complete();
 		yield return null;
@@ -93,5 +94,25 @@ public class WaveTileEndOnTileDestroy : WaveTile {
 		}
 	}
 
+	public void AddTargets(List<Tile> new_targs)
+	{
+		foreach(Tile child in new_targs)
+		{
+			bool add = true;
+			foreach(Tile old in targets)
+			{
+				if(child == old) add = false;
+			}
+			if(add) targets.Add(child);
+		}
+	}
 
+	public override bool IsWaveTarget(Tile t)
+	{
+		foreach(Tile child in targets)
+		{
+			if(child == t) return true;
+		}
+		return false;
+	}
 }

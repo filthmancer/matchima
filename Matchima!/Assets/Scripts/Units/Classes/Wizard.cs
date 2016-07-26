@@ -89,11 +89,11 @@ private int _currentmanapower = 100;
 		//arcane.Chance = 0.1F;
 		//InitStats.TileChances.Add(arcane);
 
-		TileChance health = new TileChance();
+		/*TileChance health = new TileChance();
 		health.Genus = GameData.ResourceLong(Genus);
 		health.Type = "health";
 		health.Chance = 0.05F;
-		InitStats.TileChances.Add(health);
+		InitStats.TileChances.Add(health);*/
 
 		PowerupSpell = GameData.instance.GetPowerup("Firestorm", this);
 

@@ -98,13 +98,13 @@ public class UIManager : MonoBehaviour {
 
 		Objects.TopRightButton.Txt[0].text = "" + GameManager.Floor;
 		Objects.TopRightButton.Txt[1].text = "" + GameManager.ZoneNum;
-		Objects.TopRightButton.Txt[2].enabled = Player.NewItems;
+		Objects.TopRightButton.Txt[2].enabled = false;//Player.NewItems;
 		Health.text = Player.Stats.Health + "/" + Player.Stats.HealthMax;
 
 		for(int i = 0; i < PlayerHealth.Length; i++)
 		{
 			float curr = PlayerHealth[i].clipBottomLeft.x;
-			PlayerHealth[i].clipBottomLeft = new Vector2(Mathf.Lerp(curr, 1.0f - Player.Stats.GetHealthRatio() + 0.26F, Time.deltaTime * 15), 0);
+			PlayerHealth[i].clipBottomLeft = new Vector2(Mathf.Lerp(curr, 1.0f - Player.Stats.GetHealthRatio(), Time.deltaTime * 15), 0);
 			PlayerHealth[i].color = Color.Lerp(GameData.instance.ShieldEmpty, GameData.instance.ShieldFull, Player.Stats.GetHealthRatio());
 		}
 		if(GameManager.Wave != null)
@@ -139,21 +139,25 @@ public class UIManager : MonoBehaviour {
 					//w.Imgtk[1].enabled = true;	
 					w.Imgtk[0].enabled = true;
 					w.Imgtk[1].enabled = true;
-					WaveTile wtile = GameManager.Wave[i] as WaveTile;
-					if(wtile)
+					WaveUnit wunit = GameManager.Wave[i] as WaveUnit;
+					if(wunit)
 					{
-						string render = wtile.GenusString;
-						if(wtile.InnerOverrideData != null)
+						if(wunit.InnerOverrideData != null)
 						{
-							w.Imgtk[1].SetSprite(wtile.InnerOverrideData, wtile.InnerOverride);
+							w.Imgtk[1].SetSprite(wunit.InnerOverrideData, wunit.InnerOverride);
+							w.Imgtk[0].SetSprite(TileMaster.Genus.Frames, "Grey");
 						}
-						else
+						else if(wunit is WaveTile)
 						{
+
+							WaveTile wtile = wunit as WaveTile;
+							string render = wtile.GenusString;
 							tk2dSpriteDefinition id = TileMaster.Types[wtile.Species].Atlas.GetSpriteDefinition(render);
 							if(id == null) render = "Alpha";
 							w.Imgtk[1].SetSprite(TileMaster.Types[wtile.Species].Atlas, render);
+							w.Imgtk[0].SetSprite(TileMaster.Genus.Frames, wtile.GenusString);
 						}
-						w.Imgtk[0].SetSprite(TileMaster.Genus.Frames, wtile.GenusString);
+						
 					}
 					
 								
@@ -260,16 +264,22 @@ public class UIManager : MonoBehaviour {
 			return false;
 		}
 	}
+	public void SetMeter(int g, bool active)
+	{
+		ShowingMeter[g] = active;
+	}
+
 	bool [] ShowingMeter = new bool[7];
 	int [] Meters = new int[7];
 	MiniAlertUI [] MeterObj = new MiniAlertUI[7];
 	public float MeterTimer = 0.4F;
-	float MeterTimer_init = 0.05F;
+	float MeterTimer_init = 0.15F;
 	public void CashMeterPoints()
 	{
 		StartedMeter = false;
 		MeterTimer = MeterTimer_init;
 		StartCoroutine(ShowBonuses());
+	
 		//for(int i = 0; i < MeterObj.Length; i++)
 		//{
 		//	if(MeterObj[i] == null) continue;
@@ -287,16 +297,16 @@ public class UIManager : MonoBehaviour {
 
 	public void GetMeterPoints(int g, int points)
 	{
-		int init_font_size = 340;
+		int init_font_size = 280;
 		GENUS genus = (GENUS) g;
 		if(g >= 4) return;
-		if(ShowingMeter[g])
+		if(ShowingMeter[g] && Meters[g] > 0)
 		{
 			Meters[g] += points;
 			if(MeterObj[g] != null)
 			{
 				MeterObj[g].AddJuice(Juice.instance.BounceB, 0.32F);
-				MeterObj[g].size = init_font_size + Meters[g];
+				MeterObj[g].size = init_font_size + Meters[g]*5;
 				MeterObj[g].text = "" + Meters[g];	
 			}
 			
@@ -306,6 +316,7 @@ public class UIManager : MonoBehaviour {
 		}
 		else
 		{
+			//print(g + ": showing");
 			ShowingMeter[g] = true;
 			Meters[g] = points;
 			//MeterTimer = MeterTimer_init;
@@ -361,8 +372,7 @@ public class UIManager : MonoBehaviour {
 
 	public IEnumerator ShowBonuses()
 	{
-		float bonus_time = 0.34F;
-
+		float bonus_time = 0.32F;
 
 		for(int i = 0; i < BonusGroups[0].Length; i++)
 		{
@@ -384,7 +394,7 @@ public class UIManager : MonoBehaviour {
 			yield return new WaitForSeconds(bonus_time);
 		}
 
-		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+		yield return new WaitForSeconds(GameData.GameSpeed(0.08F));
 		/*for(int i = 0; i < BonusGroups[g].Length; i++)
 		{
 			MiniAlertUI BonusObj = UIManager.instance.MiniAlert(
@@ -409,7 +419,7 @@ public class UIManager : MonoBehaviour {
 
 		float info_movespeed = 0.66F;
 		float info_finalscale = 0.3F;
-
+		
 		for(int g = 0; g < Meters.Length; g++)
 		{
 			if(Meters[g] == 0 || MeterObj[g] == null) continue;
@@ -427,9 +437,8 @@ public class UIManager : MonoBehaviour {
 				{
 					if(GameManager.Wave != null)
 						GameManager.Wave.AddPoints(amt[1]);
-
-					ShowingMeter[amt[0]] = false;
-					Meters[amt[0]] = 0;
+						//print(amt[0]+ ": not showing");
+					
 				},
 				new int []{g, Meters[g]}
 			);
@@ -454,7 +463,8 @@ public class UIManager : MonoBehaviour {
 							Player.Classes[cl].AddToMeter(amt[1]);
 						}
 					}
-					
+					ShowingMeter[amt[0]] = false;
+					Meters[amt[0]] = 0;
 				},
 				new int []{g, Meters[g]}
 			);
@@ -1155,6 +1165,67 @@ public class UIManager : MonoBehaviour {
 				Destroy(ScreenAlert.Child[1][0].GetChild(i).gameObject);
 		}
 
+		yield break;
+	}
+
+	public IEnumerator LvlAlert(float time, StCon [] title = null, StCon [] desc = null, bool wait_for_touch = false)
+	{
+		while(AlertShowing) yield return null;
+		AlertShowing = true;
+		GameManager.instance.paused = true;
+		ScreenAlert.SetActive(true);
+		ScreenAlert.SetTween(0,true);
+
+		UIObjTweener Lvl_Alert = (ScreenAlert[3] as UIObjTweener);
+		Lvl_Alert.SetTween(0, true);
+		if(title != null)
+		{
+			Lvl_Alert.Txt[0].text = title[0].Value + title[1].Value;
+			Lvl_Alert.Txt[0].color = title[0].Colour;
+		}
+
+		if(desc != null)
+		{
+			Transform TopParent = Lvl_Alert[0].transform;
+			Lvl_Alert[0].Child = GenerateUIObjFromStCon(TopParent, desc);
+			for(int i = 0; i < Lvl_Alert[0].Length; i++)
+			{
+				Lvl_Alert[0].GetChild(i).SetActive(false);
+			}
+			for(int i = 0; i < Lvl_Alert[0].Length; i++)
+			{
+				Lvl_Alert[0].GetChild(i).SetActive(true);
+				yield return new WaitForSeconds(GameData.GameSpeed(0.3F));
+			}
+		}
+
+
+		yield return new WaitForSeconds(GameData.GameSpeed(time));
+		
+		if(wait_for_touch)
+		{
+			bool has_touched = false;
+			while(!has_touched)
+			{
+				has_touched = Input.GetMouseButtonDown(0);
+				yield return null;
+			}
+		}
+
+		Lvl_Alert.SetTween(0, false);
+
+		PlayerControl.instance.ResetSelected();
+		GameManager.instance.paused = false;
+		AlertShowing = false;
+		
+
+		yield return new WaitForSeconds(0.1F);
+		for(int i = 0; i < Lvl_Alert[0].Length; i++)
+		{
+			if(Lvl_Alert[0].GetChild(i) != null)
+				Destroy(Lvl_Alert[0].GetChild(i).gameObject);
+		}
+		ScreenAlert.SetActive(false);
 		yield break;
 	}
 

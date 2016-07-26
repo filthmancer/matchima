@@ -12,6 +12,7 @@ public class WardenWaveUnit : WaveUnit {
 	public override IEnumerator OnStart()
 	{
 		if(!Active || Ended) yield break;
+		GameManager.instance.paused = true;
 		controllers = new List<Tile>();
 		bool [,] replacedtile = new bool [(int)TileMaster.instance.MapSize.x, (int)TileMaster.instance.MapSize.y];
 		for(int i = 0; i < 3; i++)
@@ -32,6 +33,7 @@ public class WardenWaveUnit : WaveUnit {
 			yield return new WaitForSeconds(Time.deltaTime * 30);
 		}
 		yield return new WaitForSeconds(Time.deltaTime * 20);
+		GameManager.instance.paused = false;
 	}
 
 	void CreateWard(int x, int y)
@@ -39,7 +41,7 @@ public class WardenWaveUnit : WaveUnit {
 		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Force);
 		MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
 		mp.SetTarget(TileMaster.Tiles[x,y].transform.position);
-		mp.SetPath(0.35F, 0.2F);
+		mp.SetPath(0.55F, 0.2F);
 		//mp.Target_Tile = TileMaster.Tiles[x,y];
 		mp.SetTileMethod(TileMaster.Tiles[x,y], (Tile t) => 
 			{

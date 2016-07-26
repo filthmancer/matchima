@@ -273,7 +273,7 @@ public class Class : Unit {
 
 		foreach(Upgrade child in Mutations)
 		{
-			if(child == null) continue;
+			if(child == null || !(child is Upgrade)) continue;
 			child.Up(Stats, child.RateFinal);
 		}
 
@@ -299,6 +299,11 @@ public class Class : Unit {
 			if(child == null) continue;
 			yield return StartCoroutine(child.BeforeMatch(tiles));
 		}
+		foreach(Upgrade child in Mutations)
+		{
+			if(child == null) continue;
+			child.OnMatch(Stats, child.RateFinal);
+		}
 		yield return null;
 	}
 
@@ -323,6 +328,11 @@ public class Class : Unit {
 		else AddToMeterDirect(-MeterDecay);
 		yield return StartCoroutine(CheckManaPower());
 		
+		if(MeterLvl > 0 && !Player.Options.PowerupAlerted)
+		{
+			Player.Options.PowerupAlerted = true;
+			StartCoroutine(PowerupAlert());
+		}
 		
 		Reset();
 		yield return null;
@@ -371,7 +381,7 @@ public class Class : Unit {
 		Manapower_audio = AudioManager.instance.PlayClip(this.transform, AudioManager.instance.Player, "Mana Powerup");
 		Manapower_audio.GetComponent<DestroyTimer>().enabled = false;
 		UIManager.ClassButtons.GetClass(Index).ShowClass(true);
-		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+		yield return new WaitForSeconds(GameData.GameSpeed(0.05F));
 		
 		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, "", GameData.Colour(Genus));
 		powerup.transform.SetParent(UIManager.ClassButtons.GetClass(Index).transform);
@@ -379,7 +389,7 @@ public class Class : Unit {
 		powerup.transform.localScale = Vector3.one;
 
 		
-		yield return new WaitForSeconds(GameData.GameSpeed(0.84F));
+		yield return new WaitForSeconds(GameData.GameSpeed(0.5F));
 		Destroy(powerup);
 		Destroy(Manapower_audio.gameObject);
 
@@ -492,11 +502,7 @@ public class Class : Unit {
 			OnLowHealth();
 		}
 
-		if(MeterLvl > 0 && !Player.Options.PowerupAlerted)
-		{
-			Player.Options.PowerupAlerted = true;
-			StartCoroutine(PowerupAlert());
-		}
+		
 		
 		if(isKilled)
 		{
@@ -672,14 +678,14 @@ public class Class : Unit {
 		GameManager.instance.paused = true;
 		UIManager.ClassButtons.GetClass(Index).ShowClass(false);
 		Level ++;
+		
+
 		StCon [] title = InitStats.LevelUp(power);
-		StCon [] floor = new StCon [] {new StCon(Name + " Level"), new StCon(Level+"")};
-
-		yield return StartCoroutine(UIManager.instance.Alert(0.7F, floor, title, null, true));
-
+		StCon [] floor = new StCon [] {new StCon(Name + " Level "), new StCon(Level+"")};
 		Reset();
+		yield return StartCoroutine(UIManager.instance.LvlAlert(0.6F, floor, title, true));
 
-		float mutation_chance = Stats.MutationChance - (0.05F * power);
+		float mutation_chance = 1.0F;//Stats.MutationChance - (0.1F * power);
 		if(UnityEngine.Random.value < mutation_chance)
 		{
 			yield return StartCoroutine(Mutate(power));
@@ -706,7 +712,7 @@ public class Class : Unit {
 	//Get Mutation
 		Upgrade u = null;
 
-		float cursechance = Stats.CurseChance - (0.09F * power);
+		float cursechance = 0.0F;//Stats.CurseChance - (0.09F * power);
 		bool Boon = UnityEngine.Random.value > cursechance;
 
 		if(Boon)
@@ -749,17 +755,16 @@ public class Class : Unit {
 		foreach(Upgrade child in Mutations){
 			if(child != null && child.Index == u.Index) prev = child;
 		}
-
+		u._Rate += final_rate;
+		finaltitle = u.Title;
 		if(prev == null) 
 		{
-			u._Rate += final_rate;
+			
 			Mutations.Add(u);
-			finaltitle = u.Title;
 		}
 		else 
 		{
 			prev._Rate += final_rate;
-			finaltitle = prev.Title;
 		}
 
 		string boon = Name + " was ";

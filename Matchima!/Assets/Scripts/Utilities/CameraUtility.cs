@@ -22,6 +22,13 @@ public class CameraUtility : MonoBehaviour {
 	public static Vector3 TargetPos;
 	public static float TargetOrtho = 0.0F;
 
+	public static float OrthoFactor
+	{
+		get{
+			return 1.0F + (TargetOrtho-6.6F)*0.03F;
+		}
+	}
+
 	public bool IgnoreTargetOrtho = false;
 
 	public tk2dCamera Cam;

@@ -69,9 +69,6 @@ public class Bomb : Tile {
 		CameraUtility.instance.ScreenShake((float)Stats.Value/5,  GameData.GameSpeed(0.4F));
 		yield return new WaitForSeconds( GameData.GameSpeed(0.4F));
 
-		//yield return StartCoroutine(Player.instance.BeforeMatch(to_collect));
-		PlayerControl.instance.RemoveTileToMatch(this);
-		to_collect.Add(this);
 		for(int i = 0; i < to_collect.Count; i++)
 		{
 			if(to_collect[i].IsType("Chicken"))

@@ -137,4 +137,9 @@ public class WaveUnit : Unit {
 	{
 
 	}
+
+	public virtual bool IsWaveTarget(Tile t)
+	{
+		return false;
+	}
 }

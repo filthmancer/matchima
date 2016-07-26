@@ -17,11 +17,11 @@ public class Thief : Class {
 
 		
 
-		TileChance health = new TileChance();
+		/*TileChance health = new TileChance();
 		health.Genus = GameData.ResourceLong(Genus);
 		health.Type = "health";
 		health.Chance = 0.05F;
-		InitStats.TileChances.Add(health);
+		InitStats.TileChances.Add(health);*/
 
 	/*	ClassUpgrade b = new ClassUpgrade((int val) => {attack.Chance += 0.02F * val;});
 		b.BaseAmount = 2;
@@ -199,7 +199,7 @@ public class Thief : Class {
 		knife.transform.position = UIManager.Objects.BotGear.transform.position;
 		float velx = Random.Range(0.09F, 0.17F);
 		if(Random.value < 0.5F) velx = -velx;
-		Vector3 vel = new Vector3(velx, 2.0F * TileMaster.YScale, 0.0F);
+		Vector3 vel = new Vector3(velx, 2.0F * CameraUtility.OrthoFactor, 0.0F);
 		knife.GetComponent<Velocitizer>().SetVelocity(vel, 0.3F);
 		knife.GetComponent<Velocitizer>().SetRotation(new Vector3(0,0,Random.Range(-1.5F, 1.5F)));
 		knife.GetComponent<Velocitizer>().AddTimedAction(() =>

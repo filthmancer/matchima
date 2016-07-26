@@ -23,7 +23,7 @@ public class Barbarian : Class {
 		health = new TileChance();
 		health.Genus = GameData.ResourceLong(Genus);
 		health.Type = "health";
-		health.Chance = 0.4F;
+		health.Chance = 0.3F;
 		InitStats.TileChances.Add(health);
 
 		TileChance sword = new TileChance();
