@@ -27,7 +27,7 @@ public class UIObjects : MonoBehaviour {
 
 	public GameObject TxtTooltipObj;
 	public UIObj HorizontalGrouper, VerticalGrouper;
-	public UIObj TextObj;
+	public UIObj TextObj, ZoneObj;
 
 	//public UIObj [] WaveSlots;
 

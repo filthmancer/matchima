@@ -683,9 +683,10 @@ public class Class : Unit {
 		StCon [] title = InitStats.LevelUp(power);
 		StCon [] floor = new StCon [] {new StCon(Name + " Level "), new StCon(Level+"")};
 		Reset();
-		yield return StartCoroutine(UIManager.instance.LvlAlert(0.6F, floor, title, true));
 
-		float mutation_chance = 1.0F;//Stats.MutationChance - (0.1F * power);
+		yield return StartCoroutine(UIManager.instance.Alert(0.3F, floor, title, null, true));
+
+		float mutation_chance = Stats.MutationChance - (0.1F * power);
 		if(UnityEngine.Random.value < mutation_chance)
 		{
 			yield return StartCoroutine(Mutate(power));
@@ -712,7 +713,7 @@ public class Class : Unit {
 	//Get Mutation
 		Upgrade u = null;
 
-		float cursechance = 0.0F;//Stats.CurseChance - (0.09F * power);
+		float cursechance = Stats.CurseChance - (0.09F * power);
 		bool Boon = UnityEngine.Random.value > cursechance;
 
 		if(Boon)

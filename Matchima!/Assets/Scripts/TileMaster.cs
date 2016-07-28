@@ -119,7 +119,9 @@ public class TileMaster : MonoBehaviour {
 				{
 					if(Tiles[x,y] == null) {Debug.LogWarning("NULL " + x + ":" + y); continue;}
 					if(Tiles[x,y].isFalling || Tiles[x,y].UnlockedFromGrid) 
-					{Debug.LogWarning("WAITING FOR " + x + ":" + y); return false;}
+					{
+						Debug.LogWarning("WAITING FOR " + x + ":" + y); return false;
+					}
 				}
 			}
 			return true;
@@ -625,6 +627,19 @@ public class TileMaster : MonoBehaviour {
 	public IEnumerator AfterTurn()
 	{
 		if(Player.Stats.isKilled) yield break;
+		for(int xx = 0; xx < Grid.Size[0]; xx++)
+		{
+			for(int yy = 0; yy < Grid.Size[1]; yy++)
+			{
+				if(Tiles[xx,yy] != null) 
+				{
+					if(Tiles[xx,yy].Destroyed) 
+					{
+						DestroyTile(Tiles[xx,yy]);
+					}
+				}
+			}
+		}
 		while(!AllLanded) 
 		{
 			if(Player.Stats.isKilled) yield break;

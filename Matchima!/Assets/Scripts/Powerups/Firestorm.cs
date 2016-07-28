@@ -78,7 +78,7 @@ public class Firestorm : Powerup {
 			{
 				MGame[i].transform.position += Vector3.right * MGame_vel[i];
 				MGame_target[i] = ClosestPoint(MGame[i].transform.position);
-				if(Mathf.Abs(MGame_vel[i]) < 0.45F) MGame_vel[i] *= 1.003F;
+				if(Mathf.Abs(MGame_vel[i]) < 0.45F) MGame_vel[i] *= 1.008F;
 				if(MGame[i].transform.position.x > TileMaster.Tiles[TileMaster.Grid.Size[0]-1,0].transform.position.x) MGame_vel[i] = -MGame_vel[i];
 				else if(MGame[i].transform.position.x < TileMaster.Tiles[0,0].transform.position.x) MGame_vel[i] = -MGame_vel[i];
 			}

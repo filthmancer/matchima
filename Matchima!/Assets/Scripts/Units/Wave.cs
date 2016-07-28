@@ -491,6 +491,7 @@ public class Wave : Unit {
 	{
 		for(int i = 0; i < AllSlots.Length; i++)
 		{
+			if(AllSlots[i] == null) continue;
 			if(AllSlots[i].IsWaveTarget(t)) return true;
 		}
 		return false;

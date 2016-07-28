@@ -28,6 +28,7 @@ public class GameManager : MonoBehaviour {
 	public static int Floor	{get{return instance.CurrentFloor;}}
 	public static int ZoneNum {get{return instance._ZoneNum;}}
 	public static Wave Wave{get{return instance.CurrentWave;}}
+	public static ZoneMapContainer ZoneMap;
 
 	public static Zone ZoneChoiceA, ZoneChoiceB;
 
@@ -57,7 +58,7 @@ public class GameManager : MonoBehaviour {
 	public AudioSource AudioObj;
 	public AudioClip MatchA, TouchA;
 	public AudioClip ReleaseA;
-
+	
 	public float Difficulty_Growth{
 		get{
 			switch(DifficultyMode)
@@ -82,6 +83,8 @@ public class GameManager : MonoBehaviour {
 	public int CurrentFloor = 0;
 	public Zone CurrentZone;
 	public Wave CurrentWave;
+	public ZoneMapContainer CurrentZoneMap;
+
 	private int _ZoneNum = 0;
 
 	public bool gameStart = false;
@@ -107,7 +110,7 @@ public class GameManager : MonoBehaviour {
 	}
 	public static bool TuteActive = false;
 
-	public Zone StoryMode;
+	public ZoneMapContainer StoryModeMap;
 	public Zone [] Zones;
 	
 	public WaveGroup DefaultWaves;
@@ -176,6 +179,7 @@ public class GameManager : MonoBehaviour {
 
 		CurrentFloor = 0;
 		_ZoneNum = 0;
+		ZoneMap = CurrentZoneMap;
 
 		inStartMenu = true;
 		TuteActive = false;	
@@ -338,22 +342,18 @@ public class GameManager : MonoBehaviour {
 			Player.Stats._Health = Player.Stats._HealthMax;
 			break;
 			case 2: //X
-			//EscapeZone();
+			EscapeZone();
 			//GetWave(GameData.instance.GetRandomWave(), 2);
 			//CameraUtility.SetTurnOffset(camopen);
-			Wave.AddPoints(150);
+			//Wave.AddPoints(150);
 			//TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["chest"], GENUS.ALL, 1, 1);
 			break;
 			case 3: //c
-			TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["lightning"], GENUS.DEX,1, 1);
+			TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["guard"], GENUS.DEX,1, 1);
 			break;
 			case 4: //V
 			//GetTurn();
-			TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["lightning"], GENUS.STR,1, 50);
-			//(TileMaster.Tiles[point[0], point[1]] as Ward).Buff = "Frenzy";
-			//TileEffect effect = (TileEffect) Instantiate(GameData.instance.GetTileEffectByName("Fragile"));
-			//effect.GetArgs(-1);
-			//TileMaster.Tiles[point[0], point[1]].AddEffect(effect);
+			PlayerControl.instance.focusTile.AddEffect("Stoneform", -1, "2", "1");
 
 			break;
 			case 5: //B
@@ -419,6 +419,13 @@ public class GameManager : MonoBehaviour {
 		return null;
 	}
 
+	public void AdvanceZoneMap(int choice)
+	{
+		ZoneMap.Current++;
+		//UIManager.instance.ShowZoneUI(false);
+		EnterZone(ZoneMap.CurrentBracket[choice]);
+	}
+
 	public void EnterZone(Zone z = null, string name = null)
 	{
 		StartCoroutine(_EnterZone(z, name, null));
@@ -436,6 +443,10 @@ public class GameManager : MonoBehaviour {
 		else if(name != null) 
 		{
 			target = GetZone(name);
+		}
+		else if(ZoneMap != null)
+		{
+			target = ZoneMap[0][0];
 		}
 		else target = Zones[Random.Range(0,Zones.Length)];
 
@@ -474,24 +485,28 @@ public class GameManager : MonoBehaviour {
 
 	public void EscapeZone()
 	{
-		StartCoroutine(_EscapeZone());
+		if(ZoneMap.Current < ZoneMap.Length)
+			UIManager.instance.ShowZoneUI(true);
+		else Debug.Log("YOU WIN!");
+		//StartCoroutine(_EscapeZone());
 	}
 
-	IEnumerator _EscapeZone()
+	public ZoneMapContainer GenerateZoneMap(Vector2 [] zonenum)
 	{
-		string oldname = CurrentZone.Name;
-		
-		
-		ZoneChoiceA = Zones[Random.Range(0,Zones.Length)];
-		ZoneChoiceB = Zones[Random.Range(0,Zones.Length)];
-		while(ZoneChoiceB == ZoneChoiceA)
+		ZoneMapContainer final = new ZoneMapContainer();
+		ZoneBracket [] br = new ZoneBracket[zonenum.Length];
+		for(int i = 0; i < zonenum.Length; i++)
 		{
-			ZoneChoiceB = Zones[Random.Range(0,Zones.Length)];
+			int targ = (int)Random.Range(zonenum[i].x, zonenum[i].y);
+			br[i] = new ZoneBracket(targ);
+			for(int z = 0; z < targ; z++)
+			{
+				br[i].Choices[z] = Zones[Random.Range(0,Zones.Length)];
+			}
+			
 		}
-		UIManager.instance.ShowZoneUI(true);
-		yield return null;
-	 	//yield return StartCoroutine(UIManager.instance.Alert(1.2F, false, "Escaped " + oldname));
-	 	//yield return StartCoroutine(_EnterZone());
+		final.Brackets = br;
+		return final;
 	}
 
 	public void GetWave(Wave w = null)
@@ -558,7 +573,7 @@ public class GameManager : MonoBehaviour {
 		if(CurrentWave != null && CurrentWave != w) Destroy(CurrentWave.gameObject);
 		if(w == null)
 		{
-			yield return StartCoroutine(_EscapeZone());
+			EscapeZone();
 			yield break;
 		}
 		CurrentWave = Instantiate(w);
@@ -599,7 +614,10 @@ public class GameManager : MonoBehaviour {
 		RoundTokens = 0;
 
 		ClearUI();
-		StartCoroutine(_EnterZone(StoryMode));
+		ZoneMap = StoryModeMap;
+		
+		UIManager.instance.GenerateZoneMap();
+		StartCoroutine(_EnterZone());
 		//GetWave();
 	}
 
@@ -611,7 +629,16 @@ public class GameManager : MonoBehaviour {
 		RoundTokens = 0;
 
 		ClearUI();
+
+		ZoneMap = GenerateZoneMap(new Vector2[]{
+									new Vector2(1,1),
+									new Vector2(1,3),
+									new Vector2(2,4),
+									new Vector2(1,1)
+			});
 		UIManager.Objects.TopGear.Txt[0].text = "";
+
+		UIManager.instance.GenerateZoneMap();
 		StartCoroutine(_EnterZone());
 	}
 
@@ -680,7 +707,6 @@ public class GameManager : MonoBehaviour {
 		//Player.Stats.CompleteLeech(enemies_hit);
 		//Player.instance.CheckForBestCombo(resource);
 		//StartCoroutine(SplashBonus(ComboSize));
-
 		//yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 
 		yield return StartCoroutine(Player.instance.EndTurn());
@@ -953,83 +979,6 @@ public class GameManager : MonoBehaviour {
 	 	return final.ToArray();
 	 	
 	}
-
-	/*public void CollectResources(int [] resource, int [] health, int [] armour, Bonus [] added_bonuses = null, bool all_of_res = true)
-	{
-		UIManager.Objects.GetScoreWindow().Reset();
-		for(int r = 0; r < resource.Length; r++)
-		{
-			GENUS matchGENUS = (GENUS)r;
-			if(all_of_res && matchGENUS != GENUS.ALL && matchGENUS != GENUS.PRP)
-			{
-				for(int x = 0; x < TileMaster.Tiles.GetLength(0); x ++)
-				{
-					for(int y = 0; y < TileMaster.Tiles.GetLength(1); y++)
-					{
-						Tile t = TileMaster.Tiles[x,y];
-						if(t)
-						{
-							if(t.Genus == matchGENUS && !t.Stats.isNew) 
-							{
-								all_of_res = false;
-							}
-						}
-					}
-				}
-			}
-			if(matchGENUS == GENUS.ALL || matchGENUS == GENUS.PRP) all_of_res = false;
-			
-			if(resource[r] != 0 || health[r] != 0 || armour[r] != 0)
-			{
-				List<Bonus> bonuses = new List<Bonus>();
-
-				if(GameData.GenusIsResource(matchGENUS))
-				{
-					bonuses.Add(new Bonus(Player.Classes[(int)matchGENUS].Stats.GetResourceFromGENUS(matchGENUS).ResMultiplier,
-						GameData.GENUSToString(matchGENUS), 
-						"Bonus from " + GameData.GENUSToString(matchGENUS) + " stat",
-						GameData.instance.GetGENUSColour(matchGENUS)));
-				}
-
-				if(all_of_res) bonuses.Add(new Bonus(Player.Stats.AllColourMulti, "ALL", "Bonus for collecting all of a colour", GameData.instance.GetGENUSColour(matchGENUS)));
-				
-				if(PlayerControl.instance.ComboBonus > 1.0F) bonuses.Add(new Bonus(PlayerControl.instance.ComboBonus, 
-					"COMBO", 
-					"Combo bonus:\n+" + Player.Stats.ComboBonus + " per " + Player.Stats.ComboCounter + " tiles",
-					GameData.instance.Combo));
-
-				bonuses.AddRange(Player.instance.CheckForBonus((GENUS) r));
-				if(added_bonuses != null) bonuses.AddRange(added_bonuses);	
-
-
-				int final_res = resource[r];
-				int final_health = health[r];
-				int final_armour = armour[r];
-				ResourceBonus(ref final_res, ref final_health, ref final_armour, bonuses.ToArray());	
-				if(r >= 4) return;	
-
-				if(final_res    != 0) {
-					//Player.Classes[r].StartCoroutine(Player.Classes[r].AddRoutine(final_res, bonuses.ToArray()));
-					//Player.Classes[r].Add(final_res);
-					//Player.Stats.AddResourceOfGENUS(matchGENUS, final_res);
-					//AddTokens(final_res);
-				}
-				if(final_health != 0) {
-					//Player.Classes[r].Stats.Heal(final_health);
-					//AddTokens(final_health/5);
-				}
-				if(final_armour != 0) {
-					//Player.Classes[r].Stats.AddArmour(final_armour);
-					//AddTokens(armour[r]);
-				}
-
-				StartCoroutine(UIManager.Objects.GetScoreWindow().AddScore(matchGENUS, Player.Classes[r], resource[r], health[r], armour[r], bonuses.ToArray()));
-
-			}
-		}
-	}*/
-
-
 
 	public IEnumerator CollectResourcesRoutine(int [] resource, int [] health, int [] armour, Bonus [] added_bonuses = null, bool all_of_res = true)
 	{
@@ -1449,3 +1398,41 @@ public class Bonus
 	}
 }
 
+
+[System.Serializable]
+public class ZoneMapContainer
+{
+	public ZoneBracket [] Brackets;
+	public int Current = 0;
+	public ZoneBracket CurrentBracket
+	{
+		get{return Brackets[Current];}
+	}
+	public int Length{get{return Brackets.Length;}}
+	public ZoneBracket this[int v]
+	{
+		get{return Brackets[v];}
+	}
+
+	public ZoneMapContainer(int b = 0)
+	{
+		Brackets = new ZoneBracket[b];
+	}
+}
+
+[System.Serializable]
+public class ZoneBracket
+{
+	public Zone [] Choices;
+	public int Length {get{return Choices.Length;}}
+	public Zone this[int v]
+	{
+		get{return Choices[v];}
+		set{Choices[v] = value;}
+	}
+
+	public ZoneBracket(int z = 0)
+	{
+		Choices = new Zone[z];
+	}
+}

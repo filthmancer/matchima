@@ -7,7 +7,19 @@ public class WaveTile : WaveUnit
 	public string GenusOverride;
 	[HideInInspector]
 	public string GenusString;
-	public string Species;
+	[SerializeField]
+	protected string Species;
+	public string SpeciesFinal
+	{
+		get{
+			if(!SetStringFinal.HasValue)
+			{
+				SetStringFinal = Random.Range(0, SpeciesChoice.Length);
+			}
+			return SpeciesChoice[SetStringFinal.Value];
+		}
+	}
+	private int? SetStringFinal = null;
 	public string [] SpeciesChoice;
 
 	public WaveTileSpawn SpawnType;
@@ -45,7 +57,7 @@ public class WaveTile : WaveUnit
 
 		Genus = TileMaster.Genus[GenusString];
 
-		if(SpeciesChoice == null) SpeciesChoice = new string []{Species};
+		if(SpeciesChoice == null || SpeciesChoice.Length == 0) SpeciesChoice = new string []{Species};
 
 	}
 
@@ -54,10 +66,10 @@ public class WaveTile : WaveUnit
 		if(!Active || Ended) return;
 		if(SpawnType == WaveTileSpawn.XChance)
 		{
-			TileMaster.instance.IncreaseChance(GenusString, Species, Factor);
+			TileMaster.instance.IncreaseChance(GenusString, SpeciesFinal, Factor);
 		}
 		List<TileEffectInfo> effects = Parent.GetEffects();
-		SPECIES s = TileMaster.Types[Species];
+		SPECIES s = TileMaster.Types[SpeciesFinal];
 		GenusInfo g = s[GenusString];
 		if(Value.y > 0)
 		{
@@ -112,7 +124,7 @@ public class WaveTile : WaveUnit
 			mp.SetPath(0.55F, 0.2F);
 			mp.SetTileMethod(TileMaster.Tiles[randx,randy], (Tile t) => 
 				{
-					Tile newtile = TileMaster.instance.ReplaceTile(t, TileMaster.Types[Species], Genus, Scale, FinalValue);
+					Tile newtile = TileMaster.instance.ReplaceTile(t, TileMaster.Types[SpeciesFinal], Genus, Scale, FinalValue);
 					for(int i = 0; i < Effects.Count; i++)
 					{
 						TileEffect effect = (TileEffect) Instantiate(GameData.instance.GetTileEffectByName(Effects[i].Name));
@@ -171,7 +183,7 @@ public class WaveTile : WaveUnit
 			mp.SetPath(0.55F, 0.2F);
 			mp.SetTileMethod(TileMaster.Tiles[randx,randy], (Tile t) => 
 				{
-					Tile newtile = TileMaster.instance.ReplaceTile(t, TileMaster.Types[Species], Genus, Scale, FinalValue);
+					Tile newtile = TileMaster.instance.ReplaceTile(t, TileMaster.Types[SpeciesFinal], Genus, Scale, FinalValue);
 					for(int i = 0; i < Effects.Count; i++)
 					{
 						TileEffect effect = (TileEffect) Instantiate(GameData.instance.GetTileEffectByName(Effects[i].Name));
@@ -196,12 +208,12 @@ public class WaveTile : WaveUnit
 			{
 				for(int y = 0; y < TileMaster.Grid.Size[1]; y++)
 				{
-					if(TileMaster.Tiles[x,y].IsType(GenusString, Species)) onscreen++;
+					if(TileMaster.Tiles[x,y].IsType(GenusString, SpeciesFinal)) onscreen++;
 				}
 			}
 			while(onscreen < (int) Factor)
 			{
-				TileMaster.instance.QueueTile(TileMaster.Types[Species], TileMaster.Genus[GenusString]);
+				TileMaster.instance.QueueTile(TileMaster.Types[SpeciesFinal], TileMaster.Genus[GenusString]);
 				onscreen++;
 			}
 		}
@@ -210,7 +222,7 @@ public class WaveTile : WaveUnit
 		{
 			for(int i = 0; i < (int) Factor; i++)
 			{
-				TileMaster.instance.QueueTile(TileMaster.Types[Species], TileMaster.Genus[GenusString]);
+				TileMaster.instance.QueueTile(TileMaster.Types[SpeciesFinal], TileMaster.Genus[GenusString]);
 			}
 		}
 		

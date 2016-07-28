@@ -512,40 +512,40 @@ public class Stat
 	public StCon [] LevelUp(int power)
 	{
 		List<StCon> final = new List<StCon>();
-		//final.Add(new StCon("Stats Up!", Color.white, true, 100));
+		final.Add(new StCon("Stats Up!", Color.white, true, 100));
 		StCon [] STR = _Strength.LevelUp(power);
 		if(STR != null)
 		{
-			final.Add(new StCon("+STR", GameData.Colour(GENUS.STR), true));
-			//final.AddRange(STR);
+			final.Add(new StCon("STR:", GameData.Colour(GENUS.STR), false));
+			final.AddRange(STR);
 		}
 
 		StCon [] DEX = _Dexterity.LevelUp(power);
 		if(DEX != null)
 		{
-			final.Add(new StCon("+DEX", GameData.Colour(GENUS.DEX), true));
-			//final.AddRange(DEX);
+			final.Add(new StCon("DEX:", GameData.Colour(GENUS.DEX), false));
+			final.AddRange(DEX);
 		}
 
 		StCon [] WIS = _Wisdom.LevelUp(power);
 		if(WIS != null)
 		{
-			final.Add(new StCon("+WIS", GameData.Colour(GENUS.WIS), true));
-			//final.AddRange(WIS);
+			final.Add(new StCon("WIS:", GameData.Colour(GENUS.WIS), false));
+			final.AddRange(WIS);
 		}
 
 		StCon [] CHA = _Charisma.LevelUp(power);
 		if(CHA != null)
 		{
-			final.Add(new StCon("+CHA", GameData.Colour(GENUS.CHA), true));
-			//final.AddRange(CHA);
+			final.Add(new StCon("CHA:", GameData.Colour(GENUS.CHA), false));
+			final.AddRange(CHA);
 		}
 
 		StCon [] PRP = _Luck.LevelUp(power);
 		if(PRP != null)
 		{
-			final.Add(new StCon("+LUK", GameData.Colour(GENUS.PRP), true));
-			//final.AddRange(PRP);
+			final.Add(new StCon("LUK:", GameData.Colour(GENUS.PRP), false));
+			final.AddRange(PRP);
 		}
 
 		return final.ToArray();

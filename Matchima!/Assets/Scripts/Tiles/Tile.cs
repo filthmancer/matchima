@@ -718,7 +718,7 @@ public class Tile : MonoBehaviour {
 
 	public virtual void DestroyThyself(bool collapse = false)
 	{
-		if(this == null) return;
+		if(this == null || !this.gameObject.activeSelf) return;
 
 		//TileMaster.instance.AddVelocityToColumn(Point.Base[0], Point.Base[1], 0.2F + Stats.Value * 0.5F);
 		Destroyed = true;
@@ -1143,8 +1143,7 @@ public class Tile : MonoBehaviour {
 		SetBorder(Info.Outer);
 		SetRender(Info._GenusName);
 		
-		//if(Params._shiny != null && Params._render != null) Params._shiny.sprite = Inner;
-		//transform.position = Point.targetPos;
+		//transform.position = new Vector3(Point.targetPos.x, Point.targetPos.y, transform.position.z);
 		Params.transform.position = transform.position;
 		Params._render.transform.localPosition = Vector3.zero;
 	}
@@ -1235,6 +1234,7 @@ public class Tile : MonoBehaviour {
 	
 	public void ChangeGenus(GENUS g)
 	{
+		EffectManager.instance.PlayEffect(transform, Effect.Replace, "", GameData.instance.GetGENUSColour(g));
 		Info.ChangeGenus(g);
 		SetSprite();
 	}
@@ -1250,18 +1250,30 @@ public class Tile : MonoBehaviour {
 		mp.SetThreshold(0.1F);
 		mp.DontDestroy = true;
 
-		mp.SetMethod(() => {
+		mp.SetIntMethod((int [] num) => {
+			TileMaster.Grid[num[0], num[1]]._Tile = this;
+			Setup(num[0], num[1]);
+
 			transform.position = new Vector3(Point.targetPos.x, Point.targetPos.y, transform.position.z);
-			Params.transform.position = transform.position;
-			Params._render.transform.localPosition = Vector3.zero;
+			SetSprite();
 			UnlockedFromGrid = false;
 			
-		});
-		TileMaster.Grid[x, y]._Tile = this;
-		Setup(x,y);
+		}, x,y);
+		
 	}
 
-
+	public bool Isolated
+	{
+		get
+		{
+			Tile [] nbours = Point.GetNeighbours(true);
+			for(int i = 0; i < nbours.Length; i++)
+			{
+				if(IsGenus(nbours[i].Genus, false)) return false;
+			}
+			return true;
+		}
+	}
 
 }
 
@@ -1539,12 +1551,25 @@ public class TilePointContainer
 	public Tile GetNeighbour(int x, int y)
 	{
 		int dist = 0;
-		int [] init = new int [] {BaseX+x, BaseY+y};
-		int [] point = Closest(init[0], init[1], out dist);
+		int x_final = x * Scale;
+		int y_final = y * Scale;
+		int [] point = new int [] {BaseX+x_final, BaseY+y_final};
 
+		if(point[0] < 0 || point[0] >= TileMaster.Grid.Size[0] ||
+			point[1] < 0 || point[1] >= TileMaster.Grid.Size[1])
+			return null;
 
-		return TileMaster.Tiles[point[0] + x, point[1]+y];
+		Tile targ = TileMaster.Tiles[point[0], point[1]];
+		if(targ == parent)
+		{
+			int [] closest = Closest(point[0], point[1], out dist);
+
+			return  TileMaster.Tiles[closest[0] + x, closest[1]+y];
+		}
+		else return targ;
 	}
+
+
 
 }
 

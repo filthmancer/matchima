@@ -46,5 +46,30 @@ public class Minion : Enemy {
 			//sleep_part = EffectManager.instance.PlayEffect(this.transform, Effect.Sleep);
 		}
 	}
+
+	
+	private float MinionSpawnChance = 0.35F;
+		public override IEnumerator AfterTurnRoutine()
+		{
+			yield return StartCoroutine(base.AfterTurnRoutine());
+			if(Random.value > MinionSpawnChance) yield break;
+
+			while(!TileMaster.AllLanded) yield return null;
+			if(isMatching || Genus == GENUS.OMG) yield break;
+		//MINIONS summon other minions on isolated resource tiles
+			for(int xx = 0; xx < TileMaster.Grid.Size[0]; xx++)
+			{
+				for(int yy = 0; yy < TileMaster.Grid.Size[1]; yy++)
+				{
+					if(TileMaster.Tiles[xx,yy].IsType("resource") && TileMaster.Tiles[xx,yy].Isolated)
+					{
+						TileMaster.instance.ReplaceTile(xx,yy, TileMaster.Types["minion"], GENUS.RAND);
+						yield break;
+					}
+				}
+			}
+			yield break;
+			
+		}
 }
 

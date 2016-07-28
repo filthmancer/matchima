@@ -128,33 +128,6 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 		}
 	}
 
-	void _GenerateEvents()
-	{
-		//EventTrigger e = this.GetComponent<EventTrigger>();
-		//if(!e)	e = this.AddComponent<EventTrigger>();
-		//
-		//EventTrigger.Entry entry = new EventTrigger.Entry();
-		//entry.eventID = EvenTriggerType.PointerClick;
-		//entry.callback.AddListener(() => {_MouseClick();});
-		//e.triggers.Add(entry);
-		//entry = new EventTrigger.Entry();
-		//entry.eventID = EvenTriggerType.PointerEnter;
-		//entry.callback.AddListener(() => {_MouseOver();});
-		//e.triggers.Add(entry);
-		//entry = new EventTrigger.Entry();
-		//entry.eventID = EvenTriggerType.PointerExit;
-		//entry.callback.AddListener(() => {_MouseOut();});
-		//e.triggers.Add(entry);
-		//entry = new EventTrigger.Entry();
-		//entry.eventID = EvenTriggerType.PointerDown;
-		//entry.callback.AddListener(() => {_MouseDown();});
-		//e.triggers.Add(entry);
-		//entry = new EventTrigger.Entry();
-		//entry.eventID = EvenTriggerType.PointerUp;
-		//entry.callback.AddListener(() => {_MouseUp();});
-		//e.triggers.Add(entry);
-	}
-
 	public void OnPointerClick(PointerEventData eventData)
 	{
 
@@ -166,6 +139,10 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 		{
 			child();
 		}
+		foreach(UIAction_Method child in TypeActions_MouseOver)
+		{
+			child.Act();
+		}
 		if(Img.Length > 0) init = Img[0].color;
 	}
 
@@ -174,6 +151,10 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 		foreach(Action child in Actions_MouseOut)
 		{
 			child();
+		}
+		foreach(UIAction_Method child in TypeActions_MouseOut)
+		{
+			child.Act();
 		}
 		isPressed = false;
 		time_over = 0.0F;
@@ -188,6 +169,10 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 		{
 			child();
 		}
+		foreach(UIAction_Method child in TypeActions_MouseDown)
+		{
+			child.Act();
+		}
 		isPressed = true;
 		time_over += Time.deltaTime;
 		if(Img.Length > 0) 
@@ -200,11 +185,17 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 	public void OnPointerUp(PointerEventData eventData)
 	{
 		Img[0].color = init;
+		foreach(UIAction_Method child in TypeActions_MouseUp)
+		{
+			child.Act();
+		}
 		//if(Application.isMobilePlatform) return;
 		foreach(Action child in Actions_MouseUp)
 		{
 			child();
 		}
+
+		
 		
 		isPressed = false;
 		time_over = 0.0F;
@@ -215,68 +206,15 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 					Actions_MouseUp = new List<Action>(),
 					Actions_MouseDown = new List<Action>(),
 					Actions_MouseClick = new List<Action>();
-
+	List<UIAction_Method>	TypeActions_MouseOut = new List<UIAction_Method>(), 
+						TypeActions_MouseOver = new List<UIAction_Method>(),
+						TypeActions_MouseUp = new List<UIAction_Method>(),
+						TypeActions_MouseDown = new List<UIAction_Method>(),
+						TypeActions_MouseClick = new List<UIAction_Method>();
 
 	protected Color init;
 	protected float time_over = 0.0F;
 	public bool isPressed;
-	public void _MouseOut()
-	{
-		//if(Application.isMobilePlatform) return;
-		foreach(Action child in Actions_MouseOut)
-		{
-			child();
-		}
-		if(isPressed) 
-		{
-			time_over = 0.0F;
-			isPressed = false;
-		}
-		Img[0].color = init;
-	}
-
-	public void _MouseOver()
-	{
-		//if(Application.isMobilePlatform) return;
-		//if(!Application.isEditor) isPressed = true;
-		foreach(Action child in Actions_MouseOver)
-		{
-			child();
-		}
-		//if(!Application.isEditor || isPressed) time_over += Time.deltaTime;
-	}
-
-	public void _MouseUp()
-	{
-		Img[0].color = init;
-		//if(Application.isMobilePlatform) return;
-		foreach(Action child in Actions_MouseUp)
-		{
-			child();
-		}
-		
-		isPressed = false;
-		time_over = 0.0F;
-		init = Img[0].color;
-	}
-
-	public void _MouseDown()
-	{
-		//if(Application.isMobilePlatform) return;
-		foreach(Action child in Actions_MouseDown)
-		{
-			child();
-		}
-		isPressed = true;
-		time_over += Time.deltaTime;
-		init = Img[0].color;
-		Img[0].color = Color.Lerp(init, Color.black, 0.2F);
-	}
-
-	public void _MouseClick()
-	{
-
-	}
 
 	public void AddAction(UIAction a, Action func)
 	{
@@ -290,9 +228,30 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 			break;
 			case UIAction.MouseUp:
 			Actions_MouseUp.Add(func);
+
 			break;
 			case UIAction.MouseDown:
 			Actions_MouseDown.Add(func);
+			break;
+		}
+	}
+
+	public void AddAction(UIAction a, Action<string[]> func, params string [] t)
+	{
+
+		switch(a)
+		{
+			case UIAction.MouseOut:
+			TypeActions_MouseOut.Add(new UIAction_Method(func, t));
+			break;
+			case UIAction.MouseOver:
+			TypeActions_MouseOver.Add(new UIAction_Method(func, t));
+			break;
+			case UIAction.MouseUp:
+			TypeActions_MouseUp.Add(new UIAction_Method(func, t));
+			break;
+			case UIAction.MouseDown:
+			TypeActions_MouseDown.Add(new UIAction_Method(func, t));
 			break;
 		}
 	}
@@ -305,23 +264,32 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 			Actions_MouseOver.Clear();
 			Actions_MouseUp.Clear();
 			Actions_MouseDown.Clear();
+			TypeActions_MouseOut.Clear();
+			TypeActions_MouseOver.Clear();
+			TypeActions_MouseUp.Clear();
+			TypeActions_MouseDown.Clear();
 		}
 		switch(a)
 		{
 			case UIAction.MouseOut:
 			Actions_MouseOut.Clear();
+			TypeActions_MouseOut.Clear();
 			break;
 			case UIAction.MouseOver:
 			Actions_MouseOver.Clear();
+			TypeActions_MouseOver.Clear();
 			break;
 			case UIAction.MouseUp:
 			Actions_MouseUp.Clear();
+			TypeActions_MouseUp.Clear();
 			break;
 			case UIAction.MouseDown:
 			Actions_MouseDown.Clear();
+			TypeActions_MouseDown.Clear();
 			break;
 			case UIAction.MouseClick:
 			Actions_MouseClick.Clear();
+			TypeActions_MouseClick.Clear();
 			break;
 		}
 	}
@@ -335,4 +303,20 @@ public enum UIAction
 	MouseDown,
 	MouseClick,
 	None
+}
+
+public class UIAction_Method
+{
+	public string [] Values;
+	public Action<string[]> Method;
+	public void Act()
+	{
+		Method(Values);
+	}
+
+	public UIAction_Method(Action<string[]> m, params string [] v)
+	{
+		Values = v;
+		Method = m;
+	}
 }

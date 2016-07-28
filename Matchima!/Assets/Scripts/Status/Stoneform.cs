@@ -32,7 +32,7 @@ public class Stoneform : TileEffect {
 	public int StoneformTime;
 	public int StoneformDelay = 1;
 
-	private int StoneformTime_current;
+	private int StoneformTime_current=0, StoneformDelay_current=0;
 	private GENUS initial_genus;
 
 	public override IEnumerator StatusEffectRoutine()
@@ -50,20 +50,37 @@ public class Stoneform : TileEffect {
 			
 			if(StoneformTime_current >= StoneformTime)
 			{
-				StoneformTime_current = 0;
-				_Tile.ChangeGenus(initial_genus);
-				yield return new WaitForSeconds(Time.deltaTime * 10);
+				StoneformDelay_current ++;
+				if(StoneformDelay_current >= StoneformDelay)
+				{
+					StoneformTime_current = 0;
+					StoneformDelay_current = 0;
+					MiniAlertUI m = UIManager.instance.MiniAlert(_Tile.Point.targetPos, "Stone!", 120, GameData.Colour(_Tile.Genus), 0.3F, 0.1F);
+					_Tile.ChangeGenus(GENUS.OMG);
+					yield return new WaitForSeconds(Time.deltaTime * 10);
+				}
+				else if(_Tile.Genus == GENUS.OMG)
+				{
+					_Tile.ChangeGenus(initial_genus);
+					yield return new WaitForSeconds(Time.deltaTime * 10);
+				}
 			}
 			else 
 			{
 				StoneformTime_current ++;
 				if(_Tile.Genus != GENUS.OMG)
 				{
+					MiniAlertUI m = UIManager.instance.MiniAlert(_Tile.Point.targetPos, "Stone!", 120, GameData.Colour(_Tile.Genus), 0.3F, 0.1F);
 					_Tile.ChangeGenus(GENUS.OMG);
 					yield return new WaitForSeconds(Time.deltaTime * 10);
 				}
 			}
 		}
 		yield break;
+	}
+
+	public override bool CanAttack()
+	{
+		return _Tile.Genus != GENUS.OMG;
 	}
 }

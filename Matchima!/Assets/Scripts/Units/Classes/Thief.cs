@@ -12,7 +12,7 @@ public class Thief : Class {
 		attack = new TileChance();
 		attack.Genus = "Alpha";
 		attack.Type = "sword";
-		attack.Chance = 0.2F;
+		attack.Chance = 0.11F;
 		InitStats.TileChances.Add(attack);
 
 		

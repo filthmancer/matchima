@@ -145,16 +145,16 @@ public class UIManager : MonoBehaviour {
 						if(wunit.InnerOverrideData != null)
 						{
 							w.Imgtk[1].SetSprite(wunit.InnerOverrideData, wunit.InnerOverride);
-							w.Imgtk[0].SetSprite(TileMaster.Genus.Frames, "Grey");
+							w.Imgtk[0].SetSprite(TileMaster.Genus.Frames, "Omega");
 						}
 						else if(wunit is WaveTile)
 						{
 
 							WaveTile wtile = wunit as WaveTile;
 							string render = wtile.GenusString;
-							tk2dSpriteDefinition id = TileMaster.Types[wtile.Species].Atlas.GetSpriteDefinition(render);
+							tk2dSpriteDefinition id = TileMaster.Types[wtile.SpeciesFinal].Atlas.GetSpriteDefinition(render);
 							if(id == null) render = "Alpha";
-							w.Imgtk[1].SetSprite(TileMaster.Types[wtile.Species].Atlas, render);
+							w.Imgtk[1].SetSprite(TileMaster.Types[wtile.SpeciesFinal].Atlas, render);
 							w.Imgtk[0].SetSprite(TileMaster.Genus.Frames, wtile.GenusString);
 						}
 						
@@ -831,25 +831,6 @@ public class UIManager : MonoBehaviour {
 		}
 	}
 
-	public void ShowZoneMenu()
-	{
-		bool open = (UIManager.Objects.MiddleGear[1] as UIObjTweener).Tween.IsObjectOpened();
-		if(!open && !GameManager.instance.paused)
-		{
-			ScreenAlert.SetTween(0,true);
-			GameManager.instance.paused = true;
-			(UIManager.Objects.MiddleGear[1] as UIObjTweener).SetTween(0, true);
-		}
-		else
-		{
-			if((UIManager.Objects.MiddleGear[1] as UIObjTweener).Tweens[0].IsObjectOpened())
-			{
-				ScreenAlert.SetTween(0,false);
-				GameManager.instance.paused = false;
-				(UIManager.Objects.MiddleGear[1] as UIObjTweener).SetTween(0, false);
-			}
-		}
-	}
 
 	public void ShowResourceUI()
 	{
@@ -948,11 +929,11 @@ public class UIManager : MonoBehaviour {
 			i++;
 		}
 
-		UIObj zone = Objects.MiddleGear[1] as UIObj;
+		/*UIObj zone = Objects.MiddleGear[1] as UIObj;
 
 		zone[0].AddAction(UIAction.MouseUp,() => {ShowStashUI();});
 		zone[1].AddAction(UIAction.MouseUp,() => {GameManager.instance.EnterZone(GameManager.ZoneChoiceA);});
-		zone[2].AddAction(UIAction.MouseUp,() => {GameManager.instance.EnterZone(GameManager.ZoneChoiceB);});
+		zone[2].AddAction(UIAction.MouseUp,() => {GameManager.instance.EnterZone(GameManager.ZoneChoiceB);});*/
 
 		yield return null;
 
@@ -1119,7 +1100,7 @@ public class UIManager : MonoBehaviour {
 			for(int i = 0; i < ScreenAlert[0][0].Length; i++)
 			{
 				ScreenAlert[0][0].GetChild(i).SetActive(true);
-				yield return new WaitForSeconds(GameData.GameSpeed(0.55F));
+				yield return new WaitForSeconds(GameData.GameSpeed(0.35F));
 			}
 		}
 
@@ -1456,32 +1437,151 @@ public class UIManager : MonoBehaviour {
 	  	c.Name + " joined the party!", 50, GameData.Colour((GENUS)slot), 1.5F);
 	}
 
+
+	/*public void ShowZoneMenu()
+	{
+		bool open = (UIManager.Objects.MiddleGear[1] as UIObjTweener).Tween.IsObjectOpened();
+		if(!open && !GameManager.instance.paused)
+		{
+			ScreenAlert.SetTween(0,true);
+			GameManager.instance.paused = true;
+			(UIManager.Objects.MiddleGear[1] as UIObjTweener).SetTween(0, true);
+		}
+		else
+		{
+			if((UIManager.Objects.MiddleGear[1] as UIObjTweener).Tweens[0].IsObjectOpened())
+			{
+				ScreenAlert.SetTween(0,false);
+				GameManager.instance.paused = false;
+				(UIManager.Objects.MiddleGear[1] as UIObjTweener).SetTween(0, false);
+			}
+		}
+	}*/
+
+	public void GenerateZoneMap()
+	{
+		List<UIObj> Brackets = new List<UIObj>();
+		for(int i = 0; i < GameManager.ZoneMap.Length; i++)
+		{
+			UIObj bracket = GenerateZoneChoice(Objects.MiddleGear[1][0].transform, GameManager.ZoneMap[i].Choices);
+			Brackets.Add(bracket);
+			if(i > GameManager.ZoneMap.Current)
+			{
+				for(int c = 0; c < bracket.Length; c++)
+				{
+					bracket.Child[c].Txt[0].text = "?";
+					bracket.Child[c].Img[0].color = Color.grey;
+				}
+			}
+		}
+		Objects.MiddleGear[1][0].Child = Brackets.ToArray();
+	}
+
 	public void ShowZoneUI(bool ended)
 	{
 		(Objects.MiddleGear[1] as UIObjTweener).SetTween(0);
 		bool open = (Objects.MiddleGear[1] as UIObjTweener).Tween.IsObjectOpened();
 		GameManager.instance.paused = open;
+		Objects.MiddleGear[1].Txt[3].enabled = false;
 		if(!open) UIManager.instance.SetClassButtons(false);
 		if(ended)
 		{
+			//TITLE
 			Objects.MiddleGear[1].Txt[0].text = "Escaped " + GameManager.Zone.Name;
+			//ZONE INFO
 			Objects.MiddleGear[1].Txt[1].text = "";
-			Objects.MiddleGear[1].Txt[2].enabled = Player.NewItems;
+			Objects.MiddleGear[1].Txt[2].enabled = false;
+
+			//CHOOSE ZONE
 			Objects.MiddleGear[1].Txt[3].enabled = true;
-			Objects.MiddleGear[1].Child[1].SetActive(true);
-			Objects.MiddleGear[1].Child[2].SetActive(true);
-			Objects.MiddleGear[1].Child[1].Txt[0].text = GameManager.ZoneChoiceA.Name;
-			Objects.MiddleGear[1].Child[2].Txt[0].text = GameManager.ZoneChoiceB.Name;
+			for(int i = 0; i < Objects.MiddleGear[1][0].Length; i++)
+			{
+				UIObj bracket = Objects.MiddleGear[1][0].Child[i];
+				for(int c = 0; c < bracket.Length; c++)
+				{
+					if(i == GameManager.ZoneMap.Current+1)
+					{
+						bracket.Child[c].Txt[0].text = GameManager.ZoneMap[i][c]._Name;
+						bracket.Child[c].Img[0].color = GameManager.ZoneMap[i][c].Tint;
+						bracket.Child[c].ClearActions();
+
+						bracket.Child[c].AddAction(UIAction.MouseUp, (string []	 val)=>
+						{
+							int v = GameData.StringToInt(val[0]);
+							GameManager.instance.AdvanceZoneMap(v);
+						}, c +"");
+					}
+					else if(i > GameManager.ZoneMap.Current+1)
+					{
+						bracket.Child[c].ClearActions();
+						bracket.Child[c].Txt[0].text = "?";
+						bracket.Child[c].Img[0].color = Color.grey * 0.6F;
+					}
+					else 
+					{
+						bracket.Child[c].Txt[0].text = GameManager.ZoneMap[i][c]._Name;
+						bracket.Child[c].Txt[0].color = Color.grey;
+						bracket.Child[c].Img[0].color = GameManager.ZoneMap[i][c].Tint * 0.6F;
+						bracket.Child[c].ClearActions();
+					}
+				}
+			}
 		}
 		else
 		{
 			Objects.MiddleGear[1].Txt[0].text = GameManager.Zone.Name;
 			Objects.MiddleGear[1].Txt[1].text = "";
-			Objects.MiddleGear[1].Txt[2].enabled = Player.NewItems;
 			Objects.MiddleGear[1].Txt[3].enabled = false;
-			Objects.MiddleGear[1].Child[1].SetActive(false);
-			Objects.MiddleGear[1].Child[2].SetActive(false);
+			Objects.MiddleGear[1].Txt[2].enabled = false;
+
+			for(int i = 0; i < Objects.MiddleGear[1][0].Length; i++)
+			{
+				UIObj bracket = Objects.MiddleGear[1][0].Child[i];
+				for(int c = 0; c < bracket.Length; c++)
+				{
+					bracket.Child[c].ClearActions();
+					if(i > GameManager.ZoneMap.Current)
+					{
+						bracket.Child[c].ClearActions();
+						bracket.Child[c].Txt[0].text = "?";
+						bracket.Child[c].Img[0].color = Color.grey * 0.6F;
+					}
+					else 
+					{
+						bracket.Child[c].Txt[0].text = GameManager.ZoneMap[i][c]._Name;
+						bracket.Child[c].Txt[0].color = Color.white;
+						bracket.Child[c].Img[0].color = GameManager.ZoneMap[i][c].Tint;
+					}
+				}
+			}
 		}
+	}
+
+	public UIObj GenerateZoneChoice(Transform TopParent, params Zone [] zones)
+	{
+		UIObj ParentObj = (UIObj) Instantiate(Objects.HorizontalGrouper);
+		Transform ParentTrans = ParentObj.transform;
+		ParentTrans.SetParent(TopParent);
+		ParentTrans.position = Vector3.zero;
+		ParentTrans.localScale = Vector3.one;
+		ParentTrans.localRotation = Quaternion.Euler(0,0,0);
+		ParentObj.GetComponent<HorizontalLayoutGroup>().spacing = 310;
+
+		List<UIObj> child = new List<UIObj>();
+		for(int i = 0; i < zones.Length; i++)
+		{
+			UIObj new_desc = (UIObj) Instantiate(Objects.ZoneObj);
+			new_desc.transform.SetParent(ParentTrans);
+			new_desc.transform.position = Vector3.zero;
+			new_desc.transform.localScale = Vector3.one * 1.6F;
+			new_desc.transform.localRotation = Quaternion.Euler(0,0,0);
+			new_desc.Txt[0].text = zones[i]._Name;
+			new_desc.Img[0].color = zones[i].Tint;
+			child.Add(new_desc);
+		}
+		ParentObj.Child = child.ToArray();
+
+		return ParentObj;
 	}
 
 	public void ShowStashUI()

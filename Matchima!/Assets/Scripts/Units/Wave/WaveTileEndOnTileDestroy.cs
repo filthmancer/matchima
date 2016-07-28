@@ -41,7 +41,7 @@ public class WaveTileEndOnTileDestroy : WaveTile {
 			//mp.Target_Tile = TileMaster.Tiles[randx,randy];
 			mp.SetTileMethod(TileMaster.Tiles[randx,randy], (Tile t) => 
 				{
-					Tile newtile = TileMaster.instance.ReplaceTile(t, TileMaster.Types[Species], Genus, Scale, FinalValue);
+					Tile newtile = TileMaster.instance.ReplaceTile(t, TileMaster.Types[SpeciesFinal], Genus, Scale, FinalValue);
 					targets.Add(newtile);
 					for(int i = 0; i < Effects.Count; i++)
 					{
@@ -53,7 +53,7 @@ public class WaveTileEndOnTileDestroy : WaveTile {
 			
 		
 			
-			yield return new WaitForSeconds(Time.deltaTime * 5);
+			yield return new WaitForSeconds(Time.deltaTime * 20);
 		}
 		yield return new WaitForSeconds(Time.deltaTime * 20);
 		GameManager.instance.paused = false;

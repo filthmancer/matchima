@@ -3,7 +3,6 @@ using System.Collections;
 
 public class TileEffect : Status {
 	public Tile _Tile;
-	public bool TileCanAttack = true;
 
 	public virtual void Setup(Tile t)
 	{
@@ -30,9 +29,9 @@ public class TileEffect : Status {
 		
 	}
 
-	public virtual bool CanAttack()
+	public override bool CanAttack()
 	{
-		return TileCanAttack;
+		return true;
 	}
 
 
