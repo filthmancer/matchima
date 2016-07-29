@@ -20,6 +20,7 @@ public class Charm : TileEffect {
 		{
 			//_Tile.Stats.isAlly = true;
 		}
+		else _Tile.OnAlert();
 		return Duration == 0;
 	}
 

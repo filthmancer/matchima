@@ -160,12 +160,12 @@ public class Enemy : Tile {
 		return effects && !Stats.isNew && !Stats.isFrozen && Stats.isAlerted && !HasAttackedThisTurn;
 	}
 
-	public override IEnumerator BeforeMatch(bool original)
+	public override IEnumerator BeforeMatch(bool original, int Damage = 0)
 	{
 		if(isMatching) yield break;
 		isMatching = true;
 
-		if(original) InitStats.TurnDamage += PlayerControl.instance.AttackValue;
+		if(original) InitStats.TurnDamage += (original ? PlayerControl.instance.AttackValue : Damage);
 
 		if(InitStats.TurnDamage == 0) yield break;
 
@@ -222,7 +222,7 @@ public class Enemy : Tile {
 			CollectThyself(true);
 
 			PlayAudio("death");
-			float item_chance = (float)Stats.Value/32.0F;
+			float item_chance = 0.0F;//float)Stats.Value/32.0F;
 			if(Stats.Value > 10) item_chance += 0.4F;
 			if(Random.value < item_chance) 
 			{

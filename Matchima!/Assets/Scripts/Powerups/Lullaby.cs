@@ -92,8 +92,9 @@ public class Lullaby : Powerup {
 		Tile [] targets  = TileMaster.Enemies;
 		for(int i = 0; i < targets.Length; i++)
 		{
-			Sleep(targets[i], sleep_duration);
-			yield return new WaitForSeconds(GameData.GameSpeed(0.13F));
+			if(targets[i].HasEffect("Charm") || targets[i].Stats.isAlly) CharmAndValue(targets[i], sleep_duration);
+			else Sleep(targets[i], sleep_duration);
+			yield return new WaitForSeconds(GameData.GameSpeed(0.11F));
 		}
 
 		yield return new WaitForSeconds(0.3F);
@@ -129,7 +130,7 @@ public class Lullaby : Powerup {
 		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[Parent.Index].transform, Effect.Force);
 		MoveToPoint charm = initpart.GetComponent<MoveToPoint>();
 		charm.SetTarget(target.transform.position);
-		charm.SetPath(0.25F, 0.3F);
+		charm.SetPath(0.45F, 0.3F);
 		charm.Target_Tile = target;
 		charm.SetThreshold(0.15F);
 		charm.SetMethod(() =>
@@ -139,5 +140,24 @@ public class Lullaby : Powerup {
 		});
 	}
 
+	void CharmAndValue(Tile target, int duration, int hpinc = 1, int atkinc = 3)
+	{
+		
+		target.SetState(TileState.Selected, true);
+		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[Parent.Index].transform, Effect.Force);
+		MoveToPoint charm = initpart.GetComponent<MoveToPoint>();
+		charm.SetTarget(target.transform.position);
+		charm.SetPath(0.45F, 0.3F);
+		charm.Target_Tile = target;
+		charm.SetThreshold(0.15F);
+		charm.SetMethod(() =>
+		{
+			MiniAlertUI m = UIManager.instance.MiniAlert(charm.Target_Tile.Point.targetPos, "Charm", 85, GameData.Colour(charm.Target_Tile.Genus), 1.2F, 0.1F);
+			charm.Target_Tile.AddEffect("Charm", duration);
+			charm.Target_Tile.InitStats.Hits += hpinc;
+			charm.Target_Tile.InitStats.Attack += atkinc;
+			charm.Target_Tile.CheckStats();
+		});
+	}
 
 }

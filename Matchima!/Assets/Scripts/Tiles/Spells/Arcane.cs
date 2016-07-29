@@ -77,7 +77,7 @@ public class Arcane : Tile {
 	}
 
 
-	public override IEnumerator BeforeMatch(bool original)
+	public override IEnumerator BeforeMatch(bool original, int Damage = 0)
 	{
 		float part_time = 0.6F;
 		if(isMatching) yield break;

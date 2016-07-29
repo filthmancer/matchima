@@ -10,7 +10,7 @@ public class Harp : Tile {
 		get
 		{
 			CheckStats();
-			return 2 + (Stats.Value);
+			return 4 + (Stats.Value);
 		}
 	}
 
@@ -30,7 +30,7 @@ public class Harp : Tile {
 		}
 	}
 
-	public override IEnumerator BeforeMatch(bool original)
+	public override IEnumerator BeforeMatch(bool original, int Damage = 0)
 	{
 		if(isMatching) yield break;
 		isMatching = true;

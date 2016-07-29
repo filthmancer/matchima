@@ -194,7 +194,7 @@ public class GameManager : MonoBehaviour {
 			if(Application.isMobilePlatform)
 			{
 				Player.Options.GameSpeed = 0.5F;
-				if (Time.frameCount % 120 == 0)
+				if (Time.frameCount % 60 == 0)
 				{
 				   System.GC.Collect();
 				}
@@ -357,7 +357,7 @@ public class GameManager : MonoBehaviour {
 			break;
 			case 4: //V
 			//GetTurn();
-			PlayerControl.instance.focusTile.AddEffect("Stoneform", -1, "2", "1");
+			PlayerControl.instance.focusTile.AddEffect("Charm", 5, "2", "1");
 
 			break;
 			case 5: //B

@@ -30,7 +30,7 @@ public class WaveTile : WaveUnit
 	public float Factor
 	{
 		get{
-			return Random.Range(SpawnFactorField.x, SpawnFactorField.y);
+			return Random.Range(SpawnFactorField.x, SpawnFactorField.y+0.001F);
 		}
 	}
 	public Vector2 SpawnFactorField = new Vector2(1.0F, 1.0F);

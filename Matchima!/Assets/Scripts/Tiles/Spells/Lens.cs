@@ -21,7 +21,7 @@ public class Lens : Tile {
 		if(Params._render != null) Params._render.color = Color.Lerp(Params._render.color, GameData.Colour(Genus), 0.6F);
 	}
 
-	public override IEnumerator BeforeMatch(bool original)
+	public override IEnumerator BeforeMatch(bool original, int Damage = 0)
 	{
 		foreach(Tile child in PlayerControl.instance.selectedTiles)
 		{

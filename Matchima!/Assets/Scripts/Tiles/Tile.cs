@@ -615,8 +615,9 @@ public class Tile : MonoBehaviour {
 		m.Txt[0].outlineColor = GameData.Colour(Genus);
 	}
 
-	public virtual IEnumerator BeforeMatch(bool original)
+	public virtual IEnumerator BeforeMatch(bool original, int Damage = 0)
 	{
+		InitStats.TurnDamage = Damage;
 		yield break;
 	}
 
@@ -1032,12 +1033,16 @@ public class Tile : MonoBehaviour {
 		mini.SetTarget(t.transform.position);
 		mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
 		mini.SetMethod(() =>{
+
 				if(t == null) return;
-				if(t != null) t.PlayAudio("Hit");
-					t.SetState(TileState.Selected);
+				if(t != null)
+				{
 					t.InitStats.TurnDamage += GetAttack();
-					t.Match(0);
+					t.PlayAudio("hit");
+					EffectManager.instance.PlayEffect(t.transform,Effect.Attack);
+					t.Match(1);
 					GameData.Log(this +  " dealt " + GetAttack() + "damage to " + t);
+				} 
 			}
 		);
 	}

@@ -141,7 +141,8 @@ public class ThrowKnives : Powerup {
 		float velx = Random.Range(0.09F, 0.17F);
 		if(Random.value < 0.5F) velx = -velx;
 		Vector3 vel = new Vector3(velx, 1.6F * CameraUtility.OrthoFactor, 0.0F);
-		knife.GetComponent<Velocitizer>().SetVelocity(vel, 30);
+		bool mobile = Application.isMobilePlatform;
+		knife.GetComponent<Velocitizer>().SetVelocity(vel, (mobile ? 21 : 30));
 		knife.GetComponent<Velocitizer>().SetRotation(new Vector3(0,0,Random.Range(-1.2F, 1.2F)));
 		knife.GetComponent<Velocitizer>().AddTimedAction(() =>
 		{
