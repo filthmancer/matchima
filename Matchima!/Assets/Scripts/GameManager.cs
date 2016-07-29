@@ -193,7 +193,11 @@ public class GameManager : MonoBehaviour {
 			if(!GameData.loading_assets) GameData.instance.LoadAssets();
 			if(Application.isMobilePlatform)
 			{
-				Player.Options.GameSpeed = 0.7F;
+				Player.Options.GameSpeed = 0.5F;
+				if (Time.frameCount % 120 == 0)
+				{
+				   System.GC.Collect();
+				}
 			}
 			if(GameData.loaded_assets)
 			{

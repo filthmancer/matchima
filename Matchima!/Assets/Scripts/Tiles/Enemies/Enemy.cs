@@ -170,7 +170,7 @@ public class Enemy : Tile {
 		if(InitStats.TurnDamage == 0) yield break;
 
 		AudioManager.instance.PlayTileAudio(this, "hit");
-		GameObject part = EffectManager.instance.PlayEffect(trans, Effect.Attack);
+		GameObject part = EffectManager.instance.PlayEffect(_Transform, Effect.Attack);
 		yield return new WaitForSeconds(GameData.GameSpeed(0.03F));
 
 		float init_rotation = Random.Range(-3,3);

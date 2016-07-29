@@ -76,7 +76,7 @@ public class UIManager : MonoBehaviour {
 	}
 
 	float update_interval_current = 0.0F;
-	float update_interval_amount = 3;
+	float update_interval_amount = 4;
 
 	void Update () {
 
@@ -431,7 +431,7 @@ public class UIManager : MonoBehaviour {
 
 			MoveToPoint wavetarget_mover = AttachMoverToAlert(ref wavetarget);
 			wavetarget_mover.SetTarget(Objects.TopGear[1][0][0].transform.position);
-			wavetarget_mover.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
+			wavetarget_mover.SetPath(info_movespeed * 1.5F, 0.4F, 0.0F, info_finalscale);
 			wavetarget_mover.SetIntMethod( 
 				(int [] amt) =>
 				{

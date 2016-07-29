@@ -117,10 +117,12 @@ public class TileMaster : MonoBehaviour {
 			{
 				for(int y = 0; y < Tiles.GetLength(1); y++)
 				{
-					if(Tiles[x,y] == null) {Debug.LogWarning("NULL " + x + ":" + y); continue;}
+					if(Tiles[x,y] == null) {//Debug.LogWarning("NULL " + x + ":" + y); 
+					continue;}
 					if(Tiles[x,y].isFalling || Tiles[x,y].UnlockedFromGrid) 
 					{
-						Debug.LogWarning("WAITING FOR " + x + ":" + y); return false;
+						//Debug.LogWarning("WAITING FOR " + x + ":" + y);
+						return false;
 					}
 				}
 			}

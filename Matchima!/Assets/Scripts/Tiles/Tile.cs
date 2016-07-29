@@ -134,7 +134,7 @@ public class Tile : MonoBehaviour {
 	public bool state_override = false;
 
 	protected List<GameObject> particles;
-	protected Transform trans;
+	protected Transform _Transform;
 
 
 	protected virtual TileUpgrade [] AddedUpgrades
@@ -185,7 +185,7 @@ public class Tile : MonoBehaviour {
 
 	// Use this for initialization
 	public virtual void Start () {
-       trans = this.transform;
+       _Transform = this.transform;
 
 	}
 
@@ -194,7 +194,7 @@ public class Tile : MonoBehaviour {
 		//Setup(x,y, _Scale, Info, InitStats.Value-1);
 
 		Point = new TilePointContainer(x,y,_Scale, this);
-		trans = this.transform;
+		_Transform = this.transform;
 		if(!Info.ShiftOverride) InitStats.Shift = Player.Stats.Shift;
 		else InitStats.Shift = Info.Shift;
 		transform.name = Info.Name + " | " + Point.Base[0] + ":" + Point.Base[1];
@@ -204,7 +204,7 @@ public class Tile : MonoBehaviour {
 	public virtual void Setup(int x, int y, int scale, TileInfo inf, int value_inc = 0)
 	{
 		Point = new TilePointContainer(x,y,scale, this);
-		trans = this.transform;
+		_Transform = this.transform;
 		Info = new TileInfo(inf);
 
 		if(Params != null)
@@ -270,6 +270,7 @@ public class Tile : MonoBehaviour {
 	// Update is called once per frame
 	public virtual void Update () {
 		if(Destroyed || UnlockedFromGrid) return;
+
 		if(Stats.Shift != ShiftType.None && !Destroyed)
 		{
 			Velocity();
@@ -395,7 +396,7 @@ public class Tile : MonoBehaviour {
 					linepos = PlayerControl.InputPos;
 					//Params._render.transform.position = Vector3.Lerp(Point.targetPos, transform.position + vel, 0.02F);
 				}
-				/*Vector3 [] points = LightningLine(trans.position, linepos, 5, 0.01F + PlayerControl.MatchCount * 0.005F);
+				/*Vector3 [] points = LightningLine(_Transform.position, linepos, 5, 0.01F + PlayerControl.MatchCount * 0.005F);
 				for(int i = 0; i < points.Length; i++)
 				{
 					Params.lineIn.SetPosition(i, points[i]);
@@ -424,7 +425,7 @@ public class Tile : MonoBehaviour {
 					return;
 				}
 
-				/*Vector3 [] points = LightningLine(trans.position, LineTarget.transform.position, 5, 0.01F + PlayerControl.MatchCount * 0.005F);
+				/*Vector3 [] points = LightningLine(_Transform.position, LineTarget.transform.position, 5, 0.01F + PlayerControl.MatchCount * 0.005F);
 				for(int i = 0; i < points.Length; i++)
 				{
 					Params.lineIn.SetPosition(i, points[i]);
@@ -448,11 +449,12 @@ public class Tile : MonoBehaviour {
 
 	void LateUpdate()
 	{
-		transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(rotation), Time.deltaTime * 8);
+		_Transform.rotation = Quaternion.Slerp(_Transform.rotation, Quaternion.Euler(rotation), Time.deltaTime * 8);
 		Params.counter.transform.rotation = Quaternion.Euler(Vector3.zero);
 		Params.otherWarning.transform.rotation = Quaternion.Euler(Vector3.zero);
 	}
 
+	
 	public void Velocity()
 	{
 		Vector3 velocity = Vector3.zero;
@@ -485,31 +487,31 @@ public class Tile : MonoBehaviour {
 			return;
 		}
 
-		/*Ray velRay = new Ray(transform.position, velocity);
+		/*Ray velRay = new Ray(_Transform.position, velocity);
 		RaycastHit hit;
 
-		if(Physics.Raycast(transform.position, -velocity, out hit, (speed + collide_radius) * Time.deltaTime * 80))
+		if(Physics.Raycast(_Transform.position, -velocity, out hit, (speed + collide_radius) * Time.deltaTime * 80))
 		{
-			Tile hit_tile = hit.transform.gameObject.GetComponent<Tile>();
+			Tile hit_tile = hit._Transform.gameObject.GetComponent<Tile>();
 
 			if(hit_tile != null)
 			{
-				Vector3 clamppos = transform.position;
+				Vector3 clamppos = _Transform.position;
 				if(Stats.Shift == ShiftType.Down && hit_tile.Point.Base[1] < Point.Base[1]) 
 				{
-					clamppos.y = Mathf.Clamp(clamppos.y, hit_tile.transform.position.y + collide_radius * 2, 100);
+					clamppos.y = Mathf.Clamp(clamppos.y, hit_tile._Transform.position.y + collide_radius * 2, 100);
 				}
 				else if(Stats.Shift == ShiftType.Up && hit_tile.Point.Base[1] > Point.Base[1])
 				{
-					clamppos.y = Mathf.Clamp(clamppos.y, -100, hit_tile.transform.position.y - collide_radius * 2);
+					clamppos.y = Mathf.Clamp(clamppos.y, -100, hit_tile._Transform.position.y - collide_radius * 2);
 				}
 				if(Stats.Shift == ShiftType.Left && hit_tile.Point.Base[0] < Point.Base[0]) 
 				{
-					clamppos.x = Mathf.Clamp(clamppos.x, hit_tile.transform.position.x + collide_radius * 2, 100);
+					clamppos.x = Mathf.Clamp(clamppos.x, hit_tile._Transform.position.x + collide_radius * 2, 100);
 				}
 				else if(Stats.Shift == ShiftType.Right && hit_tile.Point.Base[0] > Point.Base[0])
 				{
-					clamppos.x = Mathf.Clamp(clamppos.x, -100, hit_tile.transform.position.x - collide_radius * 2);
+					clamppos.x = Mathf.Clamp(clamppos.x, -100, hit_tile._Transform.position.x - collide_radius * 2);
 				}
 				speed = hit_tile.speed;
 
@@ -527,47 +529,47 @@ public class Tile : MonoBehaviour {
 		//}
 		if(!GameManager.inStartMenu && TileMaster.Grid != null)
 		{
-			if(Stats.Shift == ShiftType.Down && transform.position.y <= Point.targetPos.y - (speed*Time.deltaTime)) 
+			if(Stats.Shift == ShiftType.Down && _Transform.position.y <= Point.targetPos.y - (speed*Time.deltaTime)) 
 			{
 				velocity = Vector3.zero;
 				speed = 0.0F;
-				transform.position = new Vector3(Point.targetPos.x, Point.targetPos.y, transform.position.z);
+				_Transform.position = new Vector3(Point.targetPos.x, Point.targetPos.y, _Transform.position.z);
 				OnLand();
 			}
-			else if(Stats.Shift == ShiftType.Up && transform.position.y >= Point.targetPos.y + (speed*Time.deltaTime)) 
+			else if(Stats.Shift == ShiftType.Up && _Transform.position.y >= Point.targetPos.y + (speed*Time.deltaTime)) 
 			{
 				velocity = Vector3.zero;
 				speed = 0.0F;
 				
-				transform.position = new Vector3(transform.position.x, Point.targetPos.y, transform.position.z);
+				_Transform.position = new Vector3(_Transform.position.x, Point.targetPos.y, _Transform.position.z);
 				OnLand();
 			}
-			else if(Stats.Shift == ShiftType.Right && transform.position.x >= Point.targetPos.x + (speed * Time.deltaTime))
+			else if(Stats.Shift == ShiftType.Right && _Transform.position.x >= Point.targetPos.x + (speed * Time.deltaTime))
 			{
 				velocity = Vector3.zero;
 				speed = 0.0F;
 				
-				transform.position = new Vector3(Point.targetPos.x, transform.position.y, transform.position.z);
+				_Transform.position = new Vector3(Point.targetPos.x, _Transform.position.y, _Transform.position.z);
 				OnLand();
 			}
-			else if(Stats.Shift == ShiftType.Left && transform.position.x <= Point.targetPos.x - (speed * Time.deltaTime))
+			else if(Stats.Shift == ShiftType.Left && _Transform.position.x <= Point.targetPos.x - (speed * Time.deltaTime))
 			{
 				velocity = Vector3.zero;
 				speed = 0.0F;
 				
-				transform.position = new Vector3(Point.targetPos.x, transform.position.y, transform.position.z);
+				_Transform.position = new Vector3(Point.targetPos.x, _Transform.position.y, _Transform.position.z);
 				OnLand();
 			}
 			else 
 			{
 				if(speed >= 0.0F) speed = -0.1F;
-				transform.localScale = new Vector3(defaultScale+speed/90, defaultScale,defaultScale);
+				_Transform.localScale = new Vector3(defaultScale+speed/90, defaultScale,defaultScale);
 				if(collider.enabled) collider.enabled = false;
 				isFalling = true;
 			}
 		}
 
-		transform.position += velocity * speed * Time.deltaTime;
+		if(speed != 0.0F) _Transform.position += velocity * speed * Time.deltaTime;
 	}
 
 	public void SetState(TileState _state, bool _override = false)
@@ -660,7 +662,7 @@ public class Tile : MonoBehaviour {
 		else 
 		{
 			isMatching = false;
-			EffectManager.instance.PlayEffect(trans,Effect.Attack);
+			EffectManager.instance.PlayEffect(_Transform,Effect.Attack);
 		}
 		return false;
 	}
@@ -785,19 +787,19 @@ public class Tile : MonoBehaviour {
 			float dist = Vector3.Distance(nextTile.transform.position, transform.position);
 			Vector3 vel = nextTile.transform.position - transform.position;
 
-			Vector3 [] points = LightningLine(trans.position, nextTile.transform.position, 4, 0.1F);
+			Vector3 [] points = LightningLine(_Transform.position, nextTile.transform.position, 4, 0.1F);
 
 			for(int i = 0; i < points.Length; i++)
 			{
 				Params.lineIn.SetPosition(i, points[i]);
 				Params.lineOut.SetPosition(i, points[i] + Vector3.back);
 			}
-			//Params.lineIn.SetPosition(0, trans.position);
+			//Params.lineIn.SetPosition(0, _Transform.position);
 			//Params.lineIn.SetPosition(1, nextTile.transform.position);
 			Params.lineIn.SetColors(GameData.instance.GetGENUSColour(Genus), GameData.instance.GetGENUSColour(nextTile.Genus));
 
 			Params.lineOut.SetColors(Color.white, Color.white);
-			//Params.lineOut.SetPosition(0, trans.position + Vector3.back);
+			//Params.lineOut.SetPosition(0, _Transform.position + Vector3.back);
 			//Params.lineOut.SetPosition(1, nextTile.transform.position + Vector3.back);
 		}
 	}
@@ -1175,8 +1177,8 @@ public class Tile : MonoBehaviour {
 
 		TileEffect e = init;
 		e.Setup(this);
-		e.transform.position = trans.position;
-		e.transform.parent = trans;
+		e.transform.position = _Transform.position;
+		e.transform.parent = _Transform;
 		Effects.Add(e);
 		CheckStats();
 		return e;
@@ -1195,8 +1197,8 @@ public class Tile : MonoBehaviour {
 		TileEffect e = (Status) (Instantiate(GameData.instance.GetTileEffectByName(name))) as TileEffect;
 		e.GetArgs(duration, args);
 		e.Setup(this);
-		e.transform.position = trans.position;
-		e.transform.parent = trans;
+		e.transform.position = _Transform.position;
+		e.transform.parent = _Transform;
 		Effects.Add(e);
 		CheckStats();
 		return e;

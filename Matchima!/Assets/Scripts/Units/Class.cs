@@ -379,7 +379,7 @@ public class Class : Unit {
 	{
 		if(Manapower_audio != null) Destroy(Manapower_audio.gameObject);
 		Manapower_audio = AudioManager.instance.PlayClip(this.transform, AudioManager.instance.Player, "Mana Powerup");
-		Manapower_audio.GetComponent<DestroyTimer>().enabled = false;
+		if(Manapower_audio != null) Manapower_audio.GetComponent<DestroyTimer>().enabled = false;
 		UIManager.ClassButtons.GetClass(Index).ShowClass(true);
 		yield return new WaitForSeconds(GameData.GameSpeed(0.05F));
 		
@@ -391,7 +391,7 @@ public class Class : Unit {
 		
 		yield return new WaitForSeconds(GameData.GameSpeed(0.5F));
 		Destroy(powerup);
-		Destroy(Manapower_audio.gameObject);
+		if(Manapower_audio != null) Destroy(Manapower_audio.gameObject);
 
 		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons.GetClass(Index).transform.position, "POWER\nUP", 75, GameData.Colour(Genus), 1.2F, 0.2F);
 		MeterLvl = newlvl;
@@ -399,8 +399,12 @@ public class Class : Unit {
 		MeterDecay = (int) MeterDecay_soft;
 		
 		Manapower_audio = AudioManager.instance.PlayClip(this.transform, AudioManager.instance.Player, "Mana Powerup Loop");
-		Manapower_audio.GetComponent<DestroyTimer>().enabled = false;
+		if(Manapower_audio != null)
+		{
+			Manapower_audio.GetComponent<DestroyTimer>().enabled = false;
 		Manapower_audio.loop = true;
+		}
+		
 
 		Effect e = MeterLvl == 1 ? Effect.ManaPowerLvl1 : (MeterLvl == 2 ? Effect.ManaPowerLvl2 : Effect.ManaPowerLvl3);
 		ParticleSystem part = EffectManager.instance.PlayEffect(this.transform, e, "", GameData.Colour(Genus)).GetComponent<ParticleSystem>();

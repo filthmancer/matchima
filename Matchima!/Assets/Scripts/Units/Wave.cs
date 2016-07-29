@@ -129,7 +129,7 @@ public class Wave : Unit {
 		MiniAlertUI heal = UIManager.instance.MiniAlert(
 			UIManager.instance.WaveHealthText.transform.position, 
 			prefix + current_heal, 65, GameData.instance.GoodColour, 1.7F,	-0.08F);
-		heal.transform.parent = UIManager.instance.WaveHealthText.transform;
+		heal.transform.SetParent(UIManager.instance.WaveHealthText.transform);
 
 		while(heal.lifetime > 0.0F)
 		{
@@ -151,6 +151,7 @@ public class Wave : Unit {
 			yield return null;
 		}
 
+		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 		ShowingHealth = false;
 
 		yield return null;
