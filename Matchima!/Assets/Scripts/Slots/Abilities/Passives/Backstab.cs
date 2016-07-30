@@ -96,7 +96,7 @@ public class Backstab : Ability {
 		foreach(Tile child in to_collect)
 		{
 			child.SetOtherWarning("");
-			child.InitStats.TurnDamage += (int) ((float)PlayerControl.instance.AttackValue * finalDamage);
+			child.InitStats.TurnDamage += (int) ((float)Player.AttackValue * finalDamage);
 			UIManager.instance.MiniAlert(child.transform.position, RandAlert, 75, GameData.Colour(Parent.Genus));
 			yield return new WaitForSeconds(stabtime);
 		}

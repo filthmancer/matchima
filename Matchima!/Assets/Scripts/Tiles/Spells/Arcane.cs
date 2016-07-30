@@ -40,7 +40,7 @@ public class Arcane : Tile {
 		get
 		{
 			CheckStats();
-			return 3 + (Stats.Value);
+			return (3 + (Stats.Value)) * (int)Player.SpellPower;
 		}
 	}
 

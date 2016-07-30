@@ -384,7 +384,7 @@ public class _GameSaveLoad: MonoBehaviour {
 		  
 		  _s._Attack             = s._Attack;
 		  _s.AttackRate          = s.AttackRate;
-		  _s.MagicPower          = s.MagicPower;
+		  _s.SpellPower          = s.SpellPower;
 		  
 		  _s.HealthRegen         = s.HealthRegen;
 		  _s.HealthLeech         = s.HealthLeech;
@@ -445,7 +445,7 @@ public class _GameSaveLoad: MonoBehaviour {
    		
    		_s._Attack             = s._Attack;
    		_s.AttackRate          = s.AttackRate;
-   		_s.MagicPower          = s.MagicPower;
+   		_s.SpellPower          = s.SpellPower;
    		
    		_s.HealthRegen         = s.HealthRegen;
    		_s.HealthLeech         = s.HealthLeech;
@@ -551,7 +551,7 @@ public struct ClassData
 
 		public int _Attack;
 		public float AttackRate;
-		public int MagicPower;
+		public float SpellPower;
 
 		public int HealthRegen, HealthLeech;
 		public int MeterRegen, MeterLeech;

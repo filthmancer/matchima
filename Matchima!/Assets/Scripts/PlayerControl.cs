@@ -11,27 +11,25 @@ public enum SwipeDir{
 public class PlayerControl : MonoBehaviour {
 	public static PlayerControl instance;
 	public static Vector3 InputPos;
-	public static bool HoldingSlot = false;
+	public static bool HoldingSlot    = false;
 	public static UIButton HeldButton = null, SwapButton = null;
 	public static ParticleSystem TouchParticle;
 	//[HideInInspector]
 	public Tile focusTile;
 	public static Tile matchingTile;
-	public float TimeSinceLastMatch = 0.0F;
-	public float TimeWithoutInput = 0.0F;
+	public float TimeSinceLastMatch   = 0.0F;
+	public float TimeWithoutInput     = 0.0F;
 	public float currentCombo;
-	public List<Tile> selectedTiles = new List<Tile>();
-	public List<Tile> finalTiles = new List<Tile>();
+	public List<Tile> selectedTiles   = new List<Tile>();
+	public List<Tile> finalTiles      = new List<Tile>();
 	[HideInInspector]
-	public List<Tile> newTiles = new List<Tile>();
-
-	public bool isMatching = false;
-	public bool canMatch = true;
-
+	public List<Tile> newTiles        = new List<Tile>();
+	
+	public bool isMatching            = false;
+	public bool canMatch              = true;
+	
 	[HideInInspector]
-	public bool AttackMatch = false;
-
-	public int AttackValue = 0;
+	public bool AttackMatch           = false;
 
 	public Line _Line;
 
@@ -42,7 +40,7 @@ public class PlayerControl : MonoBehaviour {
 		}
 	}
 
-	private float tooltip_time = 0.78F, tooltip_current = 0.0F;
+	private float tooltip_time   = 0.78F, tooltip_current = 0.0F;
 	private bool tooltip_showing = false;
 
 	bool swiping, swipeSent;
@@ -180,7 +178,7 @@ public class PlayerControl : MonoBehaviour {
 				}
 			}
 			//Adding ability, item and other values to attack
-			int [] finaldamage = GetAttackValues(selectedTiles.ToArray());
+			int [] finaldamage = Player.instance.GetAttackValues(selectedTiles.ToArray());
 
 			for(int i = 0; i < selectedTiles.Count; i++)
 			{
@@ -208,22 +206,7 @@ public class PlayerControl : MonoBehaviour {
 		return final;
 	}
 
-	public int [] GetAttackValues(Tile [] selected)
-	{
-		int [] final = new int[selected.Length];
-		int default_attack = Player.Stats._Attack;
-		AttackValue = 1;
-		for(int i = 0; i < selected.Length; i++)
-		{
-			if(!selected[i].Type.isEnemy)
-				AttackValue *= selected[i].Stats.Attack;
-		}
 
-		default_attack *= AttackValue;
-		final = Player.instance.ActiveDamage(default_attack, selected);
-
-		return final;
-	}
 
 
 	public void SwapSlots()
@@ -434,7 +417,7 @@ public class PlayerControl : MonoBehaviour {
 		if(match)
 		{
 			//AudioManager.instance.PlayClip(this.transform, AudioManager.instance.Tiles_Default, "complete_1");
-			int [] damage = GetAttackValues(selectedTiles.ToArray());
+			int [] damage = Player.instance.GetAttackValues(selectedTiles.ToArray());
 			for(int i = 0; i < selectedTiles.Count; i++)
 			{
 				selectedTiles[i].InitStats.TurnDamage += damage[i];

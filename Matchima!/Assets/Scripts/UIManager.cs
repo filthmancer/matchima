@@ -27,6 +27,7 @@ public class UIManager : MonoBehaviour {
 	public tk2dClippedSprite [] PlayerHealth;
 	public tk2dClippedSprite [] WaveHealth;
 
+	public TextMeshProUGUI [] TDebug;
 
 
 	public ClassSlotsUI _ClassButtons;
@@ -95,6 +96,8 @@ public class UIManager : MonoBehaviour {
 		{
 			if(Input.touches.Length == 0) ShowGearTooltip(false);
 		}
+		TDebug[0].text = Player.AttackValue + "";
+		TDebug[1].text = Player.SpellValue + "";
 
 		Objects.TopRightButton.Txt[0].text = "" + GameManager.Floor;
 		Objects.TopRightButton.Txt[1].text = "" + GameManager.ZoneNum;

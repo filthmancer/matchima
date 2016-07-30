@@ -1301,14 +1301,17 @@ public class TileStat
 	[HideInInspector]
 	public float value_soft = 0;
 
-	public int Resource  = 0;
-	public int Heal 	 = 0;
-	public int Armour 	 = 0;
+	public int Resource    = 0;
+	public int Heal        = 0;
+	public int Armour      = 0;
 	
-	public int Hits      = 0;
-	public int Attack    = 0;
-	public int Lifetime  = 0;
-	public int Deathtime = 0;
+	public int Hits        = 0;
+	public int Attack      = 0;
+	public int Lifetime    = 0;
+	public int Deathtime   = 0;
+	
+	public int AttackPower = 0;
+	public int SpellPower  = 0;
 	
 	public bool isNew       = true;
 	public bool isFrozen    = false;
@@ -1326,15 +1329,20 @@ public class TileStat
 		if(t == null) return;
 		Value     += t.Value;
 
-		Resource  += t.Resource;
-		Heal 	  += t.Heal;
-		Armour 	  += t.Armour;
-		Hits      += t.Hits;
-		Attack    += t.Attack;
-		Lifetime  += t.Lifetime;
-		Deathtime += t.Deathtime;
-		DOT 	  += t.DOT;
-		TurnDamage += t.TurnDamage;
+		Resource    += t.Resource;
+		Heal        += t.Heal;
+		Armour      += t.Armour;
+		
+		Hits        += t.Hits;
+		Attack      += t.Attack;
+		Lifetime    += t.Lifetime;
+		Deathtime   += t.Deathtime;
+		
+		AttackPower += t.AttackPower;
+		SpellPower  += t.SpellPower;
+
+		DOT         += t.DOT;
+		TurnDamage  += t.TurnDamage;
 
 		if(_override)
 		{
@@ -1372,6 +1380,10 @@ public class TileStat
 			Attack    = t.Attack;
 			Lifetime  = t.Lifetime;
 			Deathtime = t.Deathtime;
+
+			AttackPower = t.AttackPower;
+			SpellPower  = t.SpellPower;
+			
 			DOT 	  = t.DOT;
 			TurnDamage = t.TurnDamage;
 			isFrozen = t.isFrozen;

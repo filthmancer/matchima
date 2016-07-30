@@ -145,7 +145,7 @@ public class Ability : Slot {
 	public virtual float DexterityFactor	{get{return 1 + (float)Parent.Stats.Dexterity / 100.0F;}}
 	public virtual float WisdomFactor		{get{return 1 + (float)Parent.Stats.Wisdom / 100.0F;}}
 	public virtual float CharismaFactor		{get{return 1 + (float)Parent.Stats.Charisma / 100.0F;}}
-	public virtual int MagicFactor			{get{return Parent.Stats.MagicPower;}}
+	public virtual int MagicFactor			{get{return (int)Parent.Stats.GetSpellPower();}}
 
 	// Use this for initialization
 	public override void Start () {

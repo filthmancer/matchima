@@ -408,50 +408,10 @@
 			}
 		},
 		{
-			"file": "Scripts/Units/Classes/Barbarian.cs",
+			"file": "Scripts/PlayerControl.cs",
 			"settings":
 			{
-				"buffer_size": 4112,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Scripts/Units/Classes/Thief.cs",
-			"settings":
-			{
-				"buffer_size": 9568,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Scripts/Units/Classes/Wizard.cs",
-			"settings":
-			{
-				"buffer_size": 9457,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Scripts/TileTypes.cs",
-			"settings":
-			{
-				"buffer_size": 17693,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Scripts/Units/Classes/Bard.cs",
-			"settings":
-			{
-				"buffer_size": 6528,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Scripts/TileMaster.cs",
-			"settings":
-			{
-				"buffer_size": 45739,
+				"buffer_size": 14249,
 				"line_ending": "Windows"
 			}
 		},
@@ -459,35 +419,77 @@
 			"file": "Scripts/Player.cs",
 			"settings":
 			{
-				"buffer_size": 19197,
+				"buffer_size": 19913,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "Scripts/PlayerControl.cs",
+			"file": "Scripts/Stat.cs",
 			"settings":
 			{
-				"buffer_size": 14593,
+				"buffer_size": 16621,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"contents": "Searching 353 files for \"AttackValue\" (case sensitive)\n\nA:\\Projects\\matchima\\Matchima!\\Assets\\Scripts\\PlayerControl.cs:\n   32  	public bool AttackMatch = false;\n   33  	[HideInInspector]\n   34: 	public int AttackValue = 0;\n   35  \n   36  	public Line _Line;\n   ..\n  181  			}\n  182  			//Adding ability, item and other values to attack\n  183: 			int [] finaldamage = GetAttackValues(selectedTiles.ToArray());\n  184  \n  185  			for(int i = 0; i < selectedTiles.Count; i++)\n  ...\n  209  	}\n  210  \n  211: 	public int [] GetAttackValues(Tile [] selected)\n  212  	{\n  213  		int [] final = new int[selected.Length];\n  ...\n  435  		{\n  436  			//AudioManager.instance.PlayClip(this.transform, AudioManager.instance.Tiles_Default, \"complete_1\");\n  437: 			int [] damage = GetAttackValues(selectedTiles.ToArray());\n  438  			for(int i = 0; i < selectedTiles.Count; i++)\n  439  			{\n\nA:\\Projects\\matchima\\Matchima!\\Assets\\Scripts\\Slots\\Abilities\\Passives\\Backstab.cs:\n   97  		{\n   98  			child.SetOtherWarning(\"\");\n   99: 			child.InitStats.TurnDamage += (int) ((float)PlayerControl.instance.AttackValue * finalDamage);\n  100  			UIManager.instance.MiniAlert(child.transform.position, RandAlert, 75, GameData.Colour(Parent.Genus));\n  101  			yield return new WaitForSeconds(stabtime);\n\nA:\\Projects\\matchima\\Matchima!\\Assets\\Scripts\\Tiles\\Enemies\\Enemy.cs:\n  166  		isMatching = true;\n  167  \n  168: 		if(original) InitStats.TurnDamage += (original ? PlayerControl.instance.AttackValue : Damage);\n  169  \n  170  		if(InitStats.TurnDamage == 0) yield break;\n\nA:\\Projects\\matchima\\Matchima!\\Assets\\Scripts\\UI\\UITooltip.cs:\n  370         //else if(PlayerControl.instance.AttackMatch)\n  371         //{\n  372:        //	Damage.Txt[0].text = PlayerControl.instance.AttackValue + \"\";\n  373         //	Damage.SetActive(true);\n  374         //}\n\n7 matches across 4 files\n",
+			"file": "Scripts/Slots/Ability.cs",
 			"settings":
 			{
-				"buffer_size": 1855,
-				"line_ending": "Windows",
-				"name": "Find Results",
-				"scratch": true
+				"buffer_size": 9979,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Scripts/Utilities/_GameSaveLoad.cs",
+			"settings":
+			{
+				"buffer_size": 19180,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Scripts/UIManager.cs",
+			"settings":
+			{
+				"buffer_size": 49327,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Scripts/Tiles/Enemies/Enemy.cs",
+			"settings":
+			{
+				"buffer_size": 8007,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Scripts/Tiles/Spells/Arcane.cs",
+			"settings":
+			{
+				"buffer_size": 5744,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Scripts/GameManager.cs",
+			"settings":
+			{
+				"buffer_size": 36071,
+				"line_ending": "Windows"
 			}
 		}
 	],
 	"build_system": "Packages/User/Processing B.sublime-build",
 	"command_palette":
 	{
-		"height": 87.0,
+		"height": 257.0,
 		"selected_items":
 		[
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
 			[
 				"install",
 				"Package Control: Install Package"
@@ -501,7 +503,7 @@
 				"Package Control: Install Package"
 			]
 		],
-		"width": 449.0
+		"width": 536.0
 	},
 	"console":
 	{
@@ -518,25 +520,31 @@
 	},
 	"file_history":
 	[
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Passives/Backstab.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/GameManager.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Arcane.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Tile.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Class.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Enemy.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/TileTypes.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/UIManager.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Bard.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Wizard.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Thief.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Barbarian.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Player.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/TileMaster.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Zone.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIGear.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIObj.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIClassSelect.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIClassButton.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UIManager.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Neutral/ItemTile.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/GameManager.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Enemy.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Tile.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/TileMaster.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/Firestorm.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Mimic.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Stat.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Class.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/WaveTileEndOnTileDestroy.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Thief.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Bard.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/WaveTile.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIMenu.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/ThrowKnives.cs",
@@ -552,7 +560,6 @@
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Status.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Grunt.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/TileEffect.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/TileTypes.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/Utility.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Harp.cs",
 		"/A/Projects/matchima/Matchima!/Assets/TK2DROOT/tk2d/Code/Sprites/tk2dBaseSprite.cs",
@@ -561,15 +568,12 @@
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/WardenWaveUnit.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/Lullaby.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/WardenBattle.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Player.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Bomb.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Item.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/PlayerControl.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Barbarian.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Blob.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/Heal.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/AudioManager.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Wizard.cs",
 		"/A/Projects/diablolike/diablolike/Assets/ISOMETRIUM/IsometriumCamera.cs",
 		"/A/Projects/diablolike/diablolike/Assets/ISOMETRIUM/IsometriumMovement.cs",
 		"/A/Projects/diablolike/diablolike/Assets/ISOMETRIUM/Data/Private/SelectionBox/UnityEngine.UI.Extensions NameSpace/IsometriumSelections.cs",
@@ -610,7 +614,6 @@
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Spells/Spell.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Unit.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Cross.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Passives/Backstab.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Actives/Boost.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Neutral/Attack.cs",
 		"/D/Projects/Pending/The Compound/Assets/Scripts/Player.cs",
@@ -619,7 +622,6 @@
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/_GameSaveLoad.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Soldier.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Flame.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Arcane.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Lens.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Ward.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/BlackHole.cs",
@@ -684,6 +686,51 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"UIManager",
+			"final_damage",
+			"Attack",
+			" Attack",
+			"Spell",
+			"Attack",
+			"Player",
+			"Attack",
+			"1.0F + ",
+			"private",
+			"public",
+			"AddedAttackPower",
+			"instance",
+			"_Attack",
+			"SpellPower",
+			"AttackPower",
+			"GetAttackValues",
+			"SpellPower",
+			"MagicPower",
+			"prev",
+			"AttackPower",
+			"CompleteRegen",
+			"CompleteHealth",
+			"SetBonuses",
+			"CompleteTurnRoutine",
+			"SetBonuses",
+			"Bonuses",
+			"GetBonuses",
+			"Bonuses",
+			"combo_factor",
+			"BeforeMatch",
+			"combo_factor",
+			"tiles",
+			"BeforeMatch",
+			"MatchRoutine",
+			"GetAttackValues",
+			"AttackPower",
+			"TileStat",
+			"TileStats",
+			"Attack",
+			"int",
+			"AttackPower",
+			"MagicPower",
+			"AttackPower",
+			"AttackValue",
 			"GetAttackValues",
 			"AttackValue",
 			"GetAttackValues",
@@ -766,52 +813,7 @@
 			"EscapeZone",
 			"GenerateUIObj",
 			"GearTooltip",
-			"title",
-			"Zones",
-			"ZoneChoiceA",
-			"CurrentZone",
-			"CurrentFloor",
-			"Objects.MiddleGear[1]",
-			"Zone",
-			"TilePointContainer",
-			"DestroyTile",
-			"Destroyed",
-			"AllLanded",
-			"SetSprite",
-			"transform.position",
-			"UnlockedFromGrid",
-			"SetSprite",
-			"Setup",
-			"TilePointContainer",
-			"Setup",
-			"isAlerted",
-			"EnemyTurnRoutine",
-			"init",
-			"GetNeighbour",
-			"IsType",
-			"child",
-			"EffectManag",
-			"ChangeGenus",
-			"Genus",
-			"SetSprite",
-			"OutOfStoneformTime",
-			"_Tile",
-			"AfterTurn",
-			"UpgradeBracket",
-			"SetTypes",
-			"Index",
-			"TileMaster.YScale",
-			"WaveUnity",
-			"wtile",
-			"WaveTile",
-			"isPaused",
-			"StartedMeter",
-			"ShowBonuses",
-			"CompleteTurnRoutine",
-			"CashMeterPoints",
-			"ShowingMeter",
-			"IsShowingMeters",
-			"CompleteTurnRoutine"
+			"title"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -877,7 +879,7 @@
 	"groups":
 	[
 		{
-			"selected": 8,
+			"selected": 2,
 			"sheets":
 			[
 				{
@@ -950,25 +952,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 4590.0,
+						"translation.y": 600.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "Scripts/Units/Classes/Barbarian.cs",
+					"file": "Scripts/PlayerControl.cs",
 					"settings":
 					{
-						"buffer_size": 4112,
+						"buffer_size": 14249,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								774,
-								774
+								908,
+								914
 							]
 						],
 						"settings":
@@ -1032,18 +1034,18 @@
 				},
 				{
 					"buffer": 2,
-					"file": "Scripts/Units/Classes/Thief.cs",
+					"file": "Scripts/Player.cs",
 					"settings":
 					{
-						"buffer_size": 9568,
+						"buffer_size": 19913,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								79,
-								79
+								4438,
+								4438
 							]
 						],
 						"settings":
@@ -1100,25 +1102,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 3392.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 3,
-					"file": "Scripts/Units/Classes/Wizard.cs",
+					"file": "Scripts/Stat.cs",
 					"settings":
 					{
-						"buffer_size": 9457,
+						"buffer_size": 16621,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2014,
-								2014
+								11159,
+								11159
 							]
 						],
 						"settings":
@@ -1175,25 +1177,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 855.0,
+						"translation.y": 8180.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 4,
-					"file": "Scripts/TileTypes.cs",
+					"file": "Scripts/Slots/Ability.cs",
 					"settings":
 					{
-						"buffer_size": 17693,
+						"buffer_size": 9979,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								9825,
-								9825
+								3290,
+								3290
 							]
 						],
 						"settings":
@@ -1250,25 +1252,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 8123.0,
+						"translation.y": 2082.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 5,
-					"file": "Scripts/Units/Classes/Bard.cs",
+					"file": "Scripts/Utilities/_GameSaveLoad.cs",
 					"settings":
 					{
-						"buffer_size": 6528,
+						"buffer_size": 19180,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1524,
-								1524
+								14389,
+								14389
 							]
 						],
 						"settings":
@@ -1322,28 +1324,29 @@
 								"bh_single_quote_close"
 							],
 							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
-							"translate_tabs_to_spaces": false
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 228.0,
+						"translation.y": 7972.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 6,
-					"file": "Scripts/TileMaster.cs",
+					"file": "Scripts/UIManager.cs",
 					"settings":
 					{
-						"buffer_size": 45739,
+						"buffer_size": 49327,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4165,
-								4165
+								2445,
+								2445
 							]
 						],
 						"settings":
@@ -1400,25 +1403,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 3127.0,
+						"translation.y": 1436.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 7,
-					"file": "Scripts/Player.cs",
+					"file": "Scripts/Tiles/Enemies/Enemy.cs",
 					"settings":
 					{
-						"buffer_size": 19197,
+						"buffer_size": 8007,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								12504,
-								12504
+								4528,
+								4528
 							]
 						],
 						"settings":
@@ -1475,25 +1478,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 9834.0,
+						"translation.y": 2614.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 8,
-					"file": "Scripts/PlayerControl.cs",
+					"file": "Scripts/Tiles/Spells/Arcane.cs",
 					"settings":
 					{
-						"buffer_size": 14593,
+						"buffer_size": 5744,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5256,
-								5256
+								803,
+								803
 							]
 						],
 						"settings":
@@ -1550,60 +1553,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 2595.0,
+						"translation.y": 285.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 9,
+					"file": "Scripts/GameManager.cs",
 					"settings":
 					{
-						"buffer_size": 1855,
+						"buffer_size": 36071,
 						"regions":
 						{
-							"match":
-							{
-								"flags": 112,
-								"regions":
-								[
-									[
-										206,
-										217
-									],
-									[
-										370,
-										381
-									],
-									[
-										521,
-										532
-									],
-									[
-										769,
-										780
-									],
-									[
-										1085,
-										1096
-									],
-									[
-										1466,
-										1477
-									],
-									[
-										1752,
-										1763
-									]
-								],
-								"scope": ""
-							}
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								17228,
+								17228
 							]
 						],
 						"settings":
@@ -1656,16 +1624,11 @@
 								"bh_single_quote_open",
 								"bh_single_quote_close"
 							],
-							"detect_indentation": false,
-							"output_tag": 1,
-							"result_base_dir": "",
-							"result_file_regex": "^([A-Za-z\\\\/<].*):$",
-							"result_line_regex": "^ +([0-9]+):",
-							"scroll_past_end": true,
-							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
+							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 13557.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1704,6 +1667,10 @@
 		]
 	},
 	"menu_visible": false,
+	"output.astyle_error_message":
+	{
+		"height": 0.0
+	},
 	"output.exec":
 	{
 		"height": 193.0

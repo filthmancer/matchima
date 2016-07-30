@@ -122,6 +122,10 @@ public class GameManager : MonoBehaviour {
 	[HideInInspector]
 	public Wave ResumeWave = null;
 
+	[HideInInspector]
+	public int ComboFactor_RepeatedCombos;
+	public float ComboFactor_ComboTotalSize;
+
 	void OnApplicationQuit()
 	{
 		GameData.instance.Save();
@@ -348,10 +352,10 @@ public class GameManager : MonoBehaviour {
 			Player.Stats._Health = Player.Stats._HealthMax;
 			break;
 			case 2: //X
-			//EscapeZone();
+			EscapeZone();
 			//GetWave(GameData.instance.GetRandomWave(), 2);
 			//CameraUtility.SetTurnOffset(camopen);
-			Wave.AddPoints(150);
+			//Wave.AddPoints(150);
 			//TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["chest"], GENUS.ALL, 1, 1);
 			break;
 			case 3: //c
@@ -731,16 +735,12 @@ public class GameManager : MonoBehaviour {
 
 
 		yield return StartCoroutine(Player.instance.AfterMatch());
-
-		//Player.Stats.CompleteLeech(enemies_hit);
-		//Player.instance.CheckForBestCombo(resource);
-		//StartCoroutine(SplashBonus(ComboSize));
-		//yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
+		
+		
 
 		yield return StartCoroutine(Player.instance.EndTurn());
-		yield return StartCoroutine(TileMaster.instance.BeforeTurn());
 
-		print("ENEMY TURN");
+		yield return StartCoroutine(TileMaster.instance.BeforeTurn());
 /* ENEMY TURN *////////////////////////////////////////////////////
 		yield return StartCoroutine(CurrentWave.BeginTurn());
 		if(Player.instance.Turns % (int)Player.Stats.AttackRate == 0 && TileMaster.instance.EnemiesOnScreen > 0)
@@ -868,15 +868,23 @@ public class GameManager : MonoBehaviour {
 		List<Tile> newTiles = new List<Tile>();
 		newTiles.AddRange(PlayerControl.instance.selectedTiles);
 		PlayerControl.instance.selectedTiles.Clear();
-		int combo_factor = 0; //Number of repeated combos made by tiles
+		ComboFactor_RepeatedCombos = 1; //Number of repeated combos made by tiles
 		
 		while(newTiles.Count > 0)
 		{
+			PlayerControl.instance.AddTilesToFinal(newTiles.ToArray());
+			for (int i = 0; i < newTiles.Count; i++)
+			{
+				if (newTiles[i] == null) continue;
+				if (newTiles[i].BeforeMatchEffect) yield return StartCoroutine(newTiles[i].BeforeMatch(false));
+			}
+
 			yield return StartCoroutine(Player.instance.BeforeMatch(newTiles));
+			yield return null;
 			newTiles.Clear();
 			newTiles.AddRange(PlayerControl.instance.selectedTiles);
 			PlayerControl.instance.selectedTiles.Clear();
-			combo_factor++;
+			ComboFactor_RepeatedCombos++;
 			//yield return new WaitForSeconds( GameData.GameSpeed(0.1F));
 		}
 	}

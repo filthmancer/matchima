@@ -165,7 +165,7 @@ public class Enemy : Tile {
 		if(isMatching) yield break;
 		isMatching = true;
 
-		if(original) InitStats.TurnDamage += (original ? PlayerControl.instance.AttackValue : Damage);
+		if(original) InitStats.TurnDamage += (original ? Player.AttackValue : Damage);
 
 		if(InitStats.TurnDamage == 0) yield break;
 

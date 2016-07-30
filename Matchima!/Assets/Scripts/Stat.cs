@@ -88,8 +88,10 @@ public class Stat
 
 	public int _Attack = 0;
 	public float AttackRate = 0;
+	public int _Spell = 0;
 
-	public int MagicPower = 0;
+	public float AttackPower = 0.0F;
+	public float SpellPower = 0.0F;
 
 	public int HealthRegen = 0;
 	public int HealthLeech = 0;
@@ -191,19 +193,23 @@ public class Stat
 		_Charisma          = new StatContainer(prev._Charisma, GENUSs);
 		_Luck 			   = new StatContainer(prev._Luck, GENUSs);
 
-		Class_Type 		  = prev.Class_Type;
+		Class_Type   = prev.Class_Type;
 		Shift        = prev.Shift;
-		MapSize 		  = prev.MapSize;
-
+		MapSize      = prev.MapSize;
 		
-		ComboCounter     = prev.ComboCounter;
-		ComboBonus       = prev.ComboBonus;
-		_Attack           = prev._Attack;
-		AttackRate       = prev.AttackRate;
-		HealthRegen            = prev.HealthRegen;
-		HealthLeech            = prev.HealthLeech;
 		
-		Spikes           = prev.Spikes;
+		ComboCounter = prev.ComboCounter;
+		ComboBonus   = prev.ComboBonus;
+		_Attack      = prev._Attack;
+		_Spell 		 = prev._Spell;
+		AttackRate   = prev.AttackRate;
+		HealthRegen  = prev.HealthRegen;
+		HealthLeech  = prev.HealthLeech;
+		
+		AttackPower = prev.AttackPower;
+		SpellPower  = prev.SpellPower;
+		
+		Spikes       = prev.Spikes;
 
 		CooldownDecrease = prev.CooldownDecrease;
 		CostDecrease     = prev.CostDecrease;
@@ -251,10 +257,15 @@ public class Stat
 		ComboBonus        += other.ComboBonus;
 		MatchNumberModifier += other.MatchNumberModifier;
 
-		_Attack            += other._Attack;
-		AttackRate        += other.AttackRate;
-		HealthRegen 			  += other.HealthRegen;
-		HealthLeech 			  += other.HealthLeech;
+		_Attack     += other._Attack;
+		_Spell 		+= other._Spell;
+		AttackRate  += other.AttackRate;
+		HealthRegen += other.HealthRegen;
+		HealthLeech += other.HealthLeech;
+		
+		AttackPower += other.AttackPower;
+		SpellPower  += other.SpellPower;
+
 		_Health 			  += other._Health;
 		_HealthMax 		  += other._HealthMax;
 		MeterMax 		  += other.MeterMax;
@@ -448,6 +459,25 @@ public class Stat
 		return (float)_Health / (float)_HealthMax;
 	}
 
+	public int GetAttack()
+	{
+		return (int) ((float)_Attack * (AttackPower));
+	}
+	public float GetAttackPower()
+	{
+		return (AttackPower);
+	}
+
+	public int GetSpell()
+	{
+		return (int) ((float)_Spell * (SpellPower));
+	}
+
+	public float GetSpellPower()
+	{
+		return SpellPower;
+	}
+
 
 	public void CompleteRegen()
 	{
@@ -508,6 +538,7 @@ public class Stat
 		_Charisma.Setup();
 		_Luck.Setup();
 	}
+
 
 	public StCon [] LevelUp(int power)
 	{

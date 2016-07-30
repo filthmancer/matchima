@@ -6,7 +6,7 @@ public class Player : MonoBehaviour {
 	public static Player instance;
 	public static Ops Options
 	{
-		get{return Player.instance._Options;}
+		get {return Player.instance._Options;}
 	}
 	public static int RequiredMatchNumber = 3;
 	public static bool loaded = false;
@@ -14,7 +14,7 @@ public class Player : MonoBehaviour {
 
 	public static List<Item> StashItems
 	{
-		get{
+		get {
 			return instance.ThisTurn_items;
 		}
 	}
@@ -23,9 +23,9 @@ public class Player : MonoBehaviour {
 	{
 		get
 		{
-			foreach(Item child in StashItems)
+			foreach (Item child in StashItems)
 			{
-				if(!child.Seen) return true;
+				if (!child.Seen) return true;
 			}
 			return false;
 		}
@@ -43,12 +43,12 @@ public class Player : MonoBehaviour {
 
 	public static Slot [] Slots
 	{
-		get{
+		get {
 			List<Slot> final = new List<Slot>();
-			foreach(Class child in Classes)
+			foreach (Class child in Classes)
 			{
-				if(child == null) continue;
-				foreach(Slot sl in child._Slots)
+				if (child == null) continue;
+				foreach (Slot sl in child._Slots)
 				{
 					final.Add(sl);
 				}
@@ -62,16 +62,16 @@ public class Player : MonoBehaviour {
 		get
 		{
 			List<Ability> final = new List<Ability>();
-			foreach(Class child in Classes)
+			foreach (Class child in Classes)
 			{
-				if(child == null) continue;
-				foreach(Slot sl in child.AllMods)
+				if (child == null) continue;
+				foreach (Slot sl in child.AllMods)
 				{
-					if(sl is Ability) final.Add(sl as Ability);
+					if (sl is Ability) final.Add(sl as Ability);
 				}
-				foreach(Slot sl in child._Slots)
+				foreach (Slot sl in child._Slots)
 				{
-					if(sl is Ability) final.Add(sl as Ability);
+					if (sl is Ability) final.Add(sl as Ability);
 				}
 			}
 			return final.ToArray();
@@ -83,16 +83,16 @@ public class Player : MonoBehaviour {
 		get
 		{
 			List<Item> final = new List<Item>();
-			foreach(Class child in Classes)
+			foreach (Class child in Classes)
 			{
-				if(child == null) continue;
-				foreach(Slot sl in child.AllMods)
+				if (child == null) continue;
+				foreach (Slot sl in child.AllMods)
 				{
-					if(sl is Item) final.Add(sl as Item);
+					if (sl is Item) final.Add(sl as Item);
 				}
-				foreach(Slot sl in child._Slots)
+				foreach (Slot sl in child._Slots)
 				{
-					if(sl is Item) final.Add(sl as Item);
+					if (sl is Item) final.Add(sl as Item);
 				}
 			}
 			return final.ToArray();
@@ -119,23 +119,23 @@ public class Player : MonoBehaviour {
 	void Start () {
 		TileMaster.instance.MapSize = Stats.MapSize;
 	}
-	
+
 	void Update () {
 		StatTemp = Stats;
 
-		if(PlayerControl.instance.TimeWithoutInput > 20.0F)
+		if (PlayerControl.instance.TimeWithoutInput > 20.0F)
 		{
 			idle_time -= Time.deltaTime;
-			if(idle_time <= 0.0F)
+			if (idle_time <= 0.0F)
 			{
 				idle_time = Random.Range(7.5F, 15.0F);
-				int randa = Random.Range(0,4);
+				int randa = Random.Range(0, 4);
 				bool info = Random.value > 0.5F;
-				if(Classes[randa] != null) 
+				if (Classes[randa] != null)
 					StartCoroutine(UIManager.instance.Quote((info ? Classes[randa].Quotes.Info : Classes[randa].Quotes.Idle)));
 			}
 		}
-		else if(PlayerControl.instance.TimeWithoutInput == 0.0F) idle_time = 0.0F;
+		else if (PlayerControl.instance.TimeWithoutInput == 0.0F) idle_time = 0.0F;
 
 	}
 
@@ -147,15 +147,15 @@ public class Player : MonoBehaviour {
 
 	public StatContainer GetResourceFromGENUS(GENUS ab)
 	{
-		switch(ab)
+		switch (ab)
 		{
-			case GENUS.STR:
+		case GENUS.STR:
 			return Classes[0].Stats.Red;
-			case GENUS.DEX:
+		case GENUS.DEX:
 			return Classes[1].Stats.Blue;
-			case GENUS.WIS:
+		case GENUS.WIS:
 			return Classes[2].Stats.Green;
-			case GENUS.CHA:
+		case GENUS.CHA:
 			return Classes[3].Stats.Yellow;
 		}
 		return null;
@@ -169,7 +169,7 @@ public class Player : MonoBehaviour {
 
 	public void OnTileMatch(Tile t)
 	{
-		
+
 	}
 
 	public void OnTileDestroy(Tile t)
@@ -198,9 +198,9 @@ public class Player : MonoBehaviour {
 
 	public int CompleteClasses()
 	{
-		foreach(Class child in Classes)
+		foreach (Class child in Classes)
 		{
-			if(child == null) continue;
+			if (child == null) continue;
 			child.Complete();
 		}
 		return 0;
@@ -208,14 +208,7 @@ public class Player : MonoBehaviour {
 
 	public IEnumerator BeforeMatch(List<Tile> tiles)
 	{
-		PlayerControl.instance.AddTilesToFinal(tiles.ToArray());
-		for(int i = 0; i < tiles.Count; i++)
-		{
-			if(tiles[i] == null) continue;
-			if(tiles[i].BeforeMatchEffect) yield return StartCoroutine(tiles[i].BeforeMatch(false));
-		}
-
-		foreach(Class child in Classes)
+		foreach (Class child in Classes)
 		{
 			yield return StartCoroutine(child.BeforeMatch(tiles));
 		}
@@ -232,40 +225,38 @@ public class Player : MonoBehaviour {
 		PlayerControl.matchingTile = null;
 
 		TileMaster.instance.SetFillGrid(true);
-		while(!TileMaster.AllLanded)	yield return null;
-
-		
+		while (!TileMaster.AllLanded)	yield return null;
 		UIManager.instance.SetBonuses(GameManager.instance.GetBonuses(GameManager.ComboSize));
 		UIManager.instance.StartTimer();
-
-		while(UIManager.instance.IsShowingMeters) yield return null;
+		while (UIManager.instance.IsShowingMeters) yield return null;
+		yield break;
 	}
 
 	public IEnumerator BeginTurn()
 	{
-		foreach(Class child in Classes)
+		foreach (Class child in Classes)
 		{
-			if(child == null) continue;
+			if (child == null) continue;
 			yield return StartCoroutine(child.BeginTurn());
-			
-			for(int i = 0; i < child._Status.Count; i++)
+
+			for (int i = 0; i < child._Status.Count; i++)
 			{
-				if(child._Status[i].CheckDuration()) 
+				if (child._Status[i].CheckDuration())
 				{
 					Destroy(child._Status[i].gameObject);
 					child._Status.RemoveAt(i);
 				}
 			}
-			
+
 			//yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 			UIManager.instance.SetClassButtons(false);
 		}
 
-		
+
 		UIManager.instance.SetClassButtons(false);
-		for(int i = 0; i < _Status.Count; i++)
+		for (int i = 0; i < _Status.Count; i++)
 		{
-			if(_Status[i].CheckDuration()) 
+			if (_Status[i].CheckDuration())
 			{
 				Destroy(_Status[i].gameObject);
 				_Status.RemoveAt(i);
@@ -292,7 +283,7 @@ public class Player : MonoBehaviour {
 		//	UIManager.instance.current_class = null;
 		//	UIManager.instance.ScreenAlert.SetTween(0, true);
 		//	UIManager.instance.ShowItemUI(ThisTurn_items.ToArray());
-		//	while(UIManager.ItemUI_active) 
+		//	while(UIManager.ItemUI_active)
 		//	{
 		//		yield return null;
 		//	}
@@ -301,14 +292,14 @@ public class Player : MonoBehaviour {
 
 		//UIManager.instance.WaveAlert.SetTween(0,false);
 
-		if(ThisTurn_upgrades.Count > 0)
+		if (ThisTurn_upgrades.Count > 0)
 		{
-			foreach(UpgradeGroup child in ThisTurn_upgrades)
+			foreach (UpgradeGroup child in ThisTurn_upgrades)
 			{
-				if(child.Upgrades.Length > 1)
+				if (child.Upgrades.Length > 1)
 				{
 					UIManager.instance.OpenBoonUI(child);
-					while(UIManager.BoonUI_active)	
+					while (UIManager.BoonUI_active)
 					{
 						yield return null;
 					}
@@ -318,7 +309,7 @@ public class Player : MonoBehaviour {
 					child.Target.GetUpgrade(child.Upgrades[0]);
 					yield return new WaitForSeconds(0.1F);
 				}
-				foreach(ClassUpgrade up in child.Upgrades)
+				foreach (ClassUpgrade up in child.Upgrades)
 				{
 					up.Value = 1;
 				}
@@ -326,7 +317,7 @@ public class Player : MonoBehaviour {
 		}
 
 		UIManager.instance.ItemUI.gameObject.SetActive(false);
-		
+
 		PlayerControl.instance.canMatch = true;
 
 		//ThisTurn_items.Clear();
@@ -341,9 +332,9 @@ public class Player : MonoBehaviour {
 
 	public IEnumerator EndTurn()
 	{
-		foreach(Class child in Classes)
+		foreach (Class child in Classes)
 		{
-			if(child == null) continue;
+			if (child == null) continue;
 			yield return StartCoroutine(child.EndTurn());
 		}
 		ResetStats();
@@ -358,9 +349,9 @@ public class Player : MonoBehaviour {
 
 	public IEnumerator CheckForBoonsRoutine()
 	{
-		foreach(Class child in Classes)
+		foreach (Class child in Classes)
 		{
-			if(child == null) continue;
+			if (child == null) continue;
 			yield return StartCoroutine(child.CheckForBoon());
 		}
 		yield return null;
@@ -374,7 +365,7 @@ public class Player : MonoBehaviour {
 
 	IEnumerator _PickupItem(Item i)
 	{
-		while(showingpickup) yield return null;
+		while (showingpickup) yield return null;
 		showingpickup = true;
 		(UIManager.Objects.MiddleGear[2] as UIObjTweener).SetTween(1, true);
 		UIManager.Objects.MiddleGear[2][0].SetActive(false);
@@ -399,18 +390,18 @@ public class Player : MonoBehaviour {
 
 	public IEnumerator CheckHealth()
 	{
-		for(int i = 0; i < Classes.Length; i++)
+		for (int i = 0; i < Classes.Length; i++)
 		{
-			if(Classes[i] != null) Classes[i].CheckHealth();
+			if (Classes[i] != null) Classes[i].CheckHealth();
 		}
 
-		if(Stats._Health < Stats._HealthMax / 5 && Stats._Health > 0)
+		if (Stats._Health < Stats._HealthMax / 5 && Stats._Health > 0)
 		{
-			int randa = Random.Range(0,4);
+			int randa = Random.Range(0, 4);
 			StartCoroutine(UIManager.instance.Quote(Classes[randa].Quotes.Danger));
 		}
 
-		if(Stats._Health <= 0) 
+		if (Stats._Health <= 0)
 		{
 			yield return StartCoroutine(DeathRoll());
 		}
@@ -420,48 +411,48 @@ public class Player : MonoBehaviour {
 	IEnumerator DeathRoll()
 	{
 		//Find all living characters
-			List<int> living_chars = new List<int>();
-			for(int i = 0; i < 4; i++)
-			{
-				if(!Classes[i].isKilled) living_chars.Add(i);
-			}
+		List<int> living_chars = new List<int>();
+		for (int i = 0; i < 4; i++)
+		{
+			if (!Classes[i].isKilled) living_chars.Add(i);
+		}
 
-			if(living_chars.Count == 0)
-			{
-				Stats.isKilled = true;
-				yield break;
-			}
+		if (living_chars.Count == 0)
+		{
+			Stats.isKilled = true;
+			yield break;
+		}
 
 		//Target Char to be killed
-			int target = living_chars[Random.Range(0,living_chars.Count)];
-			
-		//ROLL LUCK STAT OF TARGET TO SEE IF THEY DIE
-			float luck_chance = (float) Classes[target].Stats.Luck / (GameManager.Difficulty * 3.2F);
-			luck_chance += Classes[target].Stats.DeathSaveChance;
+		int target = living_chars[Random.Range(0, living_chars.Count)];
 
-			bool roll = Random.value > luck_chance;
-			yield return StartCoroutine(UIManager.instance.ShowDeathIcon(Classes[target], roll));
-			Stats.Heal(50);
-			if(roll)
-			{				
-				//StartCoroutine(UIManager.instance.Quote(Classes[target].Quotes.Death));
-				
-				if(living_chars.Count == 1)
-				{
-					Stats.isKilled = true;
-				}
+		//ROLL LUCK STAT OF TARGET TO SEE IF THEY DIE
+		float luck_chance = (float) Classes[target].Stats.Luck / (GameManager.Difficulty * 3.2F);
+		luck_chance += Classes[target].Stats.DeathSaveChance;
+
+		bool roll = Random.value > luck_chance;
+		yield return StartCoroutine(UIManager.instance.ShowDeathIcon(Classes[target], roll));
+		Stats.Heal(50);
+		if (roll)
+		{
+			//StartCoroutine(UIManager.instance.Quote(Classes[target].Quotes.Death));
+
+			if (living_chars.Count == 1)
+			{
+				Stats.isKilled = true;
 			}
-			ResetStats();
+		}
+		ResetStats();
 	}
 
 	public List<Bonus> CheckForBonus(GENUS g)
 	{
 		List<Bonus> bonuses = new List<Bonus>();
-		for(int i = 0; i < Equipment.Length; i++)
+		for (int i = 0; i < Equipment.Length; i++)
 		{
-			if(Equipment[i] == null) continue;
+			if (Equipment[i] == null) continue;
 			Bonus b = Equipment[i].CheckBonus();
-			if(b != null) bonuses.Add(b);
+			if (b != null) bonuses.Add(b);
 		}
 		return bonuses;
 	}
@@ -470,11 +461,11 @@ public class Player : MonoBehaviour {
 	{
 		ClassEffect e = (ClassEffect) Instantiate(GameData.instance.GetTileEffectByName(StatusName));
 		e.GetArgs(Duration, args);
-		if(i == -1) 
+		if (i == -1)
 		{
-			foreach(ClassEffect child in _Status)
+			foreach (ClassEffect child in _Status)
 			{
-				if(child.Name == e.Name)
+				if (child.Name == e.Name)
 				{
 					child.Duration += e.Duration;
 					Destroy(e.gameObject);
@@ -484,11 +475,11 @@ public class Player : MonoBehaviour {
 			_Status.Add(e);
 			e.transform.parent = this.transform;
 		}
-		else 
+		else
 		{
-			foreach(ClassEffect child in Classes[i]._Status)
+			foreach (ClassEffect child in Classes[i]._Status)
 			{
-				if(child.Name == e.Name)
+				if (child.Name == e.Name)
 				{
 					child.Duration += e.Duration;
 					Destroy(e.gameObject);
@@ -518,9 +509,9 @@ public class Player : MonoBehaviour {
 	public void Reset()
 	{
 		loaded = false;
-		foreach(Class child in Classes)
+		foreach (Class child in Classes)
 		{
-			if(child == null) continue;
+			if (child == null) continue;
 			Destroy(child.gameObject);
 		}
 		_Classes = new Class[4];
@@ -535,12 +526,12 @@ public class Player : MonoBehaviour {
 
 	IEnumerator LoadClasses(Class [] c = null)
 	{
-		if(c == null)
+		if (c == null)
 		{
 			Classes = new Class[_Classes.Length];
-			for(int i = 0; i < _Classes.Length; i++)
+			for (int i = 0; i < _Classes.Length; i++)
 			{
-				if(_Classes[i] == null) continue;
+				if (_Classes[i] == null) continue;
 
 				Classes[i] = (Class) Instantiate(_Classes[i]);
 				Classes[i].transform.parent = this.transform;
@@ -550,12 +541,12 @@ public class Player : MonoBehaviour {
 				yield return null;
 			}
 		}
-		else 
+		else
 		{
 			Classes = new Class[c.Length];
-			for(int i = 0; i < c.Length; i++)
+			for (int i = 0; i < c.Length; i++)
 			{
-				if(c[i] == null) continue;
+				if (c[i] == null) continue;
 				Classes[i] = c[i];
 				Classes[i].transform.parent = this.transform;
 				Classes[i].Genus = (GENUS)i;
@@ -564,12 +555,12 @@ public class Player : MonoBehaviour {
 				yield return null;
 			}
 		}
-	
+
 		/*for(int i = 0; i < Classes.Length; i++)
 		{
-			if(Classes[i] !=null) 
+			if(Classes[i] !=null)
 			{
-				
+
 				//yield return null;
 			}
 		}*/
@@ -578,7 +569,7 @@ public class Player : MonoBehaviour {
 		Stats._Health = Stats._HealthMax;
 		//yield return new WaitForSeconds(0.1F);
 
-		
+
 		loaded = true;
 
 		yield return null;
@@ -599,24 +590,24 @@ public class Player : MonoBehaviour {
 		float ratio = (float) Stats._Health / (float) Stats._HealthMax;
 		int armour = Stats._Armour;
 		Stats.SetStats(InitStats, false);
-		
+
 		int finalattack = 0;
 		//int finalhealth = 0;
-		for(int i = 0; i < Classes.Length; i++)
+		for (int i = 0; i < Classes.Length; i++)
 		{
-			if(Classes[i] != null) 
+			if (Classes[i] != null)
 			{
 				Classes[i].Reset();
-				if(!Classes[i].isKilled)
+				if (!Classes[i].isKilled)
 				{
 					Stats.AddStats(Classes[i].Stats);
 					finalattack += Classes[i].Stats._Attack;
 					//finalhealth += Classes[i].Stats._Health;
 				}
-			}	
+			}
 		}
 
-		for(int i = 0; i < _Status.Count; i++)
+		for (int i = 0; i < _Status.Count; i++)
 		{
 			Stats.AddStats(_Status[i].CheckStats());
 			_Status[i].StatusEffect();
@@ -628,11 +619,11 @@ public class Player : MonoBehaviour {
 
 		Stats.MapSize.x = Mathf.Clamp(Stats.MapSize.x, 0, 4);
 		Stats.MapSize.y = Mathf.Clamp(Stats.MapSize.y, 0, 4);
-		
-		if(!Stats.isKilled && TileMaster.GridSetup)
+
+		if (!Stats.isKilled && TileMaster.GridSetup)
 		{
-			Vector2 finalMap = TileMaster.instance.MapSize_Default 
-										+ Stats.MapSize;
+			Vector2 finalMap = TileMaster.instance.MapSize_Default
+			                   + Stats.MapSize;
 			TileMaster.instance.IncreaseGridTo(finalMap);
 		}
 
@@ -643,10 +634,10 @@ public class Player : MonoBehaviour {
 	public void ResetChances()
 	{
 		TileMaster.instance.ResetChances();
-		foreach(TileChance t in Stats.TileChances)
+		foreach (TileChance t in Stats.TileChances)
 		{
-			TileMaster.instance.IncreaseChance(t.Genus,t.Type, t.Chance);
-			if(t.Value > 0)
+			TileMaster.instance.IncreaseChance(t.Genus, t.Type, t.Chance);
+			if (t.Value > 0)
 			{
 				SPECIES s = TileMaster.Types[t.Type];
 				GenusInfo g = s[t.Genus];
@@ -654,28 +645,28 @@ public class Player : MonoBehaviour {
 			}
 		}
 
-		if(GameManager.Wave != null) GameManager.Wave.GetChances();
-		
+		if (GameManager.Wave != null) GameManager.Wave.GetChances();
+
 		Spawner2.GetSpawnables(TileMaster.Types);
 	}
 
 	public int [] ActiveDamage(int damage, Tile [] selected)
 	{
 		int[] indiv_damage = new int[selected.Length];
-		for(int i = 0; i < selected.Length; i++)
+		for (int i = 0; i < selected.Length; i++)
 		{
-			if(selected[i].Type.isEnemy) indiv_damage[i] = damage;
+			if (selected[i].Type.isEnemy) indiv_damage[i] = damage;
 			else indiv_damage[i] = 0;
 		}
 
-		foreach(Ability child in Abilities)
+		foreach (Ability child in Abilities)
 		{
-			if(child == null) continue;
+			if (child == null) continue;
 			child.DamageIndicator(ref indiv_damage, selected);
 		}
 
-		foreach(Item child in Items){
-			if(child == null) continue;
+		foreach (Item child in Items) {
+			if (child == null) continue;
 			child.DamageIndicator(ref indiv_damage, selected);
 		}
 
@@ -684,34 +675,73 @@ public class Player : MonoBehaviour {
 
 
 
+public static int AttackValue
+{
+	get{return (int) ((float)Stats.GetAttack() * (1.0F + AddedAttackPower));}
+}
+public static int SpellValue
+{
+	get{return (int) ((float)Stats.GetSpell() * (1.0F + AddedSpellPower));}
+}
+
+public static float AttackPower
+{
+	get{return AddedAttackPower + Stats.GetAttackPower();}
+}
+
+public static float SpellPower
+{
+	get{return AddedSpellPower + Stats.GetSpellPower();}
+}
+public static float AddedAttackPower = 0;
+public static float AddedSpellPower  = 0;
+
+	public int [] GetAttackValues(Tile [] selected)
+	{
+		//GET ATTACK POWER
+		AddedAttackPower = 0;
+		AddedSpellPower = 0;
+		for(int i = 0; i < selected.Length; i++)
+		{
+			AddedAttackPower += selected[i].Stats.AttackPower;
+			AddedSpellPower += selected[i].Stats.SpellPower;
+		}
+
+		//CHECK PLAYER, CLASSES, ITEMS FOR BONUS ATTACK
+		int [] final = new int[selected.Length];
+		final = ActiveDamage(AttackValue, selected);
+
+		return final;
+	}
+
 	public void OnHit(params Tile[] attackers)
 	{
 		int hit =  0;
-		for(int i = 0; i < attackers.Length; i++)
+		for (int i = 0; i < attackers.Length; i++)
 		{
-		 	hit += attackers[i].GetAttack();
+			hit += attackers[i].GetAttack();
 		}
 
-		foreach(Item child in Items)
+		foreach (Item child in Items)
 		{
 			hit = child.OnHit(hit, attackers);
 		}
-		foreach(Ability child in Abilities)
+		foreach (Ability child in Abilities)
 		{
 			hit = child.OnHit(hit, attackers);
 		}
-		
+
 		Stats.Hit(hit, attackers);
 	}
 
 	public void CheckForBestCombo(int[] combo)
 	{
 		int final = 0;
-		for(int i = 0; i < combo.Length; i++)
+		for (int i = 0; i < combo.Length; i++)
 		{
 			final += combo[i];
 		}
-		if(final > BestCombo) 
+		if (final > BestCombo)
 		{
 			BestCombo = final;
 		}
@@ -741,13 +771,13 @@ public class Player : MonoBehaviour {
 	public static List<Vector2> QueuedSpells = new List<Vector2>();
 	public static void QueueSpell(int x, int y)
 	{
-		QueuedSpells.Add(new Vector2(x,y));
+		QueuedSpells.Add(new Vector2(x, y));
 	}
 	public static bool QueuedSpell(int x, int y)
 	{
-		foreach(Vector2 child in QueuedSpells)
+		foreach (Vector2 child in QueuedSpells)
 		{
-			if(child.x == x && child.y == y) return true;
+			if (child.x == x && child.y == y) return true;
 		}
 		return false;
 	}
@@ -755,41 +785,41 @@ public class Player : MonoBehaviour {
 	public void Tutorial()
 	{
 		QuoteGroup tute = null;
-		switch(Turns)
+		switch (Turns)
 		{
-			case 0:
+		case 0:
 			tute = new QuoteGroup("Tute");
 			tute.AddQuote("Swipe 3 tiles to Match!",  Classes[2], true, 1F);
 			break;
-			case 1:
+		case 1:
 			tute = new QuoteGroup("Tute");
-			tute.AddQuote("Mana tiles fill mana pools.", Classes[1],true, 1F );
+			tute.AddQuote("Mana tiles fill mana pools.", Classes[1], true, 1F );
 			tute.AddQuote("Health tiles fill the health bar.", Classes[1], true, 1F);
 			break;
-			case 3:
+		case 3:
 			tute = new QuoteGroup("Tute");
 			tute.AddQuote("Enemies incoming!", Classes[0], true, 1F);
-			tute.AddQuote("Enemy tiles deal damage to your health.",Classes[0], true, 1F);
+			tute.AddQuote("Enemy tiles deal damage to your health.", Classes[0], true, 1F);
 			tute.AddQuote("Match enemies to attack them back!", Classes[0], true, 1f);
 			break;
-			case 5:
+		case 5:
 			tute = new QuoteGroup("Tute");
 			tute.AddQuote("Enemies sleep for one turn on appearing", Classes[1], true, 1f);
 			tute.AddQuote("Keep their numbers low. The more there are, the more damage you'll take!", Classes[1], true, 1F);
 			break;
-			case 8:
+		case 8:
 			tute = new QuoteGroup("Tute");
 			tute.AddQuote("Tiles each have different values and effects", Classes[3], true, 1F);
 			tute.AddQuote("Hold down on a tile to see its Info.", Classes[3], true, 1F);
 			break;
-			case 11:
+		case 11:
 			tute = new QuoteGroup("Tute");
 			tute.AddQuote("When you fill a mana pool, it creates a special tile.", Classes[2], true, 1f);
 			tute.AddQuote("Tiles can have many different effects! Read their Info and experiment!", Classes[2], true, 1f);
 			break;
 		}
 
-		if(tute != null) StartCoroutine(UIManager.instance.Quote(tute.ToArray()));
+		if (tute != null) StartCoroutine(UIManager.instance.Quote(tute.ToArray()));
 	}
 }
 
@@ -801,8 +831,8 @@ public class Ops
 	private float game_speed = 1.0F;
 	public float GameSpeed
 	{
-		get{return game_speed;}
-		set{game_speed = Mathf.Clamp(value, 0.0F, 2.0F);}
+		get {return game_speed;}
+		set {game_speed = Mathf.Clamp(value, 0.0F, 2.0F);}
 	}
 
 	public KeyCode ViewTileStatsKey = KeyCode.LeftShift;
@@ -818,7 +848,7 @@ public class Ops
 }
 
 [System.Serializable]
-public class EquipmentContainer{
+public class EquipmentContainer {
 	public Item Helm;
 	public Item Chest;
 	public Item Weapon;
@@ -830,39 +860,39 @@ public class EquipmentContainer{
 
 	public Item this[int i]
 	{
-		get{
-			switch(i)
+		get {
+			switch (i)
 			{
-				case 0:
+			case 0:
 				return Helm;
-				case 1:
+			case 1:
 				return Chest;
-				case 2:
+			case 2:
 				return Weapon;
-				case 3:
+			case 3:
 				return Shield;
-				case 4:
+			case 4:
 				return Boots;
 			}
 			return null;
 		}
 
-		set{
-			switch(i)
+		set {
+			switch (i)
 			{
-				case 0:
+			case 0:
 				Helm = value;
 				break;
-				case 1:
+			case 1:
 				Chest = value;
 				break;
-				case 2:
+			case 2:
 				Weapon = value;
 				break;
-				case 3:
+			case 3:
 				Shield = value;
 				break;
-				case 4:
+			case 4:
 				Boots = value;
 				break;
 			}
@@ -871,17 +901,17 @@ public class EquipmentContainer{
 
 	public string TypeOf(int i)
 	{
-		switch(i)
+		switch (i)
 		{
-			case 0:
+		case 0:
 			return "Helm";
-			case 1:
+		case 1:
 			return "Chest";
-			case 2:
+		case 2:
 			return "Weapon";
-			case 3:
+		case 3:
 			return "Shield";
-			case 4:
+		case 4:
 			return "Boots";
 		}
 		return "ERROR";
