@@ -45,10 +45,14 @@ public class Bard : Class {
 		harp = new TileChance();
 		harp.Genus = GameData.ResourceLong(Genus);
 		harp.Type = "harp";
-		harp.Chance = 0.11F;
+		harp.Chance = 0.14F;
 		InitStats.TileChances.Add(harp);
 
-
+		TileChance sword = new TileChance();
+		sword.Genus = GameData.ResourceLong(Genus);
+		sword.Type = "sword";
+		sword.Chance = 0.01F;
+		InitStats.TileChances.Add(sword);
 
 		TileChance health = new TileChance();
 		health.Genus = GameData.ResourceLong(Genus);

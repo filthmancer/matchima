@@ -345,9 +345,18 @@ public class TileMaster : MonoBehaviour {
 					CreateTile(xx,yy, velocity);	
 				}
 				yield return null;
+			}			
+		}
+		for(int x = 0; x < Grid.Size[0]; x++)
+		{
+			for(int y = 0; y < Grid.Size[1];y++)
+			{
+				if(Grid[x,y]._Tile == null) continue;
+				if(Tiles[x,y] != null || Tiles[x,y].Type == null)
+				{
+					Tiles[x,y].InitStats.isNew = false;
+				}
 			}
-
-			
 		}
 	}
 
@@ -599,6 +608,18 @@ public class TileMaster : MonoBehaviour {
 				}
 			}
 		}
+		for(int x = 0; x < Grid.Size[0]; x++)
+		{
+			for(int y = 0; y < Grid.Size[1];y++)
+			{
+				if(Grid[x,y]._Tile == null) continue;
+				if(Tiles[x,y] != null || Tiles[x,y].Type == null)
+				{
+					Tiles[x,y].InitStats.isNew = false;
+				}
+			}
+		}
+		
 	}
 
 	public IEnumerator BeforeTurn()

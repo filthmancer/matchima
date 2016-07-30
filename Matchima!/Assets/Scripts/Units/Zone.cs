@@ -27,6 +27,7 @@ public class Zone : MonoBehaviour {
 	public bool Repeat;
 	public int StartAt = 0;
 
+	public bool isNew = true;
 	public Color Tint, WallTint;
 	[SerializeField]
 	public IntVector MapSize;
@@ -48,6 +49,7 @@ public class Zone : MonoBehaviour {
 			if(Waves[i] == null) continue;
 			Waves[i].Index = i;
 		}
+		isNew = true;
 	}
 
 	public Wave GetWaveProgressive()
@@ -105,7 +107,7 @@ public class Zone : MonoBehaviour {
 			if(child.Chance > 0.0F && GameManager.Difficulty > child.RequiredDifficulty)
 			{
 				choices.Add(child);
-				chance.Add(child.Chance);
+				chance.Add(child.Chance * 3);
 			}
 		}
 		foreach(Wave child in GameManager.instance.DefaultWaves.Waves)

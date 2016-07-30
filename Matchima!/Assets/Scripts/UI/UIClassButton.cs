@@ -32,6 +32,15 @@ public class UIClassButton : UIObj {
 	public bool shop_activated = false;
 	float tooltip_timer = 0.3F;
 
+	public override void Start()
+	{
+		base.Start();
+		AddAction(UIAction.MouseDown, ()=>
+		{
+			if(GameManager.inStartMenu)  UIManager.Menu.HeroMenu(ParentObj.Index);
+		});
+	}
+
 	// Update is called once per frame
 	public void Update () {
 		if(!class_set && _class != null) 
@@ -40,8 +49,8 @@ public class UIClassButton : UIObj {
 			AddAction(UIAction.MouseOver, () => {HoverOver();});
 			AddAction(UIAction.MouseDown, () => {
 				if(_class.MeterLvl > 0 && !GameManager.instance.isPaused) StartCoroutine(_class.UseManaPower());
-				//PartialOpen.OpenCloseObjectAnimation();
 				});
+
 			if(ClassInit.IsObjectOpened()) ClassInit.OpenCloseObjectAnimation();
 		}
 		else if(_class == null && ClassInit.IsObjectOpened()) ClassInit.OpenCloseObjectAnimation();
@@ -75,19 +84,6 @@ public class UIClassButton : UIObj {
 
 			GetCooldown();
 		}
-
-		activated = UIManager.instance.current_class == this._class;
-		if(UIManager.instance.current_class != null)
-		{
-			_Sprite.color = (activated ? color_default : color_default * Color.grey);
-			_Frame.color = (activated ? Color.white : Color.grey);
-		}
-		else 
-		{
-			_Sprite.color = color_default;
-			_Frame.color = Color.white;
-		}
-
 	}
 
 	public void Setup(Class ab)
@@ -183,6 +179,20 @@ public class UIClassButton : UIObj {
 	public void ActivatePower()
 	{
 
+	}
+
+	public void QuickPopup(float time)
+	{
+		if(!PartialOpen.IsObjectOpened())
+			StartCoroutine(QuickPopup_Routine(time));
+	}
+
+	IEnumerator QuickPopup_Routine(float time)
+	{
+		PartialOpen.OpenCloseObjectAnimation();
+		yield return new WaitForSeconds(time);
+		PartialOpen.OpenCloseObjectAnimation();
+		yield return null;
 	}
 
 	public void TweenClass(bool? active = null)

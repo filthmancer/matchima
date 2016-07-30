@@ -68,7 +68,7 @@ private int _currentmanapower = 100;
 		TileChance bomb = new TileChance();
 		bomb.Genus = GameData.ResourceLong(Genus);
 		bomb.Type = "arcane";
-		bomb.Chance = 0.15F;
+		bomb.Chance = 0.2F;
 		InitStats.TileChances.Add(bomb);
 
 		/*lightning = new TileChance();

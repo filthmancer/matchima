@@ -26,23 +26,46 @@ public class ItemTile : Tile {
 		}
 	}
 
+	public string [] RollTypes = new string[]
+	{
+		"cross",
+		"lightning",
+		"bomb",
+		"altar",
+		"minion",
+		"blackhole"
+	};
+
 	public override bool Match(int resource)
 	{
 		if(isMatching) return true;
 		isMatching = true;
 
+		InitStats.Value *=  resource;
 		CheckStats();
-		Stats.Value *=  resource;
-
+		if(Random.value > 0.3F)
+		{
+			InitStats.Value *= 3;
+			CollectThyself(true);
+			TileMaster.Tiles[Point.Base[0], Point.Base[1]] = null;
+			CheckStats();
+			return true;
+		}
+		else
+		{
+			string type = RollTypes[Random.Range(0, RollTypes.Length)];
+			TileMaster.instance.ReplaceTile(this, TileMaster.Types[type], GENUS.RAND, 1, Stats.Value);
+			return false;
+		}
 	//CHANGE ITEM STATS BASED ON VALUE
 
-		GameObject item_obj = Instantiate(ItemObj);
+	/*	GameObject item_obj = Instantiate(ItemObj);
 		_Item = item_obj.GetComponent<Item>();
 		_Item.SetStats(null, Stats.Value, Genus);
 		Player.instance.PickupItem(_Item);
 		CollectThyself(true);
-		TileMaster.Tiles[Point.Base[0], Point.Base[1]] = null;
-		return true;
+		TileMaster.Tiles[Point.Base[0], Point.Base[1]] = null;*/
+		
 	}
 
 	public override void AddValue(float amt)

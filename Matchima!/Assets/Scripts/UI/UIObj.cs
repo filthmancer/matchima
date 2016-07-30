@@ -124,6 +124,7 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 	{
 		if(isPressed)
 		{
+		
 			time_over += Time.deltaTime;
 		}
 	}
@@ -184,7 +185,6 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 
 	public void OnPointerUp(PointerEventData eventData)
 	{
-		Img[0].color = init;
 		foreach(UIAction_Method child in TypeActions_MouseUp)
 		{
 			child.Act();
@@ -194,12 +194,9 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 		{
 			child();
 		}
-
-		
-		
 		isPressed = false;
 		time_over = 0.0F;
-		if(Img.Length > 0) Img[0].color = init;
+		if(Img.Length > 0) Img[0].color = init;	
 	}
 	List<Action>	Actions_MouseOut = new List<Action>(), 
 					Actions_MouseOver = new List<Action>(),

@@ -22,16 +22,12 @@ public class UIClassSelect : UIObj {
 		{
 			Img[0].color = GameData.Colour(_class.Genus);
 			Txt[0].text = _class._Name.Value;
+			Txt[1].text = "";
 			
-			AddAction(UIAction.MouseUp, () => {
-
-			if(time_over < drag_threshold) 
-			{
-				
-				//(ParentObj as UIGear).Drag = false;
+			AddAction(UIAction.MouseUp, (string [] f) => {
 				UIManager.Menu.SetTargetClass(this);
-			}
-
+				(ParentObj as UIGear).Drag = true;
+				
 			});
 		}
 		else
@@ -42,12 +38,7 @@ public class UIClassSelect : UIObj {
 		
 		AddAction(UIAction.MouseDown, () =>
 		{
-			//if(time_over > drag_threshold) 
-			//{
-				
-				//(ParentObj as UIGear).Drag = true;
-			//}
-			
+			(ParentObj as UIGear).Drag = false;			
 		});
 		 init = Img[0].color;
 	}
@@ -63,5 +54,7 @@ public class UIClassSelect : UIObj {
 			//}
 		}
 	}
+
+
 
 }

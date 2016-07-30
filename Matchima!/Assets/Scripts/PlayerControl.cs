@@ -30,7 +30,7 @@ public class PlayerControl : MonoBehaviour {
 
 	[HideInInspector]
 	public bool AttackMatch = false;
-	[HideInInspector]
+
 	public int AttackValue = 0;
 
 	public Line _Line;
@@ -212,12 +212,14 @@ public class PlayerControl : MonoBehaviour {
 	{
 		int [] final = new int[selected.Length];
 		int default_attack = Player.Stats._Attack;
+		AttackValue = 1;
 		for(int i = 0; i < selected.Length; i++)
 		{
 			if(!selected[i].Type.isEnemy)
-				default_attack += Player.Stats._Attack * selected[i].Stats.Attack;
+				AttackValue *= selected[i].Stats.Attack;
 		}
 
+		default_attack *= AttackValue;
 		final = Player.instance.ActiveDamage(default_attack, selected);
 
 		return final;

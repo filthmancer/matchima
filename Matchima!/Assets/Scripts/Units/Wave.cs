@@ -52,6 +52,7 @@ public class Wave : Unit {
 	public bool HasDialogue;
 	public bool ExplodeOnEnd;
 	public bool PointsFromTiles = true;
+	public bool ShuffleTiles = false;
 	public Quote [] Quotes;
 	public WaveUnit [] AllSlots
 	{
@@ -103,6 +104,23 @@ public class Wave : Unit {
 			if(AllSlots[i] == null) continue;
 			AllSlots[i].Activate();
 		}	
+
+		if(ShuffleTiles)
+		{
+			List<WaveUnit> final = new List<WaveUnit>();
+			List<WaveUnit> init = new List<WaveUnit>();
+			init.AddRange(AllSlots);
+			for(int i = 0; i < AllSlots.Length; i++)
+			{
+				int num = Random.Range(0,init.Count);
+				final.Add(init[num]);
+				init.RemoveAt(num);
+			}
+
+			Slot1 = final[0];
+			Slot2 = final[1];
+			Slot3 = final[2];
+		}
 
 		yield return StartCoroutine(WaveActivateRoutine());
 	}

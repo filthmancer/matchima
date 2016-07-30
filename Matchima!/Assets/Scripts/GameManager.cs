@@ -13,6 +13,7 @@ public enum GameMode
 {
 	Story,
 	Endless,
+	Quick,
 	None
 }
 
@@ -210,6 +211,7 @@ public class GameManager : MonoBehaviour {
 					//TileMaster.instance.SetFillGrid(true);
 					if(Mode == GameMode.Story) PlayStoryMode();
 					else if (Mode == GameMode.Endless) PlayEndlessMode();
+					else if (Mode == GameMode.Quick) PlayQuickMode();
 				}
 			}
 		}
@@ -346,10 +348,10 @@ public class GameManager : MonoBehaviour {
 			Player.Stats._Health = Player.Stats._HealthMax;
 			break;
 			case 2: //X
-			EscapeZone();
+			//EscapeZone();
 			//GetWave(GameData.instance.GetRandomWave(), 2);
 			//CameraUtility.SetTurnOffset(camopen);
-			//Wave.AddPoints(150);
+			Wave.AddPoints(150);
 			//TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["chest"], GENUS.ALL, 1, 1);
 			break;
 			case 3: //c
@@ -482,7 +484,7 @@ public class GameManager : MonoBehaviour {
 		StCon [] floor = new StCon[]{new StCon("Entered")};
 		StCon [] title = new StCon[]{new StCon(CurrentZone.Name, CurrentZone.WallTint * 1.5F, false, 110)};
 		
-		yield return StartCoroutine(UIManager.instance.Alert(1.2F, floor, title));
+		yield return StartCoroutine(UIManager.instance.Alert(0.9F, floor, title));
 		yield return StartCoroutine(_GetWave(w));
 		
 	}
@@ -646,6 +648,28 @@ public class GameManager : MonoBehaviour {
 		StartCoroutine(_EnterZone());
 	}
 
+	public void PlayQuickMode()
+	{
+		inStartMenu = false;
+		gameStart = true;
+		StartCoroutine(Player.instance.BeginTurn());
+		RoundTokens = 0;
+
+		ClearUI();
+
+		ZoneMap = GenerateZoneMap(new Vector2[]{
+									new Vector2(1,1),
+									new Vector2(1,3),
+									new Vector2(2,4),
+									new Vector2(1,1)
+			});
+		UIManager.Objects.TopGear.Txt[0].text = "";
+
+		UIManager.instance.GenerateZoneMap();
+		StartCoroutine(_EnterZone());
+	}
+
+
 	public void ResumeGame()
 	{
 		inStartMenu = false;
@@ -726,6 +750,7 @@ public class GameManager : MonoBehaviour {
 		
 		yield return StartCoroutine(TileMaster.instance.AfterTurn());
 		yield return StartCoroutine(CompleteTurnRoutine());
+		yield return StartCoroutine(Player.instance.CheckHealth());	
 		yield return StartCoroutine(CurrentWave.AfterTurn());
 
 		if(CurrentWave.Ended && !Player.Stats.isKilled)
@@ -920,7 +945,7 @@ public class GameManager : MonoBehaviour {
 
 		//yield return StartCoroutine(Player.instance.CheckForBoonsRoutine());
 		Player.instance.CompleteHealth();
-		yield return StartCoroutine(Player.instance.CheckHealth());	
+		
 		Player.instance.ResetStats();
 
 		PlayerControl.instance.canMatch = true;
@@ -966,19 +991,23 @@ public class GameManager : MonoBehaviour {
 	 	if(multi > 1.0F)
 	 		final.Add(new Bonus(multi,title,multi.ToString("0.0") + "x", col));
 
-
-	 	for(int i = 0; i < Player.Classes.Length; i++)
-	 	{
-	 		if(AllOfRes(i))
-	 		{
-	 			final.Add(new Bonus(
-	 				Player.Stats.AllColourMulti,
-	 				"ALL " + GameData.Resource(Player.Classes[i].Genus),
-	 				Player.Stats.AllColourMulti.ToString("0.0") + "x",
-	 				GameData.Colour((GENUS)i), i));
-	 		}
-	 		final.AddRange(Player.instance.CheckForBonus((GENUS) i));
-	 	}
+		if(!Zone.isNew)
+		{
+			for(int i = 0; i < Player.Classes.Length; i++)
+			{
+				if(AllOfRes(i))
+				{
+					final.Add(new Bonus(
+						Player.Stats.AllColourMulti,
+						"ALL " + GameData.Resource(Player.Classes[i].Genus),
+						Player.Stats.AllColourMulti.ToString("0.0") + "x",
+						GameData.Colour((GENUS)i), i));
+				}
+				final.AddRange(Player.instance.CheckForBonus((GENUS) i));
+			}
+		}
+		Zone.isNew = false;
+	 	
 
 	 	return final.ToArray();
 	 	
@@ -1168,6 +1197,7 @@ public class GameManager : MonoBehaviour {
 
 	public bool AllOfRes(int i)
 	{
+		
 		bool all_of_res = true;
 		GENUS matchGENUS = Player.Classes[i].Genus;
 		if(matchGENUS != GENUS.ALL)

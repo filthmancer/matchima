@@ -1,9 +1,30 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Mimic : Enemy {
 
 	public bool revealed = false;
+
+	public override StCon [] BaseDescription
+	{
+		get{
+			List<StCon> basic = new List<StCon>();
+			if(Stats.Resource != 0)
+			basic.Add(new StCon("+" + Stats.GetValues()[0] + " Mana", GameData.Colour(Genus), false, 40));
+			if(Stats.Heal != 0)
+			basic.Add(new StCon("+" + Stats.GetValues()[1] + "% Health", GameData.Colour(GENUS.STR), false, 40));
+			if(Stats.Armour != 0)
+			basic.Add(new StCon("+" + Stats.GetValues()[2] + " Armour", GameData.Colour(GENUS.DEX), false, 40));
+			if(revealed)
+			{
+				basic.Add(new StCon((Stats.Hits > 0 ? Stats.Hits : 0) + " Health", GameData.Colour(GENUS.STR), false,40));
+				basic.Add(new StCon((Stats.Attack > 0 ? Stats.Attack : 0) + " Attack", GameData.Colour(GENUS.DEX), false,40));
+			}
+			return basic.ToArray();
+		}
+	}
+
 	public override StCon [] Description
 	{
 		get{
@@ -163,12 +184,10 @@ public class Mimic : Enemy {
 
 	public override void SetSprite()
 	{
-		int sprite = Stats.Value / 5;
 		SetBorder(Info.Outer);
-		if(revealed) sprite = 1;
-		else sprite = 0;
 
-		SetRender(Info._GenusName);
+		if(revealed) SetRender(Info._GenusName + "_2");
+		else SetRender(Info._GenusName);
 		
 		//if(Params._shiny != null && Params._render != null) Params._shiny.sprite = Params._render.sprite;
 	}

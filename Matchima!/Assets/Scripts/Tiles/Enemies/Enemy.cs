@@ -222,7 +222,7 @@ public class Enemy : Tile {
 			CollectThyself(true);
 
 			PlayAudio("death");
-			float item_chance = 0.0F;//float)Stats.Value/32.0F;
+			float item_chance = (float)Stats.Value/32.0F;
 			if(Stats.Value > 10) item_chance += 0.4F;
 			if(Random.value < item_chance) 
 			{
