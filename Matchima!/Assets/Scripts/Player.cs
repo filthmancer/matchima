@@ -167,6 +167,18 @@ public class Player : MonoBehaviour {
 		ResetStats();
 	}
 
+	public void CompleteRegen()
+	{
+		int heal = 0;
+		foreach(Class child in Classes)
+		{
+			int [] regen = child.Stats.CompleteRegen();
+			heal += regen[0];
+			child.AddTometer(regen[1]);
+		}
+		Stats.Heal(heal);
+	}
+
 	public void OnTileMatch(Tile t)
 	{
 
@@ -220,7 +232,7 @@ public class Player : MonoBehaviour {
 	{
 		PlayerControl.instance.finalTiles.Clear();
 		PlayerControl.instance.selectedTiles.Clear();
-		Stats.CompleteRegen();
+		CompleteRegen();
 		CompleteHealth();
 		PlayerControl.matchingTile = null;
 

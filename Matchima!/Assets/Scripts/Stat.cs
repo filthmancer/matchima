@@ -479,16 +479,14 @@ public class Stat
 	}
 
 
-	public void CompleteRegen()
+	public int [] CompleteRegen()
 	{
-		//Debug.Log(Regen);
 		GameData.Log("Regen'd " + HealthRegen + " health");
-		HealThisTurn += HealthRegen;
 		foreach(StatContainer child in AllStats)
 		{
 			child.Regen();
 		}
-		
+		return new int [] {HealthRegen, MeterRegen};
 	}
 
 	public void CompleteLeech(int num)

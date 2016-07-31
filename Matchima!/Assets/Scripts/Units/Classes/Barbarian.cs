@@ -34,6 +34,48 @@ public class Barbarian : Class {
 
 		PowerupSpell = GameData.instance.GetPowerup("Heal", this);
 
+		Ups_Lvl1 = new Upgrade []
+		{
+			new Upgrade("Hearty", " Max HP", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._HealthMax += 10 + (int)val*5;}, 5, 10),
+			new Upgrade("Healing", " HP Regen", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.HealthRegen += 1 + (int) val;}, 1, 1),
+			new Upgrade("Sharp", " Attack", 0.5F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._Attack += 1 + (int)val;}, 1, 1),
+			new Upgrade("Soldier's", "% chance\n of Health", 0.2F, ScaleType.GRADIENT, 1.0F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance(GameData.ResourceLong(Genus), "health", 0.1F + 0.03F * value));}, 3, 10
+				),
+			new Upgrade("Bombers's", "% chance\n of Bomb", 0.1F, ScaleType.GRADIENT, 1.0F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance(GameData.ResourceLong(Genus), "bomb", 0.1F + 0.03F * value));}, 3, 10
+				)
+		};
+
+		Ups_Lvl2 = new Upgrade []
+		{
+			new Upgrade("Lucky", "% Death Save Chance",
+						1.0F, ScaleType.GRADIENT, 1.0F,
+						(Stat s, float value) =>
+						{
+							s.DeathSaveChance += 0.05F + (value * 0.03F);
+						}, 3, 5),
+			new Upgrade("Strengthening", " Tile Per Match", 1.0F, ScaleType.RANK, 0.0F,
+				(Stat s, float value) =>
+				{
+					s.MatchNumberModifier -= 1;
+					}, -1, -1)
+		};
+
+		Ups_Lvl3 = new Upgrade []
+		{
+			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.4F,
+						(Stat s, float value) => {
+							s.MapSize.x += 1 + (int) (1 * value);},1,1
+						),
+			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.4F,
+				(Stat s, float value) => {
+					s.MapSize.y += 1 + (int) (1 * value);},1,1
+					)
+		};
+
 		base.StartClass();
 	}
 

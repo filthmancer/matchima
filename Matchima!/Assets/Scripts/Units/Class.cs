@@ -166,6 +166,8 @@ public class Class : Unit {
 		0, 0,0,0//6, 10, 30
 	};
 
+	protected Upgrade [] Ups_Lvl1, Ups_Lvl2, Ups_Lvl3;
+
 	public GameObject ManaPowerParticle;
 	public UIObj MinigameObj;
 

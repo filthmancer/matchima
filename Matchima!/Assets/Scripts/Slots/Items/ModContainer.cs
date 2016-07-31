@@ -149,23 +149,30 @@ public class ModContainer : MonoBehaviour {
 		new GenusBracket("Red",
 			new Upgrade("Hearty", " Max HP", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._HealthMax += 10 + (int)val*5;}, 5, 10),
 			new Upgrade("Healing", " HP Regen", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.HealthRegen += 1 + (int) val;}, 1, 1),
-			new Upgrade("Sharp", " Attack", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._Attack += 1 + (int)val;}, 1, 1)
-			),
+			new Upgrade("Sharp", " Attack", 0.4F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._Attack += 1 + (int)val;}, 1, 1),
+			new Upgrade("Wise", " Spell Power", 0.4F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.SpellPower += 0.2F * val;}, 0.2F),
+			new Upgrade("Healing", " MP Regen", 0.2F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.MeterRegen += 1 + (int) val;}) 
+		),
 		
 		new GenusBracket("Blue",
 			new Upgrade("Sharp", " Attack", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._Attack += 1 + (int)val;}, 1, 1),
-			new Upgrade("Spiked", " Spikes", 1.0F, ScaleType.GRADIENT,1.0F, (Stat s, float val) => {s.Spikes += 1 + (int)val;}, 1, 1)
-		
+			new Upgrade("Spiked", " Spikes", 1.0F, ScaleType.GRADIENT,1.0F, (Stat s, float val) => {s.Spikes += 1 + (int)val;}, 1, 1),
+			new Upgrade("Hearty", " Max HP", 0.4F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._HealthMax += 10 + (int)val*5;}, 5, 10),
+			new Upgrade("Healing", " HP Regen", 0.4F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.HealthRegen += 1 + (int) val;}, 1, 1),
+			new Upgrade("Healing", " MP Regen", 0.2F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.MeterRegen += 1 + (int) val;})
 		),
 		new GenusBracket("Green",
-			new Upgrade("Addict's", "% Manapower Decay", 1.0F, ScaleType.GRADIENT, 0.08F,
-						(Stat s, float val) => {s.MeterDecay_Global -= (int)val;}, 4),
-			new Upgrade("Hearty", " Max HP", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._HealthMax += 10 + (int)val * 5;}, 5, 10)
+			new Upgrade("Wise", " Spell Power", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.SpellPower += 0.2F * val;}, 0.2F),
+			new Upgrade("Hearty", " Max HP", 0.4F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._HealthMax += 10 + (int)val * 5;}, 5, 10),
+			new Upgrade("Healing", " HP Regen", 0.4F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.HealthRegen += 1 + (int) val;}),
+			new Upgrade("Healing", " MP Regen", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.MeterRegen += 1 + (int) val;})
 		),
 		new GenusBracket("Yellow",
 			new Upgrade("Spiked", " Spikes", 1.0F, ScaleType.GRADIENT,1.0F, (Stat s, float val) => {s.Spikes += 1 + (int)val;}, 1, 1),
-			new Upgrade("Sharp", " Attack", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._Attack += 1 + (int)val;}, 1, 1),
-			new Upgrade("Healing", " HP Regen", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.HealthRegen += 1 + (int) val;}, 1, 1)
+			new Upgrade("Sharp", " Attack", 0.4F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._Attack += 1 + (int)val;}, 1, 1),
+			new Upgrade("Healing", " HP Regen", 0.4F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.HealthRegen += 1 + (int) val;}, 1, 1),
+			new Upgrade("Wise", " Spell Power", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.SpellPower += 0.2F * val;}, 0.2F),
+			new Upgrade("Healing", " MP Regen", 0.2F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.MeterRegen += 1 + (int) val;})
 		)
 		
 	});
@@ -436,7 +443,7 @@ public class ModContainer : MonoBehaviour {
 	public static UpgradeBracket Elegant = new UpgradeBracket(5, "Elegant", ItemType.Elegant, 0.35F, new GenusBracket [] {
 		new GenusBracket("Red",
 			new OnMatchUpgrade("Charming", "% Chance to\nCharm Enemy",
-								1.0F, ScaleType.GRADIENT, 1.0F,
+								1.0F, ScaleType.GRADIENT, 1.5F,
 				(Stat s, float value) => {
 					CastTileEffect(value, "enemy", "Charm");
 				}	
@@ -444,7 +451,7 @@ public class ModContainer : MonoBehaviour {
 		),
 		new GenusBracket("Blue",
 			new OnMatchUpgrade("Charming", "% Chance to\nCharm Enemy",
-								1.0F, ScaleType.GRADIENT, 1.0F,
+								1.0F, ScaleType.GRADIENT, 1.5F,
 				(Stat s, float value) => {
 					CastTileEffect(value, "enemy", "Charm");
 				}	
@@ -452,7 +459,7 @@ public class ModContainer : MonoBehaviour {
 		),
 		new GenusBracket("Green",
 			new OnMatchUpgrade("Charming", "% Chance to\nCharm Enemy",
-								1.0F, ScaleType.GRADIENT, 1.0F,
+								1.0F, ScaleType.GRADIENT, 1.5F,
 				(Stat s, float value) => {
 					CastTileEffect(value, "enemy", "Charm");
 				}	
@@ -460,7 +467,7 @@ public class ModContainer : MonoBehaviour {
 		),
 		new GenusBracket("Yellow",
 			new OnMatchUpgrade("Charming", "% Chance to\nCharm Enemy",
-								1.0F, ScaleType.GRADIENT, 1.0F,
+								1.0F, ScaleType.GRADIENT, 1.5F,
 				(Stat s, float value) => {
 					CastTileEffect(value, "enemy", "Charm");
 				}	
@@ -528,10 +535,11 @@ public class ModContainer : MonoBehaviour {
 		),
 		new GenusBracket("Green",
 			new Upgrade("Wise", " Max MP", 1.0F, ScaleType.GRADIENT, 0.4F, (Stat s, float val) => {s.MeterMax += 5 + (int)val;}, 1, 5),
-			new Upgrade("Addict's", " Mana Decay", 1.0F, ScaleType.GRADIENT, 0.08F, (Stat s, float val) => {s.MeterDecay_Global += 1 + (int)val;}, -1, -1)
+			new Upgrade("Hearty", " Max HP", 1.0F, ScaleType.GRADIENT, 0.6F, (Stat s, float val) => {s._HealthMax -= 10 + (int)val;}, -1, -10)
 		),
 		new GenusBracket("Yellow",
-			new Upgrade("Wise", " Max MP", 1.0F, ScaleType.GRADIENT, 0.4F, (Stat s, float val) => {s.MeterMax += 5 + (int)val;}, 1, 5)
+			new Upgrade("Wise", " Max MP", 1.0F, ScaleType.GRADIENT, 0.4F, (Stat s, float val) => {s.MeterMax += 5 + (int)val;}, 1, 5),
+			new Upgrade("Hearty", " Max HP", 1.0F, ScaleType.GRADIENT, 0.6F, (Stat s, float val) => {s._HealthMax -= 10 + (int)val;}, -1, -10)
 		)
 		
 	});
@@ -696,7 +704,7 @@ public class ModContainer : MonoBehaviour {
 						),
 			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.7F,
 				(Stat s, float value) => {
-					s.MapSize.y -= 1 + (int) (1 * value);},1,1
+					s.MapSize.y -= 1 + (int) (1 * value);},-1,-1
 					)
 		),
 		new GenusBracket("Blue",
@@ -706,7 +714,7 @@ public class ModContainer : MonoBehaviour {
 						),
 			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.7F,
 				(Stat s, float value) => {
-					s.MapSize.y -= 1 + (int) (1 * value);},1,1
+					s.MapSize.y -= 1 + (int) (1 * value);},-1,-1
 				)
 		),
 		new GenusBracket("Green",
@@ -716,7 +724,7 @@ public class ModContainer : MonoBehaviour {
 						),
 			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.7F,
 				(Stat s, float value) => {
-					s.MapSize.y -= 1 + (int) (1 * value);},1,1
+					s.MapSize.y -= 1 + (int) (1 * value);},-1,-1
 				)
 		),
 		new GenusBracket("Yellow",
@@ -726,7 +734,7 @@ public class ModContainer : MonoBehaviour {
 						),
 			new Upgrade("Magellan's", " Map Y", 1.0F, ScaleType.RANK, 0.7F,
 				(Stat s, float value) => {
-					s.MapSize.y -= 1 + (int) (1 * value);},1,1
+					s.MapSize.y -= 1 + (int) (1 * value);},-1,-1
 				)
 		)
 		
