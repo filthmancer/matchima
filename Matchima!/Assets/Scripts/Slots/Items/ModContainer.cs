@@ -150,7 +150,7 @@ public class ModContainer : MonoBehaviour {
 			new Upgrade("Hearty", " Max HP", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._HealthMax += 10 + (int)val*5;}, 5, 10),
 			new Upgrade("Healing", " HP Regen", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.HealthRegen += 1 + (int) val;}, 1, 1),
 			new Upgrade("Sharp", " Attack", 0.4F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._Attack += 1 + (int)val;}, 1, 1),
-			new Upgrade("Wise", " Spell Power", 0.4F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.SpellPower += 0.2F * val;}, 0.2F),
+			new Upgrade("Wise", "% Spell Power", 0.4F, ScaleType.GRADIENT, 0.2F, (Stat s, float val) => {s.SpellPower += 0.2F * val;}, 20),
 			new Upgrade("Healing", " MP Regen", 0.2F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.MeterRegen += 1 + (int) val;}) 
 		),
 		
@@ -159,19 +159,21 @@ public class ModContainer : MonoBehaviour {
 			new Upgrade("Spiked", " Spikes", 1.0F, ScaleType.GRADIENT,1.0F, (Stat s, float val) => {s.Spikes += 1 + (int)val;}, 1, 1),
 			new Upgrade("Hearty", " Max HP", 0.4F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._HealthMax += 10 + (int)val*5;}, 5, 10),
 			new Upgrade("Healing", " HP Regen", 0.4F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.HealthRegen += 1 + (int) val;}, 1, 1),
+			new Upgrade("Wise", "% Spell Power", 0.4F, ScaleType.GRADIENT, 0.2F, (Stat s, float val) => {s.SpellPower += 0.2F * val;}, 20),
 			new Upgrade("Healing", " MP Regen", 0.2F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.MeterRegen += 1 + (int) val;})
 		),
 		new GenusBracket("Green",
-			new Upgrade("Wise", " Spell Power", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.SpellPower += 0.2F * val;}, 0.2F),
+			new Upgrade("Wise", "% Spell Power", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.SpellPower += 0.2F * val;}, 20),
 			new Upgrade("Hearty", " Max HP", 0.4F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._HealthMax += 10 + (int)val * 5;}, 5, 10),
-			new Upgrade("Healing", " HP Regen", 0.4F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.HealthRegen += 1 + (int) val;}),
-			new Upgrade("Healing", " MP Regen", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.MeterRegen += 1 + (int) val;})
+			new Upgrade("Healing", " HP Regen", 0.4F, ScaleType.GRADIENT, 0.8F, (Stat s, float val) => {s.HealthRegen += 1 + (int) val;}),
+			new Upgrade("Healing", " MP Regen", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.MeterRegen += 1 + (int) val;}),
+			new Upgrade("Sharp", " Spell", 0.7F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._Spell += 1 + (int)val;}, 1, 1)
 		),
 		new GenusBracket("Yellow",
 			new Upgrade("Spiked", " Spikes", 1.0F, ScaleType.GRADIENT,1.0F, (Stat s, float val) => {s.Spikes += 1 + (int)val;}, 1, 1),
 			new Upgrade("Sharp", " Attack", 0.4F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._Attack += 1 + (int)val;}, 1, 1),
 			new Upgrade("Healing", " HP Regen", 0.4F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.HealthRegen += 1 + (int) val;}, 1, 1),
-			new Upgrade("Wise", " Spell Power", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.SpellPower += 0.2F * val;}, 0.2F),
+			new Upgrade("Wise", "% Spell Power", 1.0F, ScaleType.GRADIENT, 0.2F, (Stat s, float val) => {s.SpellPower += 0.2F * val;}, 20),
 			new Upgrade("Healing", " MP Regen", 0.2F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.MeterRegen += 1 + (int) val;})
 		)
 		
@@ -196,7 +198,7 @@ public class ModContainer : MonoBehaviour {
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("red", "armour", 0.1F + 0.03F * value));}, 3, 10
 				),
-			new Upgrade("Cleric's", "% chance\n of Red Cross", 1.0F, ScaleType.GRADIENT, 1.0F,
+			new Upgrade("Cleric's", "% chance\n of Red Beam", 1.0F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("Red", "cross", 0.1F + 0.03F * value));}, 3, 10
 				),
@@ -219,7 +221,7 @@ public class ModContainer : MonoBehaviour {
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("Blue", "health", 0.1F + 0.03F * value));}, 3, 10
 				),
-			new Upgrade("Cleric's", "% chance\n of Blue Cross", 1.0F, ScaleType.GRADIENT, 1.0F,
+			new Upgrade("Cleric's", "% chance\n of Blue Beam", 1.0F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("Blue", "cross", 0.1F + 0.03F * value));}, 3, 10
 				),
@@ -257,7 +259,7 @@ public class ModContainer : MonoBehaviour {
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("green", "armour", 0.1F + 0.03F * value));}, 3, 10
 				),
-			new Upgrade("Cleric's", "% chance\n of Green Cross", 1.0F, ScaleType.GRADIENT, 1.0F,
+			new Upgrade("Cleric's", "% chance\n of Green Beam", 1.0F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("Green", "cross", 0.1F + 0.03F * value));}, 3, 10
 				),
@@ -271,7 +273,7 @@ public class ModContainer : MonoBehaviour {
 				)
 		),
 		new GenusBracket("Yellow",
-			new Upgrade("Cleric's", "% chance\n of Cross", 0.45F, ScaleType.GRADIENT, 1.0F,
+			new Upgrade("Cleric's", "% chance\n of Beam", 0.45F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("", "cross", 0.1F + 0.03F * value));}, 3, 10
 				),
@@ -302,18 +304,81 @@ public class ModContainer : MonoBehaviour {
 		)
 	});
 
-	public static UpgradeBracket Shift = new UpgradeBracket(2, "Shift", ItemType.Shift, 0.0F, new GenusBracket [] {
-		new GenusBracket("Red"
-
-			),
+	public static UpgradeBracket Shift = new UpgradeBracket(2, "Shift", ItemType.Shift, 0.1F, new GenusBracket [] {
+		new GenusBracket("Red",
+			new Upgrade("Bombers's", " Lightning Value", 1.0F, ScaleType.GRADIENT, 0.2F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("", "lightning", 0, 1 + (int)value));}, 1, 1),
+			
+			new Upgrade("Bombers's", " Arcane Value", 1.0F, ScaleType.GRADIENT, 0.2F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("", "arcane", 0, 1 + (int)value));}, 1, 1),
+			
+			new Upgrade("Bombers's", " Bomb Value", 1.0F, ScaleType.GRADIENT, 0.2F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("", "bomb", 0, 1 + (int)value));}, 1, 1),
+			
+			new Upgrade("Bombers's", " Beam Value", 1.0F, ScaleType.GRADIENT, 0.2F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("", "cross", 0, 1 + (int)value));}, 1, 1)
+			
+		),
 		
-		new GenusBracket("Blue"
+		new GenusBracket("Blue",
+			new Upgrade("Bombers's", " Lightning Value", 1.0F, ScaleType.GRADIENT, 0.2F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("", "lightning", 0, 1 + (int)value));}, 1, 1),
+			
+			new Upgrade("Bombers's", " Arcane Value", 1.0F, ScaleType.GRADIENT, 0.2F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("", "arcane", 0, 1 + (int)value));}, 1, 1),
+			
+			new Upgrade("Bombers's", " Bomb Value", 1.0F, ScaleType.GRADIENT, 0.2F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("", "bomb", 0, 1 + (int)value));}, 1, 1),
+			
+			new Upgrade("Bombers's", " Beam Value", 1.0F, ScaleType.GRADIENT, 0.2F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("", "cross", 0, 1 + (int)value));}, 1, 1)
+			
 
 		),
-		new GenusBracket("Green"
+		new GenusBracket("Green",
+			new Upgrade("Bombers's", " Lightning Value", 1.0F, ScaleType.GRADIENT, 0.2F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("", "lightning", 0, 1 + (int)value));}, 1, 1),
+			
+			new Upgrade("Bombers's", " Arcane Value", 1.0F, ScaleType.GRADIENT, 0.2F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("", "arcane", 0, 1 + (int)value));}, 1, 1),
+			
+			new Upgrade("Bombers's", " Bomb Value", 1.0F, ScaleType.GRADIENT, 0.2F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("", "bomb", 0, 1 + (int)value));}, 1, 1),
+			
+			new Upgrade("Bombers's", " Beam Value", 1.0F, ScaleType.GRADIENT, 0.2F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("", "cross", 0, 1 + (int)value));}, 1, 1)
+			
 		
 		),
-		new GenusBracket("Yellow"
+		new GenusBracket("Yellow",
+			new Upgrade("Bombers's", " Lightning Value", 1.0F, ScaleType.GRADIENT, 0.2F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("", "lightning", 0, 1 + (int)value));}, 1, 1),
+			
+			new Upgrade("Bombers's", " Arcane Value", 1.0F, ScaleType.GRADIENT, 0.2F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("", "arcane", 0, 1 + (int)value));}, 1, 1),
+			
+			new Upgrade("Bombers's", " Bomb Value", 1.0F, ScaleType.GRADIENT, 0.2F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("", "bomb", 0, 1 + (int)value));}, 1, 1),
+			
+			new Upgrade("Bombers's", " Beam Value", 1.0F, ScaleType.GRADIENT, 0.2F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("", "cross", 0, 1 + (int)value));}, 1, 1)
+			
 
 		)
 	});
@@ -326,7 +391,7 @@ public class ModContainer : MonoBehaviour {
 						{
 							s.DeathSaveChance += 0.05F + (value * 0.03F);
 						}, 3, 5),
-			new Upgrade("Strengthening", " Tile Per Match", 1.0F, ScaleType.RANK, 0.0F,
+			new Upgrade("Strengthening", " Tile Per Match", 0.2F, ScaleType.RANK, 0.0F,
 				(Stat s, float value) =>
 				{
 					s.MatchNumberModifier -= 1;
@@ -340,7 +405,7 @@ public class ModContainer : MonoBehaviour {
 						{
 							s.DeathSaveChance += 0.05F + (value * 0.03F);
 						}, 3, 5),
-			new Upgrade("Strengthening", " Tile Per Match", 1.0F, ScaleType.RANK, 0.0F,
+			new Upgrade("Strengthening", " Tile Per Match", 0.2F, ScaleType.RANK, 0.0F,
 				(Stat s, float value) =>
 				{
 					s.MatchNumberModifier -= 1;
@@ -353,7 +418,7 @@ public class ModContainer : MonoBehaviour {
 						{
 							s.DeathSaveChance += 0.05F + (value * 0.03F);
 						}, 3, 5),
-			new Upgrade("Strengthening", " Tile Per Match", 1.0F, ScaleType.RANK, 0.0F,
+			new Upgrade("Strengthening", " Tile Per Match", 0.2F, ScaleType.RANK, 0.0F,
 				(Stat s, float value) =>
 				{
 					s.MatchNumberModifier -= 1;
@@ -366,7 +431,7 @@ public class ModContainer : MonoBehaviour {
 						{
 							s.DeathSaveChance += 0.05F + (value * 0.03F);
 						}, 3, 5),
-			new Upgrade("Strengthening", " Tile Per Match", 1.0F, ScaleType.RANK, 0.0F,
+			new Upgrade("Strengthening", " Tile Per Match", 0.2F, ScaleType.RANK, 0.0F,
 				(Stat s, float value) =>
 				{
 					s.MatchNumberModifier -= 1;
@@ -442,32 +507,80 @@ public class ModContainer : MonoBehaviour {
 	}
 	public static UpgradeBracket Elegant = new UpgradeBracket(5, "Elegant", ItemType.Elegant, 0.35F, new GenusBracket [] {
 		new GenusBracket("Red",
-			new OnMatchUpgrade("Charming", "% Chance to\nCharm Enemy",
+			new OnMatchUpgrade("Charming", "% Chance to\nChange Enemy to Bomb",
 								1.0F, ScaleType.GRADIENT, 1.5F,
+				(Stat s, float value) => {
+					CastTileChange(value, "enemy", "Bomb");
+				}	
+			),
+			new OnMatchUpgrade("Charming", "% Chance to\nSleep Enemy",
+								0.8F, ScaleType.GRADIENT, 1.5F,
+				(Stat s, float value) => {
+					CastTileEffect(value, "enemy", "Sleep");
+				}	
+			),
+			new OnMatchUpgrade("Charming", "% Chance to\nCharm Enemy",
+								0.4F, ScaleType.GRADIENT, 1.5F,
 				(Stat s, float value) => {
 					CastTileEffect(value, "enemy", "Charm");
 				}	
 			)
 		),
 		new GenusBracket("Blue",
-			new OnMatchUpgrade("Charming", "% Chance to\nCharm Enemy",
+			new OnMatchUpgrade("Charming", "% Chance to\nChange Enemy to Sword",
 								1.0F, ScaleType.GRADIENT, 1.5F,
+				(Stat s, float value) => {
+					CastTileChange(value, "enemy", "Sword");
+				}	
+			),
+			new OnMatchUpgrade("Charming", "% Chance to\nSleep Enemy",
+								0.4F, ScaleType.GRADIENT, 1.5F,
+				(Stat s, float value) => {
+					CastTileEffect(value, "enemy", "Sleep");
+				}	
+			),
+			new OnMatchUpgrade("Charming", "% Chance to\nCharm Enemy",
+								0.4F, ScaleType.GRADIENT, 1.5F,
 				(Stat s, float value) => {
 					CastTileEffect(value, "enemy", "Charm");
 				}	
 			)
 		),
 		new GenusBracket("Green",
-			new OnMatchUpgrade("Charming", "% Chance to\nCharm Enemy",
+			new OnMatchUpgrade("Charming", "% Chance to\nChange Enemy to Lightning",
 								1.0F, ScaleType.GRADIENT, 1.5F,
+				(Stat s, float value) => {
+					CastTileChange(value, "enemy", "lightning");
+				}	
+			),
+			new OnMatchUpgrade("Charming", "% Chance to\nSleep Enemy",
+								0.4F, ScaleType.GRADIENT, 1.5F,
+				(Stat s, float value) => {
+					CastTileEffect(value, "enemy", "Sleep");
+				}	
+			),
+			new OnMatchUpgrade("Charming", "% Chance to\nCharm Enemy",
+								0.4F, ScaleType.GRADIENT, 1.5F,
 				(Stat s, float value) => {
 					CastTileEffect(value, "enemy", "Charm");
 				}	
 			)
 		),
 		new GenusBracket("Yellow",
-			new OnMatchUpgrade("Charming", "% Chance to\nCharm Enemy",
+			new OnMatchUpgrade("Charming", "% Chance to\nChange Enemy to Chicken",
 								1.0F, ScaleType.GRADIENT, 1.5F,
+				(Stat s, float value) => {
+					CastTileChange(value, "enemy", "Chicken");
+				}	
+			),
+			new OnMatchUpgrade("Charming", "% Chance to\nSleep Enemy",
+								0.4F, ScaleType.GRADIENT, 1.5F,
+				(Stat s, float value) => {
+					CastTileEffect(value, "enemy", "Sleep");
+				}	
+			),
+			new OnMatchUpgrade("Charming", "% Chance to\nCharm Enemy",
+								0.8F, ScaleType.GRADIENT, 1.5F,
 				(Stat s, float value) => {
 					CastTileEffect(value, "enemy", "Charm");
 				}	
@@ -475,7 +588,7 @@ public class ModContainer : MonoBehaviour {
 		)
 		});
 	
-	public static UpgradeBracket Developers = new UpgradeBracket(6, "Developer's", ItemType.Developers, 0.35F, new GenusBracket[]
+	public static UpgradeBracket Developers = new UpgradeBracket(6, "Developer's", ItemType.Developers, 0.32F, new GenusBracket[]
 	{
 		new GenusBracket("Red",
 			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.4F,

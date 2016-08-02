@@ -285,10 +285,10 @@ public class GameManager : MonoBehaviour {
 			Player.Classes[3].AddToMeter(Player.Classes[3].MeterTop);
 		}
 
-		//if(Input.GetKeyDown(KeyCode.H))	Player.Classes[0].LevelUp();
-		//if(Input.GetKeyDown(KeyCode.J))	Player.Classes[1].LevelUp();
-		//if(Input.GetKeyDown(KeyCode.K))	Player.Classes[2].LevelUp();
-		//if(Input.GetKeyDown(KeyCode.L))	Player.Classes[3].LevelUp();
+		if(Input.GetKeyDown(KeyCode.H))	StartCoroutine(Player.Classes[0].Mutate(1));
+		if(Input.GetKeyDown(KeyCode.J))	StartCoroutine(Player.Classes[1].Mutate(1));
+		if(Input.GetKeyDown(KeyCode.K))	StartCoroutine(Player.Classes[2].Mutate(1));
+		if(Input.GetKeyDown(KeyCode.L))	StartCoroutine(Player.Classes[3].Mutate(1));
 
 		if(Input.GetKeyDown(KeyCode.F5)) PlayerControl.instance.focusTile.AddValue(5);
 		if(Input.GetKeyDown(KeyCode.F10)) OpenInFileBrowser.Open(Application.persistentDataPath);
@@ -352,10 +352,10 @@ public class GameManager : MonoBehaviour {
 			Player.Stats._Health = Player.Stats._HealthMax;
 			break;
 			case 2: //X
-			EscapeZone();
+			//EscapeZone();
 			//GetWave(GameData.instance.GetRandomWave(), 2);
 			//CameraUtility.SetTurnOffset(camopen);
-			//Wave.AddPoints(150);
+			Wave.AddPoints(150);
 			//TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["chest"], GENUS.ALL, 1, 1);
 			break;
 			case 3: //c

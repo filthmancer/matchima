@@ -40,7 +40,7 @@ public class Arcane : Tile {
 		get
 		{
 			CheckStats();
-			return (3 + (Stats.Value)) * (int)Player.SpellPower;
+			return (3 * (Stats.Value)) + (int)Player.SpellPower;
 		}
 	}
 
@@ -163,6 +163,7 @@ public class Arcane : Tile {
 
 				mp.SetTileMethod(c, (Tile child) =>
 				{
+				//	print(final_damage + ":" + Player.SpellPower);
 					child.SetState(TileState.Selected, true);
 					child.InitStats.Hits -= final_damage;
 					//child.InitStats.TurnDamage += final_damage;

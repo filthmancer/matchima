@@ -13,7 +13,7 @@ public class Grunt : Enemy {
 	private int ChiefHPScale = 3, ChiefHPMult = 1;
 	private int ChiefATKScale = 19, ChiefATKMult = 1;
 
-	private int TerrorHPScale = 12, TerrorHPMult = 4;
+	private int TerrorHPScale = 14, TerrorHPMult = 3;
 	private int TerrorATKScale = 19, TerrorATKMult = 1;
 
 	public override StCon [] Description
@@ -85,14 +85,8 @@ public class Grunt : Enemy {
 			{
 				if(Random.value < chief_chance)
 				{
-					//if(Random.value < terror_chance) Rank = 4;
-					//else 
 					Rank = 3;
 				}
-				//else if(Random.value < terror_chance)
-				//{
-				//	Rank = 4;
-				//}
 				else Rank = 2;
 			}
 			else if(Random.value < terror_chance) Rank = 4;
@@ -104,25 +98,25 @@ public class Grunt : Enemy {
 		{
 			case 1:
 			Name        = "Grunt";
-			//InitStats.Value += (int)(factor/5);
+			InitStats.Value = 2;//(int)(factor/5);
 			hpfactor    *= GruntHPMult + factor / GruntHPScale;
 			atkfactor   *= GruntATKMult + factor / GruntATKScale;
 			break;
 			case 2:
 			Name        = "Captain";
-			InitStats.Value += 1 + (int)(factor/5);
+			InitStats.Value = 4;//1 + (int)(factor/5);
 			hpfactor    *= CaptainHPMult + factor / CaptainHPScale;
 			atkfactor   *= CaptainATKMult + factor / CaptainATKScale;
 			break;
 			case 3:
 			Name        = "Chief";
-			InitStats.Value += 2 + (int)(factor/5);
+			InitStats.Value = 6;//2 + (int)(factor/5);
 			hpfactor    *= ChiefHPMult + factor / ChiefHPScale;
 			atkfactor   *= ChiefATKMult + factor / ChiefATKScale;
 			break;
 			case 4:
 			Name        = "Terror";
-			InitStats.Value += 4 + (int)(factor/2);
+			//InitStats.Value += 4 + (int)(factor/2);
 			hpfactor    *= TerrorHPMult + factor / TerrorHPScale;
 			atkfactor   *= TerrorATKMult + factor / TerrorATKScale;
 			break;

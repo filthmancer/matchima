@@ -87,12 +87,12 @@ public class Stat
 	public int MatchNumberModifier = 0;
 
 	public int _Attack = 0;
-	public float AttackRate = 0;
-	public int _Spell = 0;
-
 	public float AttackPower = 0.0F;
+	public int _Spell = 0;
 	public float SpellPower = 0.0F;
 
+	public float AttackRate = 0;
+	
 	public int HealthRegen = 0;
 	public int HealthLeech = 0;
 	public int MeterRegen = 0;
@@ -185,6 +185,7 @@ public class Stat
 			Stat_MeterInc = prev.Stat_MeterInc;
 			Stat_AtkInc = prev.Stat_AtkInc;
 			Stat_MeterInc = prev.Stat_MeterInc;
+			Stat_SplInc = prev.Stat_SplInc;
 		//}
 
 		_Strength          = new StatContainer(prev._Strength, GENUSs);
@@ -234,7 +235,7 @@ public class Stat
 		TileChances.Clear();
 		TileChances.AddRange(prev.TileChances);
 
-		MatchNumberModifier = prev.MatchNumberModifier;
+		MatchNumberModifier = Mathf.Clamp(prev.MatchNumberModifier, 2, 100);
 
 		//HealThisTurn = prev.HealThisTurn;
 		//DmgThisTurn = prev.DmgThisTurn;
@@ -246,6 +247,7 @@ public class Stat
 		Stat_MeterInc += other.Stat_MeterInc;
 		Stat_AtkInc += other.Stat_AtkInc;
 		Stat_MeterInc += other.Stat_MeterInc;
+		Stat_SplInc += other.Stat_SplInc;
 
 		_Strength.AddValues(other._Strength);
 		_Dexterity.AddValues(other._Dexterity);
@@ -255,7 +257,7 @@ public class Stat
 
 		ComboCounter      += other.ComboCounter;
 		ComboBonus        += other.ComboBonus;
-		MatchNumberModifier += other.MatchNumberModifier;
+		MatchNumberModifier = MatchNumberModifier = Mathf.Clamp(MatchNumberModifier+other.MatchNumberModifier, 2, 100);;
 
 		_Attack     += other._Attack;
 		_Spell 		+= other._Spell;
@@ -290,19 +292,27 @@ public class Stat
 		//DmgThisTurn += other.DmgThisTurn;
 	}	
 
-	public float Stat_HealthInc = 0, Stat_MeterInc = 0, Stat_AtkInc = 0, Stat_ValueInc = 0;
+	public float  
+	Stat_HealthInc = 0,
+	Stat_MeterInc  = 0,
+	Stat_AtkInc    = 0, 
+	Stat_ValueInc  = 0,
+	Stat_SplInc    = 0;
+
 	public void ApplyStatInc()
 	{
 		ValueInc      += (int)Stat_ValueInc;
 		_Attack       += (int)Stat_AtkInc;
+		_Spell 		  += (int)Stat_SplInc;
 		MeterMax 	  += (int)Stat_MeterInc;
 		_HealthMax    += (int)Stat_HealthInc;
 	}
 
 	public void CheckStatInc() {
-		Stat_HealthInc = (float)Strength*6;
-		Stat_MeterInc = (float)Wisdom / 4.0F;
-		Stat_AtkInc = (float)Dexterity / 7.0F;
+		Stat_HealthInc = (float)Strength * 5;
+		Stat_SplInc = (float)Wisdom / 10.0F;
+		//Stat_MeterInc = (float)Wisdom / 4.0F;
+		Stat_AtkInc = (float)Dexterity / 10.0F;
 		Stat_ValueInc = (float)Charisma / 20.0F;
 	}
 	

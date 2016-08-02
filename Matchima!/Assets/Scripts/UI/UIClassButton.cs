@@ -32,6 +32,8 @@ public class UIClassButton : UIObj {
 	public bool shop_activated = false;
 	float tooltip_timer = 0.3F;
 
+	public Sprite HeroMaskSprite;
+
 	public override void Start()
 	{
 		base.Start();
@@ -104,8 +106,11 @@ public class UIClassButton : UIObj {
 		_Sprite.sprite = ab.Icon;
 		_Sprite.color = color_default;
 		_Sprite.enabled = true;
-		_SpriteMask.sprite = ab.Icon;
+		_SpriteMask.sprite = HeroMaskSprite;
+		_SpriteMask.color = new Color(1,1,1,0.2F);
 		_SpriteMask.enabled = false;
+
+		_FrameMask.gameObject.SetActive(true);
 		_FrameMask.clipTopRight = new Vector2(1,1);
 
 		for(int i = 0; i < _class._Slots.Length; i++)

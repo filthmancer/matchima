@@ -8,11 +8,16 @@ public class Bomb : Tile {
 		get
 		{
 			CheckStats();
-			return 1 + (Stats.Value/12);
+			return 1 + (Stats.Value/5);
 		}
 	}
 	public GameObject Particles;
-	private int BombDamage = 10;
+	private int BombDamage
+	{
+		get{
+			return 10 + (int)Player.SpellPower;
+		}
+	}
 
 	public override StCon [] Description
 	{

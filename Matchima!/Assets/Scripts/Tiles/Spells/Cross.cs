@@ -15,7 +15,13 @@ public class Cross : Tile {
 	int[] DownLeft = new int[] {-1, -1};
 	int[] DownRight = new int[] {1, -1};
 
-	public int CrossDamage = 10;
+	public int CrossDamage
+	{
+		get
+		{
+			return (int) (10 * Stats.Value) + (int) Player.SpellPower;
+		}
+	}
 
 	public override StCon [] Description
 	{

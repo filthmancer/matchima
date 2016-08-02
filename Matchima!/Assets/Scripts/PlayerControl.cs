@@ -98,10 +98,10 @@ public class PlayerControl : MonoBehaviour {
 		{
 			bool input = Input.GetMouseButton(0) || Input.GetKey(KeyCode.Space);
 
-			if(Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space) || (PlayerControl.matchingTile == null && input)) 
+			if(Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space) || (matchingTile == null && input)) 
 			{
 				isMatching = true;
-				matchingTile = focusTile;
+				SetMatchingTile(focusTile);
 			}
 
 			CheckCheats();
@@ -168,26 +168,7 @@ public class PlayerControl : MonoBehaviour {
 			
 		}
 
-		if(matchingTile != null)//PlayerControl.matchingTile != null)
-		{
-			if(PlayerControl.matchingTile.Genus == GENUS.ALL)
-			{
-				foreach(Tile child in selectedTiles)
-				{
-					if(child.Genus != GENUS.ALL) PlayerControl.matchingTile = child;
-				}
-			}
-			//Adding ability, item and other values to attack
-			int [] finaldamage = Player.instance.GetAttackValues(selectedTiles.ToArray());
-
-			for(int i = 0; i < selectedTiles.Count; i++)
-			{
-				if(selectedTiles[i].Type.isEnemy)
-				{
-					selectedTiles[i].SetDamageWarning(finaldamage[i]);
-				}
-			}
-		}
+		
 	}
 
 	public Vector3 [] LightningLine(Vector3 start, Vector3 end, int segments, float power)
@@ -204,6 +185,31 @@ public class PlayerControl : MonoBehaviour {
 			last = final[i];
 		}
 		return final;
+	}
+
+	public void SetMatchingTile(Tile t)
+	{
+		matchingTile = t;
+		if(matchingTile != null)
+		{
+			if(matchingTile.Genus == GENUS.ALL)
+			{
+				foreach(Tile child in selectedTiles)
+				{
+					if(child.Genus != GENUS.ALL) matchingTile = child;
+				}
+			}
+			//Adding ability, item and other values to attack
+			int [] finaldamage = Player.instance.GetAttackValues(selectedTiles.ToArray());
+
+			for(int i = 0; i < selectedTiles.Count; i++)
+			{
+				if(selectedTiles[i].Type.isEnemy)
+				{
+					selectedTiles[i].SetDamageWarning(finaldamage[i]);
+				}
+			}
+		}
 	}
 
 
@@ -297,13 +303,15 @@ public class PlayerControl : MonoBehaviour {
 					focusTile = TileMaster.Tiles[final[0], final[1]];
 				}
 				else focusTile = nt;
+
+
 				if(sound_hover == null)
 				{
-					PlayerControl.instance.sound_hover = AudioManager.instance.PlayClip(this.transform, AudioManager.instance.Tiles_Default, "hold_1");
+					sound_hover = AudioManager.instance.PlayClip(this.transform, AudioManager.instance.Tiles_Default, "hold_1");
 					if(sound_hover != null)
 					{
-						PlayerControl.instance.sound_hover.GetComponent<DestroyTimer>().enabled = false;
-						PlayerControl.instance.sound_hover.loop = true;
+						sound_hover.GetComponent<DestroyTimer>().enabled = false;
+						sound_hover.loop = true;
 					}
 					
 				}
@@ -364,25 +372,20 @@ public class PlayerControl : MonoBehaviour {
 			}
 
 			selectedTiles.RemoveRange(point+1, range);
-			PlayerControl.matchingTile = selectedTiles[point];
+			SetMatchingTile(selectedTiles[point]);
 
-			//AudioManager.instance.PlayClipOn(this.transform, "Player", "Release");
 			for(int i = 0; i < selectedTiles.Count; i++)
 			{
-				if(PlayerControl.matchingTile.Genus == GENUS.ALL)
-				{
-					if(selectedTiles[i].Genus != GENUS.ALL) PlayerControl.matchingTile = selectedTiles[i];
-				}
 				selectedTiles[i].SetState(TileState.Selected);
 				if(i+1 <= selectedTiles.Count - 1) selectedTiles[i].SetArrow(selectedTiles[i+1], null, true);
 			}
-			//selectedTiles[0].arrowIn.enabled = false;
 		}
 	}
 
 	public void GetSelectedTile(Tile t)
 	{
 		selectedTiles.Add(t);
+		SetMatchingTile(t);
 	}
 
 	public void CheckMatch()
@@ -432,7 +435,7 @@ public class PlayerControl : MonoBehaviour {
 			TileMaster.instance.ResetTiles(true);
 			selectedTiles.Clear();
 			selectedTiles = new List<Tile>();
-			PlayerControl.matchingTile = null;
+			SetMatchingTile(null);
 		}
 	}
 
@@ -566,7 +569,7 @@ public class PlayerControl : MonoBehaviour {
 			OuterLine[i].enabled = false;
 		}
 		focusTile = null;
-		matchingTile = null;
+		SetMatchingTile(null);
 	}
 
 	

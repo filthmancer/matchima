@@ -174,7 +174,7 @@ public class Player : MonoBehaviour {
 		{
 			int [] regen = child.Stats.CompleteRegen();
 			heal += regen[0];
-			child.AddTometer(regen[1]);
+			child.AddToMeter(regen[1]);
 		}
 		Stats.Heal(heal);
 	}
@@ -652,8 +652,16 @@ public class Player : MonoBehaviour {
 			if (t.Value > 0)
 			{
 				SPECIES s = TileMaster.Types[t.Type];
-				GenusInfo g = s[t.Genus];
-				g.ValueAdded.y += (t.Value);
+				if(t.Genus == string.Empty)
+				{
+					s._ValueAdded.y += t.Value;
+				}
+				else
+				{
+					GenusInfo g = s[t.Genus];
+					g.ValueAdded.y += (t.Value);
+				}
+				
 			}
 		}
 

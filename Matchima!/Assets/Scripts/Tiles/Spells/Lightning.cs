@@ -9,7 +9,7 @@ public class Lightning : Tile {
 	private int final_damage
 	{
 		get{
-			return (int) (LDamage + added_damage) * Stats.Value;
+			return (int) ((LDamage + added_damage) * Stats.Value) + (int) Player.SpellPower;
 		}
 	}
 
