@@ -58,8 +58,8 @@ public class Enemy : Tile {
 		{
 			return new TileUpgrade []
 			{
-				new TileUpgrade(1.0F, 1, () => {InitStats.Value += 1;})
-				//new TileUpgrade(0.1F, 2, () => {InitStats.Resource +=1;})
+				new TileUpgrade(1.0F, 1, () => {InitStats.Value += 1;}),
+				new TileUpgrade(0.1F, 2, () => {InitStats.Resource +=1;})
 			};
 		}
 	}

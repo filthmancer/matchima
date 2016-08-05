@@ -52,7 +52,7 @@ public class Fireball : Ability {
 		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(true);
 		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons.GetClass(Parent.Index).transform.position + Vector3.up, 
 													"Fireball", 55, GameData.Colour(Parent.Genus), 1.2F, 0.25F);
-		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[(int)Parent.Genus].transform, Effect.Force);
+		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[(int)Parent.Genus].transform, Effect.Spell);
 
 		MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
 		mp.SetTarget(target.transform.position);

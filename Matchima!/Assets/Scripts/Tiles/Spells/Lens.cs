@@ -29,7 +29,7 @@ public class Lens : Tile {
 			if(child.IsType("Vacuum")) break;
 			int val = (int) ((float)child.Stats.Value * multiplier) - child.Stats.Value;
 			child.AddValue(val);
-			GameObject part = EffectManager.instance.PlayEffect(child.transform, Effect.Shiny, "", GameData.instance.GetGENUSColour(child.Genus));
+			GameObject part = EffectManager.instance.PlayEffect(child.transform, Effect.Shiny, GameData.instance.GetGENUSColour(child.Genus));
 			part.GetComponent<DestroyTimer>().Timer = 0.5F;
 			yield return new WaitForSeconds(Time.deltaTime * 5);
 		}

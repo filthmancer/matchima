@@ -34,7 +34,7 @@ public class WaveTileEndOnTileDestroy : WaveTile {
 			}
 			replacedtile[randx,randy] = true;
 
-			GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Force);
+			GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Spell);
 			MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
 			mp.SetTarget(TileMaster.Tiles[randx,randy].transform.position);
 			mp.SetPath(0.55F, 0.2F);
@@ -53,10 +53,9 @@ public class WaveTileEndOnTileDestroy : WaveTile {
 			
 		
 			
-			yield return new WaitForSeconds(Time.deltaTime * 20);
+			yield return new WaitForSeconds(Time.deltaTime * 10);
 		}
-		yield return new WaitForSeconds(Time.deltaTime * 20);
-		GameManager.instance.paused = false;
+		yield return new WaitForSeconds(Time.deltaTime * 2);
 	}
 
 	public override IEnumerator AfterTurn()

@@ -75,7 +75,7 @@ public class Swap : Ability {
 
 		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons.GetClass(Parent.Index).transform.position + Vector3.up, 
 			"SPELLSWORD", 55, GameData.Colour(Parent.Genus), 1.2F, 0.25F);
-		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[(int)Parent.Genus].transform, Effect.Force);
+		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[(int)Parent.Genus].transform, Effect.Spell);
 		MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
 		mp.SetTarget(target.transform.position);
 		mp.SetPath(0.35F, 0.2F);
@@ -122,7 +122,7 @@ public class Swap : Ability {
 					if(sp == null)
 					{
 						_tiles[x,y].ChangeGenus(g);
-						EffectManager.instance.PlayEffect(_tiles[x,y].transform, Effect.Replace, "", GameData.instance.GetGENUSColour(_tiles[x,y].Genus));
+						EffectManager.instance.PlayEffect(_tiles[x,y].transform, Effect.Replace, GameData.instance.GetGENUSColour(_tiles[x,y].Genus));
 					} 
 					else
 					{

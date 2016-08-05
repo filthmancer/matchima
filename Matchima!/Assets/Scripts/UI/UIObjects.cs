@@ -24,6 +24,7 @@ public class UIObjects : MonoBehaviour {
 	public GameObject Options;
 	public UIScoreWindowNew ScoreWindowB;
 	public MiniAlertUI MiniAlert;
+	public Transform MiniAlertPool;
 
 	public GameObject TxtTooltipObj;
 	public UIObj HorizontalGrouper, VerticalGrouper;

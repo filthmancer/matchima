@@ -147,7 +147,7 @@ private int _currentmanapower = 100;
 		GameManager.instance.paused = true;
 		UIManager.instance.ScreenAlert.SetTween(0,true);
 		UIManager.ClassButtons.GetClass(Index).ShowClass(true);
-		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, "", GameData.Colour(Genus));
+		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, GameData.Colour(Genus));
 		
 		powerup.transform.SetParent(UIManager.ClassButtons.GetClass(Index).transform);
 		powerup.transform.position = UIManager.ClassButtons.GetClass(Index).transform.position;

@@ -72,7 +72,7 @@ public class Harp : Tile {
 					//{
 						child.ChangeGenus(Genus);
 						//child.SetState(TileState.Selected, true);
-						EffectManager.instance.PlayEffect(child.transform, Effect.Replace, "", GameData.instance.GetGENUSColour(child.Genus));	
+						EffectManager.instance.PlayEffect(child.transform, Effect.Replace, GameData.instance.GetGENUSColour(child.Genus));	
 						//c.AddValue(EndValueAdded);
 					//}
 					if(child.Type.isEnemy) 

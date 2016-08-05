@@ -111,6 +111,14 @@ public class Blob : Enemy {
 						TileMaster.Tiles[basex+xx, basey].AddEffect(neweff);
 					}
 				}
+				for(int yy = 1; yy < scale; yy++)
+				{
+					for(int xx = 0; xx < scale; xx++)
+					{
+						TileMaster.Grid[basex + xx, basey + yy]._Tile = null;
+					}
+					
+				}
 			
 				if(add_to_wavetargets) GameManager.Wave.AddTargets(new_blobs);
 
@@ -256,7 +264,7 @@ public class Blob : Enemy {
 			value += group[i].Stats.Value;
 			hits += group[i].Stats.Hits;
 			attack += group[i].Stats.Attack;
-			EffectManager._PlayEffect(group[0].transform, Effect.Shiny, "", GameData.Colour(Genus));
+			EffectManager.instance.PlayEffect(group[i].transform, Effect.Shiny, GameData.Colour(Genus));
 		}
 
 		yield return new WaitForSeconds(Time.deltaTime * 20);

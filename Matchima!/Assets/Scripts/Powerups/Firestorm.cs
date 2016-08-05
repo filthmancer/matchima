@@ -32,7 +32,7 @@ public class Firestorm : Powerup {
 		GameManager.instance.paused = true;
 		UIManager.instance.ScreenAlert.SetTween(0,true);
 		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(true);
-		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, "", GameData.Colour(Parent.Genus));
+		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, "powerupstart", GameData.Colour(Parent.Genus));
 		
 		powerup.transform.SetParent(UIManager.ClassButtons.GetClass(Parent.Index).transform);
 		powerup.transform.position = UIManager.ClassButtons.GetClass(Parent.Index).transform.position;
@@ -142,7 +142,7 @@ public class Firestorm : Powerup {
 			tile.SetState(TileState.Selected, true);
 			to_collect.Add(tile);
 
-			GameObject new_part = EffectManager.instance.PlayEffect(tile.transform, Effect.Fire);
+			GameObject new_part = EffectManager.instance.PlayEffect(tile.transform, "fire");
 			particles.Add(new_part);
 			yield return new WaitForSeconds(GameData.GameSpeed(0.025F));
 
@@ -150,7 +150,7 @@ public class Firestorm : Powerup {
 			tile.SetState(TileState.Selected, true);
 			to_collect.Add(tile);
 
-			new_part = EffectManager.instance.PlayEffect(tile.transform, Effect.Fire);
+			new_part = EffectManager.instance.PlayEffect(tile.transform, "fire");
 			particles.Add(new_part);			
 		}
 		

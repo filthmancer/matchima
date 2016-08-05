@@ -33,7 +33,7 @@ public class ColourSwap : Powerup {
 					{
 						int old_value = _tiles[x,y].Stats.Value;
 						_tiles[x,y].ChangeGenus(EndGenus);
-						EffectManager.instance.PlayEffect(_tiles[x,y].transform, Effect.Replace, "", GameData.instance.GetGENUSColour(_tiles[x,y].Genus));
+						EffectManager.instance.PlayEffect(_tiles[x,y].transform, "replace", GameData.instance.GetGENUSColour(_tiles[x,y].Genus));
 						
 					}
 				}

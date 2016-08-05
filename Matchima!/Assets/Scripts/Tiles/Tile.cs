@@ -734,9 +734,9 @@ public class Tile : MonoBehaviour {
 	{
 		if(collapse)
 		{
-			MiniTile2 TileObj = (MiniTile2) Instantiate(TileMaster.instance.MiniTileObj);
+			/*MiniTile2 TileObj = (MiniTile2) Instantiate(TileMaster.instance.MiniTileObj);
 			TileObj.Setup(this);
-			TileObj.Explode();
+			TileObj.Explode();*/
 			/*bool dest = true;
 			float gravity = 0.03F;
 			float vel = -0.2F;
@@ -1241,7 +1241,7 @@ public class Tile : MonoBehaviour {
 	
 	public void ChangeGenus(GENUS g)
 	{
-		EffectManager.instance.PlayEffect(transform, Effect.Replace, "", GameData.instance.GetGENUSColour(g));
+		EffectManager.instance.PlayEffect(transform, Effect.Replace, GameData.instance.GetGENUSColour(g));
 		Info.ChangeGenus(g);
 		SetSprite();
 	}

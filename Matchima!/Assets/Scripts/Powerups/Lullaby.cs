@@ -24,7 +24,7 @@ public class Lullaby : Powerup {
 		GameManager.instance.paused = true;
 		UIManager.instance.ScreenAlert.SetTween(0,true);
 		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(true);
-		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, "", GameData.Colour(Parent.Genus));
+		GameObject powerup = EffectManager.instance.PlayEffect(this.transform,  "powerupstart", GameData.Colour(Parent.Genus));
 		powerup.transform.SetParent(UIManager.ClassButtons.GetClass(Parent.Index).transform);
 		powerup.transform.position = UIManager.ClassButtons.GetClass(Parent.Index).transform.position;
 		powerup.transform.localScale = Vector3.one;
@@ -127,7 +127,7 @@ public class Lullaby : Powerup {
 	{
 		
 		target.SetState(TileState.Selected, true);
-		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[Parent.Index].transform, Effect.Force);
+		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[Parent.Index].transform, "spell");
 		MoveToPoint charm = initpart.GetComponent<MoveToPoint>();
 		charm.SetTarget(target.transform.position);
 		charm.SetPath(0.45F, 0.3F);
@@ -144,7 +144,7 @@ public class Lullaby : Powerup {
 	{
 		
 		target.SetState(TileState.Selected, true);
-		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[Parent.Index].transform, Effect.Force);
+		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[Parent.Index].transform, "spell");
 		MoveToPoint charm = initpart.GetComponent<MoveToPoint>();
 		charm.SetTarget(target.transform.position);
 		charm.SetPath(0.45F, 0.3F);

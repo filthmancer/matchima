@@ -169,7 +169,7 @@ public class GameManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		QualitySettings.vSyncCount = 0;
-		Application.targetFrameRate = 60;
+		Application.targetFrameRate = 50;
 		if(!Application.isMobilePlatform)
 		{
 			Screen.SetResolution(525,830, false);
@@ -206,6 +206,7 @@ public class GameManager : MonoBehaviour {
 			}
 			if(GameData.loaded_assets)
 			{
+				Resources.UnloadUnusedAssets();
 				if(ResumeZone != null) 
 				{
 					ResumeGame();
@@ -483,8 +484,9 @@ public class GameManager : MonoBehaviour {
 		if(GameManager.ZoneNum > 1) 
 		{
 			yield return null;
-			TileMaster.instance.NewGrid();
+			yield return StartCoroutine(TileMaster.instance.NewGridRoutine());
 		}
+
 		StCon [] floor = new StCon[]{new StCon("Entered")};
 		StCon [] title = new StCon[]{new StCon(CurrentZone.Name, CurrentZone.WallTint * 1.5F, false, 110)};
 		

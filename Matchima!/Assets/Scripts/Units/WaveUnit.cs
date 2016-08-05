@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class WaveUnit : Unit {
 
@@ -24,7 +25,7 @@ public class WaveUnit : Unit {
 		Parent = p;
 		Index = i;
 		Active = false;
-		Timer = Random.Range(PrepTime.x, PrepTime.y);
+		Timer = UnityEngine.Random.Range(PrepTime.x, PrepTime.y);
 		
 		//Inner.SetSprite(InnerOverride);
 		//Outer.SetSprite(OuterOverride);
@@ -136,6 +137,15 @@ public class WaveUnit : Unit {
 	public void Reset()
 	{
 
+	}
+
+	public void CastAction(Tile targ, Action<Tile> a)
+	{
+		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Spell);
+		MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
+		mp.SetTarget(targ.transform.position);
+		mp.SetPath(0.55F, 0.2F);
+		mp.SetTileMethod(targ, a);
 	}
 
 	public virtual bool IsWaveTarget(Tile t)

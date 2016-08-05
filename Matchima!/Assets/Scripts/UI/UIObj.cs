@@ -28,6 +28,8 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 			else return null;
 	}}
 
+	public bool isActive{get{return this.gameObject.activeSelf;}}
+
 	public virtual void Start()
 	{
 		if(Name == string.Empty) Name = gameObject.name;
@@ -210,6 +212,7 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 						TypeActions_MouseClick = new List<UIAction_Method>();
 
 	protected Color init;
+	public void SetInitCol(Color c) {init = c;}
 	protected float time_over = 0.0F;
 	public bool isPressed;
 

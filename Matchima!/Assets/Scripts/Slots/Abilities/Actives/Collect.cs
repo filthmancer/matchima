@@ -104,7 +104,7 @@ public class Collect : Ability {
 		{
 			if(child == null || child.isMatching) continue;
 			child.SetState(TileState.Selected, true);
-			GameObject part = EffectManager.instance.PlayEffect(child.transform, Effect.Shiny, "", GameData.instance.GetGENUSColour(child.Genus));
+			GameObject part = EffectManager.instance.PlayEffect(child.transform, Effect.Shiny, GameData.instance.GetGENUSColour(child.Genus));
 			part.transform.parent = child.transform;
 			yield return new WaitForSeconds(Time.deltaTime * 2);
 		}

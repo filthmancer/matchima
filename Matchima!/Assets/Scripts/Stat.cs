@@ -235,7 +235,7 @@ public class Stat
 		TileChances.Clear();
 		TileChances.AddRange(prev.TileChances);
 
-		MatchNumberModifier = Mathf.Clamp(prev.MatchNumberModifier, 2, 100);
+		MatchNumberModifier = prev.MatchNumberModifier;
 
 		//HealThisTurn = prev.HealThisTurn;
 		//DmgThisTurn = prev.DmgThisTurn;
@@ -257,7 +257,7 @@ public class Stat
 
 		ComboCounter      += other.ComboCounter;
 		ComboBonus        += other.ComboBonus;
-		MatchNumberModifier = MatchNumberModifier = Mathf.Clamp(MatchNumberModifier+other.MatchNumberModifier, 2, 100);;
+		MatchNumberModifier += other.MatchNumberModifier;
 
 		_Attack     += other._Attack;
 		_Spell 		+= other._Spell;
@@ -393,6 +393,7 @@ public class Stat
 
 	public void Heal(int heal)
 	{
+
 		int healperc = (int) (_HealthMax * ((float)heal/100.0F));
 		HealThisTurn = Mathf.Clamp(HealThisTurn + healperc, 0, 1000000);
 		_Health = Mathf.Clamp(_Health + healperc, 0, _HealthMax);
@@ -408,7 +409,6 @@ public class Stat
 	public void Hit(int hit_initial, params Tile[] attackers)
 	{
 		GameData.Log("Incoming " + hit_initial + " damage");
-
 		foreach(Ability child in Player.Abilities)
 		{
 			if(child == null) continue;
@@ -460,7 +460,7 @@ public class Stat
 
 		_Health -= (int) final_hit;
 		_Health = Mathf.Clamp(_Health, 0, _HealthMax);
-		DmgThisTurn += (int) final_hit;
+	//	DmgThisTurn += (int) final_hit;
 
 	}
 

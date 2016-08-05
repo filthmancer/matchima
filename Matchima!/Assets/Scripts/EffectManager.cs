@@ -48,10 +48,32 @@ public class ParticleContainer
 	public ParticleSystem SpellParticle;
 }
 
+[System.Serializable]
+public class ParticleContainer2
+{
+	public string Name;
+	public Effect EffectEnum;
+	public GameObject Particle;
+	public ObjectPooler Pool;
+
+
+	public GameObject Spawn()
+	{
+		if(Pool == null)
+		{
+			Pool = new ObjectPooler(Particle, 1, EffectManager.instance.transform);
+		}
+		return Pool.Spawn();
+	}
+}
+
 
 public class EffectManager : MonoBehaviour {
 	public static EffectManager instance;
 	public ParticleContainer Particles;
+	public ParticleContainer2 [] Particles2;
+
+
 	void Awake()
 	{
 		if(instance == null)
@@ -61,28 +83,99 @@ public class EffectManager : MonoBehaviour {
 		}
 		else if(instance != this) 
 		{
-			instance.Start();
 			Destroy(this.gameObject);
 		}
 	}
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
-
-	public static GameObject _PlayEffect(Transform t, Effect e, string s = "", Color? col = null)
+	private static GameObject _PlayEffect(Transform t, Effect e, string s = "", Color? col = null)
 	{
 		return EffectManager.instance.PlayEffect(t,e,s,col);
 	}
 
 
-	public GameObject PlayEffect(Transform t, Effect e, string s = "", Color? col = null)
+
+	public GameObject PlayEffect(Transform t, string name, Color? col = null)
+	{
+		if(t == null) return null;
+		GameObject final = null;
+		name = name.ToLower();
+		
+		for(int i = 0; i < Particles2.Length; i++)
+		{
+			if(string.Equals(name, Particles2[i].Name.ToLower()))
+			{
+				final = Particles2[i].Spawn();
+				break;
+			}
+		}
+
+		final.transform.SetParent(t);
+		final.transform.position = t.position;
+		if(name == "attack")
+		{
+			Vector3 pos = t.position + Vector3.back * 3;
+			Vector3 offset = Utility.RandomVectorInclusive(1,1).normalized * 1.4F;
+			final.transform.position = pos - offset;
+			final.transform.parent = t;
+			MoveToPoint p = final.GetComponent<MoveToPoint>();
+			p.SetTarget(t.position + offset);
+			p.SetDelay(0.35F);
+			p.SetThreshold(0.25F);
+		}
+
+		ParticleSystem final_part = final.GetComponent<ParticleSystem>();
+		if(final_part)
+		{
+			if(col.HasValue) final_part.startColor = col.Value;
+			final_part.Clear();
+			final_part.Play();
+		}
+
+
+		return final;
+	}
+
+
+	public GameObject PlayEffect(Transform t, Effect e, Color? col = null)
+	{
+		if(t == null) return null;
+		GameObject final = null;
+		ParticleSystem final_part = null;
+		
+		for(int i = 0; i < Particles2.Length; i++)
+		{
+			if(e == Particles2[i].EffectEnum)
+			{
+				final = Particles2[i].Spawn();
+				final_part = final.GetComponent<ParticleSystem>();
+				break;
+			}
+		}
+
+		final.transform.SetParent(t);
+		final.transform.position = t.position;
+		if(e == Effect.Attack)
+		{
+			Vector3 pos = t.position + Vector3.back * 3;
+			Vector3 offset = Utility.RandomVectorInclusive(1,1).normalized * 1.4F;
+			final.transform.position = pos - offset;
+			final.transform.parent = t;
+			MoveToPoint p = final.GetComponent<MoveToPoint>();
+			p.SetTarget(t.position + offset);
+			p.SetDelay(0.35F);
+			p.SetThreshold(0.25F);
+		}
+		if(final_part)
+		{
+			if(col.HasValue) final_part.startColor = col.Value;
+			final_part.Clear();
+			final_part.Play();
+		}
+		return final;
+	}
+
+
+	private GameObject PlayEffect(Transform t, Effect e, string s = "", Color? col = null)
 	{
 		if(t == null) return null;
 		if(e == Effect.STRING)
@@ -144,11 +237,6 @@ public class EffectManager : MonoBehaviour {
 				part.transform.position = t.position;
 				part.transform.parent = t;
 			break;
-			case Effect.Force:
-				part = (ParticleSystem) Instantiate(Particles._Force);
-				part.transform.position = t.position;
-				part.transform.parent = t;
-			break;
 			case Effect.Lightning:
 				part = (ParticleSystem) Instantiate(Particles._Lightning);
 				part.transform.position = t.position;
@@ -195,21 +283,22 @@ public class EffectManager : MonoBehaviour {
 
 	private Effect EffectFromString(string s)
 	{
+		s = s.ToLower();
 		switch(s)
 		{
-			case "Charm":
+			case "charm":
 			return Effect.Charm;
-			case "Curse":
+			case "curse":
 			return Effect.Curse;
-			case "Stun":
+			case "stun":
 			return Effect.Sleep;
-			case "Sleep":
+			case "sleep":
 			return Effect.Sleep;
-			case "Replace":
+			case "replace":
 			return Effect.Replace;
-			case "Collect":
+			case "collect":
 			return Effect.Shiny;
-			case "Gravity":
+			case "gravity":
 			return Effect.AntiGrav;
 		}
 		return Effect.STRING;

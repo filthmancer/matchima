@@ -40,7 +40,7 @@ public class Arcane : Tile {
 		get
 		{
 			CheckStats();
-			return (3 * (Stats.Value)) + (int)Player.SpellPower;
+			return (2 * (Stats.Value)) + (int)Player.SpellValue;
 		}
 	}
 
@@ -94,9 +94,7 @@ public class Arcane : Tile {
 				if(TileMaster.Tiles[xx,yy].IsGenus(GENUS.OMG, false) &&
 					!TileMaster.Tiles[xx,yy].isMatching) to_collect.Add(TileMaster.Tiles[xx,yy]);
 			}
-		}
-
-		
+		}	
 		while(to_collect.Count > TilesCollected)
 		{
 			to_collect.RemoveAt(Random.Range(0, to_collect.Count));
@@ -104,7 +102,6 @@ public class Arcane : Tile {
 
 		foreach(Tile child in to_collect)
 		{
-			
 			PlayerControl.instance.RemoveTileToMatch(child);
 
 			GameObject part = Instantiate(ArcaneParticle);
@@ -131,20 +128,22 @@ public class Arcane : Tile {
 					TileMaster.instance.ReplaceTile(c, TileMaster.Types[EndType], c.Genus, 1, EndValueAdded);
 				}
 				else TileMaster.instance.ReplaceTile(c, TileMaster.Types[EndType], TileMaster.Genus[EndGenus], 1, EndValueAdded);
-				EffectManager.instance.PlayEffect(c.transform, Effect.Replace, "", GameData.instance.GetGENUSColour(c.Genus));	
+				EffectManager.instance.PlayEffect(c.transform, Effect.Replace, GameData.instance.GetGENUSColour(c.Genus));	
 			});
 
 			yield return new WaitForSeconds(part_time);
 			
 		}
 
-		if(TileMaster.instance.EnemiesOnScreen == 0) yield break;
+		if(TileMaster.instance.EnemiesOnScreen == 0 || TileMaster.Enemies.Length == 0) yield break;
 		int check = 0;
+		bool checkforallies = false;
+		int check_maxsize = TileMaster.Grid.Size[0]*TileMaster.Grid.Size[1];
 		while(to_collect.Count < TilesCollected)
 		{
-			Tile c = TileMaster.Tiles[Utility.RandomInt(x), Utility.RandomInt(y)];
+			Tile c = TileMaster.Enemies[Random.Range(0, TileMaster.Enemies.Length)];
 			if(c != this && 
-				c.Type.isEnemy)
+				c.Type.isEnemy && (!c.Type.isAlly || checkforallies))
 			{
 				
 				to_collect.Add(c);	
@@ -155,15 +154,15 @@ public class Arcane : Tile {
 				MoveToPoint mp = part.GetComponent<MoveToPoint>();
 				mp.SetTarget(c.transform.position);
 				mp.SetPath(0.5F, 0.2F);
-				part.GetComponent<ParticleSystem>().startColor = GameData.Colour(Genus);
+				mp.DontDestroy = false;
 
+				part.GetComponent<ParticleSystem>().startColor = GameData.Colour(Genus);
 				float dist = Vector3.Distance(c.transform.position, this.transform.position);
 				mp.Speed = 0.1F + 0.05F * dist;
 				part_time = 0.2F;// + (0.03F * dist);
 
 				mp.SetTileMethod(c, (Tile child) =>
 				{
-				//	print(final_damage + ":" + Player.SpellPower);
 					child.SetState(TileState.Selected, true);
 					child.InitStats.Hits -= final_damage;
 					//child.InitStats.TurnDamage += final_damage;
@@ -189,7 +188,13 @@ public class Arcane : Tile {
 
 				yield return new WaitForSeconds(part_time);
 			}
-			//yield return null;
+			else 
+			{
+				check++;
+				if(check > check_maxsize/2) checkforallies = true;
+			}
+			if(check > check_maxsize) break;
+			
 		}
 		
 		yield return null;

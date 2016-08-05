@@ -385,7 +385,7 @@ public class Class : Unit {
 		UIManager.ClassButtons.GetClass(Index).ShowClass(true);
 		yield return new WaitForSeconds(GameData.GameSpeed(0.05F));
 		
-		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, "", GameData.Colour(Genus));
+		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, GameData.Colour(Genus));
 		powerup.transform.SetParent(UIManager.ClassButtons.GetClass(Index).transform);
 		powerup.transform.position = UIManager.ClassButtons.GetClass(Index).transform.	position;
 		powerup.transform.localScale = Vector3.one;
@@ -409,7 +409,7 @@ public class Class : Unit {
 		
 
 		Effect e = MeterLvl == 1 ? Effect.ManaPowerLvl1 : (MeterLvl == 2 ? Effect.ManaPowerLvl2 : Effect.ManaPowerLvl3);
-		ParticleSystem part = EffectManager.instance.PlayEffect(this.transform, e, "", GameData.Colour(Genus)).GetComponent<ParticleSystem>();
+		ParticleSystem part = EffectManager.instance.PlayEffect(this.transform, e, GameData.Colour(Genus)).GetComponent<ParticleSystem>();
 		if(ManaPowerParticle != null) Destroy(ManaPowerParticle);
 		ManaPowerParticle = part.gameObject;
 		ManaPowerParticle.transform.position = UIManager.ClassButtons.GetClass(Index).transform.position;
@@ -678,6 +678,9 @@ public class Class : Unit {
 		//}
 	}
 
+	private float mutation_psuedochance = 1.0F;
+	private float mutation_psuedochance_min = 0.0F;
+	private float mutation_psuedochance_max = 0.6F;
 
 	protected IEnumerator LevelUp(int power)
 	{
@@ -693,9 +696,18 @@ public class Class : Unit {
 		yield return StartCoroutine(UIManager.instance.Alert(0.3F, floor, title, null, true));
 
 		float mutation_chance = Stats.MutationChance - (0.1F * power);
+
+		//Adding psuedochance factor to mutation chance
+		mutation_chance += mutation_psuedochance;
+
 		if(UnityEngine.Random.value < mutation_chance)
 		{
+			mutation_psuedochance = 0.0F;
 			yield return StartCoroutine(Mutate(power));
+		}
+		else
+		{
+			mutation_psuedochance = Mathf.Clamp(mutation_psuedochance + 0.04F, mutation_psuedochance_min, mutation_psuedochance_max);	
 		}
 		UIManager.ClassButtons.GetClass(Index).ShowClass(false);
 		Player.instance.ResetStats();
@@ -705,7 +717,7 @@ public class Class : Unit {
 	public IEnumerator Mutate(int power)
 	{
 		UIManager.ClassButtons.GetClass(Index).ShowClass(true);
-		GameObject powerup = EffectManager.instance.PlayEffect(UIManager.ClassButtons.GetClass(Index).transform, Effect.ManaPowerUp, "", GameData.Colour(Genus));
+		GameObject powerup = EffectManager.instance.PlayEffect(UIManager.ClassButtons.GetClass(Index).transform, Effect.ManaPowerUp, GameData.Colour(Genus));
 		powerup.transform.localScale = Vector3.one;
 
 		StCon [] title = new StCon[]{
@@ -826,6 +838,7 @@ public class Class : Unit {
 		yield return null;
 	}
 
+
 	public void GetSlot(Slot s, int? num = null)
 	{
 		if(s == null) return;
@@ -932,6 +945,16 @@ public class Class : Unit {
 	{
 		DeathWarning = true;
 		LowHealthWarning = true;
+	}
+
+	public int OnHit(int hit, Tile[] attackers)
+	{
+		int final = hit;
+		foreach(Upgrade child in Mutations)
+		{
+			final = child.OnPlayerHit(hit, attackers, Stats, child.RateFinal);
+		}
+		return final;
 	}
 
 	public void OnCombo(int combo)

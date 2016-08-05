@@ -68,7 +68,19 @@ public class TileMaster : MonoBehaviour {
 				for (int y = 0; y < Tiles.GetLength(1); y++)
 				{
 					if (Tiles[x, y] == null) continue;
-					if (Tiles[x, y].Type.isEnemy) final.Add(Tiles[x, y]);
+					if (Tiles[x, y].Type.isEnemy && !Tiles[x,y].Type.isAlly) 
+					{
+						bool add = true;
+						for(int i = 0; i < final.Count; i++)
+						{
+							if(final[i] == Tiles[x,y])
+							{
+								add = false;
+								break;
+							}
+						}
+						if(add) final.Add(Tiles[x, y]);
+					}
 				}
 			}
 			return final.ToArray();
@@ -530,7 +542,7 @@ public class TileMaster : MonoBehaviour {
 			}
 		}
 		newtile = CreateTile(x, y, Vector2.zero, sp, g, false, newscale, addvalue);
-		EffectManager.instance.PlayEffect(newtile.transform, Effect.Replace, "", GameData.instance.GetGENUSColour(newtile.Genus));
+		EffectManager.instance.PlayEffect(newtile.transform, Effect.Replace, GameData.instance.GetGENUSColour(newtile.Genus));
 		newtile.InitStats.Value += tempval;
 		return newtile;
 	}
@@ -622,7 +634,37 @@ public class TileMaster : MonoBehaviour {
 				}
 			}
 		}
+	}
 
+	public IEnumerator NewGridRoutine(SPECIES sp = null, GENUS g = GENUS.NONE, bool no_enemies = false)
+	{
+		if (Grid == null) yield break;
+		for (int x = 0; x < Grid.Size[0]; x++)
+		{
+			for (int y = 0; y < Grid.Size[1]; y++)
+			{
+				if (Tiles.GetLength(0) > x && Tiles.GetLength(1) > y && Tiles[x, y] != null)
+				{
+					Tiles[x, y].DestroyThyself(); // true);
+					//Destroy(Tiles[x,y].gameObject);
+					Grid[x, y]._Tile = null;
+					CreateTile(x, y, Vector2.up, sp, g, no_enemies);
+				}
+			}
+		}
+		for (int x = 0; x < Grid.Size[0]; x++)
+		{
+			for (int y = 0; y < Grid.Size[1]; y++)
+			{
+				if (Grid[x, y]._Tile == null) continue;
+				if (Tiles[x, y] != null || Tiles[x, y].Type == null)
+				{
+					Tiles[x, y].InitStats.isNew = false;
+				}
+			}
+		}
+		yield return StartCoroutine(BeforeTurn());
+		yield return StartCoroutine(AfterTurn());
 	}
 
 	public IEnumerator BeforeTurn()
@@ -710,12 +752,11 @@ public class TileMaster : MonoBehaviour {
 					}
 					if (Tiles[xx, yy].AfterTurnCheck) continue;
 					Tiles[xx, yy].AfterTurnCheck = true;
+					if (Tiles[xx, yy].Type.isEnemy) EnemiesOnScreen ++;
 
 					Tiles[xx, yy].AfterTurn();
 					if (Tiles[xx, yy].HasAfterTurnEffect())
 						yield return StartCoroutine(Tiles[xx, yy].AfterTurnRoutine());
-
-					if (Tiles[xx, yy].Type.isEnemy) EnemiesOnScreen ++;
 				}
 				//else if(fill_from_none[xx, yy]) ReplaceTile(xx,yy);
 			}
@@ -862,13 +903,14 @@ public class TileMaster : MonoBehaviour {
 		}
 		if (res == null) res = UIManager.ClassButtons[0].transform as RectTransform;
 
-		ParticleSystem col = EffectManager.instance.PlayEffect(t.transform, Effect.Destroy, "", GameData.instance.GetGENUSColour(t.Genus)).GetComponent<ParticleSystem>();
+		ParticleSystem col = EffectManager.instance.PlayEffect(t.transform, Effect.Destroy, GameData.instance.GetGENUSColour(t.Genus)).GetComponent<ParticleSystem>();
 		int combo = GameManager.ComboSize;
 		if (combo < 10)
 			col.startColor = Color.Lerp(Color.black, GameData.Colour(t.Genus), 0.4F + (float)combo / 8.0F);
 		else
 			col.startColor = Color.Lerp(GameData.Colour(t.Genus), Color.white, (float)(combo - 10) / 20.0F);
 		col.startSize = Mathf.Clamp(0.1F + (float)combo / 25, 0.2F, 0.5F);
+		col.transform.SetParent(this.transform);
 
 		Vector3 startpos = t.transform.position;
 		startpos.z = -8;
@@ -892,6 +934,7 @@ public class TileMaster : MonoBehaviour {
 			//mini = UIManager.instance.AttachMoverToAlert(ref m);
 			m.AddJuice(Juice.instance.BounceB, info_time);
 			UIManager.instance.GetMeterPoints(g, values[0]);
+			m.DestroyOnEnd = true;
 			/*Vector3 targ = Vector3.zero;
 			if(g > 3) targ = UIManager.instance.Health.transform.position;
 			else targ = UIManager.Objects.MiddleGear[4][g].transform.position;
@@ -916,15 +959,16 @@ public class TileMaster : MonoBehaviour {
 			mini = m.GetComponent<MoveToPoint>();
 			m.AddJuice(Juice.instance.BounceB, info_time);
 			m.AddAction(() => {mini.enabled = true;});
-			m.DestroyOnEnd = false;
+			m.DestroyOnEnd = true;
+			Player.Stats.Heal(values[1]);
 
-			mini.SetTarget(UIManager.instance.Health.transform.position);
+			/*mini.SetTarget(UIManager.instance.Health.transform.position);
 			mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
 
 			mini.SetMethod(() => {
-				Player.Stats.Heal(values[1]);
+				
 			}
-			              );
+			              );*/
 		}
 		if (values[2] > 0)
 		{
@@ -936,14 +980,14 @@ public class TileMaster : MonoBehaviour {
 			mini = m.GetComponent<MoveToPoint>();
 			m.AddJuice(Juice.instance.BounceB, info_time);
 			m.AddAction(() => {mini.enabled = true;});
-			m.DestroyOnEnd = false;
+			m.DestroyOnEnd = true;
 
-			mini.SetTarget(UIManager.instance.Health.transform.position);
+			/*mini.SetTarget(UIManager.instance.Health.transform.position);
 			mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
 			mini.SetMethod(() => {
 				Player.Stats.Heal(values[2]);
 			}
-			              );
+			              );*/
 		}
 		if (t.Type.isEnemy)
 		{

@@ -180,7 +180,7 @@ public class TileTypes : MonoBehaviour {
 		{
 			GameObject par = new GameObject(child.Name);
 			par.transform.SetParent(poolpar.transform);
-			child.TilePool = new ObjectPool(child.Prefab, prefabs_per_spec, par.transform);
+			child.TilePool = new TilePooler(child.Prefab, prefabs_per_spec, par.transform);
 			yield return null;
 		}
 
@@ -438,7 +438,7 @@ public class SPECIES
 					 All = new GenusInfo(GENUS.ALL),
 					 Grey = new GenusInfo(GENUS.OMG);
 
-	public ObjectPool TilePool;
+	public TilePooler TilePool;
 
 	public GenusInfo [] AllGenus
 	{
@@ -732,7 +732,9 @@ public class IntVector
 	}
 }
 
-public class ObjectPool
+
+
+public class TilePooler
 {
 	Tile Object;
 	Transform Parent;
@@ -743,7 +745,7 @@ public class ObjectPool
 
 	public Vector3 PoolPos = new Vector3(0, -100, 0);
 
-	public ObjectPool(Tile t, int num, Transform _parent)
+	public TilePooler(Tile t, int num, Transform _parent)
 	{
 		Object = t;
 		Parent = _parent;
@@ -759,7 +761,7 @@ public class ObjectPool
 		}
 	}
 
-	public ObjectPool(GameObject t, int num, Transform _parent)
+	public TilePooler(GameObject t, int num, Transform _parent)
 	{
 		Object = t.GetComponent<Tile>();
 		Parent = _parent;

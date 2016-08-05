@@ -483,16 +483,18 @@ public class UIMenu : UIObj {
 		GameManager.instance.DifficultyMode = GameManager.instance.DifficultyMode + 1;
 		if(GameManager.instance.DifficultyMode > (DiffMode)2) GameManager.instance.DifficultyMode = 0;
 		UIManager.Objects.MiddleGear[0].GetChild(1).Txt[0].text = "" + GameManager.instance.DifficultyMode;
+
+
 		switch(GameManager.instance.DifficultyMode)
 		{
 			case DiffMode.Easy:
-				UIManager.Objects.MiddleGear[0].GetChild(1).Img[0].color = GameData.Colour(GENUS.WIS);
+				UIManager.Objects.MiddleGear[0][1].SetInitCol(GameData.Colour(GENUS.WIS));
 			break;
 			case DiffMode.Okay:
-				UIManager.Objects.MiddleGear[0].GetChild(1).Img[0].color = GameData.Colour(GENUS.CHA);
+				UIManager.Objects.MiddleGear[0][1].SetInitCol(GameData.Colour(GENUS.CHA));
 			break;
 			case DiffMode.Hard:
-				UIManager.Objects.MiddleGear[0].GetChild(1).Img[0].color = GameData.Colour(GENUS.STR);
+				UIManager.Objects.MiddleGear[0][1].SetInitCol(GameData.Colour(GENUS.STR));
 			break;
 		}
 		

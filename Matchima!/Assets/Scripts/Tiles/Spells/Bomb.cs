@@ -15,7 +15,7 @@ public class Bomb : Tile {
 	private int BombDamage
 	{
 		get{
-			return 10 + (int)Player.SpellPower;
+			return (5 * Stats.Value) + (int)Player.SpellValue;
 		}
 	}
 

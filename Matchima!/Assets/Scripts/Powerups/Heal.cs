@@ -16,7 +16,7 @@ public class Heal : Powerup {
 		UIManager.instance.ScreenAlert.SetTween(0,true);
 		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(true);
 		
-		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, "", GameData.Colour(Parent.Genus));
+		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, "powerupstart", GameData.Colour(Parent.Genus));
 		
 		powerup.transform.SetParent(UIManager.ClassButtons.GetClass(Parent.Index).transform);
 		powerup.transform.position = UIManager.ClassButtons.GetClass(Parent.Index).transform.position;
@@ -66,7 +66,7 @@ public class Heal : Powerup {
 		MGame.ClearActions(UIAction.MouseDown);
 
 		
-		GameObject initpart = EffectManager.instance.PlayEffect(MGame.transform, Effect.Force);
+		GameObject initpart = EffectManager.instance.PlayEffect(MGame.transform, "spell");
 		initpart.GetComponent<MoveToPoint>().SetTarget(UIManager.instance.Health.transform.position);
 		initpart.GetComponent<MoveToPoint>().SetPath(0.2F, 0.2F);
 		yield return new WaitForSeconds(0.7F);

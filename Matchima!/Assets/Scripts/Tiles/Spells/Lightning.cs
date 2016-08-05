@@ -9,7 +9,7 @@ public class Lightning : Tile {
 	private int final_damage
 	{
 		get{
-			return (int) ((LDamage + added_damage) * Stats.Value) + (int) Player.SpellPower;
+			return (int) ((LDamage + added_damage) * Stats.Value) + (int) Player.SpellValue;
 		}
 	}
 
@@ -46,7 +46,7 @@ public class Lightning : Tile {
 			for(int y = 0; y < _tiles.GetLength(1); y++)
 			{
 				Tile tile = _tiles[x,y];
-				if(tile.Genus == this.Genus) continue;
+				if(tile == null || tile.Genus == this.Genus) continue;
 				bool add = true;
 				for(int i = 0; i < onScreen.Count; i++)
 				{
@@ -69,7 +69,7 @@ public class Lightning : Tile {
 		GENUS col = onScreen[collect];
 		particles = new List<GameObject>();
 		Tile target = TileMaster.Tiles[Random.Range(0,TileMaster.Grid.Size[0]), Random.Range(0,TileMaster.Grid.Size[1])];
-		while(target.Genus != col)
+		while(target == null || target.Genus != col)
 		{
 			target = TileMaster.Tiles[Random.Range(0,TileMaster.Grid.Size[0]), Random.Range(0,TileMaster.Grid.Size[1])];
 		}

@@ -37,6 +37,7 @@ public class Sleep : TileEffect {
 
 	public override void _OnDestroy()
 	{
+		base._OnDestroy();
 		_Tile.OnAlert();
 		
 	}

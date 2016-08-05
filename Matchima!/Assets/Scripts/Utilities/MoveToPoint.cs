@@ -32,6 +32,14 @@ public class MoveToPoint : MonoBehaviour {
 	Action<Tile> tilemethod;
 	Action<int[]> intmethod;
 
+	private ObjectPoolerReference poolref;
+
+	void Start()
+	{
+		poolref = GetComponent<ObjectPoolerReference>();
+	}
+
+
 	// Update is called once per frame
 	void Update () {
 		if(Point != Vector3.zero)
@@ -59,13 +67,23 @@ public class MoveToPoint : MonoBehaviour {
 					if(method != null) method();
 					if(tilemethod != null) tilemethod(Target_Tile);
 					if(intmethod != null) intmethod(Target_Int);
-					if(!DontDestroy) Destroy(this.gameObject);
-					else Destroy(this);
+					if(!DontDestroy)
+					{
+						if(poolref) 
+						{
+							poolref.Unspawn();
+							method = null;
+							tilemethod = null;
+							intmethod = null;
+						}
+						else Destroy(this.gameObject);
+					}
+					else Destroy(this);//GetComponent<ObjectPoolerReference>().Unspawn();
 				}
 				else delay -= Time.deltaTime;
 			}
 		}
-		else Destroy(this.gameObject);
+		else if(poolref) poolref.Unspawn();//Destroy(this.gameObject);
 	}
 
 	public void SetTarget(Vector3 pos)
@@ -130,5 +148,6 @@ public class MoveToPoint : MonoBehaviour {
 		final_scale = scale;
 		final_scale_time = time;
 	}
+
 
 }

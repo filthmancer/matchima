@@ -8,7 +8,8 @@ public class UIClassButton : UIObj {
 	public TextMeshProUGUI LevelUp;
 	public Image Back, _Sprite, _SpriteMask;
 	public tk2dSprite _Frame;
-	public tk2dClippedSprite _FrameMask;
+	public tk2dClippedSprite _FrameMask, _BackingMask;
+
 	public Image Target, Death;
 	public UIObj Banner;
 	public UIObj Health;
@@ -84,7 +85,7 @@ public class UIClassButton : UIObj {
 			}
 			else */ //Banner.SetActive(false);
 
-			GetCooldown();
+			if(GameManager.instance.gameStart) GetCooldown();
 		}
 	}
 
@@ -141,7 +142,9 @@ public class UIClassButton : UIObj {
 	{
 		if(float.IsNaN(_class.GetMeterRatio())) return;
 		float curr = _FrameMask.clipBottomLeft.y;
-		_FrameMask.clipBottomLeft = new Vector2(0,Mathf.Lerp(curr, _class.GetMeterRatio(), 0.3F));
+		_FrameMask.clipBottomLeft = new Vector2(0,Mathf.Lerp(curr, _class.GetMeterRatio()-0.35F, 0.3F));
+		curr = _BackingMask.clipBottomLeft.y;
+		_BackingMask.clipBottomLeft = new Vector2(0,Mathf.Lerp(curr, _class.GetMeterRatio(), 0.3F));
 	}
 
 	public void Activate(Class ab)

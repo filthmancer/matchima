@@ -10,10 +10,11 @@ public enum ZoneStyle
 
 public class Zone : MonoBehaviour {
 	public string _Name;
+	public string _Prefix = "The";
 	public string Name
 	{
 		get{
-			return "The " + _Name;
+			return _Prefix + " " + _Name;
 		}
 	}
 	public Wave IntroWave;
@@ -38,6 +39,7 @@ public class Zone : MonoBehaviour {
 	private int Depth;
 	private int Initial;
 
+	
 	private int curr = 0;
 	private bool shown_intro_wave;
 	private bool ShownBoss;
@@ -153,4 +155,22 @@ public class Zone : MonoBehaviour {
 	{
 		return MapSize.ToVector2;
 	}
+
+	public int CurrentDepthInZone
+	{
+		get{
+			return curr;
+		}
+	}
+
+	public float GetZoneDepth_Ratio()
+	{
+		return (float) curr / (float) Depth;
+	}
+
+	public int GetZoneDepth()
+	{
+		return Depth;
+	}
+
 }

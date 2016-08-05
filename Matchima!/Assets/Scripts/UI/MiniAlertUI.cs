@@ -25,6 +25,8 @@ public class MiniAlertUI : UIObj {
 		}
 	}
 
+	private ObjectPoolerReference poolref;
+
 	bool ended = false;
 	// Update is called once per frame
 	void Update () {
@@ -56,7 +58,15 @@ public class MiniAlertUI : UIObj {
 			{
 				child();
 			}
-			if(DestroyOnEnd) Destroy(this.gameObject);
+			if(DestroyOnEnd) 
+			{
+				if(poolref) 
+				{
+					EndActions.Clear();
+					poolref.Unspawn();
+				}
+				else Destroy(this.gameObject);
+			}
 		}
 	}
 
@@ -69,9 +79,32 @@ public class MiniAlertUI : UIObj {
 		Txt[0].text = text;
 		Txt[0].fontSize = size;
 		Txt[0].color = col;
+		Txt[0].outlineColor = Color.black;
 		_speed = speed;
 		Img[0].enabled = back;
 		DestroyOnEnd = true;
+
+		Gravity = false;
+		ended = false;
+	}
+
+	public void Setup(MiniAlertUI prev)
+	{
+		transform.position = prev.transform.position;
+		lifetime = prev.lifetime;
+		text = prev.text;
+		size = prev.size;
+		Txt[0].text = prev.Txt[0].text;
+		Txt[0].fontSize = prev.Txt[0].fontSize;
+		Txt[0].color = prev.Txt[0].color;
+		Txt[0].outlineColor = prev.Txt[0].outlineColor;
+		_speed = prev._speed;
+		Img[0].enabled = prev.Img[0].enabled;
+		DestroyOnEnd = prev.DestroyOnEnd;
+
+		poolref = GetComponent<ObjectPoolerReference>();
+		Gravity = false;
+		ended = false;
 	}
 
 	public void AddAction(Action m)

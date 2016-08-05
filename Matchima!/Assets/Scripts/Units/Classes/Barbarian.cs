@@ -87,7 +87,7 @@ public class Barbarian : Class {
 		UIManager.instance.ScreenAlert.SetTween(0,true);
 		UIManager.ClassButtons.GetClass(Index).ShowClass(true);
 		
-		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, "", GameData.Colour(Genus));
+		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, GameData.Colour(Genus));
 		
 		powerup.transform.SetParent(UIManager.ClassButtons.GetClass(Index).transform);
 		powerup.transform.position = UIManager.ClassButtons.GetClass(Index).transform.position;
@@ -137,7 +137,7 @@ public class Barbarian : Class {
 		MGame.ClearActions(UIAction.MouseDown);
 
 		
-		GameObject initpart = EffectManager.instance.PlayEffect(MGame.transform, Effect.Force);
+		GameObject initpart = EffectManager.instance.PlayEffect(MGame.transform, Effect.Spell);
 		initpart.GetComponent<MoveToPoint>().SetTarget(UIManager.instance.Health.transform.position);
 		initpart.GetComponent<MoveToPoint>().SetPath(0.2F, 0.2F);
 		yield return new WaitForSeconds(0.7F);

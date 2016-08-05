@@ -73,7 +73,7 @@ public class Ward : Tile {
 			SetState(TileState.Idle, true);
 			
 
-			GameObject part = EffectManager.instance.PlayEffect(this.transform, Effect.Force, "", GameData.instance.GetGENUSColour(Genus));
+			GameObject part = EffectManager.instance.PlayEffect(this.transform, Effect.Spell, GameData.instance.GetGENUSColour(Genus));
 			MoveToPoint mp = part.GetComponent<MoveToPoint>();
 			mp.enabled = true;
 			mp.SetTarget(UIManager.ClassButtons[(int)Genus].transform.position);

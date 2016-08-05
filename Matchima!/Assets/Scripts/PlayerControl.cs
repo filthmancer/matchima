@@ -19,7 +19,7 @@ public class PlayerControl : MonoBehaviour {
 	public static Tile matchingTile;
 	public float TimeSinceLastMatch   = 0.0F;
 	public float TimeWithoutInput     = 0.0F;
-	public float currentCombo;
+	
 	public List<Tile> selectedTiles   = new List<Tile>();
 	public List<Tile> finalTiles      = new List<Tile>();
 	[HideInInspector]
@@ -58,6 +58,7 @@ public class PlayerControl : MonoBehaviour {
 			return 1.0F + (Mathf.Floor(selectedTiles.Count / Player.Stats.ComboCounter) * Player.Stats.ComboBonus);
 		}
 	}
+	public float ComboBonus_Temp;
 
 	void Awake()
 	{
@@ -92,7 +93,7 @@ public class PlayerControl : MonoBehaviour {
 		if(TimeWithoutInput < 30.0F) TimeWithoutInput += Time.deltaTime;
 
 		CheckInput();
-		currentCombo = ComboBonus;
+		ComboBonus_Temp = ComboBonus;
 		if(TouchParticle != null) TouchParticle.transform.position = InputPos;
 		if(focusTile != null && !HoldingSlot)
 		{
@@ -416,6 +417,8 @@ public class PlayerControl : MonoBehaviour {
 				child.originalMatch = true;
 			}
 		}
+
+			
 
 		if(match)
 		{

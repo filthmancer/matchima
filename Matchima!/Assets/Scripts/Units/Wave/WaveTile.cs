@@ -103,6 +103,7 @@ public class WaveTile : WaveUnit
 
 		for(int x = 0; x < (int)Factor; x++)
 		{
+			
 			int randx = (int)Random.Range(0, TileMaster.instance.MapSize.x);
 			int randy = (int)Random.Range(0, TileMaster.instance.MapSize.y);
 			int checks = 0;
@@ -118,7 +119,7 @@ public class WaveTile : WaveUnit
 			}
 			replacedtile[randx,randy] = true;
 
-			GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Force);
+			GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Spell);
 			MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
 			mp.SetTarget(TileMaster.Tiles[randx,randy].transform.position);
 			mp.SetPath(0.55F, 0.2F);
@@ -134,10 +135,9 @@ public class WaveTile : WaveUnit
 				});
 			
 
-			yield return new WaitForSeconds(Time.deltaTime * 20);
+			yield return new WaitForSeconds(Time.deltaTime * 10);
 		}
-		yield return new WaitForSeconds(Time.deltaTime * 20);
-		GameManager.instance.paused = false;
+		yield return new WaitForSeconds(Time.deltaTime * 10);
 	}
 
 
@@ -177,7 +177,7 @@ public class WaveTile : WaveUnit
 			replacedtile[randx,randy] = true;
 
 			List<TileEffectInfo> Effects = Parent.GetEffects();
-			GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Force);
+			GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Spell);
 			MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
 			mp.SetTarget(TileMaster.Tiles[randx,randy].transform.position);
 			mp.SetPath(0.55F, 0.2F);

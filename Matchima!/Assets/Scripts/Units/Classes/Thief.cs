@@ -12,13 +12,13 @@ public class Thief : Class {
 		attack = new TileChance();
 		attack.Genus = "Alpha";
 		attack.Type = "sword";
-		attack.Chance = 0.14F;
+		attack.Chance = 0.06F;
 		InitStats.TileChances.Add(attack);
 
 		TileChance attackgen = new TileChance();
 		attackgen.Genus = GameData.ResourceLong(Genus);
 		attackgen.Type = "sword";
-		attackgen.Chance = 0.04F;
+		attackgen.Chance = 0.06F;
 		InitStats.TileChances.Add(attackgen);
 
 		TileChance chest = new TileChance();
@@ -101,7 +101,7 @@ public class Thief : Class {
 		GameManager.instance.paused = true;
 		UIManager.instance.ScreenAlert.SetTween(0,true);
 		UIManager.ClassButtons.GetClass(Index).ShowClass(true);
-		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, "", GameData.Colour(Genus));
+		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, GameData.Colour(Genus));
 		powerup.transform.SetParent(UIManager.ClassButtons.GetClass(Index).transform);
 		powerup.transform.position = UIManager.ClassButtons.GetClass(Index).transform.position;
 		powerup.transform.localScale = Vector3.one;

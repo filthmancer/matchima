@@ -21,9 +21,9 @@ public class Healing : ClassEffect {
 
 		if(_Unit != null)
 		{
-			GameObject part = EffectManager.instance.PlayEffect(UIManager.ClassButtons[(int)_Unit.Genus].transform, Effect.Shiny, "", GameData.instance.GetGENUSColour(_Unit.Genus));
+			GameObject part = EffectManager.instance.PlayEffect(UIManager.ClassButtons[(int)_Unit.Genus].transform, Effect.Shiny, GameData.instance.GetGENUSColour(_Unit.Genus));
 			part.GetComponent<DestroyTimer>().Timer = 0.8F;
-			part = EffectManager.instance.PlayEffect(UIManager.instance.Health.transform, Effect.Shiny, "", GameData.instance.GetGENUSColour(_Unit.Genus));
+			part = EffectManager.instance.PlayEffect(UIManager.instance.Health.transform, Effect.Shiny, GameData.instance.GetGENUSColour(_Unit.Genus));
 			part.GetComponent<DestroyTimer>().Timer = 0.8F;
 		}
 
@@ -43,9 +43,9 @@ public class Healing : ClassEffect {
 		_Unit = c;
 		if(_Unit != null)
 		{
-			GameObject part = EffectManager.instance.PlayEffect(UIManager.ClassButtons[(int)_Unit.Genus].transform, Effect.Shiny, "", GameData.instance.GetGENUSColour(_Unit.Genus));
+			GameObject part = EffectManager.instance.PlayEffect(UIManager.ClassButtons[(int)_Unit.Genus].transform, Effect.Shiny, GameData.instance.GetGENUSColour(_Unit.Genus));
 			part.GetComponent<DestroyTimer>().Timer = 0.8F;
-			part = EffectManager.instance.PlayEffect(UIManager.instance.Health.transform, Effect.Shiny, "", GameData.instance.GetGENUSColour(_Unit.Genus));
+			part = EffectManager.instance.PlayEffect(UIManager.instance.Health.transform, Effect.Shiny, GameData.instance.GetGENUSColour(_Unit.Genus));
 			part.GetComponent<DestroyTimer>().Timer = 0.8F;
 		}
 

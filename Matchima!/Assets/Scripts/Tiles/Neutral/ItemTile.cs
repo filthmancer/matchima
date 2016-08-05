@@ -10,7 +10,7 @@ public class ItemTile : Tile {
 	public override StCon [] Description
 	{
 		get{
-			return new StCon[]{new StCon("Contains an item.", GameData.Colour(Genus),true, 40)};
+			return new StCon[]{new StCon("Contains an secret tile", GameData.Colour(Genus),true, 40)};
 		}
 	}
 
@@ -26,14 +26,26 @@ public class ItemTile : Tile {
 		}
 	}
 
-	public string [] RollTypes = new string[]
+	private class RollCon
 	{
-		"cross",
-		"lightning",
-		"bomb",
-		"altar",
-		"minion",
-		"blackhole"
+		public string species;
+		public GENUS genus;
+		public RollCon(string s, GENUS g)
+		{
+			genus = g;
+			species = s;
+		}
+	}
+
+	private RollCon [] Rolls = new RollCon[]
+	{
+		new RollCon("cross", GENUS.RAND),
+		new RollCon("lightning", GENUS.RAND),
+		new RollCon("bomb", GENUS.RAND),
+		new RollCon("altar", GENUS.OMG),
+		new RollCon("minion", GENUS.RAND),
+		new RollCon("chicken", GENUS.OMG),
+		new RollCon("health", GENUS.ALL)
 	};
 
 	public override bool Match(int resource)
@@ -43,9 +55,9 @@ public class ItemTile : Tile {
 
 		InitStats.Value *=  resource;
 		CheckStats();
-		if(Random.value > 0.3F)
+		if(Random.value > 0.8F)
 		{
-			InitStats.Value *= 3;
+			InitStats.Resource = 15;
 			CollectThyself(true);
 			TileMaster.Tiles[Point.Base[0], Point.Base[1]] = null;
 			CheckStats();
@@ -53,8 +65,8 @@ public class ItemTile : Tile {
 		}
 		else
 		{
-			string type = RollTypes[Random.Range(0, RollTypes.Length)];
-			TileMaster.instance.ReplaceTile(this, TileMaster.Types[type], GENUS.RAND, 1, Stats.Value);
+			RollCon type = Rolls[Random.Range(0, Rolls.Length)];
+			TileMaster.instance.ReplaceTile(this, TileMaster.Types[type.species], type.genus, 1, Stats.Value);
 			return false;
 		}
 	//CHANGE ITEM STATS BASED ON VALUE

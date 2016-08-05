@@ -96,8 +96,10 @@ public class UIManager : MonoBehaviour {
 		{
 			if(Input.touches.Length == 0) ShowGearTooltip(false);
 		}
-		TDebug[0].text = Player.AttackValue + "";
-		TDebug[1].text = Player.SpellValue + "";
+		if(!Objects.MiddleGear[5].isActive)
+			Objects.MiddleGear[5].SetActive(true);
+		Objects.MiddleGear[5].Txt[0].text = ""+Player.AttackValue;
+		Objects.MiddleGear[5].Txt[1].text = ""+Player.SpellValue;
 
 		Objects.TopRightButton.Txt[0].text = "" + GameManager.Floor;
 		Objects.TopRightButton.Txt[1].text = "" + GameManager.ZoneNum;
@@ -426,11 +428,12 @@ public class UIManager : MonoBehaviour {
 		for(int g = 0; g < Meters.Length; g++)
 		{
 			if(Meters[g] == 0 || MeterObj[g] == null) continue;
-			MiniAlertUI wavetarget = (MiniAlertUI) Instantiate(MeterObj[g]);
-			wavetarget.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
+			
+			MiniAlertUI wavetarget = MiniAlert(MeterObj[g]);
+			
+			//wavetarget.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
 			wavetarget.transform.position = UIManager.Objects.MiddleGear[4][g].transform.position;
 			wavetarget.transform.localScale = Vector3.one;
-
 
 			MoveToPoint wavetarget_mover = AttachMoverToAlert(ref wavetarget);
 			wavetarget_mover.SetTarget(Objects.TopGear[1][0][0].transform.position);
@@ -440,15 +443,13 @@ public class UIManager : MonoBehaviour {
 				{
 					if(GameManager.Wave != null)
 						GameManager.Wave.AddPoints(amt[1]);
-						//print(amt[0]+ ": not showing");
-					
 				},
 				new int []{g, Meters[g]}
 			);
 			wavetarget.lifetime = 0.0F;
 
-			MiniAlertUI classtarget = (MiniAlertUI) Instantiate(MeterObj[g]);
-			classtarget.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
+			MiniAlertUI classtarget = MiniAlert(MeterObj[g]);
+			//classtarget.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
 			classtarget.transform.position = UIManager.Objects.MiddleGear[4][g].transform.position;
 			classtarget.transform.localScale = Vector3.one;
 
@@ -1486,6 +1487,9 @@ public class UIManager : MonoBehaviour {
 		bool open = (Objects.MiddleGear[1] as UIObjTweener).Tween.IsObjectOpened();
 		GameManager.instance.paused = open;
 		Objects.MiddleGear[1].Txt[3].enabled = false;
+		Objects.MiddleGear[1].Img[2].enabled = false;
+		Objects.MiddleGear[1].Img[4].enabled = false;
+
 		if(!open) UIManager.instance.SetClassButtons(false);
 		if(ended)
 		{
@@ -1497,6 +1501,8 @@ public class UIManager : MonoBehaviour {
 
 			//CHOOSE ZONE
 			Objects.MiddleGear[1].Txt[3].enabled = true;
+
+
 			for(int i = 0; i < Objects.MiddleGear[1][0].Length; i++)
 			{
 				UIObj bracket = Objects.MiddleGear[1][0].Child[i];
@@ -1533,9 +1539,14 @@ public class UIManager : MonoBehaviour {
 		else
 		{
 			Objects.MiddleGear[1].Txt[0].text = GameManager.Zone.Name;
-			Objects.MiddleGear[1].Txt[1].text = "";
+			Objects.MiddleGear[1].Txt[1].text = "Wave " + GameManager.Zone.CurrentDepthInZone + "/" + GameManager.Zone.GetZoneDepth();
 			Objects.MiddleGear[1].Txt[3].enabled = false;
 			Objects.MiddleGear[1].Txt[2].enabled = false;
+
+			Objects.MiddleGear[1].Img[2].enabled = true;
+			Objects.MiddleGear[1].Img[4].enabled = true;
+			Objects.MiddleGear[1].Img[4].fillAmount = GameManager.Zone.GetZoneDepth_Ratio();
+			Objects.MiddleGear[1].Img[3].enabled = false;
 
 			for(int i = 0; i < Objects.MiddleGear[1][0].Length; i++)
 			{
@@ -1679,19 +1690,42 @@ public class UIManager : MonoBehaviour {
 		Reset();
 	}
 
+	public ObjectPooler MiniAlertPool;
+
 	public MiniAlertUI MiniAlert(Vector3 position, string alert, float size = 30, Color? col = null, float life = 0.6F, float speed = 0.1F, bool background = false)
 	{
-		MiniAlertUI alertobj = (MiniAlertUI) Instantiate(Objects.MiniAlert);
+		if(MiniAlertPool == null)
+		{
+			MiniAlertPool = new ObjectPooler(Objects.MiniAlert.gameObject, 1, Objects.MiniAlertPool);
+		}
+		MiniAlertUI alertobj = MiniAlertPool.Spawn().GetComponent<MiniAlertUI>();
 		alertobj.transform.SetParent(Canvas.transform);
 		alertobj.transform.localScale = Vector3.one;
 		alertobj.Setup(position, alert, life, size, col??Color.white, speed, background);
+		alertobj.GetComponent<MoveToPoint>().enabled = false;
+		alertobj.transform.rotation = Quaternion.identity;
+		return alertobj;
+	}
+
+	public MiniAlertUI MiniAlert(MiniAlertUI prev)
+	{
+		if(MiniAlertPool == null)
+		{
+			MiniAlertPool = new ObjectPooler(Objects.MiniAlert.gameObject, 1, Objects.MiniAlertPool);
+		}
+		MiniAlertUI alertobj = MiniAlertPool.Spawn().GetComponent<MiniAlertUI>();
+		alertobj.transform.SetParent(Canvas.transform);
+		alertobj.transform.localScale = Vector3.one;
+		alertobj.Setup(prev);
+		alertobj.GetComponent<MoveToPoint>().enabled = false;
+		alertobj.transform.rotation = Quaternion.identity;
 		return alertobj;
 	}
 
 	public MoveToPoint AttachMoverToAlert(ref MiniAlertUI alert)
 	{
-
 		MoveToPoint mini = alert.GetComponent<MoveToPoint>();
+		mini.enabled = true;
 		alert.AddAction(() => {
 				mini.transform.SetParent(Canvas.transform);
 				mini.enabled = true;

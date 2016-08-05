@@ -150,7 +150,7 @@ public class ModContainer : MonoBehaviour {
 			new Upgrade("Hearty", " Max HP", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._HealthMax += 10 + (int)val*5;}, 5, 10),
 			new Upgrade("Healing", " HP Regen", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.HealthRegen += 1 + (int) val;}, 1, 1),
 			new Upgrade("Sharp", " Attack", 0.4F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._Attack += 1 + (int)val;}, 1, 1),
-			new Upgrade("Wise", "% Spell Power", 0.4F, ScaleType.GRADIENT, 0.2F, (Stat s, float val) => {s.SpellPower += 0.2F * val;}, 20),
+			new Upgrade("Wise", "% Spell Power", 0.4F, ScaleType.GRADIENT, 0.5F, (Stat s, float val) => {s.SpellPower += 0.2F * val;}, 20),
 			new Upgrade("Healing", " MP Regen", 0.2F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.MeterRegen += 1 + (int) val;}) 
 		),
 		
@@ -159,11 +159,11 @@ public class ModContainer : MonoBehaviour {
 			new Upgrade("Spiked", " Spikes", 1.0F, ScaleType.GRADIENT,1.0F, (Stat s, float val) => {s.Spikes += 1 + (int)val;}, 1, 1),
 			new Upgrade("Hearty", " Max HP", 0.4F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._HealthMax += 10 + (int)val*5;}, 5, 10),
 			new Upgrade("Healing", " HP Regen", 0.4F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.HealthRegen += 1 + (int) val;}, 1, 1),
-			new Upgrade("Wise", "% Spell Power", 0.4F, ScaleType.GRADIENT, 0.2F, (Stat s, float val) => {s.SpellPower += 0.2F * val;}, 20),
+			new Upgrade("Wise", "% Spell Power", 0.4F, ScaleType.GRADIENT, 0.5F, (Stat s, float val) => {s.SpellPower += 0.2F * val;}, 20),
 			new Upgrade("Healing", " MP Regen", 0.2F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.MeterRegen += 1 + (int) val;})
 		),
 		new GenusBracket("Green",
-			new Upgrade("Wise", "% Spell Power", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.SpellPower += 0.2F * val;}, 20),
+			new Upgrade("Wise", "% Spell Power", 1.0F, ScaleType.GRADIENT, 0.5F, (Stat s, float val) => {s.SpellPower += 0.2F * val;}, 20),
 			new Upgrade("Hearty", " Max HP", 0.4F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._HealthMax += 10 + (int)val * 5;}, 5, 10),
 			new Upgrade("Healing", " HP Regen", 0.4F, ScaleType.GRADIENT, 0.8F, (Stat s, float val) => {s.HealthRegen += 1 + (int) val;}),
 			new Upgrade("Healing", " MP Regen", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.MeterRegen += 1 + (int) val;}),
@@ -173,7 +173,7 @@ public class ModContainer : MonoBehaviour {
 			new Upgrade("Spiked", " Spikes", 1.0F, ScaleType.GRADIENT,1.0F, (Stat s, float val) => {s.Spikes += 1 + (int)val;}, 1, 1),
 			new Upgrade("Sharp", " Attack", 0.4F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._Attack += 1 + (int)val;}, 1, 1),
 			new Upgrade("Healing", " HP Regen", 0.4F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.HealthRegen += 1 + (int) val;}, 1, 1),
-			new Upgrade("Wise", "% Spell Power", 1.0F, ScaleType.GRADIENT, 0.2F, (Stat s, float val) => {s.SpellPower += 0.2F * val;}, 20),
+			new Upgrade("Wise", "% Spell Power", 0.5F, ScaleType.GRADIENT, 0.5F, (Stat s, float val) => {s.SpellPower += 0.2F * val;}, 20),
 			new Upgrade("Healing", " MP Regen", 0.2F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.MeterRegen += 1 + (int) val;})
 		)
 		
@@ -304,8 +304,13 @@ public class ModContainer : MonoBehaviour {
 		)
 	});
 
-	public static UpgradeBracket Shift = new UpgradeBracket(2, "Shift", ItemType.Shift, 0.1F, new GenusBracket [] {
+	public static UpgradeBracket Shift = new UpgradeBracket(2, "Shift", ItemType.Shift, 0.2F, new GenusBracket [] {
 		new GenusBracket("Red",
+
+			new Upgrade("Bombers's", " Mana Value", 1.0F, ScaleType.GRADIENT, 0.2F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("", "mana", 0, 1 + (int)value));}, 1, 1),
+
 			new Upgrade("Bombers's", " Lightning Value", 1.0F, ScaleType.GRADIENT, 0.2F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("", "lightning", 0, 1 + (int)value));}, 1, 1),
@@ -325,6 +330,11 @@ public class ModContainer : MonoBehaviour {
 		),
 		
 		new GenusBracket("Blue",
+
+			new Upgrade("Bombers's", " Mana Value", 1.0F, ScaleType.GRADIENT, 0.2F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("", "mana", 0, 1 + (int)value));}, 1, 1),
+
 			new Upgrade("Bombers's", " Lightning Value", 1.0F, ScaleType.GRADIENT, 0.2F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("", "lightning", 0, 1 + (int)value));}, 1, 1),
@@ -344,6 +354,11 @@ public class ModContainer : MonoBehaviour {
 
 		),
 		new GenusBracket("Green",
+
+			new Upgrade("Bombers's", " Mana Value", 1.0F, ScaleType.GRADIENT, 0.2F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("", "mana", 0, 1 + (int)value));}, 1, 1),
+
 			new Upgrade("Bombers's", " Lightning Value", 1.0F, ScaleType.GRADIENT, 0.2F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("", "lightning", 0, 1 + (int)value));}, 1, 1),
@@ -363,6 +378,11 @@ public class ModContainer : MonoBehaviour {
 		
 		),
 		new GenusBracket("Yellow",
+
+			new Upgrade("Bombers's", " Mana Value", 1.0F, ScaleType.GRADIENT, 0.2F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("", "mana", 0, 1 + (int)value));}, 1, 1),
+
 			new Upgrade("Bombers's", " Lightning Value", 1.0F, ScaleType.GRADIENT, 0.2F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("", "lightning", 0, 1 + (int)value));}, 1, 1),
@@ -465,7 +485,7 @@ public class ModContainer : MonoBehaviour {
 			{
 				Tile e = TileMaster.Enemies[UnityEngine.Random.Range(0, TileMaster.Enemies.Length)];
 				e.SetState(TileState.Selected, true);
-				GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[0].transform, Effect.Force);
+				GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[0].transform, Effect.Spell);
 				MoveToPoint charm = initpart.GetComponent<MoveToPoint>();
 				charm.SetTarget(e.transform.position);
 				charm.SetPath(0.6F, 0.3F);
@@ -490,7 +510,7 @@ public class ModContainer : MonoBehaviour {
 			{
 				Tile e = TileMaster.Enemies[UnityEngine.Random.Range(0, TileMaster.Enemies.Length)];
 				e.SetState(TileState.Selected, true);
-				GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[0].transform, Effect.Force);
+				GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[0].transform, Effect.Spell);
 				MoveToPoint charm = initpart.GetComponent<MoveToPoint>();
 				charm.SetTarget(e.transform.position);
 				charm.SetPath(0.6F, 0.3F);
@@ -1106,13 +1126,21 @@ public class Upgrade
 		if(Method != null) Method(s, val);
 	}
 
+	public int OnPlayerHit(int hit, Tile[] attackers, Stat s, float val)
+	{
+		if(MethType != MethodType.OnPlayerHit) return hit;
+		if(Method != null) Method(s,val);
+		return hit;
+	}
+
 
 }
 
 public enum MethodType
 {
 	OnReset,
-	OnMatch
+	OnMatch,
+	OnPlayerHit
 }
 
 public class OnMatchUpgrade : Upgrade

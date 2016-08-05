@@ -422,6 +422,7 @@ public class Wave : Unit {
 		{
 			for(int y = 0; y < _tiles.GetLength(1); y++)
 			{
+				if(_tiles[x,y] == null) continue;
 				int distX = Mathf.Abs(x - targX);
 				int distY = Mathf.Abs(y - targY);
 				
@@ -446,6 +447,7 @@ public class Wave : Unit {
 
 		for(int i = 0; i < to_collect.Count; i++)
 		{
+			if(to_collect[i] == null) continue;
 			if(to_collect[i].Type.isEnemy)
 			{
 				to_collect[i].InitStats.TurnDamage += 10;

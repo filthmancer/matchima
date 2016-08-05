@@ -4,13 +4,14 @@ using System.Collections;
 public class TileEffect : Status {
 	public Tile _Tile;
 
+	private GameObject particle;
 	public virtual void Setup(Tile t)
 	{
 		_Tile = t;
 		if(FX != string.Empty)
 		{
-			GameObject part = EffectManager.instance.PlayEffect(this.transform, Effect.STRING, FX);
-			part.transform.parent = this.transform;
+			particle = EffectManager.instance.PlayEffect(this.transform, FX);
+			particle.transform.parent = this.transform;
 		}
 	}
 
@@ -26,7 +27,12 @@ public class TileEffect : Status {
 
 	public virtual void _OnDestroy()
 	{
-		
+		ObjectPoolerReference poolref = particle.GetComponent<ObjectPoolerReference>();
+		if(poolref)
+		{
+			poolref.Unspawn();
+		}
+		else Destroy(particle);
 	}
 
 	public override bool CanAttack()

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class WardenWaveUnit : WaveUnit {
 
 	List<Tile> controllers;
-
+	int controller_count = 3;
 	public bool controllers_dead = false;
 	public bool controllers_attack = false;
 
@@ -15,8 +15,9 @@ public class WardenWaveUnit : WaveUnit {
 		GameManager.instance.paused = true;
 		controllers = new List<Tile>();
 		bool [,] replacedtile = new bool [(int)TileMaster.instance.MapSize.x, (int)TileMaster.instance.MapSize.y];
-		for(int i = 0; i < 3; i++)
+		for(int i = 0; i < controller_count; i++)
 		{
+			print(i);
 			int randx = (int)Random.Range(0, TileMaster.instance.MapSize.x);
 			int randy = (int)Random.Range(0, TileMaster.instance.MapSize.y);
 			while(replacedtile[randx, randy] || 
@@ -30,15 +31,14 @@ public class WardenWaveUnit : WaveUnit {
 
 			CreateWard(randx, randy);
 		
-			yield return new WaitForSeconds(Time.deltaTime * 30);
+			yield return new WaitForSeconds(Time.deltaTime * 10);
 		}
-		yield return new WaitForSeconds(Time.deltaTime * 20);
-		GameManager.instance.paused = false;
+		yield return new WaitForSeconds(Time.deltaTime * 5);
 	}
 
 	void CreateWard(int x, int y)
 	{
-		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Force);
+		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Spell);
 		MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
 		mp.SetTarget(TileMaster.Tiles[x,y].transform.position);
 		mp.SetPath(0.55F, 0.2F);
@@ -56,6 +56,7 @@ public class WardenWaveUnit : WaveUnit {
 	{
 		yield return StartCoroutine(base.BeginTurn());
 		if(!Active || Ended) yield break;
+		yield return null;
 		TimeActive ++;
 		if(TimeActive % 3 == 0)
 		{
@@ -63,25 +64,19 @@ public class WardenWaveUnit : WaveUnit {
 			int r = Random.Range(0,3);
 			switch(r)
 			{
-				case 0: tute.AddQuote("Come on troops!",  this, false, 1.4F); break;
-				case 1: tute.AddQuote("Fight for your precious mana.",  this, false, 1.4F); break;
-				case 2: tute.AddQuote("I have total command!",  this, false, 1.4F); break;
+				case 0: tute.AddQuote("Come on troops!",  this, false, 1.2F); break;
+				case 1: tute.AddQuote("Fight for your precious mana.",  this, false, 1.2F); break;
+				case 2: tute.AddQuote("I have total command!",  this, false, 1.2F); break;
 			}
 			
-			StartCoroutine(UIManager.instance.Quote(tute.ToArray()));
+			yield return StartCoroutine(UIManager.instance.Quote(tute.ToArray()));
 
-			List<Tile> enemies = new List<Tile>();
-			for(int x = 0; x < TileMaster.Grid.Size[0]; x++)
-			{
-				for(int y = 0; y < TileMaster.Grid.Size[1]; y++)
+			Tile targ = TileMaster.Enemies[Random.Range(0, TileMaster.Enemies.Length)];
+			CastAction(targ, (Tile t) =>
 				{
-					if(TileMaster.Tiles[x,y].IsType("Enemy")) enemies.Add(TileMaster.Tiles[x,y]);
-				}
-			}
-			foreach(Tile child in enemies)
-			{
-				child.AddEffect("Frenzy", 1, "2");
-			}
+					MiniAlertUI m = UIManager.instance.MiniAlert(t.Point.targetPos, "Frenzy!", 120, GameData.Colour(t.Genus), 0.3F, 0.1F);
+					t.AddEffect("Frenzy", 1, "2");	
+				});
 		}
 	}
 

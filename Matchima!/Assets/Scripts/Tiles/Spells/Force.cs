@@ -51,7 +51,7 @@ public class Force : Tile {
 
 		foreach(Tile child in to_collect)
 		{
-			GameObject part = EffectManager.instance.PlayEffect(this.transform, Effect.Force, "", GameData.instance.GetGENUSColour(Genus));
+			GameObject part = EffectManager.instance.PlayEffect(this.transform, Effect.Spell, GameData.instance.GetGENUSColour(Genus));
 			MoveToPoint mp = part.GetComponent<MoveToPoint>();
 			mp.enabled = true;
 			mp.SetTarget(child.transform.position);

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -164,6 +164,7 @@ public class Player : MonoBehaviour {
 	public void CompleteHealth()
 	{
 		Stats.CompleteHealth();
+		
 		ResetStats();
 	}
 
@@ -176,6 +177,7 @@ public class Player : MonoBehaviour {
 			heal += regen[0];
 			child.AddToMeter(regen[1]);
 		}
+		
 		Stats.Heal(heal);
 	}
 
@@ -632,6 +634,8 @@ public class Player : MonoBehaviour {
 		Stats.MapSize.x = Mathf.Clamp(Stats.MapSize.x, 0, 4);
 		Stats.MapSize.y = Mathf.Clamp(Stats.MapSize.y, 0, 4);
 
+		Stats.MatchNumberModifier = Mathf.Clamp(Stats.MatchNumberModifier, -2, 100);;
+
 		if (!Stats.isKilled && TileMaster.GridSetup)
 		{
 			Vector2 finalMap = TileMaster.instance.MapSize_Default
@@ -746,9 +750,9 @@ public static float AddedSpellPower  = 0;
 		{
 			hit = child.OnHit(hit, attackers);
 		}
-		foreach (Ability child in Abilities)
+		foreach(Class child in Classes)
 		{
-			hit = child.OnHit(hit, attackers);
+			hit = child.OnHit(hit,attackers);
 		}
 
 		Stats.Hit(hit, attackers);

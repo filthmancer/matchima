@@ -109,6 +109,8 @@ public class WardenBattle : Wave {
 		}
 
 		GameManager.instance.paused = false;
+		UIManager.Objects.BotGear.SetTween(0, true);
+		UIManager.Objects.TopGear.SetTween(0, false);
 		UIManager.instance.ScreenAlert.SetTween(0,false);
 	}
 
