@@ -25,8 +25,6 @@ public class MiniAlertUI : UIObj {
 		}
 	}
 
-	private ObjectPoolerReference poolref;
-
 	bool ended = false;
 	// Update is called once per frame
 	void Update () {
@@ -40,14 +38,19 @@ public class MiniAlertUI : UIObj {
 			}
 			
 		}
-		Txt[0].text = text;
-		if(lifetime < -1.0F) return;
+		
+		if(lifetime < -1.0F) 
+		{
+			Txt[0].text = text;
+			return;
+		}
 		if(lifetime > 0.0F){
 			transform.position += velocity * _speed;
 			transform.position += gravity_velocity;
 
 			lifetime -= Time.deltaTime;
 			_speed = Mathf.Lerp(_speed, 0.0F, Time.deltaTime * 10);
+			Txt[0].text = text;
 			
 		}
 		else 
@@ -130,4 +133,23 @@ public class MiniAlertUI : UIObj {
 	}
 
 	public void ResetJuice(float f = 0.0F){juice_time_curr = f;}
+
+	public override void ClearActions(UIAction a = UIAction.None)
+	{
+		base.ClearActions(a);
+		if(a == UIAction.None)
+		{
+			EndActions.Clear();
+		}
+	}
+
+	public void PoolDestroy()
+	{
+		poolref = GetComponent<ObjectPoolerReference>();
+		if(poolref)
+		{
+			poolref.Unspawn();
+		}
+		else Destroy(this.gameObject);
+	}
 }

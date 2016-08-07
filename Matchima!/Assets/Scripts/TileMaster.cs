@@ -228,6 +228,10 @@ public class TileMaster : MonoBehaviour {
 	public void Reset()
 	{
 		ResetChances();
+		generated = false;
+		FillGrid = false;
+		Types.Setup();
+		Genus = _GenusTypes;
 	}
 
 	public void ResetChances()
@@ -264,7 +268,6 @@ public class TileMaster : MonoBehaviour {
 
 	public void GenerateGrid(GridInfo level = null, float wait = 0.0F, bool clear = true)
 	{
-
 		if (clear)
 		{
 			ClearGrid(true);

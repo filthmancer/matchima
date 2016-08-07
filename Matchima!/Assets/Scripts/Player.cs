@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Player : MonoBehaviour {
+
+#region Variables
 	public static Player instance;
 	public static Ops Options
 	{
@@ -30,6 +32,7 @@ public class Player : MonoBehaviour {
 			return false;
 		}
 	}
+
 
 	public bool CompleteMatch = true;
 	public int Turns = 0;
@@ -106,10 +109,28 @@ public class Player : MonoBehaviour {
 	public List<UpgradeGroup> ThisTurn_upgrades = new List<UpgradeGroup>();
 	public List<ClassEffect> _Status = new List<ClassEffect>();
 
+	[SerializeField]
+	private LevelContainer _Level;
+	public static LevelContainer Level{get{return instance._Level;}}
 
+	private Unlock [] _Unlocks = new Unlock[]
+	{
+		new Unlock("quickmode", 2, "Quick Crawl Mode"),
+		new Unlock("charselect", 2, "Character Selection"),
+		new Unlock("farmer", 3, "The Farmer", false),
+		new Unlock("endlessmode", 5, "Endless Mode"),
+		new Unlock("squire", 6, "The Squire", false),
+		new Unlock("warden", 7, "The Warden", false),
+		new Unlock("merchant", 8, "The Merchant", false)
+	};
+	public Unlock [] Unlocks{get{return _Unlocks;}}
+	
 	float idle_quote_chance = 0.02F;
 	bool idle_quote = false;
 	float idle_time = 0.0F;
+#endregion
+
+#region Generic Functions
 	void Awake()
 	{
 		instance = this;
@@ -138,13 +159,9 @@ public class Player : MonoBehaviour {
 		else if (PlayerControl.instance.TimeWithoutInput == 0.0F) idle_time = 0.0F;
 
 	}
+#endregion
 
-	public TileTypes GetTileTypes()
-	{
-		return null;//_class.Types;
-	}
-
-
+#region Event-Based Functions
 	public StatContainer GetResourceFromGENUS(GENUS ab)
 	{
 		switch (ab)
@@ -220,6 +237,42 @@ public class Player : MonoBehaviour {
 		return 0;
 	}
 
+	public void OnHit(params Tile[] attackers)
+	{
+		int hit =  0;
+		for (int i = 0; i < attackers.Length; i++)
+		{
+			hit += attackers[i].GetAttack();
+		}
+
+		foreach (Item child in Items)
+		{
+			hit = child.OnHit(hit, attackers);
+		}
+		foreach(Class child in Classes)
+		{
+			hit = child.OnHit(hit,attackers);
+		}
+
+		Stats.Hit(hit, attackers);
+	}
+
+	public void CheckForBestCombo(int[] combo)
+	{
+		int final = 0;
+		for (int i = 0; i < combo.Length; i++)
+		{
+			final += combo[i];
+		}
+		if (final > BestCombo)
+		{
+			BestCombo = final;
+		}
+	}
+
+#endregion
+
+#region Matching Functions
 	public IEnumerator BeforeMatch(List<Tile> tiles)
 	{
 		foreach (Class child in Classes)
@@ -355,8 +408,9 @@ public class Player : MonoBehaviour {
 		Turns ++;
 		yield return null;
 	}
+#endregion
 
-	public void CheckForBoons()
+	/*public void CheckForBoons()
 	{
 		StartCoroutine(CheckForBoonsRoutine());
 	}
@@ -369,7 +423,7 @@ public class Player : MonoBehaviour {
 			yield return StartCoroutine(child.CheckForBoon());
 		}
 		yield return null;
-	}
+	}*/
 
 	bool showingpickup = false;
 	public void PickupItem(Item i)
@@ -538,6 +592,8 @@ public class Player : MonoBehaviour {
 		StartCoroutine(LoadClasses(classes));
 	}
 
+
+
 	IEnumerator LoadClasses(Class [] c = null)
 	{
 		if (c == null)
@@ -697,28 +753,79 @@ public class Player : MonoBehaviour {
 		return indiv_damage;
 	}
 
+#region Player Level/Unlocks
+	public IEnumerator AddXP(int xp)
+	{
+		int rate = 1;
+		float rate_soft = 1.0F;
+		int current = 0;
+		while(current < xp)
+		{
+			int actual = Mathf.Clamp(rate, 0, xp-current);
+			current += actual;
+			
+			rate_soft *= 1.05F;
+			rate = (int)rate_soft;
+			if(_Level.AddXP(actual))
+			{
+				MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear[1][2].transform.position, "Level Up!", 60);
+				rate = 1;
+				rate_soft = 1.0F;
+				UIManager.instance.UpdatePlayerLvl();
+				yield return new WaitForSeconds(0.05F);
+			}
+			UIManager.instance.UpdatePlayerLvl();
+			yield return null;
+		}
+		yield return null;
+	}
 
 
-public static int AttackValue
-{
-	get{return (int) ((float)Stats.GetAttack() * (1.0F + AddedAttackPower));}
-}
-public static int SpellValue
-{
-	get{return (int) ((float)Stats.GetSpell() * (1.0F + AddedSpellPower));}
-}
+	public void SetLevelInfo(int lvl, int xp)
+	{
+		if(lvl < 1) lvl = 1;
+	 	_Level.Level = lvl;
+	 	_Level.XP_Current = xp;
+	 	_Level.XP_RequiredArray_num = lvl-1;
+	 	_Level.XP_Required = Level.XP_RequiredArray[lvl-1];
+	 	while(_Level.AddXP(0))
+	 	{
 
-public static float AttackPower
-{
-	get{return AddedAttackPower + Stats.GetAttackPower();}
-}
+	 	}
+	}
 
-public static float SpellPower
-{
-	get{return AddedSpellPower + Stats.GetSpellPower();}
-}
-public static float AddedAttackPower = 0;
-public static float AddedSpellPower  = 0;
+	public bool GetUnlock(string s){
+		string fin = s.ToLower();
+		for(int i = 0; i < Unlocks.Length; i++)
+		{
+			if(string.Equals(Unlocks[i].Name, fin)) return Unlocks[i].Value;
+		}
+		return false;
+	}
+
+#endregion
+
+#region Attack/Spell Values
+	public static int AttackValue
+	{
+		get{return (int) ((float)Stats.GetAttack() * (1.0F + AddedAttackPower));}
+	}
+	public static int SpellValue
+	{
+		get{return (int) ((float)Stats.GetSpell() * (1.0F + AddedSpellPower));}
+	}
+	
+	public static float AttackPower
+	{
+		get{return AddedAttackPower + Stats.GetAttackPower();}
+	}
+	
+	public static float SpellPower
+	{
+		get{return AddedSpellPower + Stats.GetSpellPower();}
+	}
+	public static float AddedAttackPower = 0;
+	public static float AddedSpellPower  = 0;
 
 	public int [] GetAttackValues(Tile [] selected)
 	{
@@ -737,116 +844,10 @@ public static float AddedSpellPower  = 0;
 
 		return final;
 	}
-
-	public void OnHit(params Tile[] attackers)
-	{
-		int hit =  0;
-		for (int i = 0; i < attackers.Length; i++)
-		{
-			hit += attackers[i].GetAttack();
-		}
-
-		foreach (Item child in Items)
-		{
-			hit = child.OnHit(hit, attackers);
-		}
-		foreach(Class child in Classes)
-		{
-			hit = child.OnHit(hit,attackers);
-		}
-
-		Stats.Hit(hit, attackers);
-	}
-
-	public void CheckForBestCombo(int[] combo)
-	{
-		int final = 0;
-		for (int i = 0; i < combo.Length; i++)
-		{
-			final += combo[i];
-		}
-		if (final > BestCombo)
-		{
-			BestCombo = final;
-		}
-	}
-
-	public void LevelUp()
-	{
-		Stats.Level += 1;
-
-		InitStats.LevelUp(1);
-
-		ResetStats();
-	}
-
-	public string [] GetLevelUpInfo()
-	{
-		string [] info = new string [10];
-		info[0] = ("LEVEL:  " + Stats.Level + "\n");
-		return info;
-	}
-
-	public Ability GetClassAbility()
-	{
-		return null;
-	}
-
-	public static List<Vector2> QueuedSpells = new List<Vector2>();
-	public static void QueueSpell(int x, int y)
-	{
-		QueuedSpells.Add(new Vector2(x, y));
-	}
-	public static bool QueuedSpell(int x, int y)
-	{
-		foreach (Vector2 child in QueuedSpells)
-		{
-			if (child.x == x && child.y == y) return true;
-		}
-		return false;
-	}
-
-	public void Tutorial()
-	{
-		QuoteGroup tute = null;
-		switch (Turns)
-		{
-		case 0:
-			tute = new QuoteGroup("Tute");
-			tute.AddQuote("Swipe 3 tiles to Match!",  Classes[2], true, 1F);
-			break;
-		case 1:
-			tute = new QuoteGroup("Tute");
-			tute.AddQuote("Mana tiles fill mana pools.", Classes[1], true, 1F );
-			tute.AddQuote("Health tiles fill the health bar.", Classes[1], true, 1F);
-			break;
-		case 3:
-			tute = new QuoteGroup("Tute");
-			tute.AddQuote("Enemies incoming!", Classes[0], true, 1F);
-			tute.AddQuote("Enemy tiles deal damage to your health.", Classes[0], true, 1F);
-			tute.AddQuote("Match enemies to attack them back!", Classes[0], true, 1f);
-			break;
-		case 5:
-			tute = new QuoteGroup("Tute");
-			tute.AddQuote("Enemies sleep for one turn on appearing", Classes[1], true, 1f);
-			tute.AddQuote("Keep their numbers low. The more there are, the more damage you'll take!", Classes[1], true, 1F);
-			break;
-		case 8:
-			tute = new QuoteGroup("Tute");
-			tute.AddQuote("Tiles each have different values and effects", Classes[3], true, 1F);
-			tute.AddQuote("Hold down on a tile to see its Info.", Classes[3], true, 1F);
-			break;
-		case 11:
-			tute = new QuoteGroup("Tute");
-			tute.AddQuote("When you fill a mana pool, it creates a special tile.", Classes[2], true, 1f);
-			tute.AddQuote("Tiles can have many different effects! Read their Info and experiment!", Classes[2], true, 1f);
-			break;
-		}
-
-		if (tute != null) StartCoroutine(UIManager.instance.Quote(tute.ToArray()));
-	}
+#endregion
 }
 
+//Options
 [System.Serializable]
 public class Ops
 {
@@ -871,6 +872,7 @@ public class Ops
 	public bool PowerupAlerted = false;
 }
 
+//Item Information
 [System.Serializable]
 public class EquipmentContainer {
 	public Item Helm;
@@ -940,4 +942,99 @@ public class EquipmentContainer {
 		}
 		return "ERROR";
 	}
+}
+
+//Player Global Leveling System
+[System.Serializable]
+public class LevelContainer
+{
+	public int Level = 1;
+	public int XP_Current;
+	public int XP_Required;
+
+	public int [] XP_RequiredArray = new int[]
+	{
+		100,
+		250,
+		400,
+		950,
+		1500,
+		3500,
+		7000,
+		18000
+	};
+	public Color [] Level_Colors;
+	public int XP_RequiredArray_num = 0;
+
+	public float XP_Ratio {get{return (float)XP_Current/(float)XP_Required;}}
+	public LevelContainer()
+	{
+		Level = 1;
+		XP_Current = 0;
+		XP_Required = XP_RequiredArray[0];
+		XP_RequiredArray_num = 0;
+	}
+
+	public bool AddXP(int num)
+	{
+		XP_Current = Mathf.Clamp(XP_Current + num, 0, XP_Required);
+		if(XP_Current == XP_Required)
+		{
+			Level++;
+			XP_RequiredArray_num++;
+			XP_Required = XP_RequiredArray[XP_RequiredArray_num];
+			XP_Current = 0;
+			return true;
+		}
+		return false;
+	}
+
+	public Color LevelColor
+	{
+		get{
+			int num = 0;
+			if(Level < 5) num = 0;
+			else if(Level < 10) num = 1;
+			else if(Level < 20)	num = 2;
+			num = Mathf.Clamp(num, 0, Level_Colors.Length-1);
+			return Level_Colors[num];
+		}
+	}
+
+	public Color GetColor(int lvl)
+	{
+		int num = 0;
+		if(lvl < 5) num = 0;
+		else if(lvl < 10) num = 1;
+		else if(lvl < 20)	num = 2;
+		num = Mathf.Clamp(num, 0, Level_Colors.Length-1);
+		return Level_Colors[num];
+	}
+}
+
+//Player Global Unlocks
+public class Unlock
+{
+	public string Name;
+	public int Level_Required;
+
+	public string GetTitle()
+	{
+		if(showtitle) return _Title;
+		return (showtitle || Value) ? _Title : "???";
+	}
+
+	private string _Title;
+	private bool showtitle = true;
+	public Unlock(string n, int lvl, string title, bool showt = true)
+	{
+		Name = n;
+		Level_Required = lvl;
+		_Title = title;
+		showtitle = showt;
+	}
+	public bool Value
+	{
+		get{return Player.Level.Level >= Level_Required;}
+	} 
 }

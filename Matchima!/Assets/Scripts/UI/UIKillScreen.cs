@@ -7,43 +7,97 @@ public class UIKillScreen : UIObj {
 
 	public GameObject KillBox;
 	public TextMeshProUGUI Turns;
-	public Image PointsImg;
-	public TextMeshProUGUI AllTokens;
-	public TextMeshProUGUI Defeat;
-	public TextMeshProUGUI KillerInfo, BestCombo, NextSpecial;
+	public TextMeshProUGUI EndType;
+	public TextMeshProUGUI Blurb;
 
-	public TextMeshProUGUI Class;
-	public void Activate(long alltokens, int tens, int hunds, int thous)
+	public void Activate(End_Type e, int [] xp_steps)
 	{
-		Child[0].ClearActions();
-		Child[0].AddAction(UIAction.MouseUp, () => {
-			UIManager.instance.Reset();
-			GameManager.instance.Reset();
-			TileMaster.instance.Reset();
-		});
-		StartCoroutine(CheckPoints(alltokens));
-		
+		StartCoroutine(CheckPoints(e, xp_steps));
 	}
 
-	IEnumerator CheckPoints(long currenttokens)
+	public void Deactivate()
 	{
-		yield return new WaitForSeconds(1.0F);
+		Child[0].ClearActions();
+		KillBox.SetActive(false);
+	}
 
+	IEnumerator CheckPoints(End_Type e, int [] xp_steps)
+	{
+
+		string endtext = "";
+		Color endcol = Color.white;
+		switch(e)
+		{
+			case End_Type.Victory:
+			endtext = "Victory";
+			endcol = Color.green;
+			break;
+			case End_Type.Defeat:
+			endtext = "Defeated";
+			endcol = Color.red;
+			break;
+			case End_Type.Retire:
+			endtext = "Retired";
+			endcol = Color.yellow;
+			break;
+		}
+
+		EndType.text = Player.instance.retired ? "RETIRED" : "DEFEATED";
+		Txt[0].text = GameManager.Floor + " Depth";
+		Txt[1].text = "In " + Player.instance.Turns + " Turns";
+		Txt[2].text = "0";
+
+		Txt[0].enabled = false;
+		Txt[1].enabled = false;
+		EndType.enabled = false;
+		Txt[2].enabled = false;
+		Child[0].SetActive(false);
+		UIManager.instance.ScreenAlert.SetActive(true);
+		UIManager.instance.ScreenAlert.SetTween(0,true);
+		
 		KillBox.SetActive(true);
-		Defeat.text = Player.instance.retired ? "RETIRED" : "DEFEATED";
-		KillerInfo.text = "YOU WERE KILLED BY A GRUNT";
-		Turns.text = "YOU SURVIVED " + Player.instance.Turns + " TURNS";
-		BestCombo.text = "BEST COMBO : " + Player.instance.BestCombo + " PTS";
-		//Class.text = Player.instance.Class.Name + " : " + Player.instance.Class.Level;
-		StartCoroutine(CycleInfo());
+		yield return new WaitForSeconds(Time.deltaTime * 15);
+		//EndType.enabled = true;
+		MiniAlertUI xp = UIManager.instance.MiniAlert(EndType.transform.position, endtext, 200);
+		xp.AddJuice(Juice.instance.BounceB, 0.1F);
+		xp.DestroyOnEnd = false;
+		xp.Txt[0].color = endcol;
 
-		int speed = 1;
-		bool isIncreasing = true;
-		
-		//float ratio = (float)(Player.instance.Class.PointsCurrent % 1000) / Player.instance.Class.PointsToLevel;
-		//PointsImg.transform.localScale = new Vector3(ratio, 1,1);
-		AllTokens.text = currenttokens + " Tokens";
-		
+		Txt[2].enabled = true;
+
+		yield return new WaitForSeconds(Time.deltaTime * 45);
+		//Txt[0].enabled = true;
+		MiniAlertUI depth = UIManager.instance.MiniAlert(Txt[0].transform.position, GameManager.Floor + " Depth", 130);
+		depth.AddJuice(Juice.instance.BounceB, 0.1F);
+		depth.DestroyOnEnd = false;
+		Txt[2].text = "" + xp_steps[0];
+
+		yield return new WaitForSeconds(Time.deltaTime * 45);
+		//Txt[1].enabled = true;
+		MiniAlertUI turns = UIManager.instance.MiniAlert(Txt[1].transform.position, "In " + Player.instance.Turns + " Turns", 130);
+		turns.AddJuice(Juice.instance.BounceB, 0.1F);
+		turns.DestroyOnEnd = false;
+
+		Txt[2].text = "" + xp_steps[1];
+		UIManager.instance.UpdatePlayerLvl();
+		(UIManager.Objects.MiddleGear["zoneui"] as UIObjTweener).SetTween(1, true);
+		yield return new WaitForSeconds(Time.deltaTime * 25);
+		yield return StartCoroutine(Player.instance.AddXP(xp_steps[1]));
+
+		Child[0].ClearActions();
+		Child[0].AddAction(UIAction.MouseDown, () => {
+			StartCoroutine(GameManager.instance.Reset());
+			depth.PoolDestroy();
+			xp.PoolDestroy();
+			turns.PoolDestroy();
+		});
+		Child[0].SetActive(true);
+		//KillerInfo.text = "YOU WERE KILLED BY A GRUNT";
+		//Turns.text = "YOU SURVIVED " + Player.instance.Turns + " TURNS";
+		//BestCombo.text = "BEST COMBO : " + Player.instance.BestCombo + " PTS";
+		//Class.text = Player.instance.Class.Name + " : " + Player.instance.Class.Level;
+		//StartCoroutine(CycleInfo());
+
 		yield return null;
 	}
 
@@ -54,7 +108,8 @@ public class UIKillScreen : UIObj {
 
 		float currtime = cycletime;
 		int currentcycle = 0;
-		while (isCycling)
+		yield break;
+		/*while (isCycling)
 		{
 			if(currtime > 0.0F) currtime -= Time.deltaTime;
 			else 
@@ -82,30 +137,8 @@ public class UIKillScreen : UIObj {
 				break;
 			}
 			yield return null;
-		}
+		}*/
 	}
 
-	//int class_exp = Player.instance.Class.PointsCurrent;
-		//int class_exp_final = class_exp + (int)(roundtokens / 4);
-		//isIncreasing = true;
-		//while(isIncreasing)
-		//{
-		//	if(class_exp >= class_exp_final - 10)
-		//	{
-		//		class_exp = class_exp_final;
-		//		Player.instance.Class.PointsCurrent = class_exp_final;
-		//		isIncreasing = false;
-		//	}
-		//	else if(class_exp >= Player.instance.Class.PointsToLevel)
-		//	{
-		//		Player.instance.Class.LevelUp();
-		//	}
-		//	else 
-		//	{
-		//		class_exp += 4;
-		//	}
-		//	ratio = (float)(class_exp) / Player.instance.Class.PointsToLevel;
-		//	PointsImg.transform.localScale = new Vector3(ratio, 1,1);
-		//	yield return null;
-		//}
+
 }

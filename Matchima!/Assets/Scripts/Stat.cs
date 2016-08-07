@@ -403,7 +403,7 @@ public class Stat
 	public void AddArmour(int _armour)
 	{
 		_Armour = Mathf.Clamp(_Armour + _armour,0, 99999999);
-		//UIManager.instance.UpdatePlayerUI();
+		//UIManager.instance.UpdatePlayerLvl();
 	}
 
 	public void Hit(int hit_initial, params Tile[] attackers)

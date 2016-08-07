@@ -10,7 +10,7 @@ public class UIClassSelect : UIObj {
 	public void Setup(Class c)
 	{
 		_class = c;
-		transform.localScale = Vector3.one;
+		transform.localScale = Vector3.one * 0.98F;
 		(transform as RectTransform).anchorMin = Vector3.zero;
 		(transform as RectTransform).anchorMax = Vector3.one;
 		(transform as RectTransform).anchoredPosition = Vector3.one*0.5F;
@@ -21,21 +21,24 @@ public class UIClassSelect : UIObj {
 		if(c.Unlocked)
 		{
 			Img[0].color = GameData.Colour(_class.Genus);
+			Img[1].sprite = _class.Icon;
+			Img[1].color = Color.white;
 			Txt[0].text = _class._Name.Value;
-			Txt[1].text = "";
-			
+			Txt[1].text = _class.Description;
 			AddAction(UIAction.MouseUp, (string [] f) => {
 				UIManager.Menu.SetTargetClass(this);
 				(ParentObj as UIGear).Drag = true;
-				
 			});
 		}
 		else
 		{
 			Img[0].color = Color.Lerp(GameData.Colour(_class.Genus), Color.black, 0.6F);
 			Txt[0].text = "???";
+			Img[1].color = Color.black;
 		}
 		
+	
+
 		AddAction(UIAction.MouseDown, () =>
 		{
 			(ParentObj as UIGear).Drag = false;			

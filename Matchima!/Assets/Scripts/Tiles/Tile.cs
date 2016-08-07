@@ -970,6 +970,7 @@ public class Tile : MonoBehaviour {
 		m.AddAction(() => {mini.enabled = true;});
 		m.DestroyOnEnd = false;
 
+
 		mini.SetTarget(UIManager.instance.Health.transform.position);
 		mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
 		mini.SetMethod(() =>{

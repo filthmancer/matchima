@@ -40,7 +40,7 @@ public class Enchant : Ability {
 		activated = true;
 		cooldown_time = cooldown;
 		
-		Player.instance.LevelUp();
+		//Player.instance.LevelUp();
 	}
 
 	public override void SetStatsRandom()

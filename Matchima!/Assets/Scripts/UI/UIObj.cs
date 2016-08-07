@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 
 public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, IPointerUpHandler,IPointerEnterHandler, IPointerExitHandler{
-	public string Name;
+	public string _Name;
 	[HideInInspector]
 	public int Index = 100;
 	[HideInInspector]
@@ -28,12 +28,15 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 			else return null;
 	}}
 
+	protected ObjectPoolerReference poolref;
+	public ObjectPoolerReference GetPoolRef(){return poolref;}
+
 	public bool isActive{get{return this.gameObject.activeSelf;}}
 
 	public virtual void Start()
 	{
-		if(Name == string.Empty) Name = gameObject.name;
-		else gameObject.name = Name;
+		if(_Name == string.Empty) _Name = gameObject.name;
+		else gameObject.name = _Name;
 		
 		if(Img.Length == 0 && GetComponent<Image>()) Img = new Image[]{GetComponent<Image>()};
 		if(Txt.Length == 0 && GetComponent<TextMeshProUGUI>()) Txt = new TextMeshProUGUI[]{GetComponent<TextMeshProUGUI>()};
@@ -73,7 +76,9 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 		{
 			foreach(UIObj child in Child)
 			{
-				if(child.Name == s) return child;
+				if(child == null || child._Name == string.Empty) continue;
+				if(child._Name == s) return child;
+				if(child[s] != null) return child[s];
 			}
 			return null;
 		}
@@ -115,6 +120,16 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 			x++;
 		}
 		Child = newchild;
+	}
+
+	public void DestroyChildren()
+	{
+		for(int i = 0; i < Child.Length; i++)
+		{
+			if(Child[i].GetPoolRef()) Child[i].GetPoolRef().Unspawn();
+			else Destroy(Child[i].gameObject);
+		}
+		Child = new UIObj[0];
 	}
 
 	public void BooleanObjColor(bool good)
@@ -256,7 +271,7 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 		}
 	}
 
-	public void ClearActions(UIAction a = UIAction.None)
+	public virtual void ClearActions(UIAction a = UIAction.None)
 	{
 		if(a == UIAction.None)
 		{

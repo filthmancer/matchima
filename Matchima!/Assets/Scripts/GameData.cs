@@ -10,6 +10,7 @@ using System;
 
 
 public class GameData : MonoBehaviour {
+#region Variables
 	public static GameData instance;
 	void Awake() {
 		if(instance == null)
@@ -34,10 +35,7 @@ public class GameData : MonoBehaviour {
 	public Color GoodColourFill, BadColourFill;
 	public Color ShieldFull, ShieldEmpty;
 
-	//public ClassContainer [] Classes;
 	public Class [] Classes;
-	//public ClassContainer EndlessMode;
-
 	public AbilityContainer [] Abilities, ClassAbilities;
 
 	public Powerup [] Powerups;
@@ -52,6 +50,10 @@ public class GameData : MonoBehaviour {
 	public static Status [] _Status;
 	public ItemInfo [] _Icons;
 
+	public ZoneMapContainer StoryModeMap;
+	public Zone [] Zones;
+	public bool ModeUnlocked_Endless, ModeUnlocked_Quick;
+
 	public GameObject WaveParent;
 	public GameObject AbilityParent;
 	public GameObject TileEffectParent;
@@ -62,30 +64,19 @@ public class GameData : MonoBehaviour {
 	public static bool loaded_assets = false;
 
 	public bool PrintLogs;
+#endregion
 
-	// Use this for initialization
-	void Start () {
-		LoadClasses();
-		LoadPowerups();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
-
-	public void LoadAssets()
-	{
-		loading_assets = true;
-		StartCoroutine(LoadAssets_Routine());
-	}
-
-
+#region Generics
 	public static Vector3 RandomVector
 	{
 		get{
 			return new Vector3(UnityEngine.Random.value - UnityEngine.Random.value, UnityEngine.Random.value - UnityEngine.Random.value, UnityEngine.Random.value - UnityEngine.Random.value);
 		}
+	}
+
+	public static float DeltaSeconds(float amt)
+	{
+		return (Time.deltaTime * Application.targetFrameRate) / amt;
 	}
 
 	public static void Log(string s, Type t = null)
@@ -100,9 +91,69 @@ public class GameData : MonoBehaviour {
 		return f * Player.Options.GameSpeed * Time.deltaTime * 60;
 	}
 
+	public static int StringToInt(string num)
+	{
+		try
+		{
+			return Convert.ToInt32(num);
+		}
+		catch
+		{
+			return -100;
+		}
+	}
+
+	public static float StringToFloat(string num)
+	{
+		return Convert.ToSingle(num);
+	}
+
+	public static string PowerString(int num)
+	{
+		string suff = "";
+		int suffnum = 0;
+
+		int n = num;
+		
+		bool ispowering = true;
+		while(ispowering)
+		{
+			if(n <= 1) break;
+			if(n < 1000) ispowering = false;
+			else 
+			{
+				n /= 1000;
+				suffnum ++;
+				suff = power_suff[suffnum];
+			}
+		}
+		return n + suff;
+	}
+
+	static string [] power_suff = new string []
+	{
+		"",
+		"k",
+		"m",
+		"b",
+		"t"
+	};
+#endregion
+
+#region Tile/Type Info
 	public Sprite [] GetTileSprite(string s)
 	{
 		return TileMaster.Types.SpriteOf(s);
+	}
+
+	public Sprite GetIconByName(string s)
+	{
+		foreach(ItemInfo child in _Icons)
+		{
+			if(child._Name == s) return child._Sprite;
+		}
+		//Debug.LogError("NO ICON FOUND: " + s);
+		return null;
 	}
 
 	public static string Genus(GENUS g)
@@ -348,55 +399,9 @@ public class GameData : MonoBehaviour {
 		}
 		return false;
 	}
+#endregion
 	
-	public static int StringToInt(string num)
-	{
-		try
-		{
-			return Convert.ToInt32(num);
-		}
-		catch
-		{
-			return -100;
-		}
-	}
-
-	public static float StringToFloat(string num)
-	{
-		return Convert.ToSingle(num);
-	}
-
-	public static string PowerString(int num)
-	{
-		string suff = "";
-		int suffnum = 0;
-
-		int n = num;
-		
-		bool ispowering = true;
-		while(ispowering)
-		{
-			if(n <= 1) break;
-			if(n < 1000) ispowering = false;
-			else 
-			{
-				n /= 1000;
-				suffnum ++;
-				suff = power_suff[suffnum];
-			}
-		}
-		return n + suff;
-	}
-
-	static string [] power_suff = new string []
-	{
-		"",
-		"k",
-		"m",
-		"b",
-		"t"
-	};
-
+#region Waves/Zones
 	public Wave GetRandomWave()
 	{
 		float allchance = 0.0F;
@@ -438,18 +443,66 @@ public class GameData : MonoBehaviour {
 		return null;
 	}
 
-	public Sprite GetIconByName(string s)
+	public Zone GetZone(string name)
 	{
-		foreach(ItemInfo child in _Icons)
+		for(int i = 0; i < Zones.Length; i++)
 		{
-			if(child._Name == s) return child._Sprite;
+			if(Zones[i]._Name == name) return Zones[i];
 		}
-		//Debug.LogError("NO ICON FOUND: " + s);
 		return null;
 	}
 
+	public Zone GetZoneRandom()
+	{
+		return Zones[UnityEngine.Random.Range(0, Zones.Length)];
+	}
 
-//SAVE STATE
+	public ZoneMapContainer GenerateEndlessMode()
+	{
+		return GenerateZoneMap(new Vector2[]{new Vector2(2,2), new Vector2(2,2)});
+	}
+	public ZoneMapContainer GenerateZoneMap(Vector2 [] zonenum)
+	{
+		ZoneMapContainer final = new ZoneMapContainer();
+		ZoneBracket [] br = new ZoneBracket[zonenum.Length];
+		for(int i = 0; i < zonenum.Length; i++)
+		{
+			int targ = (int)UnityEngine.Random.Range(zonenum[i].x, zonenum[i].y);
+			br[i] = new ZoneBracket(targ);
+			for(int z = 0; z < targ; z++)
+			{
+				br[i].Choices[z] = Zones[UnityEngine.Random.Range(0,Zones.Length)];
+			}
+		}
+		final.Brackets = br;
+		return final;
+	}
+
+	public ZoneMapContainer GenerateZoneMap(ZoneMapBracketData [] brackets)
+	{
+		ZoneMapContainer final = new ZoneMapContainer();
+		ZoneBracket [] br = new ZoneBracket[brackets.Length];
+		for(int i = 0; i < brackets.Length; i++)
+		{
+			br[i] = new ZoneBracket(brackets[i].Zone.Length);
+			for(int x = 0; x < brackets[i].Zone.Length; x++)
+			{
+				br[i].Choices[x] = GetZone(brackets[i].Zone[x].Name);
+			}
+		}
+		final.Brackets = br;
+		return final;
+	}
+#endregion
+
+#region Load/Save
+	public void LoadAssets()
+	{
+		loading_assets = true;
+		StartCoroutine(LoadAssets_Routine());
+	}
+
+	//Save State
 
 	public void Save()
 	{
@@ -539,270 +592,325 @@ public class GameData : MonoBehaviour {
 		LoadAbilities();
 		#endif
 	}
+#endregion
 
-	public void LoadAbilities()
-	{
-		return;
-		XmlDocument xmldoc = new XmlDocument ();
-		//Ability Data
-		List<AbilityContainer> UnlockedAbilities = new List<AbilityContainer>();
-		List<AbilityContainer> UnlockedClassAbilities = new List<AbilityContainer>();
-
-		TextAsset skills = (TextAsset) Resources.Load("SkillParameters");
-		xmldoc.LoadXml(skills.text);
-
-		XmlNode abilityroot = xmldoc.ChildNodes[0].ChildNodes[0];
-
-		int ab_num = abilityroot.ChildNodes.Count;
-		
-		abilities_allchance = 0.0F;
-
-		for(int i = 0; i < ab_num; i++)
+#region Loading Data
+	public IEnumerator LoadInitialData()
 		{
-			XmlNode a = abilityroot.ChildNodes[i];
-			AbilityContainer new_ab = GetAbilityFromXml(a);
-			if(!new_ab.Unlocked) continue;
-			UnlockedAbilities.Add(new AbilityContainer(new_ab));
-			abilities_allchance += new_ab.Chance;
+			int lvl = PlayerPrefs.GetInt("PlayerLevel");
+			int xp = PlayerPrefs.GetInt("PlayerXP");
+			Player.instance.SetLevelInfo(lvl, xp);
+
+			LoadClasses();
+			LoadPowerups();
+			LoadModes();
+			Load();
+			
+			yield return null;
+			yield return StartCoroutine(UIManager.instance.UnloadUI());
+			yield return null;
+			yield return StartCoroutine(UIManager.Menu.LoadMenu());
 		}
 
-		XmlNode class_abilityroot = xmldoc.ChildNodes[0].ChildNodes[1];
-
-		for(int i = 0; i < class_abilityroot.SelectNodes("//Class").Count; i++)
+		public void LoadModes()
 		{
-			XmlNode ca = class_abilityroot.SelectNodes("//Class")[i];
-			string classname = ca.SelectNodes("Name")[0].InnerText;
-			ClassContainer c_con = GetClassContainer(classname);
-			if(c_con == null) {
-				Debug.LogError("Could not load class abilities! " + classname);
-				continue;
-			}
-			ab_num = ca.ChildNodes[1].SelectNodes("Ability").Count;
-
-			c_con.Abilities = new AbilityContainer[ab_num];
-			for(int a = 0; a < ab_num; a++)
+			ModeUnlocked_Quick = Player.instance.GetUnlock("quickmode");
+			ModeUnlocked_Endless = Player.instance.GetUnlock("endlessmode");
+		}
+	
+		public void LoadAbilities()
+		{
+			return;
+			XmlDocument xmldoc = new XmlDocument ();
+			//Ability Data
+			List<AbilityContainer> UnlockedAbilities = new List<AbilityContainer>();
+			List<AbilityContainer> UnlockedClassAbilities = new List<AbilityContainer>();
+	
+			TextAsset skills = (TextAsset) Resources.Load("SkillParameters");
+			xmldoc.LoadXml(skills.text);
+	
+			XmlNode abilityroot = xmldoc.ChildNodes[0].ChildNodes[0];
+	
+			int ab_num = abilityroot.ChildNodes.Count;
+			
+			abilities_allchance = 0.0F;
+	
+			for(int i = 0; i < ab_num; i++)
 			{
-				XmlNode ab = ca.ChildNodes[1].ChildNodes[a];
-				
-				AbilityContainer new_ab = GetAbilityFromXml(ab);
-
-				int unlock_lvl = StringToInt(ab.SelectNodes("UnlockLvl")[0].InnerText);
-				if(new_ab.Unlocked || c_con.Level >= unlock_lvl)
+				XmlNode a = abilityroot.ChildNodes[i];
+				AbilityContainer new_ab = GetAbilityFromXml(a);
+				if(!new_ab.Unlocked) continue;
+				UnlockedAbilities.Add(new AbilityContainer(new_ab));
+				abilities_allchance += new_ab.Chance;
+			}
+	
+			XmlNode class_abilityroot = xmldoc.ChildNodes[0].ChildNodes[1];
+	
+			for(int i = 0; i < class_abilityroot.SelectNodes("//Class").Count; i++)
+			{
+				XmlNode ca = class_abilityroot.SelectNodes("//Class")[i];
+				string classname = ca.SelectNodes("Name")[0].InnerText;
+				ClassContainer c_con = GetClassContainer(classname);
+				if(c_con == null) {
+					Debug.LogError("Could not load class abilities! " + classname);
+					continue;
+				}
+				ab_num = ca.ChildNodes[1].SelectNodes("Ability").Count;
+	
+				c_con.Abilities = new AbilityContainer[ab_num];
+				for(int a = 0; a < ab_num; a++)
 				{
-					new_ab.Unlocked = true;
-					UnlockedClassAbilities.Add(new AbilityContainer(new_ab));
-				} 
-				c_con.Abilities[a] = new AbilityContainer(new_ab);
+					XmlNode ab = ca.ChildNodes[1].ChildNodes[a];
+					
+					AbilityContainer new_ab = GetAbilityFromXml(ab);
+	
+					int unlock_lvl = StringToInt(ab.SelectNodes("UnlockLvl")[0].InnerText);
+					if(new_ab.Unlocked || c_con.Level >= unlock_lvl)
+					{
+						new_ab.Unlocked = true;
+						UnlockedClassAbilities.Add(new AbilityContainer(new_ab));
+					} 
+					c_con.Abilities[a] = new AbilityContainer(new_ab);
+				}
 			}
+			Abilities = UnlockedAbilities.ToArray();
+			ClassAbilities = UnlockedClassAbilities.ToArray();
 		}
-		Abilities = UnlockedAbilities.ToArray();
-		ClassAbilities = UnlockedClassAbilities.ToArray();
-	}
-
-	public AbilityContainer GetAbilityFromXml(XmlNode a)
-	{
-		AbilityContainer new_ab = new AbilityContainer();
-
-		string script = a.SelectNodes("Script")[0].InnerText;
-		string name = a.SelectNodes("Name")[0].InnerText;
-		string icon = a.SelectNodes("Icon")[0].InnerText;
-
-		bool unlocked = (a.SelectNodes("Unlocked")[0].InnerText == "T");
-
-		float chance = StringToFloat(a.SelectNodes("Chance")[0].InnerText);
-		int cd_min = StringToInt(a.SelectNodes("Cooldown")[0].SelectNodes("RangeMin")[0].InnerText);
-		int cd_max = StringToInt(a.SelectNodes("Cooldown")[0].SelectNodes("RangeMax")[0].InnerText);
-
-		new_ab.Name = name;
-		new_ab.Icon = icon;
-		new_ab.AbilityScript = script;
-		new_ab.Chance = chance;
-		new_ab.Unlocked = unlocked;
-		new_ab.CooldownMin = cd_min;
-		new_ab.CooldownMax = cd_max;
-
-		float cost_chance = StringToFloat(a.SelectNodes("CostChance")[0].InnerText);
-		int cost_min = StringToInt(a.SelectNodes("Cost")[0].SelectNodes("RangeMin")[0].InnerText);
-		int cost_max = StringToInt(a.SelectNodes("Cost")[0].SelectNodes("RangeMax")[0].InnerText);
-		string costType = a.SelectNodes("CostType")[0].InnerText;
-		bool cost_reduce = a.SelectNodes("ReduceCooldown")[0].InnerText == "T";
-
-		string mod = a.SelectNodes("AbilityMod")[0].InnerText;
-		int mod_mult = StringToInt(a.SelectNodes("AbilityModMult")[0].InnerText);
-
-		new_ab.CostChance = cost_chance;
-		new_ab.CostType = costType;
-		new_ab.CostMin = cost_min;
-		new_ab.CostMax = cost_max;
-		new_ab.CostReducesCooldown = cost_reduce;
-		new_ab.StatType = mod;
-		new_ab.StatMultiplier = mod_mult;
-
-		XmlNode starttypes = a.SelectNodes("Inputs")[0];
-		int start_num = starttypes.SelectNodes("Input").Count;
-		new_ab.Input = new ContainerData[start_num];
-		for(int x = 0; x < start_num; x++)
+	
+		public AbilityContainer GetAbilityFromXml(XmlNode a)
 		{
-			XmlNode starttype = starttypes.SelectNodes("Input")[x];
-			new_ab.Input[x] = new ContainerData(starttype.ChildNodes.Cast<XmlNode>().Select(node => node.InnerText).ToArray());		
-		}
-
-		XmlNode endtypes = a.SelectNodes("Outputs")[0];
-		int end_num = endtypes.SelectNodes("Output").Count;
-		new_ab.Output = new ContainerData[end_num];
-		for(int x = 0; x < end_num; x++)
-		{
-			XmlNode endtype = endtypes.SelectNodes("Output")[x];
-			new_ab.Output[x] = new ContainerData(endtype.ChildNodes.Cast<XmlNode>().Select(node => node.InnerText).ToArray());
-		}
-
-		return new_ab;
-	}
-
-	public void LoadClass(int num, string name, bool un, int lvl)
-	{
-		//if(Classes[num].Name != name) 
-		//{
-		//	Debug.LogError("LOADED INTO WRONG CLASS");
-		//	return;
-		//}
-		//Classes[num].Unlocked = un;
-		//Classes[num].Level = lvl;
-	}
-
-	public void LoadClassAbilities(Class c)
-	{
-		UnityEngine.Object [] class_ab = Resources.LoadAll("Abilities/" + c.Name);
-		List<Ability> final = new List<Ability>();
-		for(int i = 0; i < class_ab.Length; i++)
-		{
-			GameObject abobj = (GameObject) class_ab[i];
-			final.Add((Ability) abobj.GetComponent<Slot>());
-			//c.GenerateSlotUpgrade(abobj.GetComponent<Slot>());
-		}
-
-		UnityEngine.Object [] default_ab = Resources.LoadAll("Abilities/Default");
-		
-		for(int i = 0; i < default_ab.Length; i++)
-		{
-			GameObject abobj = (GameObject) default_ab[i];
-			final.Add((Ability) abobj.GetComponent<Slot>());
-			//c.GenerateSlotUpgrade(abobj.GetComponent<Slot>());
-		}
-
-		TeamAbilities = final.ToArray();
-	}
-
-	public string GetIOSPath()
-	{
-		string path = Application.dataPath.Substring(0, Application.dataPath.Length - 5);
-		path = path.Substring(0,path.LastIndexOf('/'));
-		return path + "/Documents";
-	}
-
-	public Ability GetRandomAbility()
-	{
-		List<AbilityContainer> all_ab = new List<AbilityContainer>();
-		all_ab.AddRange(Abilities);
-				
-		float allchance = 0.0F;
-		foreach(AbilityContainer child in all_ab)
-		{
-			if(child.Unlocked) allchance += child.Chance;
-		}
-
-		float chance = UnityEngine.Random.value * allchance;
-		float chance_current = 0.0F;
-		AbilityContainer Container = null;
-
-		for(int i = 0; i < all_ab.Count; i++)
-		{
-			if(!all_ab[i].Unlocked) continue;
-
-			if(chance > chance_current && chance < chance_current + all_ab[i].Chance)
+			AbilityContainer new_ab = new AbilityContainer();
+	
+			string script = a.SelectNodes("Script")[0].InnerText;
+			string name = a.SelectNodes("Name")[0].InnerText;
+			string icon = a.SelectNodes("Icon")[0].InnerText;
+	
+			bool unlocked = (a.SelectNodes("Unlocked")[0].InnerText == "T");
+	
+			float chance = StringToFloat(a.SelectNodes("Chance")[0].InnerText);
+			int cd_min = StringToInt(a.SelectNodes("Cooldown")[0].SelectNodes("RangeMin")[0].InnerText);
+			int cd_max = StringToInt(a.SelectNodes("Cooldown")[0].SelectNodes("RangeMax")[0].InnerText);
+	
+			new_ab.Name = name;
+			new_ab.Icon = icon;
+			new_ab.AbilityScript = script;
+			new_ab.Chance = chance;
+			new_ab.Unlocked = unlocked;
+			new_ab.CooldownMin = cd_min;
+			new_ab.CooldownMax = cd_max;
+	
+			float cost_chance = StringToFloat(a.SelectNodes("CostChance")[0].InnerText);
+			int cost_min = StringToInt(a.SelectNodes("Cost")[0].SelectNodes("RangeMin")[0].InnerText);
+			int cost_max = StringToInt(a.SelectNodes("Cost")[0].SelectNodes("RangeMax")[0].InnerText);
+			string costType = a.SelectNodes("CostType")[0].InnerText;
+			bool cost_reduce = a.SelectNodes("ReduceCooldown")[0].InnerText == "T";
+	
+			string mod = a.SelectNodes("AbilityMod")[0].InnerText;
+			int mod_mult = StringToInt(a.SelectNodes("AbilityModMult")[0].InnerText);
+	
+			new_ab.CostChance = cost_chance;
+			new_ab.CostType = costType;
+			new_ab.CostMin = cost_min;
+			new_ab.CostMax = cost_max;
+			new_ab.CostReducesCooldown = cost_reduce;
+			new_ab.StatType = mod;
+			new_ab.StatMultiplier = mod_mult;
+	
+			XmlNode starttypes = a.SelectNodes("Inputs")[0];
+			int start_num = starttypes.SelectNodes("Input").Count;
+			new_ab.Input = new ContainerData[start_num];
+			for(int x = 0; x < start_num; x++)
 			{
-				Container = all_ab[i];
-				break;
+				XmlNode starttype = starttypes.SelectNodes("Input")[x];
+				new_ab.Input[x] = new ContainerData(starttype.ChildNodes.Cast<XmlNode>().Select(node => node.InnerText).ToArray());		
 			}
-			chance_current += all_ab[i].Chance;
+	
+			XmlNode endtypes = a.SelectNodes("Outputs")[0];
+			int end_num = endtypes.SelectNodes("Output").Count;
+			new_ab.Output = new ContainerData[end_num];
+			for(int x = 0; x < end_num; x++)
+			{
+				XmlNode endtype = endtypes.SelectNodes("Output")[x];
+				new_ab.Output[x] = new ContainerData(endtype.ChildNodes.Cast<XmlNode>().Select(node => node.InnerText).ToArray());
+			}
+	
+			return new_ab;
 		}
-
-		if(Container == null) 
+	
+		/*public void LoadClass(int num, string name, bool un, int lvl)
 		{
-			Debug.LogError("Could not generate skill!");
-			return null;
-		}
-		Ability ab = (Ability) Instantiate(GetAbilityByName(Container.AbilityScript));
-		ab.Setup(Container);
-
-		return ab;
-	}
-
-	string [] classes_list = new string []
-	{
-		"barbarian",
-		"bard",
-		"rogue",
-		"wizard",
-		"warden",
-		"witchdoctor"
-	};
-
-	public void LoadClasses()
-	{
-		int num = 0;
-		string path_init = "classes";
-		List<Class> final = new List<Class>();
-		AudioManager.instance.Classes = new AudioGroup[classes_list.Length];
-		AudioManager.instance.Class_Default = AudioManager.GenerateGroup(path_init, "default");
-		for(int i = 0; i < classes_list.Length; i++)
+			//if(Classes[num].Name != name) 
+			//{
+			//	Debug.LogError("LOADED INTO WRONG CLASS");
+			//	return;
+			//}
+			//Classes[num].Unlocked = un;
+			//Classes[num].Level = lvl;
+		}*/
+	
+		public void LoadClassAbilities(Class c)
 		{
-			string path = path_init + "/" + classes_list[i];
-
-			string prefpath = path + "/" + classes_list[i] + "_prefab";
-			UnityEngine.Object cobj = Resources.Load(prefpath);
-			if(cobj == null) continue;
-			Class cfin = (cobj as GameObject).GetComponent<Class>();
-			final.Add(cfin);
-			num++;
-
-			AudioGroup audiogroup = AudioManager.GenerateGroup(path_init, classes_list[i]);
-			AudioManager.instance.Classes[i] = audiogroup;
-
+			UnityEngine.Object [] class_ab = Resources.LoadAll("Abilities/" + c.Name);
+			List<Ability> final = new List<Ability>();
+			for(int i = 0; i < class_ab.Length; i++)
+			{
+				GameObject abobj = (GameObject) class_ab[i];
+				final.Add((Ability) abobj.GetComponent<Slot>());
+				//c.GenerateSlotUpgrade(abobj.GetComponent<Slot>());
+			}
+	
+			UnityEngine.Object [] default_ab = Resources.LoadAll("Abilities/Default");
+			
+			for(int i = 0; i < default_ab.Length; i++)
+			{
+				GameObject abobj = (GameObject) default_ab[i];
+				final.Add((Ability) abobj.GetComponent<Slot>());
+				//c.GenerateSlotUpgrade(abobj.GetComponent<Slot>());
+			}
+	
+			TeamAbilities = final.ToArray();
 		}
-		print("Loaded " + num + " classes");
-		final = final.OrderBy(o=>!o.Unlocked).ToList();
-		Classes = final.ToArray();
-	}
-
-	string [] powerups_list = new string []
-	{
-		"heal",
-		"firestorm",
-		"throwknives",
-		"lullaby",
-		"colorswap"
-	};
-
-	public void LoadPowerups()
-	{
-		int num = 0;
-		string path_init = "powerups";
-		List<Powerup> final = new List<Powerup>();
-
-		for(int i = 0; i < powerups_list.Length; i++)
+	
+		public string GetIOSPath()
 		{
-			string path = path_init + "/" + powerups_list[i];
-			string prefpath = path + "/" + powerups_list[i] + "_prefab";
-			UnityEngine.Object pobj = Resources.Load(prefpath);
-			if(pobj == null) continue;
-			Powerup pfin = (pobj as GameObject).GetComponent<Powerup>();
-			final.Add(pfin);
-			num ++;
+			string path = Application.dataPath.Substring(0, Application.dataPath.Length - 5);
+			path = path.Substring(0,path.LastIndexOf('/'));
+			return path + "/Documents";
 		}
-		print("Loaded " + num + " powerups");
-		Powerups = final.ToArray();
-	}
+		string [] classes_list = new string []
+		{
+			"barbarian",
+			"bard",
+			"rogue",
+			"wizard",
+			"farmer",
+			"warden",
+			"witchdoctor"
+			
+		};
+
+		public void LoadClasses()
+		{
+			int num = 0;
+			string path_init = "classes";
+			List<Class> final = new List<Class>();
+			AudioManager.instance.Classes = new AudioGroup[classes_list.Length];
+			AudioManager.instance.Class_Default = AudioManager.GenerateGroup(path_init, "default");
+			for(int i = 0; i < classes_list.Length; i++)
+			{
+				string path = path_init + "/" + classes_list[i];
+
+				string prefpath = path + "/" + classes_list[i] + "_prefab";
+				UnityEngine.Object cobj = Resources.Load(prefpath);
+				if(cobj == null) continue;
+
+				Class cfin = (cobj as GameObject).GetComponent<Class>();
+				bool thisclassunlocked = Player.instance.GetUnlock(classes_list[i]);
+				if(thisclassunlocked) 
+				{
+					cfin.Unlocked = true;
+				}
+				final.Add(cfin);
+			
+				AudioGroup audiogroup = AudioManager.GenerateGroup(path_init, classes_list[i]);
+				AudioManager.instance.Classes[i] = audiogroup;
+
+				num++;
+			}
+			print("Loaded " + num + " classes");
+			final = final.OrderBy(o=>!o.Unlocked).ToList();
+			Classes = final.ToArray();
+		}
+
+		string [] powerups_list = new string []
+		{
+			"heal",
+			"firestorm",
+			"throwknives",
+			"lullaby",
+			"colorswap"
+		};
+
+		public void LoadPowerups()
+		{
+			int num = 0;
+			string path_init = "powerups";
+			List<Powerup> final = new List<Powerup>();
+
+			for(int i = 0; i < powerups_list.Length; i++)
+			{
+				string path = path_init + "/" + powerups_list[i];
+				string prefpath = path + "/" + powerups_list[i] + "_prefab";
+				UnityEngine.Object pobj = Resources.Load(prefpath);
+				if(pobj == null) continue;
+				Powerup pfin = (pobj as GameObject).GetComponent<Powerup>();
+				final.Add(pfin);
+				num ++;
+			}
+			print("Loaded " + num + " powerups");
+			Powerups = final.ToArray();
+		}
+
+		IEnumerator LoadAssets_Routine()
+		{
+			
+			_Items = ItemNames;
+			//_Waves = new Wave[WaveParent.transform.childCount];
+			//for(int i = 0; i < WaveParent.transform.childCount; i++)
+			//{
+			//	_Waves[i] = WaveParent.transform.GetChild(i).GetComponent<Wave>();
+			//	_Waves[i].Index = i;
+			//}
+			
+
+			TileModel = (GameObject) Resources.Load("TileModel");
+
+			UnityEngine.Object[] textures = Resources.LoadAll("Icons");
+			//Sprite [] textures = (Sprite[]) Resources.LoadAll("Icons");
+			_Icons = new ItemInfo[textures.Length];
+			for(int i = 0; i < _Icons.Length; i++)
+			{
+				_Icons[i] = new ItemInfo();
+				_Icons[i]._Name = textures[i].name;
+				Texture2D tex = (Texture2D) textures[i];
+				Sprite newSprite = Sprite.Create(tex, new Rect(0f, 0f, tex.width, tex.height), Vector2.one/2);
+				_Icons[i]._Sprite = newSprite;
+				if(i % 5 == 0) yield return null;
+			}
+
+			_Abilities = new Ability[AbilityParent.transform.childCount];
+			for(int i = 0; i < AbilityParent.transform.childCount; i++)
+			{
+				_Abilities[i] = AbilityParent.transform.GetChild(i).GetComponent<Ability>();
+				//_Abilities[i].Index = i;
+			}
+			AbilityParent.SetActive(false);
+
+			_Status = new Status[TileEffectParent.transform.childCount];
+			for(int i = 0; i < TileEffectParent.transform.childCount; i++)
+			{
+				_Status[i] = TileEffectParent.transform.GetChild(i).GetComponent<Status>();
+				//_Abilities[i].Index = i;
+				yield return null;
+			}
+
+			TileEffectParent.SetActive(false);
+
+			yield return null;
+			//LoadAbilities();
+
+
+
+			yield return StartCoroutine(AudioManager.instance.LoadAudio("Tiles"));
+			yield return StartCoroutine(TileMaster.Types.LoadSprites("Tiles"));
+			yield return StartCoroutine(TileMaster.Types.LoadPrefabs());
+
+			print("FINISHED LOADING");
+			loaded_assets = true;
+			
+			yield return null;
+		}
+#endregion
 
 	public Powerup GetPowerup(string name, Class c = null)
 	{
@@ -822,111 +930,43 @@ public class GameData : MonoBehaviour {
 		return final;
 	}
 
-
-	IEnumerator LoadAssets_Routine()
-	{
-		
-		_Items = ItemNames;
-		//_Waves = new Wave[WaveParent.transform.childCount];
-		//for(int i = 0; i < WaveParent.transform.childCount; i++)
-		//{
-		//	_Waves[i] = WaveParent.transform.GetChild(i).GetComponent<Wave>();
-		//	_Waves[i].Index = i;
-		//}
-		
-
-		TileModel = (GameObject) Resources.Load("TileModel");
-
-		UnityEngine.Object[] textures = Resources.LoadAll("Icons");
-		//Sprite [] textures = (Sprite[]) Resources.LoadAll("Icons");
-		_Icons = new ItemInfo[textures.Length];
-		for(int i = 0; i < _Icons.Length; i++)
+#region Other/Discard
+	//Get Class by Name
+		public ClassContainer GetClassContainer(string name)
 		{
-			_Icons[i] = new ItemInfo();
-			_Icons[i]._Name = textures[i].name;
-			Texture2D tex = (Texture2D) textures[i];
-			Sprite newSprite = Sprite.Create(tex, new Rect(0f, 0f, tex.width, tex.height), Vector2.one/2);
-			_Icons[i]._Sprite = newSprite;
-			if(i % 5 == 0) yield return null;
+			//foreach(ClassContainer child in Classes)
+			//{
+			//	if(name == child.Name || name == child.ShortName) 
+			//	{
+			//		return child;
+			//	}
+			//}
+			return null;
 		}
-
-		_Abilities = new Ability[AbilityParent.transform.childCount];
-		for(int i = 0; i < AbilityParent.transform.childCount; i++)
+	
+		public Class GetClass(string name)
 		{
-			_Abilities[i] = AbilityParent.transform.GetChild(i).GetComponent<Ability>();
-			//_Abilities[i].Index = i;
-		}
-		AbilityParent.SetActive(false);
-
-		_Status = new Status[TileEffectParent.transform.childCount];
-		for(int i = 0; i < TileEffectParent.transform.childCount; i++)
-		{
-			_Status[i] = TileEffectParent.transform.GetChild(i).GetComponent<Status>();
-			//_Abilities[i].Index = i;
-			yield return null;
-		}
-
-		TileEffectParent.SetActive(false);
-
-		yield return null;
-		//LoadAbilities();
-
-
-
-		yield return StartCoroutine(AudioManager.instance.LoadAudio("Tiles"));
-		yield return StartCoroutine(TileMaster.Types.LoadSprites("Tiles"));
-		yield return StartCoroutine(TileMaster.Types.LoadPrefabs());
-
-		print("FINISHED LOADING");
-		loaded_assets = true;
-		
-		yield return null;
-	}
-
-
-
-//Get Class by Name
-	public ClassContainer GetClassContainer(string name)
-	{
-		//foreach(ClassContainer child in Classes)
-		//{
-		//	if(name == child.Name || name == child.ShortName) 
-		//	{
-		//		return child;
-		//	}
-		//}
-		return null;
-	}
-
-	public Class GetClass(string name)
-	{
-		foreach(Class child in Classes)
-		{
-			if(name == child.Name || name == child.Info.ShortName)
+			foreach(Class child in Classes)
 			{
-				return child;
+				if(name == child.Name || name == child.Info.ShortName)
+				{
+					return child;
+				}
 			}
+			return null;
 		}
-		return null;
-	}
-
-	public static float DeltaSeconds(float amt)
-	{
-		return (Time.deltaTime * Application.targetFrameRate) / amt;
-	}
-
-	public static Rarity ClosestRarity(int r)
-	{
-		if(r < 2) return Rarity.Common;
-		else if(r >= 2 && r <= 6) return Rarity.Uncommon;
-		else if(r >= 6 && r <= 12) return Rarity.Magic;
-		else if(r >= 12 && r <= 24) return Rarity.Rare;
-		else if(r >= 24 && r <= 50) return Rarity.Legendary;
-		else return Rarity.Ultimate;
-	}
-
+	
+		public static Rarity ClosestRarity(int r)
+		{
+			if(r < 2) return Rarity.Common;
+			else if(r >= 2 && r <= 6) return Rarity.Uncommon;
+			else if(r >= 6 && r <= 12) return Rarity.Magic;
+			else if(r >= 12 && r <= 24) return Rarity.Rare;
+			else if(r >= 24 && r <= 50) return Rarity.Legendary;
+			else return Rarity.Ultimate;
+		}
+#endregion
 }
-
 
 public enum Rarity
 {
@@ -938,7 +978,6 @@ public enum Rarity
 	Ultimate = 50,
 	Impossible = 0
 }
-
 
 [Serializable, XmlRoot("PlayerData")]
 public class PlayerData
@@ -1027,8 +1066,6 @@ public class ItemColours
 	Developers;
 }
 
-
-
 public class StCon
 {
 	public string Value;
@@ -1051,3 +1088,255 @@ public class StCon
 		NewLine = line;
 	}
 }
+
+[System.Serializable]
+public class ZoneMapContainer
+{
+	public ZoneBracket [] Brackets;
+	public int Current = 0;
+	public ZoneBracket CurrentBracket
+	{
+		get{return Brackets[Current];}
+	}
+	public int Length{get{return Brackets.Length;}}
+	public ZoneBracket this[int v]
+	{
+		get{return Brackets[v];}
+	}
+
+	public ZoneMapContainer(int b = 0)
+	{
+		Brackets = new ZoneBracket[b];
+	}
+
+	public ZoneMapContainer(ZoneMapContainer z)
+	{
+		Brackets = z.Brackets;
+		Current = z.Current;
+	}
+
+	public bool Progress()
+	{
+		Current ++;
+		return Current < Length;
+	}
+}
+
+[System.Serializable]
+public class ZoneBracket
+{
+	public Zone [] Choices;
+	public int Length {get{return Choices.Length;}}
+	public Zone this[int v]
+	{
+		get{return Choices[v];}
+		set{Choices[v] = value;}
+	}
+
+	public ZoneBracket(int z = 0)
+	{
+		Choices = new Zone[z];
+	}
+}
+
+// UserData is our custom class that holds our defined objects we want to store in XML format 
+public class UserData 
+{ 
+   // We have to define a default instance of the structure 
+  public Data _iUser; 
+   // Default constructor doesn't really do anything at the moment 
+  public UserData() { } 
+
+  // Anything we want to store in the XML file, we define it here 
+  public struct Data 
+  { 
+	//public string ClassName;
+	public float Difficulty;
+	public int Turns;
+	public int BestCombo;
+    public int Health;
+    public int GameMode;
+
+	public ClassData [] ClassData;
+	
+	public RowData [] Rows;
+	public bool HasZoneMap;
+    public ZoneMapData ZoneMap;
+	public WaveData Wave;
+    public LevelData Level;
+  } 
+}
+
+public struct LevelData
+{
+  public int Level;
+  public int XP_Current;
+  public int XP_RequiredArray_num;
+}
+
+public struct RowData
+{
+	public int [] GenusIndex;
+	public int [] SpeciesIndex;
+	public int [] ValueIndex;
+	public int [] ScaleIndex;
+}
+
+public struct ZoneMapData
+{
+	public int FloorCount;
+	public int WaveCount;
+  public int Current;
+  public int Current_BracketIndex;
+  public ZoneMapBracketData [] BracketData;
+}
+public struct ZoneMapBracketData
+{
+  public ZoneData [] Zone;
+}
+
+public struct ZoneData
+{
+  public string Name;
+}
+
+public struct WaveData
+{
+  public bool HasWave;
+	public bool Active;
+	public int Current;
+  public int Index;
+  public bool [] Slot;
+}
+
+public struct ClassData
+{
+	public string Name;
+	public StatData Init;
+	public ItemContainerData [] Item;
+	public ModContainerData [] Mods;
+}
+   public struct StatData
+   {
+     	public int Level;
+		public int Class_Type;
+		public int _Health, _HealthMax;
+		public int _MeterMax;
+		public float MeterDecay_Global;
+
+		public int _Armour;
+		public int _ArmourMax;
+		public float ArmourReductionRate;
+			
+		public float MapSizeX, MapSizeY;
+
+		public int ComboCounter;
+		public float ComboBonus;
+		public int MatchNumberMod;
+
+		public int _Attack;
+		public float AttackRate;
+		public float SpellPower;
+
+		public int HealthRegen, HealthLeech;
+		public int MeterRegen, MeterLeech;
+
+		public int Spikes;
+
+		public float CooldownDecrease;
+		public float CostDecrease;
+		public int ValueInc;
+
+		public int Presence;
+		
+		public bool isKilled;
+		
+		public int PrevTurnKills;
+		public int HealThisTurn, DmgThisTurn;
+
+		public int Shift;
+		public StatContainerData [] ContainerData;
+		//public TileChanceData [] TileChances;
+   }
+
+    public struct StatContainerData
+   {
+      public float StatCurrent_soft;
+		public float StatGain;
+	
+		public float StatLeech;
+		public float StatRegen;
+	
+		//public int ResCurrent;
+		//public int ResMax;
+		public float ResMultiplier;
+	
+		//public float ResGain;
+		
+		public int ResLeech;
+		public int ResRegen;
+	
+		public int ThisTurn;
+	
+		//public float ResMax_soft;
+   }
+
+   public struct ItemContainerData
+   {
+   		public SlotContainerData SlotData;
+   		public int Type;
+   		public int ScaleGenus;
+   		public float ScaleRate;
+   		//public UpgradeData [] Upgrades;
+   }
+
+   public struct SlotContainerData
+   {
+   	   	public string Name;
+   	   	public string IconString;
+   	   	public int Index;
+   	   	public int Cooldown;
+   }
+
+   public struct ModContainerData
+   {
+	   public SlotContainerData SlotData;
+   }
+
+   public struct UpgradeData
+   {
+   		public int [] index;
+   		public string Prefix, Suffix;
+		public float chance;
+		public int ItemType;
+		public int ScaleType;
+		public float scalerate;
+		public int Points_total;
+   }
+
+   public struct AbilityContainerData
+   {
+   		public bool hasAbility;
+   		public string Name;
+		public string ShortName;
+		public string Description;
+		public int Level;
+	
+		public string AbilityScript;
+	
+		public int Cooldown;
+		public int [] Cost;
+		//public int CostType;
+	
+		public int StatType;
+		public int StatMultiplier;
+		public string [] Input;
+		public string [] Output;
+   }
+
+   public struct TileChanceData
+   {
+   		public string Genus, Type;
+   		public float Chance;
+   		public int Value;
+   }

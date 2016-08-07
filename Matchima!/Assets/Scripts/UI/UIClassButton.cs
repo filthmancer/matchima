@@ -51,7 +51,9 @@ public class UIClassButton : UIObj {
 			AddListener(_class);
 			AddAction(UIAction.MouseOver, () => {HoverOver();});
 			AddAction(UIAction.MouseDown, () => {
-				if(_class.MeterLvl > 0 && !GameManager.instance.isPaused) StartCoroutine(_class.UseManaPower());
+				if(_class.MeterLvl > 0 && !GameManager.instance.isPaused) 
+				print(true);
+				StartCoroutine(_class.UseManaPower());
 				});
 
 			if(ClassInit.IsObjectOpened()) ClassInit.OpenCloseObjectAnimation();

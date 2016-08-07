@@ -124,7 +124,45 @@ public class _GameSaveLoad: MonoBehaviour {
 		myData._iUser.BestCombo = Player.instance.BestCombo;
 		myData._iUser.Health = Player.Stats._Health;
 
-    myData._iUser.Zone = GameManager.Zone._Name;
+    if(GameManager.ZoneMap != null)
+    {
+      myData._iUser.HasZoneMap = true;
+      myData._iUser.ZoneMap.FloorCount = GameManager.Floor;
+      myData._iUser.ZoneMap.WaveCount = GameManager.ZoneNum;
+      Debug.Log(GameManager.ZoneNum);
+      myData._iUser.ZoneMap.Current = GameManager.ZoneMap.Current;
+      myData._iUser.ZoneMap.BracketData = new ZoneMapBracketData[GameManager.ZoneMap.Length];
+      for(int i = 0; i < GameManager.ZoneMap.Length; i++)
+      {
+        myData._iUser.ZoneMap.BracketData[i].Zone = new ZoneData[GameManager.ZoneMap[i].Length];
+        for(int x = 0; x < GameManager.ZoneMap[i].Length; x++)
+        {
+          myData._iUser.ZoneMap.BracketData[i].Zone[x].Name = GameManager.ZoneMap[i][x]._Name;
+        }
+
+      }
+      
+    }
+
+    if(GameManager.Wave != null)
+    {
+      myData._iUser.Wave.HasWave = true;
+      Wave w = GameManager.Wave;
+      myData._iUser.Wave.Active = w.Active;
+      myData._iUser.Wave.Index = w.Index;
+      myData._iUser.Wave.Current = GameManager.Wave.Current;
+      myData._iUser.Wave.Slot = new bool [w.AllSlots.Length];
+      for(int i = 0; i < w.AllSlots.Length; i++)
+      {
+        if(w.AllSlots[i] == null) 
+        {
+          continue;
+        }
+        myData._iUser.Wave.Slot[i] = true;
+      }
+    }
+
+    
 		myData._iUser.ClassData = new ClassData[4];
 		for(int i = 0; i < 4; i++)
 		{
@@ -167,26 +205,7 @@ public class _GameSaveLoad: MonoBehaviour {
 			}
 		}
 
-		if(GameManager.Wave != null)
-		{
-      myData._iUser.Wave.HasWave = true;
-      Wave w = GameManager.Wave;
-			myData._iUser.Wave.Active = w.Active;
-      myData._iUser.Wave.Index = w.Index;
 
-      myData._iUser.Wave.Current = new int [w.AllSlots.Length];
-      myData._iUser.Wave.Timer = new int [w.AllSlots.Length];
-      myData._iUser.Wave.Slot = new bool [w.AllSlots.Length];
-			for(int i = 0; i < w.AllSlots.Length; i++)
-      {
-        if(w.AllSlots[i] == null) 
-        {
-          continue;
-        }
-        myData._iUser.Wave.Slot[i] = true;
-        myData._iUser.Wave.Timer[i] = w.AllSlots[i].Timer;
-      }
-		}
 		
 		// Time to create our XML! 
 		_data = SerializeObject(myData); 
@@ -287,7 +306,9 @@ public class _GameSaveLoad: MonoBehaviour {
        	GameManager.Difficulty         = myData._iUser.Difficulty;
 		  Player.instance.Turns              = myData._iUser.Turns;
 		  Player.instance.BestCombo          = myData._iUser.BestCombo;
-  
+      
+      GameManager.instance.CurrentFloorNum = myData._iUser.ZoneMap.FloorCount;
+      GameManager.instance.CurrentZoneNum = myData._iUser.ZoneMap.WaveCount;
 		  Class [] Classes = new Class[myData._iUser.ClassData.Length];
   
 		  for(int i = 0; i < myData._iUser.ClassData.Length; i++)
@@ -334,23 +355,18 @@ public class _GameSaveLoad: MonoBehaviour {
       }
 
       TileMaster.instance.LevelToLoad(level);
-      if(myData._iUser.Wave.HasWave)
+      if(myData._iUser.HasZoneMap)
       {
-        Zone g = GameManager.instance.GetZone(myData._iUser.Zone);
-        GameManager.instance.ResumeZone = g;
-        GameManager.instance.ResumeWave = g[myData._iUser.Wave.Index];
-        
-        /* for(int i = 0; i < GameManager.Wave.Length; i++)
-         {
-          if(!myData._iUser.Wave.Slot[i]) continue;
-          GameManager.Wave[i].Current = myData._iUser.Wave.Current[i];
-          GameManager.Wave[i].Timer = myData._iUser.Wave.Timer[i];
-         }*/
-      }
+        GameManager.ZoneMap = GameData.instance.GenerateZoneMap(myData._iUser.ZoneMap.BracketData);
+        GameManager.ZoneMap.Current = myData._iUser.ZoneMap.Current;
 
+        GameManager.instance.ResumeZoneIndex = myData._iUser.ZoneMap.Current_BracketIndex;
+        GameManager.instance.ResumeWaveIndex = myData._iUser.Wave.Index;
+        GameManager.instance.ResumeWaveCurrent = myData._iUser.Wave.Current;
+      }
+      
       Spawner2.GetSpawnables(TileMaster.Types, GameManager.Wave);
-      //Player.instance.ResetStats();
-      //Player.instance.ResetChances();
+
       Player.Stats._Health = myData._iUser.Health;
 
         Debug.Log("loaded player"); 
@@ -481,178 +497,4 @@ public class _GameSaveLoad: MonoBehaviour {
     }
 } 
  
-// UserData is our custom class that holds our defined objects we want to store in XML format 
-public class UserData 
-{ 
-   // We have to define a default instance of the structure 
-  public Data _iUser; 
-   // Default constructor doesn't really do anything at the moment 
-  public UserData() { } 
-
-  // Anything we want to store in the XML file, we define it here 
-  public struct Data 
-  { 
-		//public string ClassName;
-		public float Difficulty;
-		public int Turns;
-		public int BestCombo;
-    public int Health;
-    public int GameMode;
-
-		public ClassData [] ClassData;
-		
-		public RowData [] Rows;
-    public string Zone;
-		public WaveData Wave;
-  } 
-}
-
-public struct RowData
-{
-	public int [] GenusIndex;
-	public int [] SpeciesIndex;
-	public int [] ValueIndex;
-	public int [] ScaleIndex;
-}
-public struct WaveData
-{
-  public bool HasWave;
-	public bool Active;
-	public int [] Current;
-  public int [] Timer;
-  public int Index;
-  public bool [] Slot;
-}
-
-public struct ClassData
-{
-	public string Name;
-	public StatData Init;
-	public ItemContainerData [] Item;
-	public ModContainerData [] Mods;
-}
-   public struct StatData
-   {
-     	public int Level;
-		public int Class_Type;
-		public int _Health, _HealthMax;
-		public int _MeterMax;
-		public float MeterDecay_Global;
-
-		public int _Armour;
-		public int _ArmourMax;
-		public float ArmourReductionRate;
-			
-		public float MapSizeX, MapSizeY;
-
-		public int ComboCounter;
-		public float ComboBonus;
-		public int MatchNumberMod;
-
-		public int _Attack;
-		public float AttackRate;
-		public float SpellPower;
-
-		public int HealthRegen, HealthLeech;
-		public int MeterRegen, MeterLeech;
-
-		public int Spikes;
-
-		public float CooldownDecrease;
-		public float CostDecrease;
-		public int ValueInc;
-
-		public int Presence;
-		
-		public bool isKilled;
-		
-		public int PrevTurnKills;
-		public int HealThisTurn, DmgThisTurn;
-
-		public int Shift;
-		public StatContainerData [] ContainerData;
-		//public TileChanceData [] TileChances;
-   }
-
-    public struct StatContainerData
-   {
-      public float StatCurrent_soft;
-		public float StatGain;
-	
-		public float StatLeech;
-		public float StatRegen;
-	
-		//public int ResCurrent;
-		//public int ResMax;
-		public float ResMultiplier;
-	
-		//public float ResGain;
-		
-		public int ResLeech;
-		public int ResRegen;
-	
-		public int ThisTurn;
-	
-		//public float ResMax_soft;
-   }
-
-   public struct ItemContainerData
-   {
-   		public SlotContainerData SlotData;
-   		public int Type;
-   		public int ScaleGenus;
-   		public float ScaleRate;
-   		//public UpgradeData [] Upgrades;
-   }
-
-   public struct SlotContainerData
-   {
-   	   	public string Name;
-   	   	public string IconString;
-   	   	public int Index;
-   	   	public int Cooldown;
-   }
-
-   public struct ModContainerData
-   {
-	   public SlotContainerData SlotData;
-   }
-
-   public struct UpgradeData
-   {
-   		public int [] index;
-   		public string Prefix, Suffix;
-		public float chance;
-		public int ItemType;
-		public int ScaleType;
-		public float scalerate;
-		public int Points_total;
-   }
-
-   public struct AbilityContainerData
-   {
-   		public bool hasAbility;
-   		public string Name;
-		public string ShortName;
-		public string Description;
-		public int Level;
-	
-		public string AbilityScript;
-	
-		public int Cooldown;
-		public int [] Cost;
-		//public int CostType;
-	
-		public int StatType;
-		public int StatMultiplier;
-		public string [] Input;
-		public string [] Output;
-   }
-
-   public struct TileChanceData
-   {
-   		public string Genus, Type;
-   		public float Chance;
-   		public int Value;
-   }
 

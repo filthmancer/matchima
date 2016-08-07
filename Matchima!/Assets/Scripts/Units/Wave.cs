@@ -121,7 +121,6 @@ public class Wave : Unit {
 			Slot2 = final[1];
 			Slot3 = final[2];
 		}
-
 		yield return StartCoroutine(WaveActivateRoutine());
 	}
 
@@ -310,6 +309,7 @@ public class Wave : Unit {
 
 	protected virtual IEnumerator WaveActivateRoutine()
 	{
+		UIManager.Objects.BotGear.SetTween(3, true);
 		UIManager.Objects.TopGear[2].SetActive(false);
 		UIManager.Objects.BotGear.SetTween(0, false);
 		UIManager.Objects.TopGear.SetTween(0, true);
@@ -364,6 +364,7 @@ public class Wave : Unit {
 		UIManager.Objects.BotGear.SetTween(0, true);
 		UIManager.Objects.TopGear.SetTween(0, false);
 		UIManager.instance.ScreenAlert.SetTween(0,false);
+		UIManager.Objects.BotGear.SetTween(3, false);
 	}
 
 	protected virtual IEnumerator WaveEndRoutine()
@@ -423,6 +424,7 @@ public class Wave : Unit {
 			for(int y = 0; y < _tiles.GetLength(1); y++)
 			{
 				if(_tiles[x,y] == null) continue;
+				if(to_collect.Contains(_tiles[x,y])) continue;
 				int distX = Mathf.Abs(x - targX);
 				int distY = Mathf.Abs(y - targY);
 				

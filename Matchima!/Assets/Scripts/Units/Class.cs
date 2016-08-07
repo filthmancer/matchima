@@ -63,6 +63,7 @@ public class Class : Unit {
 		}
 	}
 	public Sprite Icon;
+	public string Description;
 	public bool Unlocked = true;
 
 	public ClassInfo Info;

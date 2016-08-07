@@ -183,8 +183,147 @@ public class UIManager : MonoBehaviour {
 		{
 			StartCoroutine(HitLoop());
 		}
-
 	}
+
+	public IEnumerator Reset()
+	{
+		loaded = false;
+		
+		yield return StartCoroutine(UnloadUI());
+		yield return StartCoroutine(Menu.LoadMenu());
+	}
+
+	public void ResetScore()
+	{
+		PlayerPrefs.SetInt("Points", 0);
+		Reset();
+	}
+
+	public IEnumerator LoadUI()
+	{
+		while(!Player.loaded) yield return null;
+		
+		Objects.TopGear.DivisionActions.Clear();
+		Objects.ShowObj(Objects.MainUI, true);
+		int i =0;
+
+		i = 0;
+		
+		foreach(UIClassButton child in ClassButtons.Class)
+		{
+			child.Setup(Player.Classes[i]);
+			i++;
+		}
+		yield return null;
+
+		Objects.MiddleGear[2][0].AddAction(UIAction.MouseUp, ()=>
+		{
+			(Objects.MiddleGear[2] as UIObjTweener).SetTween(0, false);
+		});
+
+		Objects.MiddleGear[3][0].AddAction(UIAction.MouseUp, () =>
+		{
+			ShowOptions();
+		});
+		Objects.MiddleGear[3][2].AddAction(UIAction.MouseUp, ()=>
+		{
+			GameManager.instance.Retire();
+		});
+
+		Objects.MiddleGear[3][1].AddAction(UIAction.MouseUp, ()=>
+		{
+			GameManager.instance.SaveAndQuit();
+		});
+
+		Objects.MiddleGear[3][3].AddAction(UIAction.MouseUp, ()=>
+		{
+			AudioManager.PlaySFX = !AudioManager.PlaySFX;
+		});
+
+		Objects.MiddleGear[3][4].AddAction(UIAction.MouseUp, ()=>
+		{
+			AudioManager.PlayMusic = !AudioManager.PlayMusic;
+		});
+
+		Objects.MiddleGear[3][6].AddAction(UIAction.MouseUp, ()=>
+		{	
+			Objects.TopGear.SetActive(false);
+			});
+
+		Objects.MiddleGear[3][7].AddAction(UIAction.MouseUp, ()=>
+		{	
+			Objects.BotGear.SetActive(false);
+			});
+
+		Objects.MiddleGear[1].SetActive(false);
+		Objects.MiddleGear[2].SetActive(false);
+		Objects.MiddleGear[3].SetActive(false);
+
+		Objects.TopRightButton.ClearActions();
+		Objects.TopRightButton.AddAction(UIAction.MouseUp, () =>
+		{
+			ShowZoneUI(false);
+			(Objects.MiddleGear[2] as UIObjTweener).SetTween(0, false);
+			UIManager.Objects.MiddleGear[1].Txt[0].text = GameManager.Zone.Name;
+		});
+
+		(Objects.TopGear as UIGear).DivisionActions.Add((int num) =>
+		{
+			TopGear_lastdivision = num;
+		});
+
+		loaded  = true;
+
+		yield return null;
+	}
+
+	public IEnumerator UnloadUI()
+	{
+		Objects.TopGear.DivisionActions.Clear();
+		Objects.ShowObj(Objects.MainUI, false);
+
+		(Objects.MiddleGear[1] as UIObjTweener).SetTween(0, false);
+		(Objects.MiddleGear[1] as UIObjTweener).SetTween(1, false);
+		ScreenAlert.SetTween(0, false);
+		KillUI.Deactivate();
+		Objects.MiddleGear[2][0].ClearActions(); 
+		Objects.MiddleGear[3][0].ClearActions(); 
+		Objects.MiddleGear[3][2].ClearActions(); 
+		Objects.MiddleGear[3][1].ClearActions(); 
+		Objects.MiddleGear[3][3].ClearActions();
+		Objects.MiddleGear[3][4].ClearActions(); 
+		Objects.MiddleGear[3][6].ClearActions(); 
+		Objects.MiddleGear[3][7].ClearActions(); 
+		Objects.MiddleGear[5].SetActive(false);
+
+		Objects.TopRightButton.ClearActions();
+
+		
+		UIManager.ShowClassButtons(false);
+		UIManager.ShowWaveButtons(false);
+		
+		UIManager.Objects.BotGear[0].SetActive(false);
+		UIManager.Objects.TopGear[2].SetActive(false);
+		UIManager.Objects.MiddleGear[0].SetActive(true);
+		(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, false);
+		(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, false);
+		UIManager.Objects.MiddleGear[0].Txt[0].text = "";
+
+		UIManager.Objects.MiddleGear.Img[0].enabled = false;
+
+		UIManager.Objects.BotGear[3].AddAction(UIAction.MouseDown,()=>
+		{
+			UIManager.Menu.HeroMenu(0);
+		});
+
+		UIManager.Objects.TopGear.Txt[0].text = "";
+		UIManager.Objects.MiddleGear.Txt[0].text = "";
+		UIManager.Objects.BotGear.Txt[0].text = "";	
+
+		UIManager.ShowWaveButtons(false);
+		yield return null;
+	}
+
 
 	IEnumerator HealLoop()
 	{
@@ -284,13 +423,6 @@ public class UIManager : MonoBehaviour {
 		StartedMeter = false;
 		MeterTimer = MeterTimer_init;
 		StartCoroutine(ShowBonuses());
-	
-		//for(int i = 0; i < MeterObj.Length; i++)
-		//{
-		//	if(MeterObj[i] == null) continue;
-		//	MeterObj[i].lifetime = 0.0F;
-//
-		//}
 	}
 
 	bool StartedMeter;
@@ -321,7 +453,6 @@ public class UIManager : MonoBehaviour {
 		}
 		else
 		{
-			//print(g + ": showing");
 			ShowingMeter[g] = true;
 			Meters[g] = points;
 			//MeterTimer = MeterTimer_init;
@@ -363,15 +494,6 @@ public class UIManager : MonoBehaviour {
 		{
 			int index = b[i].index;
 			BonusGroups[0].Add(b[i]);
-			/*if(index == 5)
-			{
-				for(int x = 0; x < BonusGroups.Length; x++)
-				{
-					BonusGroups[x].Add(b[i]);
-				}
-				
-			}
-			else BonusGroups[index].Add(b[i]);*/
 		}
 	}
 
@@ -400,27 +522,6 @@ public class UIManager : MonoBehaviour {
 		}
 
 		yield return new WaitForSeconds(GameData.GameSpeed(0.08F));
-		/*for(int i = 0; i < BonusGroups[g].Length; i++)
-		{
-			MiniAlertUI BonusObj = UIManager.instance.MiniAlert(
-				UIManager.Objects.MiddleGear[4][g].transform.position + Vector3.up*0.4F, 
-				BonusGroups[g][i].Name, 140, BonusGroups[g][i].col, bonus_time+bonus_time_desc, 0.2F);
-			//BonusObj.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
-			BonusObj.transform.rotation = Quaternion.Euler(0,0,0);
-			BonusObj.AddJuice(Juice.instance.BounceB, 0.45F);
-		//	yield return new WaitForSeconds(bonus_time_desc);
-		/*	MiniAlertUI BonusDesc = UIManager.instance.MiniAlert(
-				UIManager.Objects.MiddleGear[4][g].transform.position + Vector3.up*1.6F, 
-				BonusGroups[g][i].Description, 85, BonusGroups[g][i].col, bonus_time, 0.0F);
-			//BonusDesc.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
-			BonusDesc.transform.rotation = Quaternion.Euler(0,0,0);
-			BonusDesc.AddJuice(Juice.instance.BounceB, 0.45F);*/
-
-		/*	Meters[g] = (int)((float)Meters[g] * BonusGroups[g][i].Multiplier);
-			MeterObj[g].AddJuice(Juice.instance.BounceB, 0.45F);
-			MeterObj[g].text = Meters[g] + "";
-			yield return new WaitForSeconds(bonus_time);
-		}*/
 
 		float info_movespeed = 0.66F;
 		float info_finalscale = 0.3F;
@@ -480,10 +581,6 @@ public class UIManager : MonoBehaviour {
 		
 	}
 
-
-
-
-	
 	public void SwapSlotButtons(UISlotButton a, Class c, int slot)
 	{
 		UIClassButton _class = ClassButtons.GetClass(c.Index);
@@ -515,9 +612,9 @@ public class UIManager : MonoBehaviour {
 			_class.Setup(c);
 		}
 	}
-	public void ShowKillUI(long alltokens, int tens, int hunds, int thous)
+	public void ShowKillUI(End_Type e, int [] xp_steps)
 	{
-		KillUI.Activate(alltokens, tens, hunds, thous);
+		KillUI.Activate(e, xp_steps);
 	}
 
 
@@ -607,38 +704,6 @@ public class UIManager : MonoBehaviour {
 			Transform TopParent = Objects.TopGear[1][1][3][1].transform;
 			Objects.TopGear[1][1][3][1].Child = GenerateUIObjFromStCon(TopParent, t.EffectDescription);
 
-			/*List<UIObj> newchildren = new List<UIObj>();
-			
-			Transform TopParent = Objects.TopGear[1][1][3][1].transform;
-			UIObj ParentObj = (UIObj) Instantiate(Objects.HorizontalGrouper);
-			Transform ParentTrans = ParentObj.transform;
-			ParentTrans.SetParent(TopParent);
-			ParentTrans.position = Vector3.zero;
-			ParentTrans.localScale = Vector3.one;
-			ParentTrans.localRotation = Quaternion.Euler(0,0,0);
-			newchildren.Add(ParentObj);
-			for(int i = 0; i < t.EffectDescription.Length; i++)
-			{
-				UIObj new_desc = (UIObj) Instantiate(Objects.TextObj);
-				new_desc.transform.SetParent(ParentTrans);
-				new_desc.transform.position = Vector3.zero;
-				new_desc.transform.localScale = Vector3.one;
-				new_desc.transform.localRotation = Quaternion.Euler(0,0,0);
-				new_desc.Txt[0].text = t.EffectDescription[i].Value;
-				new_desc.Txt[0].color = t.EffectDescription[i].Colour;
-
-				if(t.EffectDescription[i].NewLine && i < t.EffectDescription.Length-1)
-				{
-					ParentObj = (UIObj) Instantiate(Objects.HorizontalGrouper);
-					ParentTrans = ParentObj.transform;
-					ParentTrans.SetParent(TopParent);
-					ParentTrans.position = Vector3.zero;
-					ParentTrans.localScale = Vector3.one;
-					ParentTrans.localRotation = Quaternion.Euler(0,0,0);
-					newchildren.Add(ParentObj);
-				}
-				Objects.TopGear[1][1][3][1].Child = newchildren.ToArray();
-			}*/
 		}
 		else Objects.TopGear[1][1][3][1].SetActive(false);
 
@@ -653,56 +718,8 @@ public class UIManager : MonoBehaviour {
 
 			Transform TopParent = Objects.TopGear[1][1][3][2].transform;
 			Objects.TopGear[1][1][3][2].Child = GenerateUIObjFromStCon(TopParent, t.Description);
-
-			/*List<UIObj> newchildren = new List<UIObj>();
-			
-			Transform TopParent = Objects.TopGear[1][1][3][2].transform;
-			UIObj ParentObj = (UIObj) Instantiate(Objects.HorizontalGrouper);
-			Transform ParentTrans = ParentObj.transform;
-			ParentTrans.SetParent(TopParent);
-			ParentTrans.position = Vector3.zero;
-			ParentTrans.localScale = Vector3.one;
-			ParentTrans.localRotation = Quaternion.Euler(0,0,0);
-			newchildren.Add(ParentObj);
-			for(int i = 0; i < t.Description.Length; i++)
-			{
-				UIObj new_desc = (UIObj) Instantiate(Objects.TextObj);
-				new_desc.transform.SetParent(ParentTrans);
-				new_desc.transform.position = Vector3.zero;
-				new_desc.transform.localScale = Vector3.one;
-				new_desc.transform.localRotation = Quaternion.Euler(0,0,0);
-				new_desc.Txt[0].text = t.Description[i].Value;
-				new_desc.Txt[0].color = t.Description[i].Colour;
-
-				if(t.Description[i].NewLine && i < t.Description.Length-1)
-				{
-					ParentObj = (UIObj) Instantiate(Objects.HorizontalGrouper);
-					ParentTrans = ParentObj.transform;
-					ParentTrans.SetParent(TopParent);
-					ParentTrans.position = Vector3.zero;
-					ParentTrans.localScale = Vector3.one;
-					ParentTrans.localRotation = Quaternion.Euler(0,0,0);
-					newchildren.Add(ParentObj);
-				}
-				Objects.TopGear[1][1][3][2].Child = newchildren.ToArray();
-			}*/
 		}
 		else Objects.TopGear[1][1][3][2].SetActive(false);		
-	}
-
-	public void ShowStats()
-	{
-		//Objects.ShowObj(Objects.StatsbarUI);
-		//if(!ResUIOpen)
-		//{
-		//	Objects.ShowObj(Objects.BigUI);
-		//}
-	}
-
-	public void ShowClassUI(bool active)
-	{
-		//Menu.ClassMenu.SetActive(active);
-		//Objects.ShowObj(Objects.MainUI, !active);
 	}
 
 	public static void ShowClassButtons(bool? active = null)
@@ -733,21 +750,6 @@ public class UIManager : MonoBehaviour {
 		}
 	}
 
-	public void WaveButton(int i)
-	{
-		//if(GameManager.inStartMenu)
-		//{
-		//}
-		//else
-		//{
-		//	//ShowTooltip()
-		//}
-	}
-
-	public void ClassButton(int i )
-	{
-
-	}
 
 	public void ShowClassAbilities(Class c, bool? over = null)
 	{
@@ -794,15 +796,6 @@ public class UIManager : MonoBehaviour {
 		Objects.WaveUI.SetActive(open);
 	}
 
-	//public void ItemConfirm(Class c)
-	//{
-	//	c.GetSlot(current_item);
-	//	if(!InMenu)Objects.ShowObj(Objects.BigUI, false);
-	//	ItemUI.gameObject.SetActive(false);
-	//	ClassAbUI.SetActive(false);
-	//	current_item = null;
-	//	current_class = null;
-	//}
 
 	public void ItemDestroy()
 	{
@@ -811,12 +804,6 @@ public class UIManager : MonoBehaviour {
 		current_item = null;
 	}
 
-
-	public void ShowMenu(bool active)
-	{
-		//Menu.PauseMenu.SetActive(active);
-		//Objects.ShowObj(Objects.MainUI, !active);
-	}
 
 	public void ShowOptions()
 	{
@@ -912,160 +899,10 @@ public class UIManager : MonoBehaviour {
 		ResUIOpen = false;
 	}
 
-	public IEnumerator LoadUI()
-	{
-		while(!Player.loaded) yield return null;
-		
-		//Menu.ClassMenu.SetActive(false);
-		//Objects.ShowObj(Objects.Options, false);
-		Objects.TopGear.DivisionActions.Clear();
-		Objects.ShowObj(Objects.MainUI, true);
-		(UIManager.Objects.TopLeftButton as UIObjTweener).SetTween(0, true);
-		(UIManager.Objects.TopRightButton as UIObjTweener).SetTween(0,true);
-		
-		int i =0;
-
-		i = 0;
-		
-		foreach(UIClassButton child in ClassButtons.Class)
-		{
-			child.Setup(Player.Classes[i]);
-			i++;
-		}
-
-		/*UIObj zone = Objects.MiddleGear[1] as UIObj;
-
-		zone[0].AddAction(UIAction.MouseUp,() => {ShowStashUI();});
-		zone[1].AddAction(UIAction.MouseUp,() => {GameManager.instance.EnterZone(GameManager.ZoneChoiceA);});
-		zone[2].AddAction(UIAction.MouseUp,() => {GameManager.instance.EnterZone(GameManager.ZoneChoiceB);});*/
-
-		yield return null;
-
-		Objects.MiddleGear[2][0].AddAction(UIAction.MouseUp, ()=>
-		{
-			(Objects.MiddleGear[2] as UIObjTweener).SetTween(0, false);
-		});
-
-		Objects.MiddleGear[3][0].AddAction(UIAction.MouseUp, () =>
-		{
-			ShowOptions();
-		});
-		Objects.MiddleGear[3][2].AddAction(UIAction.MouseUp, ()=>
-		{
-			GameManager.instance.Retire();
-		});
-
-		Objects.MiddleGear[3][1].AddAction(UIAction.MouseUp, ()=>
-		{
-			GameManager.instance.SaveAndQuit();
-		});
-
-		Objects.MiddleGear[3][3].AddAction(UIAction.MouseUp, ()=>
-		{
-			AudioManager.PlaySFX = !AudioManager.PlaySFX;
-		});
-
-		Objects.MiddleGear[3][4].AddAction(UIAction.MouseUp, ()=>
-		{
-			AudioManager.PlayMusic = !AudioManager.PlayMusic;
-		});
-
-		Objects.MiddleGear[3][6].AddAction(UIAction.MouseUp, ()=>
-		{	
-			Objects.TopGear.SetActive(false);
-			});
-
-		Objects.MiddleGear[3][7].AddAction(UIAction.MouseUp, ()=>
-		{	
-			Objects.BotGear.SetActive(false);
-			});
-
-		Objects.MiddleGear[1].SetActive(false);
-		Objects.MiddleGear[2].SetActive(false);
-		Objects.MiddleGear[3].SetActive(false);
-
-		Objects.TopLeftButton.AddAction(UIAction.MouseUp, () =>
-		{
-			ShowOptions();
-			
-		});
-		Objects.TopRightButton.AddAction(UIAction.MouseUp, () =>
-		{
-			//GameManager.instance.EscapeZone();
-			//Objects.TopGear.SetActive(false);
-			//Objects.MiddleGear.SetActive(false);
-			//Objects.BotGear.SetActive(false);
-
-			ShowZoneUI(false);
-			(Objects.MiddleGear[2] as UIObjTweener).SetTween(0, false);
-			UIManager.Objects.MiddleGear[1].Txt[0].text = GameManager.Zone.Name;
-		});
-
-		(Objects.TopGear as UIGear).DivisionActions.Add((int num) =>
-		{
-			TopGear_lastdivision = num;
-		});
-
-		loaded  = true;
-
-		yield return null;
-	}
+	
 
 	public bool AlertShowing = false;
-	/*public IEnumerator Alert(float time, bool show_floor, string title = null, string desc = null, string floor_override = null)
-	{
-		while(AlertShowing) yield return null;
-		AlertShowing = true;
-		GameManager.instance.paused = true;
-		ScreenAlert.SetActive(true);
-		ScreenAlert.SetTween(0,true);
-
-		if(show_floor)
-		{
-
-			(ScreenAlert.Child[2] as UIObjTweener).Txt[0].text = "Floor ";
-			(ScreenAlert.Child[2] as UIObjTweener).Txt[1].text = "" + GameManager.Floor;
-			(ScreenAlert.Child[2] as UIObjTweener).SetTween(0, true);
-			yield return new WaitForSeconds(GameData.GameSpeed(0.35F));
-		}
-		else
-		{
-			if(floor_override != null)
-			{
-				ScreenAlert.Child[2].Txt[0].text = floor_override;
-				ScreenAlert.Child[2].Txt[1].text = "";
-				(ScreenAlert.Child[2] as UIObjTweener).SetTween(0, true);
-				yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
-			}
-		}
-
-		if(title != null)
-		{
-			(ScreenAlert.Child[0] as UIObjTweener).Txt[0].text = title;
-			(ScreenAlert.Child[0] as UIObjTweener).SetTween(0, true);
-			yield return new WaitForSeconds(GameData.GameSpeed(0.35F));
-		}
-
-		if(desc != null)
-		{
-			(ScreenAlert.Child[1] as UIObjTweener).Txt[0].text = desc;
-			(ScreenAlert.Child[1] as UIObjTweener).SetTween(0, true);
-		}
-
-
-		yield return new WaitForSeconds(GameData.GameSpeed(time));
-		
-		ScreenAlert.SetTween(0,false);
-		(ScreenAlert.Child[0] as UIObjTweener).SetTween(0, false);
-		(ScreenAlert.Child[1] as UIObjTweener).SetTween(0, false);
-		(ScreenAlert.Child[2] as UIObjTweener).SetTween(0, false);
-
-		PlayerControl.instance.ResetSelected();
-		GameManager.instance.paused = false;
-		AlertShowing = false;
-		yield break;
-	}*/
-
+	
 	public IEnumerator Alert(float time, StCon [] floor = null, StCon [] title = null, StCon [] desc = null, bool wait_for_touch = false)
 	{
 		while(AlertShowing) yield return null;
@@ -1073,6 +910,7 @@ public class UIManager : MonoBehaviour {
 		GameManager.instance.paused = true;
 		ScreenAlert.SetActive(true);
 		ScreenAlert.SetTween(0,true);
+		UIManager.Objects.BotGear.SetTween(3, true);
 
 		
 		/*for(int i = 0; i < ScreenAlert.Child[2].Length; i++)
@@ -1132,7 +970,7 @@ public class UIManager : MonoBehaviour {
 		(ScreenAlert[0] as UIObjTweener).SetTween(0, false);
 		(ScreenAlert[1] as UIObjTweener).SetTween(0, false);
 		(ScreenAlert[2] as UIObjTweener).SetTween(0, false);
-
+		UIManager.Objects.BotGear.SetTween(3, false);
 		PlayerControl.instance.ResetSelected();
 		GameManager.instance.paused = false;
 		AlertShowing = false;
@@ -1442,28 +1280,85 @@ public class UIManager : MonoBehaviour {
 	}
 
 
-	/*public void ShowZoneMenu()
+	public void ShowPlayerLvl()
 	{
-		bool open = (UIManager.Objects.MiddleGear[1] as UIObjTweener).Tween.IsObjectOpened();
-		if(!open && !GameManager.instance.paused)
+
+		(Objects.MiddleGear[1] as UIObjTweener).SetTween(0);
+		bool open = (Objects.MiddleGear[1] as UIObjTweener).Tween.IsObjectOpened();
+		GameManager.instance.paused = open;
+		ScreenAlert.SetTween(0, open);
+		if(!open) UIManager.instance.SetClassButtons(false);
+			UpdatePlayerLvl();
+
+	}
+	public void UpdatePlayerLvl()
+	{
+		Objects.MiddleGear[1][0].SetActive(true);
+		Objects.MiddleGear[1][1].SetActive(false);
+		Objects.MiddleGear[1][2].SetActive(true);
+		Objects.MiddleGear[1].Txt[0].text = "Unlocks";
+		Objects.MiddleGear[1].Txt[3].enabled = false;
+		Objects.MiddleGear[1][2].Txt[0].text = Player.Level.XP_Current + "/" + Player.Level.XP_Required;
+		Objects.MiddleGear[1][2].Txt[1].text = "" + Player.Level.Level;
+		Objects.MiddleGear[1][2].Txt[2].text = "Player Level";
+		Objects.MiddleGear[1][2].Img[1].fillAmount = Player.Level.XP_Ratio;
+		Objects.MiddleGear[1][2].Img[2].color = Player.Level.LevelColor;
+
+		Objects.MiddleGear[1][0].DestroyChildren();
+		List<UIObj> unlocks = new List<UIObj>();
+		for(int i = 0; i < Player.instance.Unlocks.Length; i++)
 		{
-			ScreenAlert.SetTween(0,true);
-			GameManager.instance.paused = true;
-			(UIManager.Objects.MiddleGear[1] as UIObjTweener).SetTween(0, true);
+			UIObj b = GenerateUnlock(Objects.MiddleGear[1][0].transform, Player.instance.Unlocks[i]);
+			unlocks.Add(b);
 		}
-		else
-		{
-			if((UIManager.Objects.MiddleGear[1] as UIObjTweener).Tweens[0].IsObjectOpened())
-			{
-				ScreenAlert.SetTween(0,false);
-				GameManager.instance.paused = false;
-				(UIManager.Objects.MiddleGear[1] as UIObjTweener).SetTween(0, false);
-			}
-		}
-	}*/
+		Objects.MiddleGear[1][0].Child = unlocks.ToArray();
+	}
+
+	public UIObj GenerateUnlock(Transform TopParent, Unlock u)
+	{
+		UIObj ParentObj = (UIObj) Instantiate(Objects.HorizontalGrouper);
+		Transform ParentTrans = ParentObj.transform;
+		ParentTrans.SetParent(TopParent);
+		ParentTrans.position = Vector3.zero;
+		ParentTrans.localScale = Vector3.one;
+		ParentTrans.localRotation = Quaternion.Euler(0,0,0);
+
+		HorizontalLayoutGroup hori = ParentObj.GetComponent<HorizontalLayoutGroup>();
+		hori.spacing = 130;
+		hori.childAlignment =  TextAnchor.MiddleLeft;
+
+		Color unlockcol = u.Value ? Player.Level.GetColor(u.Level_Required) : Color.grey;
+		UIObj[] child = new UIObj[2];
+		child[0] = (UIObj) Instantiate(Objects.TextObj);
+		child[0].transform.SetParent(ParentTrans);
+		child[0].transform.position = Vector3.zero;
+		child[0].transform.localScale = Vector3.one * 1.6F;
+		child[0].transform.localRotation = Quaternion.Euler(0,0,0);
+		child[0].Txt[0].text = "" + u.Level_Required;
+		child[0].Txt[0].fontSize = 100;
+		child[0].Txt[0].color = Player.Level.GetColor(u.Level_Required);
+		child[0].Txt[0].GetComponent<RectTransform>().pivot = new Vector2(0, 0.5F);
+		//child[0].Txt[0].alignment = AlignmentTypes.Left;
+
+		child[1] = (UIObj) Instantiate(Objects.TextObj);
+		child[1].transform.SetParent(ParentTrans);
+		child[1].transform.position = Vector3.zero;
+		child[1].transform.localScale = Vector3.one * 1.6F;
+		child[1].transform.localRotation = Quaternion.Euler(0,0,0);
+		child[1].Txt[0].text = u.GetTitle();
+		child[1].Txt[0].fontSize = 60;
+		child[1].Txt[0].color = unlockcol;
+		child[1].Txt[0].GetComponent<RectTransform>().pivot = new Vector2(0, 0.5F);
+		//child[1].Txt[0].alignment = AlignmentTypes.Left;
+		
+		ParentObj.Child = child;
+
+		return ParentObj;
+	}
 
 	public void GenerateZoneMap()
 	{
+		Objects.MiddleGear[1][0].DestroyChildren();
 		List<UIObj> Brackets = new List<UIObj>();
 		for(int i = 0; i < GameManager.ZoneMap.Length; i++)
 		{
@@ -1486,9 +1381,14 @@ public class UIManager : MonoBehaviour {
 		(Objects.MiddleGear[1] as UIObjTweener).SetTween(0);
 		bool open = (Objects.MiddleGear[1] as UIObjTweener).Tween.IsObjectOpened();
 		GameManager.instance.paused = open;
+		ScreenAlert.SetTween(0,open);
+
 		Objects.MiddleGear[1].Txt[3].enabled = false;
 		Objects.MiddleGear[1].Img[2].enabled = false;
 		Objects.MiddleGear[1].Img[4].enabled = false;
+		Objects.MiddleGear[1][0].SetActive(true);
+		Objects.MiddleGear[1][1].SetActive(false);
+		Objects.MiddleGear[1][2].SetActive(true);
 
 		if(!open) UIManager.instance.SetClassButtons(false);
 		if(ended)
@@ -1501,14 +1401,14 @@ public class UIManager : MonoBehaviour {
 
 			//CHOOSE ZONE
 			Objects.MiddleGear[1].Txt[3].enabled = true;
-
+			Objects.MiddleGear[1][2].Txt[2].text = "Waves";
 
 			for(int i = 0; i < Objects.MiddleGear[1][0].Length; i++)
 			{
 				UIObj bracket = Objects.MiddleGear[1][0].Child[i];
 				for(int c = 0; c < bracket.Length; c++)
 				{
-					if(i == GameManager.ZoneMap.Current+1)
+					if(i == GameManager.ZoneMap.Current)
 					{
 						bracket.Child[c].Txt[0].text = GameManager.ZoneMap[i][c]._Name;
 						bracket.Child[c].Img[0].color = GameManager.ZoneMap[i][c].Tint;
@@ -1520,7 +1420,7 @@ public class UIManager : MonoBehaviour {
 							GameManager.instance.AdvanceZoneMap(v);
 						}, c +"");
 					}
-					else if(i > GameManager.ZoneMap.Current+1)
+					else if(i > GameManager.ZoneMap.Current)
 					{
 						bracket.Child[c].ClearActions();
 						bracket.Child[c].Txt[0].text = "?";
@@ -1539,13 +1439,14 @@ public class UIManager : MonoBehaviour {
 		else
 		{
 			Objects.MiddleGear[1].Txt[0].text = GameManager.Zone.Name;
-			Objects.MiddleGear[1].Txt[1].text = "Wave " + GameManager.Zone.CurrentDepthInZone + "/" + GameManager.Zone.GetZoneDepth();
+			Objects.MiddleGear[1][2].Txt[1].text = GameManager.Wave.Name;
+			Objects.MiddleGear[1][2].Txt[2].text = "Waves";
+			Objects.MiddleGear[1][2].Txt[0].text = GameManager.Zone.CurrentDepthInZone + "/" + GameManager.Zone.GetZoneDepth();
+
 			Objects.MiddleGear[1].Txt[3].enabled = false;
 			Objects.MiddleGear[1].Txt[2].enabled = false;
 
-			Objects.MiddleGear[1].Img[2].enabled = true;
-			Objects.MiddleGear[1].Img[4].enabled = true;
-			Objects.MiddleGear[1].Img[4].fillAmount = GameManager.Zone.GetZoneDepth_Ratio();
+			Objects.MiddleGear[1][2].Img[1].fillAmount = GameManager.Zone.GetZoneDepth_Ratio();
 			Objects.MiddleGear[1].Img[3].enabled = false;
 
 			for(int i = 0; i < Objects.MiddleGear[1][0].Length; i++)
@@ -1579,7 +1480,10 @@ public class UIManager : MonoBehaviour {
 		ParentTrans.position = Vector3.zero;
 		ParentTrans.localScale = Vector3.one;
 		ParentTrans.localRotation = Quaternion.Euler(0,0,0);
-		ParentObj.GetComponent<HorizontalLayoutGroup>().spacing = 310;
+
+		HorizontalLayoutGroup hori = ParentObj.GetComponent<HorizontalLayoutGroup>();
+		hori.spacing = 310;
+		hori.childAlignment =  TextAnchor.MiddleCenter;
 
 		List<UIObj> child = new List<UIObj>();
 		for(int i = 0; i < zones.Length; i++)
@@ -1597,6 +1501,7 @@ public class UIManager : MonoBehaviour {
 
 		return ParentObj;
 	}
+
 
 	public void ShowStashUI()
 	{
@@ -1674,21 +1579,6 @@ public class UIManager : MonoBehaviour {
 
 
 
-	public void Reset()
-	{
-		loaded = false;
-		Player.instance.Reset();
-
-		GameManager.instance.gameStart = false;
-		GameData.instance.Save();
-		Application.LoadLevel(0);
-	}
-
-	public void ResetScore()
-	{
-		PlayerPrefs.SetInt("Points", 0);
-		Reset();
-	}
 
 	public ObjectPooler MiniAlertPool;
 
@@ -1703,6 +1593,7 @@ public class UIManager : MonoBehaviour {
 		alertobj.transform.localScale = Vector3.one;
 		alertobj.Setup(position, alert, life, size, col??Color.white, speed, background);
 		alertobj.GetComponent<MoveToPoint>().enabled = false;
+		alertobj.ClearActions();
 		alertobj.transform.rotation = Quaternion.identity;
 		return alertobj;
 	}
@@ -1717,6 +1608,7 @@ public class UIManager : MonoBehaviour {
 		alertobj.transform.SetParent(Canvas.transform);
 		alertobj.transform.localScale = Vector3.one;
 		alertobj.Setup(prev);
+		alertobj.ClearActions();
 		alertobj.GetComponent<MoveToPoint>().enabled = false;
 		alertobj.transform.rotation = Quaternion.identity;
 		return alertobj;

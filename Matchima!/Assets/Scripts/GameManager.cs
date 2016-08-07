@@ -18,6 +18,7 @@ public enum GameMode
 }
 
 public class GameManager : MonoBehaviour {
+#region Variables
 	public static GameManager instance;
 	public static _GameSaveLoad PlayerLoader;
 
@@ -26,8 +27,8 @@ public class GameManager : MonoBehaviour {
 
 	public static int ComboSize;
 	public static Zone Zone	{get{return instance.CurrentZone;}}
-	public static int Floor	{get{return instance.CurrentFloor;}}
-	public static int ZoneNum {get{return instance._ZoneNum;}}
+	public static int Floor	{get{return instance.CurrentFloorNum;}}
+	public static int ZoneNum {get{return ZoneMap.Current + 1;}}
 	public static Wave Wave{get{return instance.CurrentWave;}}
 	public static ZoneMapContainer ZoneMap;
 
@@ -81,12 +82,12 @@ public class GameManager : MonoBehaviour {
 	public DiffMode DifficultyMode = DiffMode.Okay;
 	public GameMode Mode = GameMode.Story;
 
-	public int CurrentFloor = 0;
+	public int CurrentFloorNum = 0;
+	public int CurrentZoneNum = 0;
 	public Zone CurrentZone;
 	public Wave CurrentWave;
 	public ZoneMapContainer CurrentZoneMap;
 
-	private int _ZoneNum = 0;
 
 	public bool gameStart = false;
 	public bool paused = false;
@@ -111,494 +112,239 @@ public class GameManager : MonoBehaviour {
 	}
 	public static bool TuteActive = false;
 
-	public ZoneMapContainer StoryModeMap;
-	public Zone [] Zones;
+
 	
 	public WaveGroup DefaultWaves;
 	private float EnemyTurnTime = 0.0F;
 
-	[HideInInspector]
-	public Zone ResumeZone = null;
-	[HideInInspector]
-	public Wave ResumeWave = null;
+
+	public bool _ResumeGame;
+	public int ResumeZoneIndex;
+	public int ResumeWaveIndex;
+	public int ResumeWaveCurrent;
 
 	[HideInInspector]
 	public int ComboFactor_RepeatedCombos;
 	public float ComboFactor_ComboTotalSize;
+#endregion
 
+#region Generics/Cheats
 	void OnApplicationQuit()
-	{
-		GameData.instance.Save();
-		//PlayerPrefs.SetInt("Resume", 0);
-		if(!gameStart) return;
-		PlayerLoader.Save();
-		PlayerPrefs.SetInt("Resume", gameStart ? 1 : 0);
-		PlayerPrefs.SetString("Name", Player.Classes[0].Name);
-		PlayerPrefs.SetInt("Turns", Player.instance.Turns);
-	}
-
-	void OnApplicationPause()
-	{
-		if(!Application.isEditor)
 		{
 			GameData.instance.Save();
-			if(gameStart) 
+			PlayerPrefs.SetInt("PlayerLevel", Player.Level.Level);
+			PlayerPrefs.SetInt("PlayerXP", Player.Level.XP_Current);
+			if(!gameStart) return;
+			PlayerLoader.Save();
+			PlayerPrefs.SetInt("Resume", gameStart ? 1 : 0);
+			PlayerPrefs.SetString("Name", Player.Classes[0].Name);
+			PlayerPrefs.SetInt("Turns", Player.instance.Turns);
+	
+		}
+	
+		void OnApplicationPause()
+		{
+			if(!Application.isEditor)
 			{
+				GameData.instance.Save();
+				PlayerPrefs.SetInt("PlayerLevel", Player.Level.Level);
+				PlayerPrefs.SetInt("PlayerXP", Player.Level.XP_Current);
+				if(!gameStart)  return;
 				PlayerLoader.Save();
 				PlayerPrefs.SetInt("Resume", gameStart ? 1 : 0);
 				PlayerPrefs.SetString("Name", Player.Classes[0].Name);
 				PlayerPrefs.SetInt("Turns", Player.instance.Turns);
-			}
-			
-		} 
-	}
-
-	void Awake()
-	{
-		if(instance == null)
-		{
-			DontDestroyOnLoad(transform.gameObject);
-			instance = this;
+			} 
 		}
-		else if(instance != this) 
-		{
-			instance.Invoke("Start",0.05F);
-			Destroy(this.gameObject);
-		}
-	}
-	// Use this for initialization
-	void Start () {
-		QualitySettings.vSyncCount = 0;
-		Application.targetFrameRate = 50;
-		if(!Application.isMobilePlatform)
-		{
-			Screen.SetResolution(525,830, false);
-		}
-		paused = false;
-		gameStart = false;
-		_Juice = GetComponent<Juice>();
-		PlayerLoader = GetComponent<_GameSaveLoad>();
-		GameData.instance.Load();
-		ResumeZone = null;
-		Difficulty = Difficulty_init;
-
-		CurrentFloor = 0;
-		_ZoneNum = 0;
-		ZoneMap = CurrentZoneMap;
-
-		inStartMenu = true;
-		TuteActive = false;	
-	}
 	
-	// Update is called once per frame
-	void Update () {
-		_Difficulty = Difficulty;
-		if(Player.loaded && UIManager.loaded && !gameStart && !Player.Stats.isKilled)
+		void Awake()
 		{
-			if(!GameData.loading_assets) GameData.instance.LoadAssets();
-			if(Application.isMobilePlatform)
+			if(instance == null)
 			{
-				Player.Options.GameSpeed = 0.5F;
-				if (Time.frameCount % 60 == 0)
-				{
-				   System.GC.Collect();
-				}
+				DontDestroyOnLoad(transform.gameObject);
+				instance = this;
 			}
-			if(GameData.loaded_assets)
+			else if(instance != this) 
 			{
-				Resources.UnloadUnusedAssets();
-				if(ResumeZone != null) 
-				{
-					ResumeGame();
-				}
-				else
-				{
-					//TileMaster.instance.SetFillGrid(true);
-					if(Mode == GameMode.Story) PlayStoryMode();
-					else if (Mode == GameMode.Endless) PlayEndlessMode();
-					else if (Mode == GameMode.Quick) PlayQuickMode();
-				}
+				instance.Invoke("Start",0.05F);
+				Destroy(this.gameObject);
 			}
 		}
-
-		if(EnemyTurn)
-		{
-			if(EnemyTurnTime > 50) 
+		// Use this for initialization
+		void Start () {
+			QualitySettings.vSyncCount = 0;
+			Application.targetFrameRate = 50;
+			if(!Application.isMobilePlatform)
 			{
-				EnemyTurnTime = 0.0F;
-				EnemyTurn = false;
+				Screen.SetResolution(525,830, false);
 			}
-			else EnemyTurnTime += Time.deltaTime;
-		}
-
-		if(Input.GetKeyDown(KeyCode.Z)) 
-		{
-			Cheat(1);
-		}
-		if(Input.GetKeyDown(KeyCode.X)) 
-		{
-			Cheat(2);
-		}
-		if(Input.GetKeyDown(KeyCode.C)) 
-		{
-			//PlayerLoader.Save();
-			Cheat(3);
-		}
-		if(Input.GetKeyDown(KeyCode.V))
-		{
-			Cheat(4);
-		} 
-		if(Input.GetKeyDown(KeyCode.B))
-		{
-			Cheat(5);
-		}
-		if(Input.GetKeyDown(KeyCode.N))
-		{
-			Cheat(6);
-		}
-		if(Input.GetKeyDown(KeyCode.M))
-		{
-			Cheat(7);
-		}
-		if(Input.GetKeyDown(KeyCode.A))
-		{
-			Cheat(8);
-		}
-		if(Input.GetKeyDown(KeyCode.S))
-		{
-			Cheat(9);
-		}
-
-		if(Input.GetKeyDown(KeyCode.U)) 
-		{
-			Player.Classes[0].AddToMeter(Player.Classes[0].MeterTop);
-		}
-		if(Input.GetKeyDown(KeyCode.I)) 
-		{
-			Player.Classes[1].AddToMeter(Player.Classes[1].MeterTop);
-		}
-		if(Input.GetKeyDown(KeyCode.O)) 
-		{
-			Player.Classes[2].AddToMeter(Player.Classes[2].MeterTop);
-		}
-		if(Input.GetKeyDown(KeyCode.P)) 
-		{
-			Player.Classes[3].AddToMeter(Player.Classes[3].MeterTop);
-		}
-
-		if(Input.GetKeyDown(KeyCode.H))	StartCoroutine(Player.Classes[0].Mutate(1));
-		if(Input.GetKeyDown(KeyCode.J))	StartCoroutine(Player.Classes[1].Mutate(1));
-		if(Input.GetKeyDown(KeyCode.K))	StartCoroutine(Player.Classes[2].Mutate(1));
-		if(Input.GetKeyDown(KeyCode.L))	StartCoroutine(Player.Classes[3].Mutate(1));
-
-		if(Input.GetKeyDown(KeyCode.F5)) PlayerControl.instance.focusTile.AddValue(5);
-		if(Input.GetKeyDown(KeyCode.F10)) OpenInFileBrowser.Open(Application.persistentDataPath);
-		if(Input.GetKeyDown(KeyCode.F6)) AddTokens(10000);
-		if(Input.GetKeyDown(KeyCode.F12)) Player.Stats.Hit(10000);
-
-		if(Input.GetKeyDown(KeyCode.P)) paused = !paused;
-
-
-		if(Player.Stats.isKilled && !isPaused)
-		{
-			paused = true;
+	
+			paused = false;
 			gameStart = false;
-			StartCoroutine(EndGame());
-			return;
+			_Juice = GetComponent<Juice>();
+			PlayerLoader = GetComponent<_GameSaveLoad>();
+			Difficulty = Difficulty_init;
+	
+			CurrentFloorNum = 0;
+			CurrentZoneNum = 0;
+			ZoneMap = CurrentZoneMap;
+	
+			inStartMenu = true;
+			TuteActive = false;	
+			StartCoroutine(GameData.instance.LoadInitialData());
 		}
-	}
-
-	public void Reset()
-	{
-		CurrentZone = null;
-		CurrentWave = null;
-		CurrentFloor = 0;
-	}
-
-	public void Retire()
-	{
-		UIManager.instance.ShowOptions();
-		Player.Stats.isKilled = true;
-		Player.instance.retired = true;
-		paused = true;
-		StartCoroutine(EndGame());
-	}
-
-	public void SaveAndQuit()
-	{
-		Player.instance.Reset();
-		GameManager.instance.gameStart = false;
-		GameData.instance.Save();
-		Application.LoadLevel(0);
-	}
-
-	IEnumerator EndGame()
-	{
-		yield return new WaitForSeconds(0.3F);
-		TileMaster.instance.ClearGrid(true);
-
-		yield return new WaitForSeconds(0.3F);
-		UIManager.instance.ShowKillUI(0, 0,0,0);
-	}
-
-	bool camopen;
-	public void Cheat(int i)
-	{
-		switch(i)
-		{
-			case 1: //Z
-			print(Difficulty + Mathf.Exp(Difficulty_Growth) + ":" + Difficulty_Growth);
-			Difficulty += Mathf.Exp(Difficulty_Growth);
-			Player.instance.Turns += 25;
-			Player.Stats._Health = Player.Stats._HealthMax;
-			break;
-			case 2: //X
-			//EscapeZone();
-			//GetWave(GameData.instance.GetRandomWave(), 2);
-			//CameraUtility.SetTurnOffset(camopen);
-			Wave.AddPoints(150);
-			//TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["chest"], GENUS.ALL, 1, 1);
-			break;
-			case 3: //c
-			TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["guard"], GENUS.DEX,1, 1);
-			break;
-			case 4: //V
-			//GetTurn();
-			PlayerControl.instance.focusTile.AddEffect("Charm", 5, "2", "1");
-
-			break;
-			case 5: //B
-			PlayerControl.instance.focusTile.InitStats.TurnDamage += 1000;
-			PlayerControl.instance.focusTile.Match(1000);
-			break;
-			case 6: //N
-			Player.instance.InitStats.MapSize.y+=1;
-			TileMaster.instance.IncreaseGrid(0,1);
-			break;
-			case 7: //M
-			Player.instance.InitStats.MapSize.x+=1;
-			Player.instance.ResetStats();
-			break;
-			case 8: //A
-			CameraUtility.instance.ScreenShake(0.6F, 1.1F);
-			break;
-			case 9: //S
-			TileMaster.instance.Ripple(TileMaster.Grid.Tiles[3,3], 1.7F, 0.5F, 0.35F);
-			//TileMaster.instance.Ripple(TileMaster.Grid.Tiles[3,3]);
-			break;
-		}
-
 		
-	}
-
-	public void AddTokens(int tokens)
-	{
-		if(tokens == 0) return; 
-		if(gameStart) 
-		{
-			int all = tokens;
-			int d = 10;
-
-			int ones = all % d - all % (d/10);
-		all -= ones;
-		d *= 10;
-
-
-		int tens = all % d - all % (d/10);
-		all -= tens;
-		d *= 10;
-
-		int hunds = all % d - all % (d/10);
-		all -= hunds;
-
-		}
-		else
-		{
-			int _tk = PlayerPrefs.GetInt("AllTokens");
-			_tk += tokens;
-
-			PlayerPrefs.SetInt("AllTokens", _tk);
-		}
-	}
-
-	public Zone GetZone(string name)
-	{
-		for(int i = 0; i < Zones.Length; i++)
-		{
-			if(Zones[i]._Name == name) return Zones[i];
-		}
-		return null;
-	}
-
-	public void AdvanceZoneMap(int choice)
-	{
-		ZoneMap.Current++;
-		//UIManager.instance.ShowZoneUI(false);
-		EnterZone(ZoneMap.CurrentBracket[choice]);
-	}
-
-	public void EnterZone(Zone z = null, string name = null)
-	{
-		StartCoroutine(_EnterZone(z, name, null));
-	}
-
-	IEnumerator _EnterZone(Zone z = null, string name = null, Wave w = null)
-	{
-		if(CurrentZone != null) Destroy(CurrentZone.gameObject);
-		Zone target = null;
-
-		if(z != null)
-		{
-			target = z;
-		}
-		else if(name != null) 
-		{
-			target = GetZone(name);
-		}
-		else if(ZoneMap != null)
-		{
-			target = ZoneMap[0][0];
-		}
-		else target = Zones[Random.Range(0,Zones.Length)];
-
-		if(target == null) yield break;
-		_ZoneNum ++;
-		CurrentZone = (Zone) Instantiate(target);
-		CurrentZone.transform.parent = this.transform;
-		CurrentZone.Randomise();
-
-		(UIManager.Objects.MiddleGear[2] as UIObjTweener).SetTween(0, false);
-		(UIManager.Objects.MiddleGear[1] as UIObjTweener).SetTween(0, false);
-		UIManager.instance.BackingTint = CurrentZone.Tint;
-		UIManager.instance.WallTint = CurrentZone.WallTint;
-
-		TileMaster.instance.MapSize_Default = CurrentZone.GetMapSize();
-
-		if(CurrentWave != null) 
-		{
-			Destroy(CurrentWave.gameObject);
-			CurrentWave = null;
-		}
-		Player.instance.ResetStats();
-
-		if(GameManager.ZoneNum > 1) 
-		{
-			yield return null;
-			yield return StartCoroutine(TileMaster.instance.NewGridRoutine());
-		}
-
-		StCon [] floor = new StCon[]{new StCon("Entered")};
-		StCon [] title = new StCon[]{new StCon(CurrentZone.Name, CurrentZone.WallTint * 1.5F, false, 110)};
-		
-		yield return StartCoroutine(UIManager.instance.Alert(0.9F, floor, title));
-		yield return StartCoroutine(_GetWave(w));
-		
-	}
-
-	public void EscapeZone()
-	{
-		if(ZoneMap.Current < ZoneMap.Length)
-			UIManager.instance.ShowZoneUI(true);
-		else Debug.Log("YOU WIN!");
-		//StartCoroutine(_EscapeZone());
-	}
-
-	public ZoneMapContainer GenerateZoneMap(Vector2 [] zonenum)
-	{
-		ZoneMapContainer final = new ZoneMapContainer();
-		ZoneBracket [] br = new ZoneBracket[zonenum.Length];
-		for(int i = 0; i < zonenum.Length; i++)
-		{
-			int targ = (int)Random.Range(zonenum[i].x, zonenum[i].y);
-			br[i] = new ZoneBracket(targ);
-			for(int z = 0; z < targ; z++)
+		// Update is called once per frame
+		void Update () {
+			_Difficulty = Difficulty;
+	
+			if(Input.GetKeyDown(KeyCode.Z))	Cheat(1);
+			if(Input.GetKeyDown(KeyCode.X))	Cheat(2);
+			if(Input.GetKeyDown(KeyCode.C)) Cheat(3);
+			if(Input.GetKeyDown(KeyCode.V))	Cheat(4); 
+			if(Input.GetKeyDown(KeyCode.B))	Cheat(5);
+			if(Input.GetKeyDown(KeyCode.N))	Cheat(6);
+			if(Input.GetKeyDown(KeyCode.M))	Cheat(7);
+			if(Input.GetKeyDown(KeyCode.A))	Cheat(8);
+			if(Input.GetKeyDown(KeyCode.S))	Cheat(9);
+			CurrentZoneMap = ZoneMap;
+			if(Player.loaded && UIManager.loaded && !gameStart && !Player.Stats.isKilled)
 			{
-				br[i].Choices[z] = Zones[Random.Range(0,Zones.Length)];
+				if(!GameData.loading_assets) GameData.instance.LoadAssets();
+				if(Application.isMobilePlatform)
+				{
+					Player.Options.GameSpeed = 0.5F;
+					//if (Time.frameCount % 60 == 0)
+					//{
+					//   System.GC.Collect();
+					//}
+				}
+				if(GameData.loaded_assets)
+				{
+					Resources.UnloadUnusedAssets();
+					if(_ResumeGame) 
+					{
+						StartCoroutine(ResumeGame());
+					}
+					else
+					{
+						//TileMaster.instance.SetFillGrid(true);
+						if(Mode == GameMode.Story) PlayStoryMode();
+						else if (Mode == GameMode.Endless) PlayEndlessMode();
+						else if (Mode == GameMode.Quick) PlayQuickMode();
+					}
+				}
 			}
-			
-		}
-		final.Brackets = br;
-		return final;
-	}
-
-	public void GetWave(Wave w = null)
-	{
-		CurrentFloor ++;
-		if(w == null)
-		{
-			w = Zone.CheckZone();
-			/*
-			if(Mode == GameMode.Story) w = Zone.CheckZone();
-			else if(Mode == GameMode.Endless) 
+	
+			if(EnemyTurn)
 			{
-				if(Random.value > 0.5F) w = DefaultWaves.GetWaveRandom();
-				else w = CurrentZone.GetWaveRandom();
-			}*/
-		}
-
-		if(CurrentWave != null && CurrentWave != w) Destroy(CurrentWave.gameObject);
-		CurrentWave = Instantiate(w);
-		CurrentWave.transform.parent = this.transform;
-
-		for(int i = 0; i < GameManager.Wave.Length; i++)
-		{
-			if(GameManager.Wave[i] != null && GameManager.Wave[i].Active && UIManager.Objects.TopGear[1].Length > i)
-			{
-				UIObj wavebutton = UIManager.WaveButtons[i];
-				wavebutton.SetActive(true);
-				wavebutton.Txt[0].text = "";	
-				wavebutton.Img[1].transform.gameObject.SetActive(true);
-				wavebutton.Img[1].enabled = true;	
-				wavebutton.Img[0].enabled = true;
-				//wavebutton.Img[0].sprite = GameManager.Wave[i].Inner;
-				wavebutton.Img[0].color = Color.white;
-				wavebutton.Img[2].enabled = true;
-				//wavebutton.Img[2].sprite = GameManager.Wave[i].Outer;
-				wavebutton.Img[2].color = Color.white;				
+				if(EnemyTurnTime > 50) 
+				{
+					EnemyTurnTime = 0.0F;
+					EnemyTurn = false;
+				}
+				else EnemyTurnTime += Time.deltaTime;
 			}
-			else 
+	
+	
+			if(Input.GetKeyDown(KeyCode.U)) 
 			{
-				UIManager.WaveButtons[i].SetActive(false);
+				Player.Classes[0].AddToMeter(Player.Classes[0].MeterTop);
+			}
+			if(Input.GetKeyDown(KeyCode.I)) 
+			{
+				Player.Classes[1].AddToMeter(Player.Classes[1].MeterTop);
+			}
+			if(Input.GetKeyDown(KeyCode.O)) 
+			{
+				Player.Classes[2].AddToMeter(Player.Classes[2].MeterTop);
+			}
+			if(Input.GetKeyDown(KeyCode.P)) 
+			{
+				Player.Classes[3].AddToMeter(Player.Classes[3].MeterTop);
+			}
+	
+			if(Input.GetKeyDown(KeyCode.H))	StartCoroutine(Player.Classes[0].Mutate(1));
+			if(Input.GetKeyDown(KeyCode.J))	StartCoroutine(Player.Classes[1].Mutate(1));
+			if(Input.GetKeyDown(KeyCode.K))	StartCoroutine(Player.Classes[2].Mutate(1));
+			if(Input.GetKeyDown(KeyCode.L))	StartCoroutine(Player.Classes[3].Mutate(1));
+	
+			if(Input.GetKeyDown(KeyCode.F5)) PlayerControl.instance.focusTile.AddValue(5);
+			if(Input.GetKeyDown(KeyCode.F10)) OpenInFileBrowser.Open(Application.persistentDataPath);
+			if(Input.GetKeyDown(KeyCode.F12)) Player.Stats.Hit(10000);
+	
+			if(Input.GetKeyDown(KeyCode.Y)) paused = !paused;
+	
+	
+			if(Player.Stats.isKilled && !isPaused)
+			{
+				Killed();
+				return;
 			}
 		}
 
-		StartCoroutine(CurrentWave.Setup());
-
-		Difficulty += Mathf.Exp(Difficulty_Growth);
-		UIManager.Objects.TopRightButton.Txt[0].text = "" + GameManager.Floor;
-		UIManager.Objects.TopRightButton.Txt[1].text = "" + GameManager.ZoneNum;
-
-		CameraUtility.instance.MainLight.color = Color.Lerp(
-			CameraUtility.instance.MainLight.color, UIManager.instance.BackingTint, Time.deltaTime * 5);
-		UIManager.Objects.Walls.color = Color.Lerp(
-			UIManager.Objects.Walls.color, UIManager.instance.WallTint, Time.deltaTime * 5);
-	}
-
-	IEnumerator _GetWave(Wave w = null)
-	{
-		CurrentFloor ++;
-		if(w == null)
+		bool camopen;
+		public void Cheat(int i)
 		{
-			w = Zone.CheckZone();
-		}
+			switch(i)
+			{
+				case 1: //Z
+				print(Difficulty + Mathf.Exp(Difficulty_Growth) + ":" + Difficulty_Growth);
+				Difficulty += Mathf.Exp(Difficulty_Growth);
+				Player.instance.Turns += 25;
+				Player.Stats._Health = Player.Stats._HealthMax;
+				break;
+				case 2: //X
+				EscapeZone();
+				//Wave.AddPoints(150);
+				break;
+				case 3: //c
+				//TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["guard"], GENUS.DEX,1, 1);
+				StartCoroutine(Player.instance.AddXP(500));
 
-		if(CurrentWave != null && CurrentWave != w) Destroy(CurrentWave.gameObject);
-		if(w == null)
-		{
-			EscapeZone();
-			yield break;
+				break;
+				case 4: //V
+				//GetTurn();
+				//PlayerControl.instance.focusTile.AddEffect("Charm", 5, "2", "1");
+				Player.Stats.Hit(10000);
+				foreach(Class child in Player.Classes)
+				{
+					child.isKilled = true;
+				}
+				break;
+				case 5: //B
+				PlayerControl.instance.focusTile.InitStats.TurnDamage += 1000;
+				PlayerControl.instance.focusTile.Match(1000);
+				break;
+				case 6: //N
+				Player.instance.InitStats.MapSize.y+=1;
+				TileMaster.instance.IncreaseGrid(0,1);
+				break;
+				case 7: //M
+				Player.instance.InitStats.MapSize.x+=1;
+				Player.instance.ResetStats();
+				break;
+				case 8: //A
+				PlayerPrefs.SetInt("PlayerLevel", 0);
+				Player.Level.Level = 0;
+				UIManager.instance.UpdatePlayerLvl();
+				//CameraUtility.instance.ScreenShake(0.6F, 1.1F);
+				break;
+				case 9: //S
+				TileMaster.instance.Ripple(TileMaster.Grid.Tiles[3,3], 1.7F, 0.5F, 0.35F);
+				//TileMaster.instance.Ripple(TileMaster.Grid.Tiles[3,3]);
+				break;
+			}
 		}
-		CurrentWave = Instantiate(w);
-		CurrentWave.transform.parent = this.transform;
-		yield return StartCoroutine(CurrentWave.Setup());
-		Difficulty += Mathf.Exp(Difficulty_Growth);
-	}
+#endregion
 
+#region Start Conditions
 	public void LoadGame(bool resume)
 	{
 		Class [] c = null;
 		if(resume)
 		{
+			_ResumeGame = true;
 			c = PlayerLoader.Load();
 			if(c == null) return;
 		}
@@ -617,6 +363,31 @@ public class GameManager : MonoBehaviour {
 
 		
 	}
+	public void LoadClass(ClassContainer targetClass)
+	{
+		StartCoroutine(UIManager.instance.LoadUI());
+	}
+
+	public IEnumerator ResumeGame()
+	{
+		inStartMenu = false;
+		gameStart = true;
+		StartCoroutine(Player.instance.BeginTurn());
+		RoundTokens = 0;
+
+		ClearUI();
+		Zone z = ZoneMap.CurrentBracket[ResumeZoneIndex];
+		yield return StartCoroutine(_EnterZone(z, ResumeWaveIndex));
+
+		yield return null;
+		print(Wave);
+		Wave.Current = ResumeWaveCurrent;
+
+		ResumeWaveCurrent = 0;
+		ResumeWaveIndex = 0;
+		ResumeZoneIndex = 0;
+	}
+
 
 	public void PlayStoryMode()
 	{
@@ -626,7 +397,7 @@ public class GameManager : MonoBehaviour {
 		RoundTokens = 0;
 
 		ClearUI();
-		ZoneMap = StoryModeMap;
+		ZoneMap = GameData.instance.StoryModeMap;
 		
 		UIManager.instance.GenerateZoneMap();
 		StartCoroutine(_EnterZone());
@@ -642,12 +413,7 @@ public class GameManager : MonoBehaviour {
 
 		ClearUI();
 
-		ZoneMap = GenerateZoneMap(new Vector2[]{
-									new Vector2(1,1),
-									new Vector2(1,3),
-									new Vector2(2,4),
-									new Vector2(1,1)
-			});
+		ZoneMap = GameData.instance.GenerateEndlessMode();
 		UIManager.Objects.TopGear.Txt[0].text = "";
 
 		UIManager.instance.GenerateZoneMap();
@@ -660,51 +426,303 @@ public class GameManager : MonoBehaviour {
 		gameStart = true;
 		StartCoroutine(Player.instance.BeginTurn());
 		RoundTokens = 0;
-
 		ClearUI();
 
-		ZoneMap = GenerateZoneMap(new Vector2[]{
-									new Vector2(1,1),
-									new Vector2(1,3),
-									new Vector2(2,4),
-									new Vector2(1,1)
-			});
+		int length = 3;
+		switch(DifficultyMode)
+		{
+			case DiffMode.Easy:
+			length = 3;
+			break;
+			case DiffMode.Okay:
+			length = 4;
+			break;
+			case DiffMode.Hard:
+			length = 6;
+			break;
+		}
+		Vector2 [] brackets = new Vector2[length];
+		for(int i = 0; i < length; i ++)
+		{
+			int min = Random.Range(1,2);
+			int max = Random.Range(2,5);
+			brackets[i] = new Vector2(min, max);
+		}
+		ZoneMap = GameData.instance.GenerateZoneMap(brackets);
 		UIManager.Objects.TopGear.Txt[0].text = "";
 
 		UIManager.instance.GenerateZoneMap();
 		StartCoroutine(_EnterZone());
 	}
+#endregion
 
-
-	public void ResumeGame()
+#region End Conditions/Reset
+	public IEnumerator Reset()
 	{
-		inStartMenu = false;
-		gameStart = true;
-		StartCoroutine(Player.instance.BeginTurn());
-		RoundTokens = 0;
+		yield return null;
+		CurrentZone = null;
+		CurrentWave = null;
+		CurrentFloorNum = 0;
+		gameStart = false;
 
-		ClearUI();
-		StartCoroutine(_EnterZone(ResumeZone, null, ResumeWave));
+		Player.instance.Reset();
+		TileMaster.instance.Reset();
+		yield return StartCoroutine(UIManager.instance.Reset());
+		
 	}
-
-	public void LoadClass(ClassContainer targetClass)
-	{
-		StartCoroutine(UIManager.instance.LoadUI());
-	}
-
 	void ClearUI()
 	{
 		(UIManager.Objects.TopGear as UIObjTweener).SetTween(1,false);
 		(UIManager.Objects.BotGear as UIObjTweener).SetTween(1,false);
+		(UIManager.Objects.TopLeftButton as UIObjTweener).SetTween(0, true);
+		(UIManager.Objects.TopRightButton as UIObjTweener).SetTween(0,true);
 		(UIManager.Objects.TopGear as UIGear).SetRotate(false);
 		(UIManager.Objects.BotGear as UIGear).SetRotate(false);
 		UIManager.Objects.BotGear[0].SetActive(true);
-		//UIManager.Objects.TopGear[2].SetActive(true);
 		UIManager.Objects.TopGear.Txt[0].text = "";
 	}
 
+	public End_Type EndType;
+	public void Killed()
+	{
+		EndType = End_Type.Defeat;
+		paused = true;
+		gameStart = false;
+		StartCoroutine(EndGame(EndType));
+	}
 
+	public void Victory()
+	{
+		EndType = End_Type.Victory;
+		paused = true;
+		gameStart = false;
+		StartCoroutine(EndGame(EndType));
+	}
 
+	public void Retire()
+	{
+		EndType = End_Type.Retire;
+		UIManager.instance.ShowOptions();
+		Player.Stats.isKilled = true;
+		Player.instance.retired = true;
+		paused = true;
+		StartCoroutine(EndGame(EndType));
+	}
+
+	public void SaveAndQuit()
+	{
+		EndType = End_Type.SaveQuit;
+		Player.instance.Reset();
+		GameManager.instance.gameStart = false;
+		GameData.instance.Save();
+		Application.LoadLevel(0);
+	}
+
+	IEnumerator EndGame(End_Type e)
+	{
+		int [] xp = CalculateXP();
+		yield return new WaitForSeconds(0.1F);
+		TileMaster.instance.ClearGrid(true);
+
+		yield return new WaitForSeconds(0.3F);
+		UIManager.instance.ShowKillUI(e, xp);
+	}
+
+	int [] CalculateXP()
+	{
+		int turns_per_floor = 10;
+
+		int [] final = new int [2];
+		final[0] = GameManager.Floor * 10;
+
+		final[1] = GameManager.Floor * turns_per_floor;
+		final[1] = Mathf.Clamp(final[1]/Player.instance.Turns, 1, 100);
+		final[1] *= final[0];
+		return final;
+	}
+#endregion
+
+#region Waves/Zones
+	public void AdvanceZoneMap(int choice)
+		{
+			EnterZone(ZoneMap.CurrentBracket[choice]);		
+		}
+	
+		public void EnterZone(Zone z = null, string name = null)
+		{
+			StartCoroutine(_EnterZone(z, name, null));
+		}
+	
+		IEnumerator _EnterZone(Zone z = null, string name = null, Wave w = null)
+		{
+			if(CurrentZone != null) Destroy(CurrentZone.gameObject);
+			Zone target = null;
+	
+			if(z != null)
+			{
+				target = z;
+			}
+			else if(name != null) 
+			{
+				target = GameData.instance.GetZone(name);
+			}
+			else if(ZoneMap != null)
+			{
+				target = ZoneMap[0][0];
+			}
+			else target = GameData.instance.GetZoneRandom();
+	
+			if(target == null) yield break;
+			CurrentZone = (Zone) Instantiate(target);
+			CurrentZone.transform.parent = this.transform;
+			CurrentZone.Randomise();
+	
+			(UIManager.Objects.MiddleGear[2] as UIObjTweener).SetTween(0, false);
+			(UIManager.Objects.MiddleGear[1] as UIObjTweener).SetTween(0, false);
+			UIManager.instance.BackingTint = CurrentZone.Tint;
+			UIManager.instance.WallTint = CurrentZone.WallTint;
+	
+			TileMaster.instance.MapSize_Default = CurrentZone.GetMapSize();
+	
+			if(CurrentWave != null) 
+			{
+				Destroy(CurrentWave.gameObject);
+				CurrentWave = null;
+			}
+			Player.instance.ResetStats();
+	
+			if(GameManager.ZoneNum > 1) 
+			{
+				yield return null;
+				yield return StartCoroutine(TileMaster.instance.NewGridRoutine());
+			}
+	
+			StCon [] floor = new StCon[]{new StCon("Entered")};
+			StCon [] title = new StCon[]{new StCon(CurrentZone.Name, CurrentZone.WallTint * 1.5F, false, 110)};
+			
+			yield return StartCoroutine(UIManager.instance.Alert(0.9F, floor, title));
+			yield return StartCoroutine(_GetWave(w));
+			
+		}
+
+		IEnumerator _EnterZone(Zone z, int wavenum)
+		{
+			if(CurrentZone != null) Destroy(CurrentZone.gameObject);
+			Zone target = z;			
+
+			CurrentZone = (Zone) Instantiate(target);
+			CurrentZone.transform.parent = this.transform;
+			CurrentZone.Randomise();
+			
+			(UIManager.Objects.MiddleGear[2] as UIObjTweener).SetTween(0, false);
+			(UIManager.Objects.MiddleGear[1] as UIObjTweener).SetTween(0, false);
+			UIManager.instance.BackingTint = CurrentZone.Tint;
+			UIManager.instance.WallTint = CurrentZone.WallTint;
+			
+			TileMaster.instance.MapSize_Default = CurrentZone.GetMapSize();
+			
+			if(CurrentWave != null) 
+			{
+				Destroy(CurrentWave.gameObject);
+				CurrentWave = null;
+			}
+			Player.instance.ResetStats();
+			
+			if(GameManager.ZoneNum > 1) 
+			{
+				yield return null;
+				yield return StartCoroutine(TileMaster.instance.NewGridRoutine());
+			}
+			
+			StCon [] floor = new StCon[]{new StCon("Entered")};
+			StCon [] title = new StCon[]{new StCon(CurrentZone.Name, CurrentZone.WallTint * 1.5F, false, 110)};
+			
+			yield return StartCoroutine(UIManager.instance.Alert(0.9F, floor, title));
+			yield return StartCoroutine(_GetWave(z[wavenum]));
+		}
+	
+		public void EscapeZone()
+		{
+			bool end = ZoneMap.Progress();
+			if(end) UIManager.instance.ShowZoneUI(true);		
+			else Victory();
+		}
+	
+		public void GetWave(Wave w = null)
+		{
+			CurrentFloorNum ++;
+			if(w == null)
+			{
+				w = Zone.CheckZone();
+				/*
+				if(Mode == GameMode.Story) w = Zone.CheckZone();
+				else if(Mode == GameMode.Endless) 
+				{
+					if(Random.value > 0.5F) w = DefaultWaves.GetWaveRandom();
+					else w = CurrentZone.GetWaveRandom();
+				}*/
+			}
+	
+			if(CurrentWave != null && CurrentWave != w) Destroy(CurrentWave.gameObject);
+			CurrentWave = Instantiate(w);
+			CurrentWave.transform.parent = this.transform;
+	
+			for(int i = 0; i < GameManager.Wave.Length; i++)
+			{
+				if(GameManager.Wave[i] != null && GameManager.Wave[i].Active && UIManager.Objects.TopGear[1].Length > i)
+				{
+					UIObj wavebutton = UIManager.WaveButtons[i];
+					wavebutton.SetActive(true);
+					wavebutton.Txt[0].text = "";	
+					wavebutton.Img[1].transform.gameObject.SetActive(true);
+					wavebutton.Img[1].enabled = true;	
+					wavebutton.Img[0].enabled = true;
+					//wavebutton.Img[0].sprite = GameManager.Wave[i].Inner;
+					wavebutton.Img[0].color = Color.white;
+					wavebutton.Img[2].enabled = true;
+					//wavebutton.Img[2].sprite = GameManager.Wave[i].Outer;
+					wavebutton.Img[2].color = Color.white;				
+				}
+				else 
+				{
+					UIManager.WaveButtons[i].SetActive(false);
+				}
+			}
+			print("Getting wave");
+			StartCoroutine(CurrentWave.Setup());
+	
+			Difficulty += Mathf.Exp(Difficulty_Growth);
+			UIManager.Objects.TopRightButton.Txt[0].text = "" + GameManager.Floor;
+			UIManager.Objects.TopRightButton.Txt[1].text = "" + GameManager.ZoneNum;
+	
+			CameraUtility.instance.MainLight.color = Color.Lerp(
+				CameraUtility.instance.MainLight.color, UIManager.instance.BackingTint, Time.deltaTime * 5);
+			UIManager.Objects.Walls.color = Color.Lerp(
+				UIManager.Objects.Walls.color, UIManager.instance.WallTint, Time.deltaTime * 5);
+		}
+	
+		IEnumerator _GetWave(Wave w = null)
+		{
+			CurrentFloorNum ++;
+			if(w == null)
+			{
+				w = Zone.CheckZone();
+			}
+	
+			if(CurrentWave != null && CurrentWave != w) Destroy(CurrentWave.gameObject);
+			if(w == null)
+			{
+				EscapeZone();
+				yield break;
+			}
+			CurrentWave = Instantiate(w);
+			CurrentWave.transform.parent = this.transform;
+			yield return StartCoroutine(CurrentWave.Setup());
+			Difficulty += Mathf.Exp(Difficulty_Growth);
+		}
+#endregion
+
+#region Turn Loop
 	public void GetTurn()
 	{
 		StartCoroutine(Turn());
@@ -713,7 +731,7 @@ public class GameManager : MonoBehaviour {
 	IEnumerator Turn()
 	{
 
-/* PLAYER TURN *///////////////////////////////////////////////////
+	/* PLAYER TURN *///////////////////////////////////////////////////
 		EnemyTurn = true;
 		
 		TileMaster.instance.SetFillGrid(false);
@@ -723,7 +741,7 @@ public class GameManager : MonoBehaviour {
 		
 		UIManager.Objects.BotGear.SetTween(0, false);
 		UIManager.Objects.TopGear.SetTween(0, false);
-		
+		//UIManager.Objects.BotGear.SetTween(3, true);
 		UIManager.instance.MoveTopGear(0);
 
 		yield return StartCoroutine(BeforeMatchRoutine());
@@ -741,9 +759,9 @@ public class GameManager : MonoBehaviour {
 		
 
 		yield return StartCoroutine(Player.instance.EndTurn());
-
+		//UIManager.Objects.BotGear.SetTween(3, false);
 		yield return StartCoroutine(TileMaster.instance.BeforeTurn());
-/* ENEMY TURN *////////////////////////////////////////////////////
+	/* ENEMY TURN *////////////////////////////////////////////////////
 		yield return StartCoroutine(CurrentWave.BeginTurn());
 		if(Player.instance.Turns % (int)Player.Stats.AttackRate == 0 && TileMaster.instance.EnemiesOnScreen > 0)
 		{
@@ -762,6 +780,7 @@ public class GameManager : MonoBehaviour {
 	
 		yield return StartCoroutine(Player.instance.BeginTurn());
 		TileMaster.instance.ResetTiles(true);
+
 		UIManager.instance.ResetTopGear();
 		yield return null;
 	}
@@ -864,7 +883,9 @@ public class GameManager : MonoBehaviour {
 		}
 		if(allied_attackers.Count > 0) yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 	}
+#endregion
 
+#region Match Loops, Routines, Bonuses
 	public IEnumerator BeforeMatchRoutine()
 	{
 		List<Tile> newTiles = new List<Tile>();
@@ -1286,15 +1307,11 @@ public class GameManager : MonoBehaviour {
 			yield return new WaitForSeconds(GameData.GameSpeed(0.6F));
 		}
 	}
+#endregion
 
 	public void ToggleTileInfo()
 	{
 		Player.Options.ViewTileStats = !Player.Options.ViewTileStats;
-	}
-
-	public void AddOverflow(int amt)
-	{
-		OverflowThisTurn += amt;
 	}
 
 	public void EnemyKilled(Enemy e)
@@ -1357,6 +1374,11 @@ public class ClassContainer
 		Level += 1;
 		return true;
 	}
+}
+
+public enum End_Type
+{
+	Defeat, Victory, Retire, SaveQuit
 }
 
 [System.Serializable]
@@ -1442,41 +1464,3 @@ public class Bonus
 	}
 }
 
-
-[System.Serializable]
-public class ZoneMapContainer
-{
-	public ZoneBracket [] Brackets;
-	public int Current = 0;
-	public ZoneBracket CurrentBracket
-	{
-		get{return Brackets[Current];}
-	}
-	public int Length{get{return Brackets.Length;}}
-	public ZoneBracket this[int v]
-	{
-		get{return Brackets[v];}
-	}
-
-	public ZoneMapContainer(int b = 0)
-	{
-		Brackets = new ZoneBracket[b];
-	}
-}
-
-[System.Serializable]
-public class ZoneBracket
-{
-	public Zone [] Choices;
-	public int Length {get{return Choices.Length;}}
-	public Zone this[int v]
-	{
-		get{return Choices[v];}
-		set{Choices[v] = value;}
-	}
-
-	public ZoneBracket(int z = 0)
-	{
-		Choices = new Zone[z];
-	}
-}

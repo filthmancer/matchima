@@ -15,16 +15,9 @@ public enum MenuState
 public class UIMenu : UIObj {
 
 	public UIObj ClassButton;
-	public UIObj ResumeGame;
-	public UIObj NewGame;
-	public UIObj ModeButton;
 
-	public UIObj Difficulty;
-	public UIObj LevelUp;
 	public UIObj AlertObj;
 	public UIObj PipObj;
-	public UIObj HealthPipParent, AttackPipParent, MagicPipParent;
-	public UIObj HelpBasic, HelpMana, HelpItems;
 
 	public UIClassSelect ClassPrefab;
 	public List<UIClassSelect> ClassObjects;
@@ -53,34 +46,12 @@ public class UIMenu : UIObj {
 
 	public MenuState State = MenuState.StartScreen;
 	private int top_division_last = 0;
-	public override void Start () {
-		base.Start();
-		StartCoroutine(LoadMenu());
-	}
 
 	bool loaded = false;
-	IEnumerator LoadMenu()
+
+	public IEnumerator LoadMenu()
 	{
-		UIManager.ShowClassButtons(false);
-		UIManager.ShowWaveButtons(false);
-		
-		UIManager.Objects.BotGear[0].SetActive(false);
-		UIManager.Objects.TopGear[2].SetActive(false);
-
-		UIManager.Objects.MiddleGear.Img[0].enabled = false;
-
-		UIManager.Objects.BotGear[3].AddAction(UIAction.MouseDown,()=>
-		{
-			UIManager.Menu.HeroMenu(0);
-		});
-
-		UIManager.Objects.TopGear.Txt[0].text = "";
-		UIManager.Objects.MiddleGear.Txt[0].text = "";
-		UIManager.Objects.BotGear.Txt[0].text = "";	
-
-		UIManager.ShowWaveButtons(false);
-
-		yield return null;
+		State = MenuState.StartScreen;
 		int wedge_num = 8;
 		for(int i = 0; i < wedge_num; i++)
 		{
@@ -92,6 +63,7 @@ public class UIMenu : UIObj {
 			obj.Setup(child);
 			obj.transform.rotation = Quaternion.Euler(0,0,360 - (360/wedge_num * i));
 		}
+
 		UIManager.Objects.BotGear[3].GetChild(1).transform.SetAsLastSibling();
 		UIManager.Objects.BotGear[3].GetChild(0).AddAction(UIAction.MouseDown,
 			() => {(UIManager.Objects.BotGear[3][0] as UIGear).Drag = true;});
@@ -102,6 +74,7 @@ public class UIMenu : UIObj {
 		UIManager.Objects.BotGear[3].GetChild(2).transform.SetAsLastSibling();
 		UIManager.Objects.BotGear[3].GetChild(2).AddAction(UIAction.MouseUp,
 			() => {MainMenu(false);});
+		
 		yield return null;
 		(UIManager.Objects.TopLeftButton as UIObjTweener).SetTween(0, false);
 		(UIManager.Objects.TopRightButton as UIObjTweener).SetTween(0,false);
@@ -110,37 +83,105 @@ public class UIMenu : UIObj {
 		(UIManager.Objects.TopGear as UIObjTweener).SetTween(1,true);
 		(UIManager.Objects.BotGear as UIObjTweener).SetTween(1,true);
 		yield return new WaitForSeconds(Time.deltaTime * 2);
+		LogoAnimation.gameObject.SetActive(true);
+		LogoAnimation.SetFrame(0);
 		LogoAnimation.Play("Title Animation");
 		yield return new WaitForSeconds(Time.deltaTime * 30);
 		UIManager.Objects.BotGear.Txt[0].text = "TOUCH TO START";
 
 		loaded = true;
-	}
-	
-	float TooltipTime = 0.4F;
-	// Update is called once per frame
-	void Update () {
-		if(State == MenuState.StartScreen && loaded)
-		{
-			UIManager.Objects.BotGear[1].Img[0].enabled = false;
-			if(Input.GetMouseButtonDown(0))
+
+		UIManager.Objects.BotGear[1].Img[0].enabled = false;
+
+		if(PlayerPrefs.GetInt("Resume") == 1) 
+		{	
+			UIObj res = UIManager.Objects.MiddleGear["resume"];	
+			res.AddAction(UIAction.MouseUp, ()=>
 			{
-				MainMenu(true);
-			}
+				ResumeGameActivate();
+			});
+			res.SetActive(true);
 		}
-		
-		//Tokens.text = PlayerPrefs.GetInt("AllTokens") + " Tokens";
+		bool activated = false;
+		UIManager.Objects.BotGear.AddAction(UIAction.MouseUp, ()=>{activated = true;});
+		UIManager.Objects.TopGear.AddAction(UIAction.MouseUp, ()=>{activated = true;});
+		UIManager.Objects.MiddleGear.AddAction(UIAction.MouseUp, ()=>{activated = true;});
+
+		while(!activated)
+		{
+			yield return null;
+		}
+
+		yield return new WaitForSeconds(Time.deltaTime * 10);
+		MainMenu(true);
 	}
 
+	public void NewGameActivate()
+	{
+		
+		UIManager.Objects.MiddleGear[0].SetActive(false);
+		UIManager.Objects.MiddleGear.Img[0].enabled = false;
+		UIManager.Objects.TopGear[2].SetActive(false);
+		(UIManager.Objects.TopLeftButton as UIObjTweener).SetTween(0, false);
+		(UIManager.Objects.TopRightButton as UIObjTweener).SetTween(0,false);
+		
+		UIManager.Objects.TopGear[1][0].Txt[0].enabled = false;
+		UIManager.Objects.TopGear[1][1].Txt[0].enabled = false;
+		UIManager.Objects.TopGear[1][2].Txt[0].enabled = false;
+		UIManager.Objects.TopGear[1][3].Txt[0].enabled = false;
+		UIManager.Objects.BotGear[3].SetActive(false);
+		UIManager.Objects.TopGear.isFlashing = false;
+		UIManager.Objects.BotGear.isFlashing = false;
+		(UIManager.Objects.BotGear[3][0] as UIGear).isFlashing = false;	
+		(UIManager.Objects.BotGear as UIGear).SetTween(3, false);
+		UIManager.Objects.BotGear[1].ClearActions();
+		UIManager.Objects.BotGear[1].Img[0].enabled = false;
+		bool alert = false;
+		for(int i = 0; i < Player.instance._Classes.Length; i++)
+		{
+			if(Player.instance._Classes[i] == null)
+			{
+				alert = true;
+				break;
+			}
+		}
+		if(alert)
+		{
+			StartCoroutine(SetAlert());
+			return;
+		}
+		GameManager.instance.LoadGame(false);
+	}
+
+	public void ResumeGameActivate()
+	{
+		Reset();
+		UIManager.Objects.MiddleGear[0].SetActive(false);
+		UIManager.Objects.MiddleGear.Img[0].enabled = false;
+		UIManager.Objects.TopGear[2].SetActive(false);
+		UIManager.Objects.TopGear.Txt[0].text = "RESUMING\nGAME";
+		(UIManager.Objects.TopLeftButton as UIObjTweener).SetTween(0, false);
+		(UIManager.Objects.TopRightButton as UIObjTweener).SetTween(0,false);
+		
+
+		UIManager.Objects.BotGear[3].SetActive(false);
+
+		(UIManager.Objects.BotGear as UIGear).SetTween(3, false);
+		UIManager.Objects.BotGear[1].ClearActions();
+		UIManager.Objects.BotGear[1].Img[0].enabled = false;
+		GameManager.instance.LoadGame(true);
+	}
+	
 	public void Reset()
 	{
+		LogoAnimation.gameObject.SetActive(false);
 		for(int i = 0; i < UIManager.ClassButtons.Length; i++)
 		{
 			UIManager.ClassButtons.GetClass(i).TweenClass(false);
 		}
 		
 		UIManager.Objects.MiddleGear.Img[0].enabled = true;
-
+		UIManager.Objects.MiddleGear["resume"].SetActive(false);
 		UIManager.Objects.TopGear.Txt[0].text = "";
 		UIManager.Objects.MiddleGear.Txt[0].text = "";
 		UIManager.Objects.BotGear.Txt[0].text = "";	
@@ -150,23 +191,65 @@ public class UIMenu : UIObj {
 
 		(UIManager.Objects.TopGear as UIObjTweener).SetTween(1,false);
 		(UIManager.Objects.BotGear as UIObjTweener).SetTween(1,false);
+		(UIManager.Objects.BotGear as UIGear).SetTween(3, false);
+		
 		(UIManager.Objects.TopGear as UIGear).SetRotate(false);
 		(UIManager.Objects.BotGear as UIGear).SetRotate(false);
 		UIManager.Objects.BotGear[0].SetActive(true);
 		//UIManager.Objects.TopGear[2].SetActive(true);
 		UIManager.Objects.TopGear.Txt[0].text = "";
+
+		UIManager.Objects.BotGear.ClearActions();
+		UIManager.Objects.TopGear.ClearActions();
+		UIManager.Objects.MiddleGear.ClearActions();
+
+		UIManager.Objects.BotGear.DivisionActions.Clear();
+		UIManager.Objects.TopGear.DivisionActions.Clear();
+		UIManager.Objects.MiddleGear.DivisionActions.Clear();
+
+		UIManager.Objects.TopGear.isFlashing = false;
+		UIManager.Objects.BotGear.isFlashing = false;
+		(UIManager.Objects.BotGear[3][0] as UIGear).isFlashing = false;
+		UIManager.Objects.TopGear[1][0].Txt[0].enabled = false;
+		UIManager.Objects.TopGear[1][1].Txt[0].enabled = false;
+		UIManager.Objects.TopGear[1][2].Txt[0].enabled = false;
+		UIManager.Objects.TopGear[1][3].Txt[0].enabled = false;
+
+		
 	}
 	
 	public void MainMenu(bool resume)
 	{
-		LogoAnimation.gameObject.SetActive(false);
+		
 		State = MenuState.MainMenu;
 		Reset();
+
+		UIManager.Objects.TopGear[1][0].Txt[0].enabled = true;
+		UIManager.Objects.TopGear[1][1].Txt[0].enabled = true;
+		UIManager.Objects.TopGear[1][2].Txt[0].enabled = true;
+		UIManager.Objects.TopGear[1][3].Txt[0].enabled = true;
+
+		UIManager.Objects.TopLeftButton.ClearActions();
+		UIManager.Objects.TopLeftButton.AddAction(UIAction.MouseUp, () =>
+		{
+			UIManager.instance.ShowOptions();
+		});
+		UIManager.Objects.TopRightButton.ClearActions();
+		UIManager.Objects.TopRightButton.AddAction(UIAction.MouseUp, () =>
+		{
+			UIManager.instance.ShowPlayerLvl();
+		});
+
+		(UIManager.Objects.TopLeftButton as UIObjTweener).SetTween(0, true);
+		(UIManager.Objects.TopRightButton as UIObjTweener).SetTween(0,true);
+		UIManager.Objects.TopRightButton.Txt[0].text = "Level";
+		UIManager.Objects.TopRightButton.Txt[1].text = ""+Player.Level.Level;
 		
 		UIManager.Objects.TopGear.AddAction(UIAction.MouseDown,
 			() => {(UIManager.Objects.TopGear as UIGear).Drag = true;});
 		UIManager.Objects.TopGear.AddAction(UIAction.MouseUp,
 			() => {(UIManager.Objects.TopGear as UIGear).Drag = false;});
+
 		(UIManager.Objects.TopGear as UIObjTweener).SetTween(1, false);
 		(UIManager.Objects.BotGear as UIObjTweener).SetTween(1, false);
 		UIManager.ShowClassButtons(true);
@@ -182,34 +265,17 @@ public class UIMenu : UIObj {
 
 		UIManager.Objects.TopGear[1][0].Txt[0].text = "STORY";
 		UIManager.Objects.TopGear[1][1].Txt[0].text = "QUICK CRAWL";
-		UIManager.Objects.TopGear[1][2].Txt[0].text = "OPTIONS";
+		UIManager.Objects.TopGear[1][2].Txt[0].text = "SETTINGS";
 		UIManager.Objects.TopGear[1][3].Txt[0].text = "ENDLESS";
 
 		UIManager.Objects.TopGear.DoDivisionLerpActions = true;
+		UIManager.Objects.TopGear.DivisionActions.Clear();
 		UIManager.Objects.TopGear.DivisionActions.Add((int i) =>
 		{
 			GetMiddleGearInfo(i);
 		});
 
 		
-		/*if(PlayerPrefs.GetInt("Resume") == 1) 
-		{
-			if(resume)
-			{
-				UIManager.Objects.TopGear.MoveToDivision(1);
-				GetMiddleGearInfo(1);
-			}
-			else
-			{
-				UIManager.Objects.TopGear.MoveToDivision(top_division_last);
-				GetMiddleGearInfo(top_division_last);
-			}
-			
-			//UIManager.Objects.TopGear[4][0].SetActive(true);
-			UIManager.Objects.TopGear[1][2].Txt[0].text = "RESUME";
-			//UIManager.Objects.TopGear[4][0].Img[1].color = GameData.Colour(GENUS.DEX);
-			
-		}*/
 		UIManager.Objects.TopGear.MoveToDivision(top_division_last);
 		GetMiddleGearInfo(top_division_last);
 		UIManager.Objects.BotGear[3][0].SetActive(true);
@@ -220,10 +286,9 @@ public class UIMenu : UIObj {
 		UIManager.Objects.BotGear.FlashArrows();
 	}
 
-	
-
 	public void HeroMenu(int x)
 	{
+		if(!Player.instance.GetUnlock("charselect")) return;
 		top_division_last = UIManager.Objects.TopGear.LastDivision;
 		if(State != MenuState.Character)
 		{
@@ -252,6 +317,11 @@ public class UIMenu : UIObj {
 				(UIManager.Objects.BotGear[3][0].GetChild(i) as UIClassSelect).ClearActions();
 				(UIManager.Objects.BotGear[3][0].GetChild(i) as UIClassSelect).Setup(child); 
 			}
+			UIManager.Objects.TopGear.DivisionActions.Clear();
+			UIManager.Objects.TopGear.DivisionActions.Add((int i) =>
+			{
+				GetHeroMenu_Info(i);
+			});
 		}
 		else
 		{
@@ -260,9 +330,29 @@ public class UIMenu : UIObj {
 		}
 	}
 
+	private void GetHeroMenu_Info(int i)
+	{
+		switch(i)
+		{
+			case 0:
+			print("Custom Team");
+			break;
+			case 1:
+			print("Saved");
+			break;
+			case 2:
+			print("Challenge");
+			break;
+			case 3:
+			print("Team of the Week");
+			break;
+		}
+	}
+
 
 	public void StartGame(GameMode g)
 	{
+
 		GameManager.instance.Mode = g;
 		switch(GameManager.instance.Mode)
 		{
@@ -275,6 +365,7 @@ public class UIMenu : UIObj {
 					return;
 				}
 			}
+			Reset();
 			UIManager.Objects.TopGear.Txt[0].text = "LOADING\nENDLESS";
 			break;
 			case GameMode.Story:
@@ -282,6 +373,7 @@ public class UIMenu : UIObj {
 			Player.instance._Classes[1] = GameData.instance.GetClass("Rogue");
 			Player.instance._Classes[2] = GameData.instance.GetClass("Wizard");
 			Player.instance._Classes[3] = GameData.instance.GetClass("Bard");
+			Reset();
 			UIManager.Objects.TopGear.Txt[0].text = "LOADING\nSTORY";
 			break;
 			case GameMode.Quick:
@@ -293,10 +385,11 @@ public class UIMenu : UIObj {
 					return;
 				}
 			}
+			Reset();
 			UIManager.Objects.TopGear.Txt[0].text = "LOADING\nQUICK CRAWL";
 			break;
 		}
-
+		
 		NewGameActivate();
 	}
 
@@ -305,10 +398,12 @@ public class UIMenu : UIObj {
 	{
 		if(i == 4) i = 0;
 		UIManager.Objects.MiddleGear.AddSpin(6);
+		bool unlocked = false;
 		//top_division_last = UIManager.Objects.TopGear.LastDivision;
 		switch(i)
 		{
 			case 0: // STORY
+			top_division_last = 0;
 			UIManager.Objects.MiddleGear[0].Txt[0].text = 
 			"FOUR ADVENTURERS BREAK INTO THE FORBIDDEN UNDERCITY TO EXPLORE AND GATHER THE PRECIOUS 'MANA' THAT SEEPS FROM BELOW";
 			(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, true);
@@ -341,11 +436,12 @@ public class UIMenu : UIObj {
 
 			break;
 
-			case 1: // Options
+			case 1: // Settings
 			UIManager.Objects.MiddleGear[0].Txt[0].text = "";
 			(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, false);
 			(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, false);
 			(UIManager.Objects.BotGear as UIGear).SetTween(3, true);
+			
 
 
 			/*UIManager.Objects.MiddleGear[0].Txt[0].text = 
@@ -363,25 +459,37 @@ public class UIMenu : UIObj {
 			break;
 
 			case 2:  // Endless
+			unlocked = GameData.instance.ModeUnlocked_Endless;
 			top_division_last = 2;
-			UIManager.Objects.MiddleGear[0].Txt[0].text = 
-			"ENDLESSLY EXPLORE THE UNDERCITY, DELVING EVER DEEPER";
-			(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, true);
-			(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, true);
-			UIManager.Objects.MiddleGear[0].GetChild(1).ClearActions();
-			UIManager.Objects.MiddleGear[0].GetChild(1).AddAction(UIAction.MouseUp,
-			() => {ChangeDifficulty();});
 
+			UIManager.Objects.MiddleGear[0].Txt[0].text = unlocked ? 
+			"ENDLESSLY EXPLORE THE UNDERCITY, DELVING EVER DEEPER" : "LOCKED";
+			
+			UIManager.Objects.MiddleGear[0].GetChild(1).ClearActions();
 			UIManager.Objects.MiddleGear[0].GetChild(0).ClearActions(UIAction.MouseUp);
-			UIManager.Objects.MiddleGear[0].GetChild(0).AddAction(UIAction.MouseUp,
-			() => {
-				StartGame(GameMode.Endless);
+
+			if(unlocked)
+			{
+				(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, true);
+				(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, true);
+				UIManager.Objects.MiddleGear[0].GetChild(1).AddAction(UIAction.MouseUp,
+				() => {ChangeDifficulty();});
+				UIManager.Objects.MiddleGear[0].GetChild(0).AddAction(UIAction.MouseUp,
+				() => {
+					StartGame(GameMode.Endless);
 				});
-			(UIManager.Objects.BotGear as UIGear).SetTween(3, false);
+			}
+			else
+			{
+				(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, false);
+				(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, false);
+			}
+			
+			(UIManager.Objects.BotGear as UIGear).SetTween(3, !Player.instance.GetUnlock("charselect"));
 
 			for(int n = 0; n < UIManager.ClassButtons.Length; n++)
 			{
-				if(Player.instance._Classes[i] == null)
+				if(Player.instance._Classes[n] == null)
 				{
 					UIManager.ClassButtons.GetClass(n)._Sprite.enabled = false;
 					UIManager.ClassButtons.GetClass(n)._SpriteMask.enabled = true;
@@ -389,7 +497,8 @@ public class UIMenu : UIObj {
 				}
 				else
 				{
-					UIManager.ClassButtons.GetClass(n)._Sprite.sprite = Player.instance._Classes[i].Icon;
+
+					UIManager.ClassButtons.GetClass(n)._Sprite.sprite = Player.instance._Classes[n].Icon;
 					UIManager.ClassButtons.GetClass(n)._Sprite.enabled = true;
 					UIManager.ClassButtons.GetClass(n)._SpriteMask.enabled = false;
 				}
@@ -398,25 +507,36 @@ public class UIMenu : UIObj {
 			break;
 
 			case 3:  // QUICK CRAWL
+			unlocked = GameData.instance.ModeUnlocked_Quick;
+
 			top_division_last = 3;
-			UIManager.Objects.MiddleGear[0].Txt[0].text = 
-			"EXPLORE A GENERATED DUNGEON";
-			(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, true);
-			(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, true);
+			UIManager.Objects.MiddleGear[0].Txt[0].text = unlocked ? 
+			"EXPLORE A GENERATED DUNGEON" : "Locked";
+
 			UIManager.Objects.MiddleGear[0].GetChild(1).ClearActions();
-			UIManager.Objects.MiddleGear[0].GetChild(1).AddAction(UIAction.MouseUp,
-			() => {ChangeDifficulty();});
-
 			UIManager.Objects.MiddleGear[0].GetChild(0).ClearActions(UIAction.MouseUp);
-			UIManager.Objects.MiddleGear[0].GetChild(0).AddAction(UIAction.MouseUp,
-			() => {
-				StartGame(GameMode.Quick);
-				});
-			(UIManager.Objects.BotGear as UIGear).SetTween(3, false);
 
+			if(unlocked)
+			{
+				(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, true);
+				(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, true);
+				UIManager.Objects.MiddleGear[0].GetChild(1).AddAction(UIAction.MouseUp,
+				() => {ChangeDifficulty();});
+				UIManager.Objects.MiddleGear[0].GetChild(0).AddAction(UIAction.MouseUp,
+				() => {
+					StartGame(GameMode.Quick);
+					});
+			}
+			else 
+			{
+				(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, false);
+				(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, false);
+			}
+			
+			(UIManager.Objects.BotGear as UIGear).SetTween(3, !Player.instance.GetUnlock("charselect"));
 			for(int n = 0; n < UIManager.ClassButtons.Length; n++)
 			{
-				if(Player.instance._Classes[i] == null)
+				if(Player.instance._Classes[n] == null)
 				{
 					UIManager.ClassButtons.GetClass(n)._Sprite.enabled = false;
 					UIManager.ClassButtons.GetClass(n)._SpriteMask.enabled = true;
@@ -424,11 +544,10 @@ public class UIMenu : UIObj {
 				}
 				else
 				{
-					UIManager.ClassButtons.GetClass(n)._Sprite.sprite = Player.instance._Classes[i].Icon;
+					UIManager.ClassButtons.GetClass(n)._Sprite.sprite = Player.instance._Classes[n].Icon;
 					UIManager.ClassButtons.GetClass(n)._Sprite.enabled = true;
 					UIManager.ClassButtons.GetClass(n)._SpriteMask.enabled = false;
 				}
-				
 			}
 			break;
 		}
@@ -436,6 +555,7 @@ public class UIMenu : UIObj {
 
 	public void SetTargetSlot(int i)
 	{
+		(UIManager.Objects.BotGear[3][0] as UIGear).isFlashing = false;	
 		if(TargetSlot == i)
 		{
 			UIManager.ClassButtons.GetClass(TargetSlot.Value).TweenClass(false);
@@ -455,6 +575,7 @@ public class UIMenu : UIObj {
 	{
 		//If targetslot is null, get the first empty slot
 		bool set_from_null = false;
+		
 		if(TargetSlot == null)
 		{
 			for(int i = 0; i < Player.instance._Classes.Length; i++)
@@ -514,59 +635,6 @@ public class UIMenu : UIObj {
 		UIManager.Objects.MiddleGear[0].GetChild(1).Txt[0].text = "" + GameManager.instance.Mode;
 	}
 
-	public void NewGameActivate()
-	{
-		UIManager.Objects.MiddleGear[0].SetActive(false);
-		UIManager.Objects.MiddleGear.Img[0].enabled = false;
-		UIManager.Objects.TopGear[2].SetActive(false);
-		
-		UIManager.Objects.TopGear[1][0].Txt[0].enabled = false;
-		UIManager.Objects.TopGear[1][1].Txt[0].enabled = false;
-		UIManager.Objects.TopGear[1][2].Txt[0].enabled = false;
-		UIManager.Objects.TopGear[1][3].Txt[0].enabled = false;
-		UIManager.Objects.BotGear[3].SetActive(false);
-		UIManager.Objects.TopGear.isFlashing = false;
-		UIManager.Objects.BotGear.isFlashing = false;
-		(UIManager.Objects.BotGear[3][0] as UIGear).isFlashing = false;	
-		(UIManager.Objects.BotGear as UIGear).SetTween(3, false);
-		UIManager.Objects.BotGear[1].ClearActions();
-		UIManager.Objects.BotGear[1].Img[0].enabled = false;
-		bool alert = false;
-		for(int i = 0; i < Player.instance._Classes.Length; i++)
-		{
-			if(Player.instance._Classes[i] == null)
-			{
-				alert = true;
-				break;
-			}
-		}
-		if(alert)
-		{
-			StartCoroutine(SetAlert());
-			return;
-		}
-		
-		
-		GameManager.instance.LoadGame(false);
-	}
-
-	public void ResumeGameActivate()
-	{
-		GameManager.instance.LoadGame(true);
-		UIManager.Objects.MiddleGear[0].SetActive(false);
-		UIManager.Objects.MiddleGear.Img[0].enabled = false;
-		UIManager.Objects.TopGear[2].SetActive(false);
-		
-		UIManager.Objects.TopGear[1][0].Txt[0].enabled = false;
-		UIManager.Objects.TopGear[1][1].Txt[0].enabled = false;
-		UIManager.Objects.TopGear[1][2].Txt[0].enabled = false;
-		UIManager.Objects.TopGear[1][3].Txt[0].enabled = false;
-		UIManager.Objects.BotGear[3].SetActive(false);
-		UIManager.Objects.TopGear.isFlashing = false;
-		UIManager.Objects.BotGear.isFlashing = false;
-		(UIManager.Objects.BotGear[3][0] as UIGear).isFlashing = false;	
-	}
-
 	public void ResetOptions()
 	{
 		//OptionsMenu["RealNumbers"].BooleanObjColor(Player.Options.ShowNumbers);
@@ -594,7 +662,7 @@ public class UIMenu : UIObj {
 
 	public void GetPips(ClassInfo Info)
 	{
-		for(int i = 0 ; i < HealthPipParent.transform.childCount; i++)
+		/*for(int i = 0 ; i < HealthPipParent.transform.childCount; i++)
 		{
 			Destroy(HealthPipParent.transform.GetChild(i).gameObject);
 		}
@@ -628,7 +696,7 @@ public class UIMenu : UIObj {
 			newpip.transform.parent = MagicPipParent.transform;
 			newpip.transform.localScale = Vector3.one;
 			newpip._Image.color = GameData.Colour(GENUS.WIS);
-		}
+		}*/
 	}
 
 	public void SetOption(string s)
@@ -653,7 +721,7 @@ public class UIMenu : UIObj {
 
 	public void ShowHelp(int i)
 	{
-		switch(i)
+		/*switch(i)
 		{
 			case 0:
 				HelpBasic.SetActive(null);
@@ -664,8 +732,6 @@ public class UIMenu : UIObj {
 			case 2:
 				HelpItems.SetActive(null);
 			break;
-		}
+		}*/
 	}
-
-
 }

@@ -129,6 +129,7 @@ public class Lullaby : Powerup {
 		target.SetState(TileState.Selected, true);
 		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[Parent.Index].transform, "spell");
 		MoveToPoint charm = initpart.GetComponent<MoveToPoint>();
+		charm.enabled = true;
 		charm.SetTarget(target.transform.position);
 		charm.SetPath(0.45F, 0.3F);
 		charm.Target_Tile = target;
@@ -146,6 +147,7 @@ public class Lullaby : Powerup {
 		target.SetState(TileState.Selected, true);
 		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[Parent.Index].transform, "spell");
 		MoveToPoint charm = initpart.GetComponent<MoveToPoint>();
+		charm.enabled = true;
 		charm.SetTarget(target.transform.position);
 		charm.SetPath(0.45F, 0.3F);
 		charm.Target_Tile = target;

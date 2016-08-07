@@ -108,20 +108,10 @@ public class EffectManager : MonoBehaviour {
 				break;
 			}
 		}
-
+		if(!final) return null;
 		final.transform.SetParent(t);
 		final.transform.position = t.position;
-		if(name == "attack")
-		{
-			Vector3 pos = t.position + Vector3.back * 3;
-			Vector3 offset = Utility.RandomVectorInclusive(1,1).normalized * 1.4F;
-			final.transform.position = pos - offset;
-			final.transform.parent = t;
-			MoveToPoint p = final.GetComponent<MoveToPoint>();
-			p.SetTarget(t.position + offset);
-			p.SetDelay(0.35F);
-			p.SetThreshold(0.25F);
-		}
+		
 
 		ParticleSystem final_part = final.GetComponent<ParticleSystem>();
 		if(final_part)
@@ -129,6 +119,21 @@ public class EffectManager : MonoBehaviour {
 			if(col.HasValue) final_part.startColor = col.Value;
 			final_part.Clear();
 			final_part.Play();
+		}
+		//MoveToPoint p = final.GetComponent<MoveToPoint>();
+		//if(p) p.enabled = true;
+
+		if(name == "attack")
+		{
+			Vector3 pos = t.position + Vector3.back * 3;
+			Vector3 offset = Utility.RandomVectorInclusive(1,1).normalized * 1.4F;
+			final.transform.position = pos - offset;
+			final.transform.parent = t;
+			MoveToPoint p = final.GetComponent<MoveToPoint>();
+			p.enabled = true;
+			p.SetTarget(t.position + offset);
+			p.SetDelay(0.35F);
+			p.SetThreshold(0.25F);
 		}
 
 
@@ -140,20 +145,29 @@ public class EffectManager : MonoBehaviour {
 	{
 		if(t == null) return null;
 		GameObject final = null;
-		ParticleSystem final_part = null;
 		
 		for(int i = 0; i < Particles2.Length; i++)
 		{
 			if(e == Particles2[i].EffectEnum)
 			{
 				final = Particles2[i].Spawn();
-				final_part = final.GetComponent<ParticleSystem>();
 				break;
 			}
 		}
-
+		if(!final) return null;
 		final.transform.SetParent(t);
 		final.transform.position = t.position;
+		
+		ParticleSystem final_part = final.GetComponent<ParticleSystem>();
+		if(final_part)
+		{
+			if(col.HasValue) final_part.startColor = col.Value;
+			final_part.Clear();
+			final_part.Play();
+		}
+		//MoveToPoint p = final.GetComponent<MoveToPoint>();
+		//if(p) p.enabled = true;
+
 		if(e == Effect.Attack)
 		{
 			Vector3 pos = t.position + Vector3.back * 3;
@@ -161,15 +175,10 @@ public class EffectManager : MonoBehaviour {
 			final.transform.position = pos - offset;
 			final.transform.parent = t;
 			MoveToPoint p = final.GetComponent<MoveToPoint>();
+			p.enabled = true;
 			p.SetTarget(t.position + offset);
 			p.SetDelay(0.35F);
 			p.SetThreshold(0.25F);
-		}
-		if(final_part)
-		{
-			if(col.HasValue) final_part.startColor = col.Value;
-			final_part.Clear();
-			final_part.Play();
 		}
 		return final;
 	}

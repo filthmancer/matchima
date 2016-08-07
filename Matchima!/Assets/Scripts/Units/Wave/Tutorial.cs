@@ -184,12 +184,6 @@ public class Tutorial : Wave {
 
 		int x = Utility.RandomInt(TileMaster.Tiles.GetLength(0));
 		int y = Utility.RandomInt(TileMaster.Tiles.GetLength(1));
-		while((TileMaster.Tiles[x,y].Info._TypeName != "resource" && TileMaster.Tiles[x,y].Point.Scale > 1)  && Player.QueuedSpell(x,y))
-		{
-			x = Utility.RandomInt(TileMaster.Tiles.GetLength(0));
-			y = Utility.RandomInt(TileMaster.Tiles.GetLength(1));				
-		}
-		Player.QueueSpell(x,y);
 		ParticleSystem part = (ParticleSystem) Instantiate(EffectManager.instance.Particles.TouchParticle);
 		part.startColor = GameData.Colour(GENUS.STR);
 		part.transform.position = UIManager.ClassButtons[Index].transform.position;
