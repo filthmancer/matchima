@@ -295,8 +295,8 @@ public class GameManager : MonoBehaviour {
 				Player.Stats._Health = Player.Stats._HealthMax;
 				break;
 				case 2: //X
-				EscapeZone();
-				//Wave.AddPoints(150);
+				//EscapeZone();
+				Wave.AddPoints(150);
 				break;
 				case 3: //c
 				//TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["guard"], GENUS.DEX,1, 1);
@@ -380,7 +380,8 @@ public class GameManager : MonoBehaviour {
 		yield return StartCoroutine(_EnterZone(z, ResumeWaveIndex));
 
 		yield return null;
-		print(Wave);
+		
+		Zone.SetCurrent(ResumeWaveIndex);
 		Wave.Current = ResumeWaveCurrent;
 
 		ResumeWaveCurrent = 0;
@@ -395,13 +396,12 @@ public class GameManager : MonoBehaviour {
 		gameStart = true;
 		StartCoroutine(Player.instance.BeginTurn());
 		RoundTokens = 0;
-
+		Player.Options.PowerupAlerted = false;
 		ClearUI();
 		ZoneMap = GameData.instance.StoryModeMap;
 		
 		UIManager.instance.GenerateZoneMap();
-		StartCoroutine(_EnterZone());
-		//GetWave();
+		StartCoroutine(StartGameEnterZone());
 	}
 
 	public void PlayEndlessMode()
@@ -410,14 +410,14 @@ public class GameManager : MonoBehaviour {
 		gameStart = true;
 		StartCoroutine(Player.instance.BeginTurn());
 		RoundTokens = 0;
-
+		Player.Options.PowerupAlerted = false;
 		ClearUI();
 
 		ZoneMap = GameData.instance.GenerateEndlessMode();
 		UIManager.Objects.TopGear.Txt[0].text = "";
 
 		UIManager.instance.GenerateZoneMap();
-		StartCoroutine(_EnterZone());
+		StartCoroutine(StartGameEnterZone());
 	}
 
 	public void PlayQuickMode()
@@ -427,7 +427,7 @@ public class GameManager : MonoBehaviour {
 		StartCoroutine(Player.instance.BeginTurn());
 		RoundTokens = 0;
 		ClearUI();
-
+		Player.Options.PowerupAlerted = false;
 		int length = 3;
 		switch(DifficultyMode)
 		{
@@ -442,7 +442,8 @@ public class GameManager : MonoBehaviour {
 			break;
 		}
 		Vector2 [] brackets = new Vector2[length];
-		for(int i = 0; i < length; i ++)
+		brackets[0] = new Vector2(1,1);
+		for(int i = 1; i < length; i ++)
 		{
 			int min = Random.Range(1,2);
 			int max = Random.Range(2,5);
@@ -452,7 +453,15 @@ public class GameManager : MonoBehaviour {
 		UIManager.Objects.TopGear.Txt[0].text = "";
 
 		UIManager.instance.GenerateZoneMap();
-		StartCoroutine(_EnterZone());
+		StartCoroutine(StartGameEnterZone());
+	}
+
+	IEnumerator StartGameEnterZone()
+	{
+		yield return StartCoroutine(UIManager.instance.Alert(0.3F, "Matchima", "Matchima is a game\nabout collecting mana\n\nCollect tiles to\nfill a hero's mana bar", "", true));
+		//UIManager.instance.ShowTuteAlert("Matchima is a game about collecting mana\n\nCollect tiles to fill a hero's mana bar");
+		while(GameManager.instance.paused) yield return null;
+		StartCoroutine(_EnterZone(ZoneMap.CurrentBracket[0], 0));
 	}
 #endregion
 
@@ -638,7 +647,8 @@ public class GameManager : MonoBehaviour {
 			StCon [] title = new StCon[]{new StCon(CurrentZone.Name, CurrentZone.WallTint * 1.5F, false, 110)};
 			
 			yield return StartCoroutine(UIManager.instance.Alert(0.9F, floor, title));
-			yield return StartCoroutine(_GetWave(z[wavenum]));
+			z.SetCurrent(wavenum);
+			yield return StartCoroutine(_GetWave());
 		}
 	
 		public void EscapeZone()
@@ -688,7 +698,6 @@ public class GameManager : MonoBehaviour {
 					UIManager.WaveButtons[i].SetActive(false);
 				}
 			}
-			print("Getting wave");
 			StartCoroutine(CurrentWave.Setup());
 	
 			Difficulty += Mathf.Exp(Difficulty_Growth);
@@ -779,6 +788,18 @@ public class GameManager : MonoBehaviour {
 		}
 	
 		yield return StartCoroutine(Player.instance.BeginTurn());
+
+		foreach(Class child in Player.Classes)
+		{
+			if(child.MeterLvl > 0 && !Player.Options.PowerupAlerted)
+			{
+				Player.Options.PowerupAlerted = true;
+				yield return StartCoroutine(UIManager.instance.Alert(0.3F, "A HERO HAS\nPOWERED UP", "Touch the hero's\nicon to cast a spell", "", true));
+				//UIManager.instance.ShowTuteAlert("A HERO HAS POWERED UP!\nTOUCH THE HERO'S ICON TO CAST A SPELL");
+				break;
+			}
+		}
+		
 		TileMaster.instance.ResetTiles(true);
 
 		UIManager.instance.ResetTopGear();

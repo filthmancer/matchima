@@ -100,7 +100,8 @@ public class UIMenu : UIObj {
 			{
 				ResumeGameActivate();
 			});
-			res.SetActive(true);
+			(res as UIObjTweener).SetTween(0, true);
+
 		}
 		bool activated = false;
 		UIManager.Objects.BotGear.AddAction(UIAction.MouseUp, ()=>{activated = true;});
@@ -156,6 +157,7 @@ public class UIMenu : UIObj {
 	public void ResumeGameActivate()
 	{
 		Reset();
+		(UIManager.Objects.MiddleGear["resume"] as UIObjTweener).SetTween(0, false);
 		UIManager.Objects.MiddleGear[0].SetActive(false);
 		UIManager.Objects.MiddleGear.Img[0].enabled = false;
 		UIManager.Objects.TopGear[2].SetActive(false);
@@ -181,7 +183,7 @@ public class UIMenu : UIObj {
 		}
 		
 		UIManager.Objects.MiddleGear.Img[0].enabled = true;
-		UIManager.Objects.MiddleGear["resume"].SetActive(false);
+		//UIManager.Objects.MiddleGear["resume"].SetActive(false);
 		UIManager.Objects.TopGear.Txt[0].text = "";
 		UIManager.Objects.MiddleGear.Txt[0].text = "";
 		UIManager.Objects.BotGear.Txt[0].text = "";	
@@ -389,7 +391,7 @@ public class UIMenu : UIObj {
 			UIManager.Objects.TopGear.Txt[0].text = "LOADING\nQUICK CRAWL";
 			break;
 		}
-		
+		(UIManager.Objects.MiddleGear["resume"] as UIObjTweener).SetTween(0,false);
 		NewGameActivate();
 	}
 
@@ -400,10 +402,13 @@ public class UIMenu : UIObj {
 		UIManager.Objects.MiddleGear.AddSpin(6);
 		bool unlocked = false;
 		//top_division_last = UIManager.Objects.TopGear.LastDivision;
+		//Reset();
+		UIGear MidGear = UIManager.Objects.MiddleGear as UIGear;
 		switch(i)
 		{
 			case 0: // STORY
 			top_division_last = 0;
+			ShowSettingsUI(false);
 			UIManager.Objects.MiddleGear[0].Txt[0].text = 
 			"FOUR ADVENTURERS BREAK INTO THE FORBIDDEN UNDERCITY TO EXPLORE AND GATHER THE PRECIOUS 'MANA' THAT SEEPS FROM BELOW";
 			(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, true);
@@ -437,11 +442,15 @@ public class UIMenu : UIObj {
 			break;
 
 			case 1: // Settings
-			UIManager.Objects.MiddleGear[0].Txt[0].text = "";
-			(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, false);
-			(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, false);
+
+			
+			MidGear[0].Txt[0].text = "";
+			(MidGear[0][0] as UIObjTweener).SetTween(0, false);
+			(MidGear[0][1] as UIObjTweener).SetTween(0, false);
 			(UIManager.Objects.BotGear as UIGear).SetTween(3, true);
 			
+			ShowSettingsUI(true);
+
 
 
 			/*UIManager.Objects.MiddleGear[0].Txt[0].text = 
@@ -461,7 +470,7 @@ public class UIMenu : UIObj {
 			case 2:  // Endless
 			unlocked = GameData.instance.ModeUnlocked_Endless;
 			top_division_last = 2;
-
+			ShowSettingsUI(false);
 			UIManager.Objects.MiddleGear[0].Txt[0].text = unlocked ? 
 			"ENDLESSLY EXPLORE THE UNDERCITY, DELVING EVER DEEPER" : "LOCKED";
 			
@@ -508,7 +517,7 @@ public class UIMenu : UIObj {
 
 			case 3:  // QUICK CRAWL
 			unlocked = GameData.instance.ModeUnlocked_Quick;
-
+			ShowSettingsUI(false);
 			top_division_last = 3;
 			UIManager.Objects.MiddleGear[0].Txt[0].text = unlocked ? 
 			"EXPLORE A GENERATED DUNGEON" : "Locked";
@@ -597,6 +606,77 @@ public class UIMenu : UIObj {
 		(UIManager.Objects.BotGear[3][0] as UIGear).isFlashing = false;	
 		//If targetslot was initally null, set back to null
 		if(set_from_null) TargetSlot = null;
+	}
+
+	public void ShowSettingsUI(bool open)
+	{
+		Color targ;
+		UIGear MidGear = UIManager.Objects.MiddleGear as UIGear;
+			MidGear[0][3].SetActive(open);
+			if(!open) return;
+
+			MidGear[0][3][0].Txt[0].text = "Real\nHP";
+			 targ = Player.Options.RealHP ? GameData.instance.GoodColour : GameData.instance.BadColour;
+			MidGear[0][3][0].SetInitCol(targ);
+			MidGear[0][3][0].Img[0].color = targ;
+
+			MidGear[0][3][0].ClearActions();
+			MidGear[0][3][0].AddAction(UIAction.MouseUp, () =>
+			{
+				Player.Options.RealHP = !Player.Options.RealHP;	
+				ShowSettingsUI(true);
+			});
+
+			MidGear[0][3][1].Txt[0].text = "Show\nNumbers";
+			 targ = Player.Options.ShowNumbers ? GameData.instance.GoodColour : GameData.instance.BadColour;
+			MidGear[0][3][1].SetInitCol(targ);
+			MidGear[0][3][1].Img[0].color = targ;
+			
+			MidGear[0][3][1].ClearActions();
+			MidGear[0][3][1].AddAction(UIAction.MouseUp, () =>
+			{
+				Player.Options.ShowNumbers = !Player.Options.ShowNumbers;	
+				ShowSettingsUI(true);
+			});
+
+
+			string title = Player.Options.StorySet == Ops_Story.Default ? "DEFAULT\nSTORY" : 
+						Player.Options.StorySet == Ops_Story.AlwaysShow ? "ALWAYS \nSHOW \nSTORY" :
+						"NEVER\nSHOW\nSTORY";
+			 targ = Player.Options.StorySet == Ops_Story.Default ? GameData.Colour(GENUS.DEX) : 
+						Player.Options.StorySet == Ops_Story.AlwaysShow ? GameData.Colour(GENUS.WIS) :
+						GameData.Colour(GENUS.STR);
+
+			MidGear[0][3][2].Txt[0].text = title;									
+			MidGear[0][3][2].SetInitCol(targ);
+			MidGear[0][3][2].Img[0].color = targ;
+			MidGear[0][3][2].ClearActions();
+			MidGear[0][3][2].AddAction(UIAction.MouseUp, () =>
+			{
+				switch(Player.Options.StorySet)
+				{
+					case Ops_Story.Default:
+						Player.Options.StorySet = Ops_Story.AlwaysShow;
+					break;
+					case Ops_Story.AlwaysShow:
+						Player.Options.StorySet = Ops_Story.NeverShow;
+					break;
+					case Ops_Story.NeverShow:
+						Player.Options.StorySet = Ops_Story.Default;
+					break;
+				}	
+				ShowSettingsUI(true);
+			});
+
+
+			MidGear[0][3][3].SetActive(false);
+			MidGear[0][3][3].Txt[0].text = "Real HP";
+			MidGear[0][3][3].Img[0].color = Player.Options.RealHP ? GameData.instance.GoodColour : GameData.instance.BadColour;
+			MidGear[0][3][3].ClearActions();
+			MidGear[0][3][3].AddAction(UIAction.MouseUp, () =>
+			{
+				Player.Options.RealHP = !Player.Options.RealHP;	
+			});
 	}
 
 	public void ChangeDifficulty()
@@ -708,12 +788,6 @@ public class UIMenu : UIObj {
 			break;
 			case "RealNumbers":
 			Player.Options.ShowNumbers = !Player.Options.ShowNumbers;
-			break;
-			case "Intros":
-			Player.Options.ShowIntroWaves = !Player.Options.ShowIntroWaves;
-			break;
-			case "Story":
-			Player.Options.SkipAllStory = !Player.Options.SkipAllStory;
 			break;
 		}
 		ResetOptions();

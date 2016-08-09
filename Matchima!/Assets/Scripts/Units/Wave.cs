@@ -85,6 +85,14 @@ public class Wave : Unit {
 		return (float) Current / Required;
 	}
 
+	public string WaveNumbers
+	{
+		get{
+			if(Required == -1) return "";
+			else return Current + "/" + Required;
+		}
+	}
+
 	public bool Ended;
 	public int Experience = 5;
 	private bool ShowingHealth;

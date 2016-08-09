@@ -141,11 +141,11 @@ public class Ability : Slot {
 
 
 
-	public virtual float StrengthFactor	 	{get{return 1 + (float)Parent.Stats.Strength / 100.0F;}}
-	public virtual float DexterityFactor	{get{return 1 + (float)Parent.Stats.Dexterity / 100.0F;}}
-	public virtual float WisdomFactor		{get{return 1 + (float)Parent.Stats.Wisdom / 100.0F;}}
-	public virtual float CharismaFactor		{get{return 1 + (float)Parent.Stats.Charisma / 100.0F;}}
-	public virtual int MagicFactor			{get{return (int)Parent.Stats.GetSpellPower();}}
+	public virtual float StrengthFactor	 	{get{if(Parent == null) return 1.0F; return 1 + (float)Parent.Stats.Strength / 100.0F;}}
+	public virtual float DexterityFactor	{get{if(Parent == null) return 1.0F; return 1 + (float)Parent.Stats.Dexterity / 100.0F;}}
+	public virtual float WisdomFactor		{get{if(Parent == null) return 1.0F; return 1 + (float)Parent.Stats.Wisdom / 100.0F;}}
+	public virtual float CharismaFactor		{get{if(Parent == null) return 1.0F; return 1 + (float)Parent.Stats.Charisma / 100.0F;}}
+	public virtual int MagicFactor			{get{if(Parent == null) return 1; return (int)Parent.Stats.GetSpellPower();}}
 
 	// Use this for initialization
 	public override void Start () {

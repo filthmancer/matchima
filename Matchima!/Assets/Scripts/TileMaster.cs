@@ -232,6 +232,7 @@ public class TileMaster : MonoBehaviour {
 		FillGrid = false;
 		Types.Setup();
 		Genus = _GenusTypes;
+		EnemyTute = false;
 	}
 
 	public void ResetChances()
@@ -670,11 +671,13 @@ public class TileMaster : MonoBehaviour {
 		yield return StartCoroutine(AfterTurn());
 	}
 
+	private bool EnemyTute = false;
 	public IEnumerator BeforeTurn()
 	{
 		while (!AllLanded)	yield return null;
 
 		EnemiesOnScreen = 0;
+		bool show_enemy_tute = false;
 		for (int x = 0; x < Grid.Size[0]; x++)
 		{
 			for (int y = 0; y < Grid.Size[1]; y++)
@@ -687,10 +690,20 @@ public class TileMaster : MonoBehaviour {
 						yield return StartCoroutine(Tiles[x, y].BeforeTurnRoutine());
 					else Tiles[x, y].BeforeTurn();
 					if (Tiles[x, y] == null || Tiles[x, y].Type == null) continue;
-					if (Tiles[x, y].Type.isEnemy) EnemiesOnScreen ++;
+					if (Tiles[x, y].Type.isEnemy) 
+					{
+						EnemiesOnScreen ++;
+						if(!EnemyTute)
+						{
+							show_enemy_tute = true;
+							EnemyTute = true;
+						} 
+					}
 				}
 			}
 		}
+		if(show_enemy_tute)
+		yield return StartCoroutine(UIManager.instance.Alert(0.3F, "Monster tiles attack you", "Match them to attack back!", "", true));
 
 		yield break;
 	}

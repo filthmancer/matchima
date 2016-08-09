@@ -866,10 +866,14 @@ public class Ops
 	//public bool HealthFromResource = false;
 	public bool RealHP = false;
 	public bool ShowNumbers = false;
-	public bool ShowIntroWaves;
-	public bool SkipAllStory;
+	public Ops_Story StorySet = Ops_Story.Default;
 
 	public bool PowerupAlerted = false;
+}
+
+public enum Ops_Story
+{
+	Default, AlwaysShow, NeverShow
 }
 
 //Item Information

@@ -8,7 +8,6 @@ public class WaveGroup : MonoBehaviour {
 	public Wave [] Waves;
 	public Wave this [int i]{get{return Waves[i];}}
 
-	public bool SkipAllStory;
 	public bool ShowIntroWave;
 	public bool Repeat;
 	public int StartAt = 0;
@@ -28,14 +27,21 @@ public class WaveGroup : MonoBehaviour {
 
 	public Wave GetWaveProgressive()
 	{
-		ShowIntroWave = Player.Options.ShowIntroWaves;
-		SkipAllStory = Player.Options.SkipAllStory;
-		bool intro_in_past = PlayerPrefs.GetInt(Name + " Intro")==1;
-		if(((!intro_in_past && !SkipAllStory) || ShowIntroWave) && !shown_intro_wave && IntroWave != null)
+		if(!shown_intro_wave && Player.Options.StorySet == Ops_Story.AlwaysShow)
 		{
 			shown_intro_wave = true;
 			PlayerPrefs.SetInt(Name + " Intro", 1);
 			return IntroWave;
+		}
+		else if(Player.Options.StorySet == Ops_Story.Default)
+		{
+			bool intro_in_past = PlayerPrefs.GetInt(Name + " Intro")==1;
+			if(!intro_in_past)
+			{
+				shown_intro_wave = true;
+				PlayerPrefs.SetInt(Name + " Intro", 1);
+				return IntroWave;
+			}	
 		}
 
 
@@ -57,14 +63,21 @@ public class WaveGroup : MonoBehaviour {
 
 	public Wave GetWaveRandom()
 	{
-		ShowIntroWave = Player.Options.ShowIntroWaves;
-		SkipAllStory = Player.Options.SkipAllStory;
-		bool intro_in_past = PlayerPrefs.GetInt(Name + " Intro")==1;
-		if(((!intro_in_past && !SkipAllStory) || ShowIntroWave) && !shown_intro_wave && IntroWave != null)
+		if(!shown_intro_wave && Player.Options.StorySet == Ops_Story.AlwaysShow)
 		{
 			shown_intro_wave = true;
 			PlayerPrefs.SetInt(Name + " Intro", 1);
 			return IntroWave;
+		}
+		else if(Player.Options.StorySet == Ops_Story.Default)
+		{
+			bool intro_in_past = PlayerPrefs.GetInt(Name + " Intro")==1;
+			if(!intro_in_past)
+			{
+				shown_intro_wave = true;
+				PlayerPrefs.SetInt(Name + " Intro", 1);
+				return IntroWave;
+			}	
 		}
 
 		List<Wave> choices = new List<Wave>();

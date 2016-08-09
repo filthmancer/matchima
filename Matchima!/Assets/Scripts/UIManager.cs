@@ -42,6 +42,8 @@ public class UIManager : MonoBehaviour {
 	[HideInInspector]
 	public Item current_item;
 
+	public UIObjTweener TuteAlert;
+
 	public static bool InMenu;
 	private int TopGear_lastdivision = 0;
 
@@ -114,7 +116,7 @@ public class UIManager : MonoBehaviour {
 		}
 		if(GameManager.Wave != null)
 		{
-			WaveHealthText.text = GameManager.Wave.Current+"/"+GameManager.Wave.Required;
+			WaveHealthText.text = GameManager.Wave.WaveNumbers;
 			for(int i = 0; i < WaveHealth.Length; i++)
 			{
 				float curr = WaveHealth[i].clipTopRight.x;
@@ -902,6 +904,17 @@ public class UIManager : MonoBehaviour {
 	
 
 	public bool AlertShowing = false;
+
+	public IEnumerator Alert(float time, string floor = "", string title = "", string desc = "", bool wait_for_touch = false)
+	{
+		StCon [] fl = null;
+		if(floor != string.Empty) fl = new StCon[] {new StCon(floor)};
+		StCon [] ti = null;
+		if(title != string.Empty) ti = new StCon[] {new StCon(title)};
+		StCon [] de = null;
+		if(desc != string.Empty) de = new StCon[] {new StCon(desc)};
+		yield return StartCoroutine(Alert(time, fl, ti, de, wait_for_touch));
+	}
 	
 	public IEnumerator Alert(float time, StCon [] floor = null, StCon [] title = null, StCon [] desc = null, bool wait_for_touch = false)
 	{
@@ -1578,7 +1591,20 @@ public class UIManager : MonoBehaviour {
 	}
 
 
+	public void ShowTuteAlert(string s)
+	{
+		TuteAlert.SetTween(0, true);
+		GameManager.instance.paused = true;
+		ScreenAlert.SetTween(0, true);
+		TuteAlert.Txt[0].text = s;
 
+		TuteAlert.Child[0].AddAction(UIAction.MouseUp, ()=>
+		{
+			GameManager.instance.paused = false;
+			ScreenAlert.SetTween(0, false);
+			TuteAlert.SetTween(0, false);
+		});
+	}
 
 	public ObjectPooler MiniAlertPool;
 
@@ -1588,7 +1614,9 @@ public class UIManager : MonoBehaviour {
 		{
 			MiniAlertPool = new ObjectPooler(Objects.MiniAlert.gameObject, 1, Objects.MiniAlertPool);
 		}
-		MiniAlertUI alertobj = MiniAlertPool.Spawn().GetComponent<MiniAlertUI>();
+		GameObject gobj = MiniAlertPool.Spawn();
+		if(gobj == null) return null;
+		MiniAlertUI alertobj = gobj.GetComponent<MiniAlertUI>();
 		alertobj.transform.SetParent(Canvas.transform);
 		alertobj.transform.localScale = Vector3.one;
 		alertobj.Setup(position, alert, life, size, col??Color.white, speed, background);

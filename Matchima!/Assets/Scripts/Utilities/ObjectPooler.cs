@@ -40,7 +40,7 @@ public class ObjectPooler
 		{
 			result = Available.Pop();
 		}
-		result.gameObject.SetActive(true);
+		if(result != null) result.gameObject.SetActive(true);
 		return result;
 	}
 

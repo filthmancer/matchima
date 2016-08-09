@@ -79,9 +79,60 @@ public class WardenIntro : Wave {
 					tute.AddQuote("But that's the way we came in!", Player.Classes[1], true, 1.4F);
 					yield return StartCoroutine(UIManager.instance.Quote(tute.ToArray()));
 
-					AddPoints(-1);
+					Current = Required;
+					yield return StartCoroutine(AfterTurn());//AddPoints(1, true);
 				break;
 			}
 			yield return null;
 		}
+
+		protected virtual IEnumerator WaveActivateRoutine()
+	{
+		UIManager.Objects.BotGear.SetTween(3, true);
+		UIManager.Objects.TopGear[2].SetActive(false);
+		UIManager.Objects.BotGear.SetTween(0, false);
+		UIManager.Objects.TopGear.SetTween(0, true);
+		UIManager.Objects.TopGear.FreeWheelDrag = true;
+		UIManager.instance.ShowGearTooltip(false);
+		GameManager.instance.paused = true;
+		UIManager.instance.ScreenAlert.SetTween(0,true);
+
+		for(int i = 1; i < UIManager.Objects.TopGear[1].Length; i++)
+		{
+			int genus = Random.Range(0,4);
+			int num = TileMaster.Types.Length;
+			SPECIES t = TileMaster.Types[Random.Range(0,num)];
+			if(t.Atlas == null) continue;
+			//UIManager.Objects.TopGear[1][i][0].Img[0].sprite = t.GetSprites(genus)[0];
+			//UIManager.Objects.TopGear[1][i][0].Img[2].sprite = TileMaster.Genus.Frame[genus];
+			UIManager.Objects.TopGear[1][i][0].SetActive(true);
+		}
+
+		StCon [] floor = new StCon[] {new StCon("Floor"), new StCon(GameManager.Floor + "")};
+
+		Current = 0;
+		StCon [] namecon = new StCon[] {_Name};
+		yield return StartCoroutine(UIManager.instance.Alert(1.25F, floor, namecon));
+
+		UIManager.Objects.TopGear[2].SetActive(true);
+		for(int i = 0; i < AllSlots.Length; i++)
+		{
+			if(AllSlots[i] == null) continue;
+			if(AllSlots[i].Active)
+			{
+				 yield return StartCoroutine(AllSlots[i].OnStart());
+			}
+		}
+
+		for(int i = 1; i < UIManager.Objects.TopGear[1].Length; i++)
+		{
+			UIManager.Objects.TopGear[1][i][0].SetActive(false);
+		}
+
+		GameManager.instance.paused = false;
+		UIManager.Objects.BotGear.SetTween(0, true);
+		UIManager.Objects.TopGear.SetTween(0, false);
+		UIManager.instance.ScreenAlert.SetTween(0,false);
+		UIManager.Objects.BotGear.SetTween(3, false);
+	}
 	}

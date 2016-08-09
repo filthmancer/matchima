@@ -48,15 +48,18 @@ public class Heal : Powerup {
 		MGame.AddAction(UIAction.MouseDown, () => 
 		{
 			final_ratio += 0.07F;
+			MiniAlertUI alert  = UIManager.instance.MiniAlert(PlayerControl.InputPos,
+			(int)(final_ratio * HealTotal) + "%", 140, GameData.Colour(Parent.Genus), 0.3F, 0.4F);
+			alert.AddJuice(Juice.instance.BounceB, 0.1F);
 		});
 
 		float taptimer = 3.0F;
 		bool istapping = true;
 		while(istapping)
 		{
-			if(final_ratio > 0.0F) final_ratio -= 0.003F;
+			MGame.transform.localScale *= 1.0F - (Time.deltaTime/5);
 			MGame.Img[1].fillAmount = Mathf.Lerp(MGame.Img[1].fillAmount, final_ratio, Time.deltaTime * 5);
-			MGame.Txt[0].text = "Healing\n" + (int)(final_ratio * HealTotal) + "%";
+			MGame.Txt[0].text ="";// "Healing\n" + (int)(final_ratio * HealTotal) + "%";
 
 			taptimer -= Time.deltaTime;
 
@@ -67,6 +70,7 @@ public class Heal : Powerup {
 
 		
 		GameObject initpart = EffectManager.instance.PlayEffect(MGame.transform, "spell");
+		initpart.GetComponent<MoveToPoint>().enabled = true;
 		initpart.GetComponent<MoveToPoint>().SetTarget(UIManager.instance.Health.transform.position);
 		initpart.GetComponent<MoveToPoint>().SetPath(0.2F, 0.2F);
 		yield return new WaitForSeconds(0.7F);

@@ -127,9 +127,8 @@ public class _GameSaveLoad: MonoBehaviour {
     if(GameManager.ZoneMap != null)
     {
       myData._iUser.HasZoneMap = true;
-      myData._iUser.ZoneMap.FloorCount = GameManager.Floor;
+      myData._iUser.ZoneMap.FloorCount = GameManager.Floor-1;
       myData._iUser.ZoneMap.WaveCount = GameManager.ZoneNum;
-      Debug.Log(GameManager.ZoneNum);
       myData._iUser.ZoneMap.Current = GameManager.ZoneMap.Current;
       myData._iUser.ZoneMap.BracketData = new ZoneMapBracketData[GameManager.ZoneMap.Length];
       for(int i = 0; i < GameManager.ZoneMap.Length; i++)

@@ -51,7 +51,7 @@ public class ThrowKnives : Powerup {
 		Destroy(powerup);
 		
 
-		StartCoroutine(Catcher());
+		yield return StartCoroutine(Catcher());
 
 		List<UIObj> knifeobj = new List<UIObj>();
 		for(int i = 0; i < knives; i++)
@@ -120,18 +120,31 @@ public class ThrowKnives : Powerup {
 		CatcherObjActual = (UIObj) Instantiate(CatcherObj);
 		RectTransform rect = CatcherObjActual.GetComponent<RectTransform>();
 		CatcherObjActual.transform.SetParent(UIManager.Objects.MiddleGear.transform);
-		CatcherObjActual.transform.localScale = Vector3.one * 1.5F;
+		CatcherObjActual.transform.localScale = Vector3.one * 1.8F;
 		rect.sizeDelta = Vector2.one;
 		rect.anchoredPosition = Vector2.zero;
+		
 
-		while(CatcherObjActual != null)
+		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "Drag the hand to begin", 100, GameData.Colour(Parent.Genus), 0.8F, 0.25F);
+		m.DestroyOnEnd = false;
+		while(!Input.GetMouseButton(0)) yield return null;
+		m.PoolDestroy();
+		StartCoroutine(CatcherLoop(CatcherObjActual));
+		yield return null;
+	}
+
+	IEnumerator CatcherLoop(UIObj c_actual)
+	{
+		
+		while(c_actual != null)
 		{
 			Vector3 point = PlayerControl.InputPos;
-			point.y = CatcherObjActual.transform.position.y;
-			CatcherObjActual.transform.position = Vector3.Lerp(
-			CatcherObjActual.transform.position, point, Time.deltaTime * 10);
+			point.y = c_actual.transform.position.y;
+			c_actual.transform.position = Vector3.Lerp(
+			c_actual.transform.position, point, Time.deltaTime * 10);
 			yield return null;
 		}
+		
 	}
 
 	UIObj CreateKnife()

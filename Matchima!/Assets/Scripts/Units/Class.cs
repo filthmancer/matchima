@@ -331,11 +331,7 @@ public class Class : Unit {
 		else AddToMeterDirect(-MeterDecay);
 		yield return StartCoroutine(CheckManaPower());
 		
-		if(MeterLvl > 0 && !Player.Options.PowerupAlerted)
-		{
-			Player.Options.PowerupAlerted = true;
-			StartCoroutine(PowerupAlert());
-		}
+		
 		
 		Reset();
 		yield return null;

@@ -66,6 +66,7 @@ public class Lullaby : Powerup {
 		{
 			float time = Random.Range(0.1F, 0.6F);
 			notes.Add(CreateNote());
+			alert.transform.position = UIManager.Objects.TopGear.transform.position + Vector3.down * 3;
 			alert.text = notes_hit/sleep_ratio + " TURN SLEEP";
 			yield return new WaitForSeconds(GameData.GameSpeed(time));
 		}
@@ -112,7 +113,12 @@ public class Lullaby : Powerup {
 		note.AddAction(UIAction.MouseDown, () =>
 		{
 			notes_hit ++;
+			MiniAlertUI alert  = UIManager.instance.MiniAlert(note.transform.position,
+			"Good!", 100, GameData.Colour(Parent.Genus), 0.3F, 0.2F);
+			alert.AddJuice(Juice.instance.BounceB, 0.1F);
+
 			Destroy(note.gameObject);
+
 		});
 		MoveToPoint mp = note.GetComponent<MoveToPoint>();
 		mp.enabled = true;

@@ -25,14 +25,12 @@ public class GridInfo {
 	public GridPoint this[int x, int y]
 	{
 		get{
+			if(Points == null || Points.GetLength(0) == 0) return null;
 			if(x > Size[0]-1) x = Size[0]-1;
 			if(y > Size[1]-1) y = Size[1]-1;
 			return Points[x,y];
 		}
 	}
-
-
-
 
 	public int [] Size
 	{
