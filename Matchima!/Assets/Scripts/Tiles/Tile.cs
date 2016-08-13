@@ -261,6 +261,7 @@ public class Tile : MonoBehaviour {
 
 		CheckStats();
 		SetSprite();
+		ClearActions();
 
 		if(GameManager.instance.EnemyTurn) SetState(TileState.Locked);
 		else SetState(TileState.Idle);
@@ -705,6 +706,17 @@ public class Tile : MonoBehaviour {
 		}
 	}
 
+	public List<Action> DestroyActions = new List<Action>();
+	public void AddAction(Action a)
+	{
+		DestroyActions.Add(a);
+	}
+
+	public void ClearActions()
+	{
+		DestroyActions.Clear();
+	}
+
 	public virtual void CollectThyself(bool destroy)
 	{
 		if(this == null) return;
@@ -716,6 +728,10 @@ public class Tile : MonoBehaviour {
 			GetComponent<SphereCollider>().enabled = false;
 		}
 
+		for(int i = 0; i < DestroyActions.Count; i++)
+		{
+			DestroyActions[i]();
+		}
 		TileMaster.instance.CollectTile(this, destroy);
 	}
 
@@ -725,6 +741,10 @@ public class Tile : MonoBehaviour {
 
 		//TileMaster.instance.AddVelocityToColumn(Point.Base[0], Point.Base[1], 0.2F + Stats.Value * 0.5F);
 		Destroyed = true;
+		for(int i = 0; i < DestroyActions.Count; i++)
+		{
+			DestroyActions[i]();
+		}
 		GetComponent<SphereCollider>().enabled = false;
 		StartCoroutine(Destroy_Thyself(collapse));
 	}

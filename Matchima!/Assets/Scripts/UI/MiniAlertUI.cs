@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using System;
@@ -13,6 +14,8 @@ public class MiniAlertUI : UIObj {
 	public float size;
 	public bool Gravity;
 	public bool DestroyOnEnd = true;
+	public Sprite SpikyBack;
+	public Sprite ScrollBack;
 	private List<Action> EndActions = new List<Action>();
 
 	private bool DoJuiceScale;
@@ -84,8 +87,17 @@ public class MiniAlertUI : UIObj {
 		Txt[0].color = col;
 		Txt[0].outlineColor = Color.black;
 		_speed = speed;
+
+		Img[0].color = Color.white;
+		Img[0].sprite = ScrollBack;
 		Img[0].enabled = back;
+		Img[1].enabled = back;
+		Img[2].enabled = back;
 		DestroyOnEnd = true;
+
+		GetComponent<HorizontalLayoutGroup>().padding = new RectOffset(0, 20, 10, 10);
+
+		velocity = Vector3.up;
 
 		Gravity = false;
 		ended = false;
@@ -102,9 +114,15 @@ public class MiniAlertUI : UIObj {
 		Txt[0].color = prev.Txt[0].color;
 		Txt[0].outlineColor = prev.Txt[0].outlineColor;
 		_speed = prev._speed;
-		Img[0].enabled = prev.Img[0].enabled;
-		DestroyOnEnd = prev.DestroyOnEnd;
 
+		GetComponent<HorizontalLayoutGroup>().padding = new RectOffset(0, 20, 10, 10);
+		Img[0].color = Color.white;
+		Img[0].sprite = ScrollBack;
+		Img[0].enabled = prev.Img[0].enabled;
+		Img[1].enabled = prev.Img[1].enabled;
+		Img[2].enabled = prev.Img[2].enabled;
+		DestroyOnEnd = prev.DestroyOnEnd;
+		velocity = Vector3.up;
 		poolref = GetComponent<ObjectPoolerReference>();
 		Gravity = false;
 		ended = false;

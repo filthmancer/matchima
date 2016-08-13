@@ -213,7 +213,7 @@ public class GameManager : MonoBehaviour {
 				if(!GameData.loading_assets) GameData.instance.LoadAssets();
 				if(Application.isMobilePlatform)
 				{
-					Player.Options.GameSpeed = 0.5F;
+					//Player.Options.GameSpeed = 0.5F;
 					//if (Time.frameCount % 60 == 0)
 					//{
 					//   System.GC.Collect();
@@ -398,8 +398,10 @@ public class GameManager : MonoBehaviour {
 		RoundTokens = 0;
 		Player.Options.PowerupAlerted = false;
 		ClearUI();
+
 		ZoneMap = GameData.instance.StoryModeMap;
-		
+		UIManager.Objects.TopGear.Txt[0].text = "";
+
 		UIManager.instance.GenerateZoneMap();
 		StartCoroutine(StartGameEnterZone());
 	}
@@ -428,6 +430,7 @@ public class GameManager : MonoBehaviour {
 		RoundTokens = 0;
 		ClearUI();
 		Player.Options.PowerupAlerted = false;
+
 		int length = 3;
 		switch(DifficultyMode)
 		{
@@ -450,6 +453,7 @@ public class GameManager : MonoBehaviour {
 			brackets[i] = new Vector2(min, max);
 		}
 		ZoneMap = GameData.instance.GenerateZoneMap(brackets);
+
 		UIManager.Objects.TopGear.Txt[0].text = "";
 
 		UIManager.instance.GenerateZoneMap();
@@ -458,8 +462,6 @@ public class GameManager : MonoBehaviour {
 
 	IEnumerator StartGameEnterZone()
 	{
-		yield return StartCoroutine(UIManager.instance.Alert(0.3F, "Matchima", "Matchima is a game\nabout collecting mana\n\nCollect tiles to\nfill a hero's mana bar", "", true));
-		//UIManager.instance.ShowTuteAlert("Matchima is a game about collecting mana\n\nCollect tiles to fill a hero's mana bar");
 		while(GameManager.instance.paused) yield return null;
 		StartCoroutine(_EnterZone(ZoneMap.CurrentBracket[0], 0));
 	}
@@ -584,32 +586,12 @@ public class GameManager : MonoBehaviour {
 			if(target == null) yield break;
 			CurrentZone = (Zone) Instantiate(target);
 			CurrentZone.transform.parent = this.transform;
-			CurrentZone.Randomise();
-	
-			(UIManager.Objects.MiddleGear[2] as UIObjTweener).SetTween(0, false);
-			(UIManager.Objects.MiddleGear[1] as UIObjTweener).SetTween(0, false);
-			UIManager.instance.BackingTint = CurrentZone.Tint;
-			UIManager.instance.WallTint = CurrentZone.WallTint;
-	
-			TileMaster.instance.MapSize_Default = CurrentZone.GetMapSize();
-	
 			if(CurrentWave != null) 
 			{
 				Destroy(CurrentWave.gameObject);
 				CurrentWave = null;
 			}
-			Player.instance.ResetStats();
-	
-			if(GameManager.ZoneNum > 1) 
-			{
-				yield return null;
-				yield return StartCoroutine(TileMaster.instance.NewGridRoutine());
-			}
-	
-			StCon [] floor = new StCon[]{new StCon("Entered")};
-			StCon [] title = new StCon[]{new StCon(CurrentZone.Name, CurrentZone.WallTint * 1.5F, false, 110)};
-			
-			yield return StartCoroutine(UIManager.instance.Alert(0.9F, floor, title));
+			yield return StartCoroutine(CurrentZone.Enter());
 			yield return StartCoroutine(_GetWave(w));
 			
 		}
@@ -617,37 +599,17 @@ public class GameManager : MonoBehaviour {
 		IEnumerator _EnterZone(Zone z, int wavenum)
 		{
 			if(CurrentZone != null) Destroy(CurrentZone.gameObject);
-			Zone target = z;			
 
-			CurrentZone = (Zone) Instantiate(target);
+			CurrentZone = (Zone) Instantiate(z);
 			CurrentZone.transform.parent = this.transform;
-			CurrentZone.Randomise();
-			
-			(UIManager.Objects.MiddleGear[2] as UIObjTweener).SetTween(0, false);
-			(UIManager.Objects.MiddleGear[1] as UIObjTweener).SetTween(0, false);
-			UIManager.instance.BackingTint = CurrentZone.Tint;
-			UIManager.instance.WallTint = CurrentZone.WallTint;
-			
-			TileMaster.instance.MapSize_Default = CurrentZone.GetMapSize();
 			
 			if(CurrentWave != null) 
 			{
 				Destroy(CurrentWave.gameObject);
 				CurrentWave = null;
 			}
-			Player.instance.ResetStats();
-			
-			if(GameManager.ZoneNum > 1) 
-			{
-				yield return null;
-				yield return StartCoroutine(TileMaster.instance.NewGridRoutine());
-			}
-			
-			StCon [] floor = new StCon[]{new StCon("Entered")};
-			StCon [] title = new StCon[]{new StCon(CurrentZone.Name, CurrentZone.WallTint * 1.5F, false, 110)};
-			
-			yield return StartCoroutine(UIManager.instance.Alert(0.9F, floor, title));
-			z.SetCurrent(wavenum);
+			yield return StartCoroutine(CurrentZone.Enter());
+			CurrentZone.SetCurrent(wavenum);
 			yield return StartCoroutine(_GetWave());
 		}
 	
@@ -729,6 +691,17 @@ public class GameManager : MonoBehaviour {
 			yield return StartCoroutine(CurrentWave.Setup());
 			Difficulty += Mathf.Exp(Difficulty_Growth);
 		}
+
+		bool shown_trial;
+		public IEnumerator CheckForTute()
+		{
+			if(CurrentWave.Name == GameData.instance.StoryModeMap[0][0].Name && !shown_trial)
+			{
+				shown_trial = true;
+				yield return StartCoroutine(UIManager.instance.Alert(0.3F, "Mana Spells", "Complete the Mana Trial to cast a spell", "", true, 60));
+			}
+			yield return null;
+		}
 #endregion
 
 #region Turn Loop
@@ -786,15 +759,17 @@ public class GameManager : MonoBehaviour {
 		{
 			yield return StartCoroutine(_GetWave());
 		}
-	
+		
+		UIManager.Objects.BotGear.SetTween(0, true);
 		yield return StartCoroutine(Player.instance.BeginTurn());
 
 		foreach(Class child in Player.Classes)
 		{
+			if(child == null) continue;
 			if(child.MeterLvl > 0 && !Player.Options.PowerupAlerted)
 			{
 				Player.Options.PowerupAlerted = true;
-				yield return StartCoroutine(UIManager.instance.Alert(0.3F, "A HERO HAS\nPOWERED UP", "Touch the hero's\nicon to cast a spell", "", true));
+
 				//UIManager.instance.ShowTuteAlert("A HERO HAS POWERED UP!\nTOUCH THE HERO'S ICON TO CAST A SPELL");
 				break;
 			}
@@ -1249,7 +1224,7 @@ public class GameManager : MonoBehaviour {
 
 	public bool AllOfRes(int i)
 	{
-		
+		if(Player.Classes[i] == null) return false;
 		bool all_of_res = true;
 		GENUS matchGENUS = Player.Classes[i].Genus;
 		if(matchGENUS != GENUS.ALL)

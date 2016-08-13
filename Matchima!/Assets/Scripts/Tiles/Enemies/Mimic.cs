@@ -127,23 +127,26 @@ public class Mimic : Enemy {
 				Player.Stats.PrevTurnKills ++;			
 				CollectThyself(true);
 
-				float item_chance = (float)Stats.Value/32.0F;
-				if(Stats.Value > 10) item_chance += 0.4F;
-				if(Random.value < 0.99F)//item_chance) 
+				if(GameData.ChestsFromEnemies)
 				{
-					for(int reward = 0; reward < Point.Scale; reward++)
+					float item_chance = (float)Stats.Value/32.0F;
+					if(Stats.Value > 10) item_chance += 0.4F;
+					if(Random.value < 0.99F)//item_chance) 
 					{
-						int x = Random.Range(Point.BaseX, Point.BaseX + Point.Scale);
-						int y = Random.Range(Point.BaseY, Point.BaseY + Point.Scale);
-
-						TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["chest"], Genus);
+						for(int reward = 0; reward < Point.Scale; reward++)
+						{
+							int x = Random.Range(Point.BaseX, Point.BaseX + Point.Scale);
+							int y = Random.Range(Point.BaseY, Point.BaseY + Point.Scale);
+	
+							TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["chest"], Genus);
+							TileMaster.Tiles[x,y].AddValue(Stats.Value);
+						}
+					}
+					else
+					{
+						TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["mimic"], Genus);
 						TileMaster.Tiles[x,y].AddValue(Stats.Value);
 					}
-				}
-				else
-				{
-					TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["mimic"], Genus);
-					TileMaster.Tiles[x,y].AddValue(Stats.Value);
 				}
 				return true;
 			}

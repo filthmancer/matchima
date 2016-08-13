@@ -703,7 +703,7 @@ public class TileMaster : MonoBehaviour {
 			}
 		}
 		if(show_enemy_tute)
-		yield return StartCoroutine(UIManager.instance.Alert(0.3F, "Monster tiles attack you", "Match them to attack back!", "", true));
+		//yield return StartCoroutine(UIManager.instance.Alert(0.3F, "Monster tiles attack you", "Match them to attack back!", "", true));
 
 		yield break;
 	}

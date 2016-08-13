@@ -137,37 +137,11 @@ public class UIManager : MonoBehaviour {
 		{
 			for(int i = 0; i < GameManager.Wave.Length; i++)
 			{
-				if(GameManager.Wave[i] != null && GameManager.Wave[i].Active && Objects.TopGear[1].Length > i)
+				if(WaveButtons.Length <= i) continue;
+				if(GameManager.Wave[i] != null && GameManager.Wave[i].Active)
 				{
-					UIObjtk w = WaveButtons[i] as UIObjtk;
-					w.SetActive(true);
-					w.Txt[0].text = "";	
-					//w.Imgtk[1].transform.gameObject.SetActive(true);
-					//w.Imgtk[1].enabled = true;	
-					w.Imgtk[0].enabled = true;
-					w.Imgtk[1].enabled = true;
-					WaveUnit wunit = GameManager.Wave[i] as WaveUnit;
-					if(wunit)
-					{
-						if(wunit.InnerOverrideData != null)
-						{
-							w.Imgtk[1].SetSprite(wunit.InnerOverrideData, wunit.InnerOverride);
-							w.Imgtk[0].SetSprite(TileMaster.Genus.Frames, "Omega");
-						}
-						else if(wunit is WaveTile)
-						{
-
-							WaveTile wtile = wunit as WaveTile;
-							string render = wtile.GenusString;
-							tk2dSpriteDefinition id = TileMaster.Types[wtile.SpeciesFinal].Atlas.GetSpriteDefinition(render);
-							if(id == null) render = "Alpha";
-							w.Imgtk[1].SetSprite(TileMaster.Types[wtile.SpeciesFinal].Atlas, render);
-							w.Imgtk[0].SetSprite(TileMaster.Genus.Frames, wtile.GenusString);
-						}
-						
-					}
-					
-								
+					UIObjtk obj = WaveButtons[i] as UIObjtk;
+					GetWaveButton(ref obj, GameManager.Wave[i] as WaveUnit);								
 				}
 				else 
 				{
@@ -176,7 +150,7 @@ public class UIManager : MonoBehaviour {
 			}
 						
 		}
-				
+	
 		if(!ShowingHealth && Player.Stats.HealThisTurn > 0)
 		{
 			StartCoroutine(HealLoop());
@@ -186,6 +160,80 @@ public class UIManager : MonoBehaviour {
 			StartCoroutine(HitLoop());
 		}
 	}
+
+	public void GetWaveButton(ref UIObjtk obj, 
+									 WaveUnit wunit)
+	{
+		if(obj == null) return;
+
+		obj.SetActive(true);
+		obj.Txt[0].text = "";	
+		obj.Imgtk[0].enabled = true;
+		obj.Imgtk[1].enabled = true;
+		if(wunit.InnerOverrideData != null)
+		{
+			obj.Imgtk[1].SetSprite(wunit.InnerOverrideData, wunit.InnerOverride);
+			obj.Imgtk[0].SetSprite(TileMaster.Genus.Frames, "Omega");
+		}
+		else if(wunit is WaveTile)
+		{
+
+			WaveTile wtile = wunit as WaveTile;
+			string render = wtile.GenusString;
+			tk2dSpriteDefinition id = TileMaster.Types[wtile.SpeciesFinal].Atlas.GetSpriteDefinition(render);
+			if(id == null) render = "Alpha";
+			obj.Imgtk[1].SetSprite(TileMaster.Types[wtile.SpeciesFinal].Atlas, render);
+			obj.Imgtk[0].SetSprite(TileMaster.Genus.Frames, wtile.GenusString);
+		}
+	}
+
+	public void GetWaveButton(ref UIObjtk obj, 
+									 SPECIES sp, GENUS g)
+	{
+		if(obj == null) return;
+
+		obj.SetActive(true);
+		obj.Txt[0].text = "";	
+		obj.Imgtk[0].enabled = true;
+		obj.Imgtk[1].enabled = true;
+
+		string sp_render = GameData.ResourceLong(g);
+		string g_render = GameData.ResourceLong(g);
+
+		tk2dSpriteDefinition sp_id = TileMaster.Types[sp.Name].Atlas.GetSpriteDefinition(sp_render);
+		if(sp_id == null) sp_render = "Alpha";
+		tk2dSpriteDefinition g_id = TileMaster.Genus.Frames.GetSpriteDefinition(g_render);
+		if(g_id == null) g_render = "Alpha";
+
+		obj.Imgtk[1].SetSprite(TileMaster.Types[sp.Name].Atlas, sp_render);
+
+		obj.Imgtk[0].SetSprite(TileMaster.Genus.Frames, g_render);
+	}
+
+	public void GetWaveButton(ref UIObjtk obj, 
+									 tk2dSpriteCollectionData inner,
+									 string inner_def,
+									 string outer_def)
+	{
+		if(obj == null) return;
+
+		obj.SetActive(true);
+		obj.Txt[0].text = "";	
+		obj.Imgtk[0].enabled = true;
+		obj.Imgtk[1].enabled = true;
+
+
+		tk2dSpriteDefinition sp_id = inner.GetSpriteDefinition(inner_def);
+		if(sp_id == null) inner_def = "Alpha";
+		tk2dSpriteDefinition g_id = TileMaster.Genus.Frames.GetSpriteDefinition(outer_def);
+		if(g_id == null) outer_def = "Alpha";
+
+		obj.Imgtk[1].SetSprite(inner, inner_def);
+
+		obj.Imgtk[0].SetSprite(TileMaster.Genus.Frames, outer_def);
+	}
+				
+		
 
 	public IEnumerator Reset()
 	{
@@ -269,6 +317,7 @@ public class UIManager : MonoBehaviour {
 			UIManager.Objects.MiddleGear[1].Txt[0].text = GameManager.Zone.Name;
 		});
 
+		(Objects.TopGear as UIGear).Drag = true;
 		(Objects.TopGear as UIGear).DivisionActions.Add((int num) =>
 		{
 			TopGear_lastdivision = num;
@@ -905,14 +954,16 @@ public class UIManager : MonoBehaviour {
 
 	public bool AlertShowing = false;
 
-	public IEnumerator Alert(float time, string floor = "", string title = "", string desc = "", bool wait_for_touch = false)
+	public IEnumerator Alert(float time, string floor = "", string title = "", string desc = "",
+							 bool wait_for_touch = false, float size = 70)
 	{
+		print(title);
 		StCon [] fl = null;
-		if(floor != string.Empty) fl = new StCon[] {new StCon(floor)};
+		if(floor != string.Empty) fl = new StCon[] {new StCon(floor, Color.white, true, size)};
 		StCon [] ti = null;
-		if(title != string.Empty) ti = new StCon[] {new StCon(title)};
+		if(title != string.Empty) ti = new StCon[] {new StCon(title, Color.white, true, size)};
 		StCon [] de = null;
-		if(desc != string.Empty) de = new StCon[] {new StCon(desc)};
+		if(desc != string.Empty) de = new StCon[] {new StCon(desc, Color.white, true, size)};
 		yield return StartCoroutine(Alert(time, fl, ti, de, wait_for_touch));
 	}
 	
@@ -1285,11 +1336,18 @@ public class UIManager : MonoBehaviour {
 		//ShowSimpleTooltip(active, Objects.TopGear[1][num].Img[1].transform, GameManager.Wave[num].Name, GameManager.Wave[num].Description);
 	}
 
-	public void AddClass(Class c, int slot)
+	public IEnumerator AddClass(Class c, int slot)
 	{
 		ClassButtons.GetClass(slot).Setup(c);
 		MiniAlert(Health.transform.position + Vector3.up * 1.3F,
-	  	c.Name + " joined the party!", 50, GameData.Colour((GENUS)slot), 1.5F);
+	  	c.Name + " joined the party!", 80, GameData.Colour((GENUS)slot), 1.5F);
+
+	  	UIManager.ClassButtons.GetClass(slot).ShowClass(true);
+	  	GameObject powerup = EffectManager.instance.PlayEffect(UIManager.ClassButtons.GetClass(slot).transform, Effect.ManaPowerUp, GameData.Colour(c.Genus));
+	  	powerup.transform.localScale = Vector3.one;
+	  	yield return new WaitForSeconds(0.6F);
+	  	UIManager.ClassButtons.GetClass(slot).ShowClass(false);
+	  	Destroy(powerup);
 	}
 
 

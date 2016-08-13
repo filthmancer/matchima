@@ -134,8 +134,10 @@ public class Wave : Unit {
 
 	public void AddPoints(int p, bool overridepoints = false)
 	{
-		if(!Active || Ended || Current == -1) return;
+		if(p == 0) return;
+		if(!Active || Ended || Required == -1) return;
 		if(!PointsFromTiles && !overridepoints) return;
+
 		PointsThisTurn += p;
 		Current = Mathf.Clamp(Current + p, 0, Required);
 		if(!ShowingHealth)
@@ -330,11 +332,13 @@ public class Wave : Unit {
 		{
 			int genus = Random.Range(0,4);
 			int num = TileMaster.Types.Length;
+
 			SPECIES t = TileMaster.Types[Random.Range(0,num)];
-			if(t.Atlas == null) continue;
-			//UIManager.Objects.TopGear[1][i][0].Img[0].sprite = t.GetSprites(genus)[0];
-			//UIManager.Objects.TopGear[1][i][0].Img[2].sprite = TileMaster.Genus.Frame[genus];
-			UIManager.Objects.TopGear[1][i][0].SetActive(true);
+			while(t.Atlas == null) t = TileMaster.Types[Random.Range(0,num)];
+			GENUS g = (GENUS)genus;
+
+			UIObjtk icon = UIManager.Objects.TopGear[1][i][0] as UIObjtk;
+			UIManager.instance.GetWaveButton(ref icon,t,g);
 		}
 
 		float spintime = Random.Range(0.6F, 0.95F);
@@ -349,7 +353,7 @@ public class Wave : Unit {
 		//yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 		StCon [] floor = new StCon[] {new StCon("Floor"), new StCon(GameManager.Floor + "")};
 
-		Current = 0;
+		if(Current > -1) Current = 0;
 		StCon [] namecon = new StCon[] {_Name};
 		yield return StartCoroutine(UIManager.instance.Alert(1.25F, floor, namecon));
 

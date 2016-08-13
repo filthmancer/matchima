@@ -128,6 +128,8 @@ public class TileTypes : MonoBehaviour {
 	public List<SPECIES> Spells;
 	public List<SPECIES> Enemies;
 	public List<SPECIES> Other;
+
+	public bool IgnoreAddedChances = false;
 						 
 	// Use this for initialization
 	void Start () {
@@ -392,7 +394,10 @@ public class GenusInfo
 	public float ChanceAdded;
 
 	public float Chance{
-		get{return ChanceInitial + ChanceAdded;}
+		get{
+			if(TileMaster.Types.IgnoreAddedChances) return ChanceInitial;
+			return ChanceInitial + ChanceAdded;
+		}
 	}
 
 	public IntVector ValueInitial = new IntVector(1,1);
@@ -485,7 +490,10 @@ public class SPECIES
 	public float ChanceAdded;
 
 	public float Chance{
-		get{return ChanceInit + ChanceAdded;}
+		get{
+			if(TileMaster.Types.IgnoreAddedChances) return ChanceInit;
+			return ChanceInit + ChanceAdded;
+		}
 	}
 
 	public void ResetChances()

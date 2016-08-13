@@ -137,7 +137,7 @@ public class UIMenu : UIObj {
 		(UIManager.Objects.BotGear as UIGear).SetTween(3, false);
 		UIManager.Objects.BotGear[1].ClearActions();
 		UIManager.Objects.BotGear[1].Img[0].enabled = false;
-		bool alert = false;
+		/*bool alert = false;
 		for(int i = 0; i < Player.instance._Classes.Length; i++)
 		{
 			if(Player.instance._Classes[i] == null)
@@ -150,7 +150,7 @@ public class UIMenu : UIObj {
 		{
 			StartCoroutine(SetAlert());
 			return;
-		}
+		}*/
 		GameManager.instance.LoadGame(false);
 	}
 
@@ -371,10 +371,10 @@ public class UIMenu : UIObj {
 			UIManager.Objects.TopGear.Txt[0].text = "LOADING\nENDLESS";
 			break;
 			case GameMode.Story:
-			Player.instance._Classes[0] = GameData.instance.GetClass("Barbarian");
-			Player.instance._Classes[1] = GameData.instance.GetClass("Rogue");
-			Player.instance._Classes[2] = GameData.instance.GetClass("Wizard");
-			Player.instance._Classes[3] = GameData.instance.GetClass("Bard");
+			Player.instance._Classes[0] = null;//GameData.instance.GetClass("Barbarian");
+			Player.instance._Classes[1] = null;//GameData.instance.GetClass("Rogue");
+			Player.instance._Classes[2] = null;//GameData.instance.GetClass("Wizard");
+			Player.instance._Classes[3] = null;//GameData.instance.GetClass("Bard");
 			Reset();
 			UIManager.Objects.TopGear.Txt[0].text = "LOADING\nSTORY";
 			break;
@@ -725,7 +725,7 @@ public class UIMenu : UIObj {
 
 	public void TutorialActivate()
 	{
-		Player.instance._Classes[0] = GameData.instance.GetClass("Barbarian");
+		//Player.instance._Classes[0] = GameData.instance.GetClass("Barbarian");
 		//Player.instance._Classes[1] = GameData.instance.GetClass("Rogue");
 		//Player.instance._Classes[2] = GameData.instance.GetClass("Wizard");
 		//Player.instance._Classes[3] = GameData.instance.GetClass("Bard");

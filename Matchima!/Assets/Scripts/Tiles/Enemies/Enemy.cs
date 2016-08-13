@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -174,13 +175,18 @@ public class Enemy : Tile {
 		yield return new WaitForSeconds(GameData.GameSpeed(0.03F));
 
 		float init_rotation = Random.Range(-3,3);
-		float info_time = 0.4F;
-		float info_start_size = 100 + (InitStats.TurnDamage*2);
+		float info_time = 0.5F;
+		float info_start_size = Mathf.Clamp(240 + (InitStats.TurnDamage*2), 240, 350);
 		float info_movespeed = 0.25F;
 		float info_finalscale = 0.65F;
 
 		Vector3 pos = TileMaster.Grid.GetPoint(Point.Point(0)) + Vector3.down * 0.3F;
-		MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + InitStats.TurnDamage, info_start_size, GameData.Colour(Genus), info_time, 0.6F, false);
+		MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + InitStats.TurnDamage, info_start_size,  Color.white, info_time, 0.6F, false);
+		m.Img[0].sprite = m.SpikyBack;
+		m.Img[0].enabled = true;
+		m.Img[0].color = GameData.instance.BadColour;
+		m.Img[0].transform.localScale *= 0.65F;
+		m.GetComponent<HorizontalLayoutGroup>().padding = new RectOffset(-50, 20, 10, 10);
 		m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
 		m.SetVelocity(Utility.RandomVectorInclusive(0.4F) + (Vector3.up*0.6F));
 		m.Gravity = true;
@@ -222,20 +228,25 @@ public class Enemy : Tile {
 			CollectThyself(true);
 
 			PlayAudio("death");
-			float item_chance = (float)Stats.Value/32.0F;
-			if(Stats.Value > 10) item_chance += 0.4F;
-			if(Random.value < item_chance) 
+			if(GameData.ChestsFromEnemies)
 			{
-				int x = Random.Range(Point.BaseX, Point.BaseX + Point.Scale);
-				int y = Random.Range(Point.BaseY, Point.BaseY + Point.Scale);
+				float item_chance = (float)Stats.Value/32.0F;
+				if(Stats.Value > 10) item_chance += 0.4F;
+				if(Random.value < item_chance) 
+				{
+					int x = Random.Range(Point.BaseX, Point.BaseX + Point.Scale);
+					int y = Random.Range(Point.BaseY, Point.BaseY + Point.Scale);
 
-				GENUS g = Genus;
-				float randg = Random.value;
-				if(Random.value < 0.4F) g = (GENUS) Random.Range(0,4);
-				if(Random.value < 0.95F) TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["chest"], g,  Point.Scale);
-				else TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["mimic"], g, Point.Scale);
+					GENUS g = Genus;
+					float randg = Random.value;
+					if(Random.value < 0.4F) g = (GENUS) Random.Range(0,4);
+					if(Random.value < 0.95F) TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["chest"], g,  Point.Scale);
+					else TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["mimic"], g, Point.Scale);
+				}
+				else TileMaster.Tiles[Point.Base[0], Point.Base[1]] = null;
 			}
 			else TileMaster.Tiles[Point.Base[0], Point.Base[1]] = null;
+			
 			return true;
 		}
 		else 

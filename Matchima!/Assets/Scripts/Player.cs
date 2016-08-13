@@ -190,6 +190,7 @@ public class Player : MonoBehaviour {
 		int heal = 0;
 		foreach(Class child in Classes)
 		{
+			if(child == null) continue;
 			int [] regen = child.Stats.CompleteRegen();
 			heal += regen[0];
 			child.AddToMeter(regen[1]);
@@ -251,6 +252,7 @@ public class Player : MonoBehaviour {
 		}
 		foreach(Class child in Classes)
 		{
+			if(child == null) continue;
 			hit = child.OnHit(hit,attackers);
 		}
 
@@ -277,6 +279,7 @@ public class Player : MonoBehaviour {
 	{
 		foreach (Class child in Classes)
 		{
+			if(child == null) continue;
 			yield return StartCoroutine(child.BeforeMatch(tiles));
 		}
 
@@ -482,6 +485,7 @@ public class Player : MonoBehaviour {
 		List<int> living_chars = new List<int>();
 		for (int i = 0; i < 4; i++)
 		{
+			if(Classes[i] == null) continue;
 			if (!Classes[i].isKilled) living_chars.Add(i);
 		}
 
@@ -560,7 +564,7 @@ public class Player : MonoBehaviour {
 		}
 	}
 
-	public void AddClassToSlot(int slot, Class c)
+	public IEnumerator AddClassToSlot(int slot, Class c)
 	{
 		Classes[slot] = Instantiate(c);
 		Classes[slot].transform.parent = this.transform;
@@ -569,9 +573,8 @@ public class Player : MonoBehaviour {
 		Classes[slot].StartClass();
 
 		ResetStats();
-		//print(UIManager.ClassButtons[slot]);
-		//UIManager.ClassButtons[slot].Setup(Classes[slot]);
-		UIManager.instance.AddClass(Classes[slot], slot);
+		
+		yield return StartCoroutine(UIManager.instance.AddClass(Classes[slot], slot));
 	}
 
 	public void Reset()

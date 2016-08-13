@@ -62,6 +62,7 @@ public class GameData : MonoBehaviour {
 
 	public static bool loading_assets = false;
 	public static bool loaded_assets = false;
+	public static bool ChestsFromEnemies = true;
 
 	public bool PrintLogs;
 #endregion

@@ -37,7 +37,7 @@ public class Heal : Powerup {
 		yield return new WaitForSeconds(GameData.GameSpeed(step_time));
 		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(false);
 		Destroy(powerup);
-		
+
 		
 		float final_ratio = 0.0F;
 		UIObj MGame = (UIObj)Instantiate(MinigameObj[0]);
@@ -53,6 +53,11 @@ public class Heal : Powerup {
 			alert.AddJuice(Juice.instance.BounceB, 0.1F);
 		});
 
+
+		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "Tap the heart to begin", 100, GameData.Colour(Parent.Genus), 0.8F, 0.25F);
+		m.DestroyOnEnd = false;
+		while(!Input.GetMouseButton(0)) yield return null;
+		
 		float taptimer = 3.0F;
 		bool istapping = true;
 		while(istapping)

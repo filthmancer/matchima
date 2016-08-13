@@ -52,13 +52,15 @@ public class UIClassButton : UIObj {
 			AddAction(UIAction.MouseOver, () => {HoverOver();});
 			AddAction(UIAction.MouseDown, () => {
 				if(_class.MeterLvl > 0 && !GameManager.instance.isPaused) 
-				print(true);
 				StartCoroutine(_class.UseManaPower());
 				});
 
 			if(ClassInit.IsObjectOpened()) ClassInit.OpenCloseObjectAnimation();
 		}
-		else if(_class == null && ClassInit.IsObjectOpened()) ClassInit.OpenCloseObjectAnimation();
+		else if(_class == null)
+		{
+
+			} //&& ClassInit.IsObjectOpened()) ClassInit.OpenCloseObjectAnimation();
 		if(!Application.isEditor && Input.touches.Length == 0) over = false;
 		
 		if(over && _class != null)
@@ -95,7 +97,10 @@ public class UIClassButton : UIObj {
 	{
 		if(ab == null) 
 		{
-			transform.parent.gameObject.SetActive(false);
+			_FrameMask.gameObject.SetActive(true);
+			_FrameMask.clipBottomLeft = new Vector2(0,0);
+			_BackingMask.clipBottomLeft = new Vector2(0,0);
+			_Sprite.sprite = UIManager.Menu.NoHeroInSlot;
 			return;
 		}
 		else transform.parent.gameObject.SetActive(true);

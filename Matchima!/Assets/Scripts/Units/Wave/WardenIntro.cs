@@ -4,7 +4,7 @@ using System.Collections;
 
 public class WardenIntro : Wave {
 
-		public override IEnumerator OnStart()
+		/*public override IEnumerator OnStart()
 		{
 			Slot1.Timer = 0;
 			Slot1.Activate();
@@ -40,7 +40,7 @@ public class WardenIntro : Wave {
 			//tute.AddQuote("Drag through Mana to collect it!",  Slot1, true, 1.4F);
 			yield return StartCoroutine(UIManager.instance.Quote(tute.ToArray()));
 
-		}
+		}*/
 
 		public override IEnumerator BeginTurn()
 		{

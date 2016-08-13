@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -458,6 +459,25 @@ public class Stat
 
 		if(final_hit <= 0) final_hit = 1;
 
+		float init_rotation = Random.Range(-3,3);
+		float info_time = 0.5F;
+		float info_start_size = Mathf.Clamp(240 + (final_hit*2), 240, 350);
+		float info_movespeed = 0.25F;
+		float info_finalscale = 0.65F;
+
+		Vector3 pos = UIManager.instance.Health.transform.position + Vector3.up * 0.3F;
+		MiniAlertUI m = UIManager.instance.MiniAlert(pos,  ""+final_hit, info_start_size, Color.white, info_time, 0.6F, false);
+		m.Img[0].sprite = m.SpikyBack;
+		m.Img[0].enabled = true;
+		m.Img[0].color = GameData.instance.BadColour;
+		m.Img[0].transform.localScale *= 0.65F;
+		m.GetComponent<HorizontalLayoutGroup>().padding = new RectOffset(-50, 20, 10, 10);
+		m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
+		m.SetVelocity(Utility.RandomVectorInclusive(0.4F) + (Vector3.up*0.6F));
+		m.Gravity = true;
+		m.AddJuice(Juice.instance.BounceB, info_time/0.8F);
+
+
 		_Health -= (int) final_hit;
 		_Health = Mathf.Clamp(_Health, 0, _HealthMax);
 	//	DmgThisTurn += (int) final_hit;
@@ -548,32 +568,32 @@ public class Stat
 	}
 
 
-	public StCon [] LevelUp(int power)
+	public StCon [] LevelUp(int power, int slot)
 	{
 		List<StCon> final = new List<StCon>();
 		final.Add(new StCon("Stats Up!", Color.white, true, 100));
-		StCon [] STR = _Strength.LevelUp(power);
+		StCon [] STR = _Strength.LevelUp(power, slot == 0);
 		if(STR != null)
 		{
 			final.Add(new StCon("STR:", GameData.Colour(GENUS.STR), false));
 			final.AddRange(STR);
 		}
 
-		StCon [] DEX = _Dexterity.LevelUp(power);
+		StCon [] DEX = _Dexterity.LevelUp(power, slot == 1);
 		if(DEX != null)
 		{
 			final.Add(new StCon("DEX:", GameData.Colour(GENUS.DEX), false));
 			final.AddRange(DEX);
 		}
 
-		StCon [] WIS = _Wisdom.LevelUp(power);
+		StCon [] WIS = _Wisdom.LevelUp(power, slot == 2);
 		if(WIS != null)
 		{
 			final.Add(new StCon("WIS:", GameData.Colour(GENUS.WIS), false));
 			final.AddRange(WIS);
 		}
 
-		StCon [] CHA = _Charisma.LevelUp(power);
+		StCon [] CHA = _Charisma.LevelUp(power, slot == 3);
 		if(CHA != null)
 		{
 			final.Add(new StCon("CHA:", GameData.Colour(GENUS.CHA), false));
@@ -679,21 +699,27 @@ public class StatContainer
 
 	}
 
-	public StCon [] LevelUp(int power)
+	public StCon [] LevelUp(int power, bool slotmult = false)
 	{
 		int StatOld = StatCurrent;
 		ToMeter = 10;
 		ToMult = 65;
-		StatCurrent_soft += StatGain * power;
+
+		float amt = StatGain * power;
+		if(slotmult) amt *= 2F;
+
+		StatCurrent_soft += amt;
 		StatCurrent = (int) StatCurrent_soft;
 
 		//MeterInc = StatCurrent / ToMeter;
 		ResMultiplier =  1.0F + (float)StatCurrent/(float)ToMult;
 
 		if(StatOld == StatCurrent) return null;
+
+		Color col = slotmult ? GameData.instance.GoodColour : Color.white;
 		return new StCon [] {
-			new StCon(StatOld + "", Color.white, false),
-			new StCon("->", Color.white, false),
+			new StCon(StatOld + "", col, false),
+			new StCon("->", col, false),
 			new StCon(StatCurrent + "", GameData.instance.GoodColour)};
 	}
 

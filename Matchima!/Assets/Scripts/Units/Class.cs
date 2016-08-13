@@ -622,6 +622,8 @@ public class Class : Unit {
 	{
 		if(UsingManaPower) yield break;
 		UsingManaPower = true;
+
+
 		UIManager.instance.ScreenAlert.SetTween(0,true);
 		int lvl = MeterLvl;
 		yield return StartCoroutine(PowerupSpell.Activate(lvl));
@@ -686,7 +688,7 @@ public class Class : Unit {
 		Level ++;
 		
 
-		StCon [] title = InitStats.LevelUp(power);
+		StCon [] title = InitStats.LevelUp(power, Index);
 		StCon [] floor = new StCon [] {new StCon(Name + " Level "), new StCon(Level+"")};
 		Reset();
 

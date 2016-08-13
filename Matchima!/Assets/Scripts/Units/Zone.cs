@@ -46,7 +46,7 @@ public class Zone : MonoBehaviour {
 	private bool shown_intro_wave;
 	private bool ShownBoss;
 
-	public void Start()
+	public virtual void Start()
 	{
 		Current = StartAt;
 		for(int i = 0; i < Waves.Length; i++)
@@ -57,7 +57,7 @@ public class Zone : MonoBehaviour {
 		isNew = true;
 	}
 
-	public Wave GetWaveProgressive()
+	public virtual Wave GetWaveProgressive()
 	{
 		if(!shown_intro_wave && Player.Options.StorySet == Ops_Story.AlwaysShow)
 		{
@@ -100,7 +100,7 @@ public class Zone : MonoBehaviour {
 		return w;
 	}
 
-	public Wave GetWaveRandom()
+	public virtual Wave GetWaveRandom()
 	{
 		if(!shown_intro_wave && Player.Options.StorySet == Ops_Story.AlwaysShow)
 		{
@@ -144,7 +144,7 @@ public class Zone : MonoBehaviour {
 		return w;
 	}
 
-	public Wave CheckZone()
+	public virtual Wave CheckZone()
 	{
 		if(Style == ZoneStyle.Progressive) return GetWaveProgressive();
 		else if(Style == ZoneStyle.Random)
@@ -187,6 +187,32 @@ public class Zone : MonoBehaviour {
 	public int GetZoneDepth()
 	{
 		return Depth;
+	}
+
+	public virtual IEnumerator Enter()
+	{
+		Randomise();
+		
+		(UIManager.Objects.MiddleGear[2] as UIObjTweener).SetTween(0, false);
+		(UIManager.Objects.MiddleGear[1] as UIObjTweener).SetTween(0, false);
+		UIManager.instance.BackingTint = Tint;
+		UIManager.instance.WallTint = WallTint;
+		
+		TileMaster.instance.MapSize_Default = GetMapSize();
+		
+		
+		Player.instance.ResetStats();
+		
+		if(GameManager.ZoneNum > 1) 
+		{
+			yield return null;
+			yield return StartCoroutine(TileMaster.instance.NewGridRoutine());
+		}
+		
+		StCon [] floor = new StCon[]{new StCon("Entered")};
+		StCon [] title = new StCon[]{new StCon(Name, WallTint * 1.5F, false, 110)};
+		
+		yield return StartCoroutine(UIManager.instance.Alert(0.9F, floor, title));
 	}
 
 }
