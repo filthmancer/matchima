@@ -42,51 +42,57 @@ public class WardenIntro : Wave {
 
 		}*/
 
+		int current = 0;
 		public override IEnumerator BeginTurn()
 		{
-			//yield return StartCoroutine(base.BeginTurn());
-			switch(Player.instance.Turns)
+			yield return StartCoroutine(base.BeginTurn());
+			current++;
+			switch(current)
 			{
 				case 2:
-					CameraUtility.instance.ScreenShake(0.6F, 1.4F);
-					yield return new WaitForSeconds(Time.deltaTime * 30);
-					QuoteGroup tute = new QuoteGroup("Tute");
-
-					int rand = Random.Range(0,4);
-					switch(rand)
-					{
-						case 0:
-							tute.AddQuote("...  ?", Player.Classes[0], true, 1.4F, 0.35F);
-						break;
-						case 1:
-							tute.AddQuote("What in the gears was that?", Player.Classes[1], true, 1.4F);
-						break;
-						case 2:
-							tute.AddQuote("A vorpus calamity! Amazing!", Player.Classes[2], true, 1.4F);
-						break;
-						case 3:
-							tute.AddQuote("This dungeon's unstable!", Player.Classes[3], true, 1.4F);
-							tute.AddQuote("... like this regime!", Player.Classes[3], true, 1.4F);
-						break;
-					}
-					
-					
-					tute.AddQuote("Oh, nice going prisoners! You've disturbed the wildlife!", Slot1, true, 1.4F);
-					tute.AddQuote("Well, you'd better take care of it. I'll, uhh... scout ahead.", Slot1, true, 1.4F);
-					yield return StartCoroutine(UIManager.instance.Quote(tute.ToArray()));
-
-					tute = new QuoteGroup("Tute");
-					tute.AddQuote("But that's the way we came in!", Player.Classes[1], true, 1.4F);
-					yield return StartCoroutine(UIManager.instance.Quote(tute.ToArray()));
-
-					Current = Required;
-					yield return StartCoroutine(AfterTurn());//AddPoints(1, true);
+				yield return StartCoroutine(AddBard());
+				break;
+				case 4:
+				Alert("Using a spell can\ncause hero mutations");
+				break;
+				case 6:
+				Alert("Each color corresponds\nto a Stat type");
 				break;
 			}
 			yield return null;
 		}
 
-		protected virtual IEnumerator WaveActivateRoutine()
+	IEnumerator AddBard()
+	{
+		Lullaby p = GameData.instance.GetPowerup("Lullaby", null) as Lullaby;
+		for(int i = 0; i < TileMaster.Enemies.Length; i++)
+		{
+			p.Sleep(TileMaster.Enemies[i], 2);
+		}
+		
+
+		TileMaster.instance.SetFillGrid(false);
+		yield return StartCoroutine(GameManager.instance.BeforeMatchRoutine());
+		yield return null;
+		yield return StartCoroutine(GameManager.instance.MatchRoutine(PlayerControl.instance.finalTiles.ToArray()));
+		yield return StartCoroutine(Player.instance.AfterMatch());
+		yield return new WaitForSeconds(Time.deltaTime * 10);
+		TileMaster.instance.ResetTiles(true);
+		TileMaster.instance.SetFillGrid(true);
+
+		Destroy(p.gameObject);
+		Player.instance.AddClassToSlot(3, GameData.instance.GetClass("Bard"));
+		TileMaster.Types["resource"]["Yellow"].ChanceInitial = 1.0F;
+		Spawner2.GetSpawnables(TileMaster.Types);
+
+		yield return StartCoroutine(UIManager.instance.ImageQuote(1.1F, Player.Classes[3], 
+													TileMaster.Types["resource"].Atlas, "Yellow",
+													TileMaster.Genus.Frames, "Yellow"));
+		
+		Alert("The Bard has \nhigh Charisma");
+	}
+
+	protected override IEnumerator WaveActivateRoutine()
 	{
 		UIManager.Objects.BotGear.SetTween(3, true);
 		UIManager.Objects.TopGear[2].SetActive(false);
@@ -115,6 +121,13 @@ public class WardenIntro : Wave {
 		yield return StartCoroutine(UIManager.instance.Alert(1.25F, floor, namecon));
 
 		UIManager.Objects.TopGear[2].SetActive(true);
+
+		UIManager.instance.ScreenAlert.SetTween(1,true);
+		yield return StartCoroutine(UIManager.instance.ImageQuote(1.3F, Slot1, UIManager.Objects.QuoteAtlas, "death"));
+		yield return StartCoroutine(UIManager.instance.ImageQuote(1.3F, Slot1, TileMaster.Types["guard"].Atlas, "Alpha", 
+																				TileMaster.Genus.Frames, "Omega"));
+
+		UIManager.instance.ScreenAlert.SetTween(1,false);
 		for(int i = 0; i < AllSlots.Length; i++)
 		{
 			if(AllSlots[i] == null) continue;
@@ -129,10 +142,21 @@ public class WardenIntro : Wave {
 			UIManager.Objects.TopGear[1][i][0].SetActive(false);
 		}
 
+
+		TileMaster.Types["minion"]["Green"].ChanceInitial = 0.0F;
+		TileMaster.Types["grunt"]["Red"].ChanceInitial = 0.0F;
+		TileMaster.Types["blob"]["Blue"].ChanceInitial = 0.0F;
+		Spawner2.GetSpawnables(TileMaster.Types);
+
+		Player.Classes[0].CanMutate = true;
+		Player.Classes[1].CanMutate = true;
+		Player.Classes[2].CanMutate = true;
+
 		GameManager.instance.paused = false;
 		UIManager.Objects.BotGear.SetTween(0, true);
 		UIManager.Objects.TopGear.SetTween(0, false);
 		UIManager.instance.ScreenAlert.SetTween(0,false);
 		UIManager.Objects.BotGear.SetTween(3, false);
+		Alert("Collecting mana\nfills the enemy bar");
 	}
-	}
+}

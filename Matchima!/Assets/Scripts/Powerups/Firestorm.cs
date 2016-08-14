@@ -122,7 +122,7 @@ public class Firestorm : Powerup {
 	}
 
 	int Damage = 20;
-	IEnumerator Cast(Tile target)
+	public IEnumerator Cast(Tile target)
 	{
 		int targX = target.Point.Base[0];
 		int targY = target.Point.Base[1];

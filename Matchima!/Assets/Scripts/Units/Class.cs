@@ -188,6 +188,7 @@ public class Class : Unit {
 	private float Exp_Max_soft;
 
 	public List<Upgrade> Mutations = new List<Upgrade>();
+	public bool CanMutate = true;
 	private AudioSource Manapower_audio;
 	public virtual void StartClass()
 	{

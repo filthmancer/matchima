@@ -83,23 +83,25 @@ public class ThrowKnives : Powerup {
 
 		
 		UIManager.instance.ScreenAlert.SetTween(0,false);
-		to_collect.AddRange(TileMaster.Enemies);
-		if(to_collect.Count == 0 || CatchNum == 0)
+		
+		if(TileMaster.Enemies.Length == 0 || CatchNum == 0)
 		{
 			GameManager.instance.paused = false;
 			yield break;
 		}
 
 		TileMaster.instance.SetAllTileStates(TileState.Locked, true);
-		for(int i = 0; i < CatchNum; i++)
+		int catchfinal = 0;
+		for(int i = 0; i < TileMaster.Enemies.Length; i++)
 		{
-			int num = Random.Range(0, to_collect.Count);
-			Tile target = to_collect[num];
-
-			if(to_collect.Count > 1) to_collect.RemoveAt(num);
-
+			Tile target = TileMaster.Enemies[i];
+			if(target == null) continue;
+			
 			yield return StartCoroutine(ThrowKnife(target, power));
 			yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
+			catchfinal++;
+			if(catchfinal > CatchNum) break;
+			else if(i == TileMaster.Enemies.Length-1) i = 0;
 		}
 
 		TileMaster.instance.SetFillGrid(false);
@@ -111,6 +113,9 @@ public class ThrowKnives : Powerup {
 		TileMaster.instance.SetFillGrid(true);
 		TileMaster.instance.ResetTiles(true);
 		yield return StartCoroutine(GameManager.instance.CompleteTurnRoutine());
+
+		for(int i = 0; i < knifelist.Count; i++)
+		{if(knifelist[i] != null) Destroy(knifelist[i].gameObject);}
 
 		GameManager.instance.paused = false;
 	}
@@ -172,19 +177,33 @@ public class ThrowKnives : Powerup {
 		return knife;
 	}
 
-	IEnumerator ThrowKnife(Tile target, int power)
+	public List<UIObj> knifelist = new List<UIObj>();
+	public IEnumerator ThrowKnife(Tile target, int power)
 	{
+		Vector3 classpos = UIManager.instance.Health.transform.position;
+		Color classcol = Color.white;
+		if(Parent != null) 
+		{
+			classpos = UIManager.ClassButtons.GetClass(Parent.Index).transform.position;
+			classcol = GameData.Colour(Parent.Genus);
+		}
+
+
 		target.SetState(TileState.Selected, true);
 		UIObj part = CreateMinigameObj(0);
-		part.transform.position = UIManager.ClassButtons.GetClass(Parent.Index).transform.position;
+		part.transform.position = classpos;
 		part.transform.localScale *= 0.7F;
+		//part.transform.SetParent(parent.transform);
 		part.GetComponent<Velocitizer>().enabled = false;
 		MoveToPoint mp = part.GetComponent<MoveToPoint>();
+
+		knifelist.Add(part);
+
 		mp.enabled = true;
 		mp.SetTarget(target.transform.position);
 		mp.SetPath(GameData.GameSpeed(0.55F), 0.0F);
 
-		float dist = Vector3.Distance(target.transform.position, UIManager.ClassButtons.GetClass(Parent.Index).transform.position);
+		float dist = Vector3.Distance(target.transform.position, classpos);
 		//mp.Speed = 0.1F + 0.05F * dist;
 		float part_time = 0.2F;// + (0.03F * dist);
 		int final_damage = power;
@@ -206,7 +225,7 @@ public class ThrowKnives : Powerup {
 			float info_finalscale = 0.65F;
 
 			Vector3 pos = TileMaster.Grid.GetPoint(child.Point.Point(0)) + Vector3.down * 0.3F;
-			MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + final_damage, info_start_size, GameData.Colour(Parent.Genus), info_time, 0.6F, false);
+			MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + final_damage, info_start_size, classcol, info_time, 0.6F, false);
 			m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
 			m.SetVelocity(Utility.RandomVectorInclusive(0.2F) + (Vector3.up*0.4F));
 			m.Gravity = true;

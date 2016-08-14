@@ -957,7 +957,6 @@ public class UIManager : MonoBehaviour {
 	public IEnumerator Alert(float time, string floor = "", string title = "", string desc = "",
 							 bool wait_for_touch = false, float size = 70)
 	{
-		print(title);
 		StCon [] fl = null;
 		if(floor != string.Empty) fl = new StCon[] {new StCon(floor, Color.white, true, size)};
 		StCon [] ti = null;
@@ -1151,8 +1150,52 @@ public class UIManager : MonoBehaviour {
 		return final.ToArray();
 	}
 
+	public IEnumerator ImageQuote(float time, Unit parent, tk2dSpriteCollectionData inner, string inner_str,
+															tk2dSpriteCollectionData outer = null, string outer_str = "")
+	{
+		while(isQuoting || InMenu) yield return null;
+		isQuoting = true;
+
+		UIObjtk quoter = null;
+		if(parent is Class)
+		{
+			quoter = Objects.ClassImageQuote[parent.Index];
+		}
+		else 
+		{
+			quoter = Objects.WaveImageQuote;
+		}
+
+		EasyTween eas = quoter.GetComponent<EasyTween>();
+		if(!eas.IsObjectOpened()) eas.OpenCloseObjectAnimation();
+
+		quoter.Imgtk[0].SetSprite(inner, inner_str);
+		if(outer != null) 
+		{
+			quoter.Imgtk[1].gameObject.SetActive(true);
+			quoter.Imgtk[1].SetSprite(outer, outer_str);	
+		}
+		else quoter.Imgtk[1].gameObject.SetActive(false);
+
+
+		yield return new WaitForSeconds(time);
+		eas = Objects.WaveImageQuote.GetComponent<EasyTween>();
+		if(eas.IsObjectOpened()) eas.OpenCloseObjectAnimation();
+
+		for(int i = 0; i < Objects.ClassImageQuote.Length; i++)
+		{
+			eas = Objects.ClassImageQuote[i].GetComponent<EasyTween>();
+			if(eas.IsObjectOpened()) eas.OpenCloseObjectAnimation();
+		}
+		
+		PlayerControl.instance.canMatch = true;
+		GameManager.instance.paused = false;
+		isQuoting = false;
+	}
+
 	public IEnumerator Quote(params Quote [] q)
 	{
+		yield break;
 		while(isQuoting || InMenu) yield return null;
 		isQuoting = true;
 		Unit curr_parent = null;
@@ -1340,12 +1383,12 @@ public class UIManager : MonoBehaviour {
 	{
 		ClassButtons.GetClass(slot).Setup(c);
 		MiniAlert(Health.transform.position + Vector3.up * 1.3F,
-	  	c.Name + " joined the party!", 80, GameData.Colour((GENUS)slot), 1.5F);
+	  	c.Name + " joined the party!", 80, GameData.Colour((GENUS)slot), 1.2F);
 
 	  	UIManager.ClassButtons.GetClass(slot).ShowClass(true);
 	  	GameObject powerup = EffectManager.instance.PlayEffect(UIManager.ClassButtons.GetClass(slot).transform, Effect.ManaPowerUp, GameData.Colour(c.Genus));
 	  	powerup.transform.localScale = Vector3.one;
-	  	yield return new WaitForSeconds(0.6F);
+	  	yield return new WaitForSeconds(1.0F);
 	  	UIManager.ClassButtons.GetClass(slot).ShowClass(false);
 	  	Destroy(powerup);
 	}

@@ -129,7 +129,7 @@ public class Lullaby : Powerup {
 		return note;
 	}
 
-	void Sleep(Tile target, int duration)
+	public void Sleep(Tile target, int duration)
 	{
 		
 		target.SetState(TileState.Selected, true);

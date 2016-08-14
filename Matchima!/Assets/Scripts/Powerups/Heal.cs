@@ -13,30 +13,8 @@ public class Heal : Powerup {
 	{
 		int HealTotal = HealPower[Level-1];
 		GameManager.instance.paused = true;
-		UIManager.instance.ScreenAlert.SetTween(0,true);
-		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(true);
 		
-		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, "powerupstart", GameData.Colour(Parent.Genus));
-		
-		powerup.transform.SetParent(UIManager.ClassButtons.GetClass(Parent.Index).transform);
-		powerup.transform.position = UIManager.ClassButtons.GetClass(Parent.Index).transform.position;
-		powerup.transform.localScale = Vector3.one;
-
-		float step_time = 0.75F;
-		float total_time = step_time * 3;
-		MiniAlertUI a = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.up*2, 
-			"Barbarian Casts", 70, GameData.Colour(Parent.Genus), total_time, 0.2F);
-		a.AddJuice(Juice.instance.BounceB, 0.1F);
-		yield return new WaitForSeconds(GameData.GameSpeed(step_time));
-		MiniAlertUI b = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "Heal", 170, GameData.Colour(Parent.Genus), step_time * 2, 0.2F);
-		b.AddJuice(Juice.instance.BounceB, 0.1F);
-		yield return new WaitForSeconds(GameData.GameSpeed(step_time));
-		MiniAlertUI c  = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.down * 3,
-			"Tap the heart!", 160, GameData.Colour(GENUS.STR), step_time, 0.2F);
-		c.AddJuice(Juice.instance.BounceB, 0.1F);
-		yield return new WaitForSeconds(GameData.GameSpeed(step_time));
-		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(false);
-		Destroy(powerup);
+		yield return StartCoroutine(PowerupStartup());
 
 		
 		float final_ratio = 0.0F;
@@ -57,6 +35,7 @@ public class Heal : Powerup {
 		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "Tap the heart to begin", 100, GameData.Colour(Parent.Genus), 0.8F, 0.25F);
 		m.DestroyOnEnd = false;
 		while(!Input.GetMouseButton(0)) yield return null;
+		m.PoolDestroy();
 		
 		float taptimer = 3.0F;
 		bool istapping = true;

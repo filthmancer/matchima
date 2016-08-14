@@ -12,18 +12,17 @@ public class Tutorial : Wave {
 		TileMaster.Types["resource"]["Red"].ChanceInitial = 1.0F;
 		Spawner2.GetSpawnables(TileMaster.Types);
 		Player.Classes[0].CanCollectMana = false;
+		Player.Classes[0].CanMutate = false;
 		Player.Stats._Health = Player.Stats._HealthMax;
 
 		(UIManager.Objects.TopGear as UIGear).Drag = false;
 
-		/*QuoteGroup tute = new QuoteGroup("Tute");
-		tute.AddQuote("Phew! That was quite a drop!",  Player.Classes[0], true, 1.0F);
-		tute.AddQuote("The entrance to the undercity should be this way!",  Player.Classes[0], true, 1.0F);
-		yield return StartCoroutine(UIManager.instance.Quote(tute.ToArray()));*/
-
 		Alert("Drag through\ntiles to match");
 		current++;
-		//yield return StartCoroutine(UIManager.instance.Alert(0.3F, "", "Drag through\ntiles to match", "", true, 50));
+		yield return new WaitForSeconds(Time.deltaTime * 15);
+		StartCoroutine(UIManager.instance.ImageQuote(1.1F, Player.Classes[0], 
+																	TileMaster.Types["resource"].Atlas, "Red",
+																	TileMaster.Genus.Frames, "Red"));
 	}
 
 	protected override IEnumerator WaveActivateRoutine()
@@ -75,28 +74,18 @@ public class Tutorial : Wave {
 			CameraUtility.instance.ScreenShake(0.6F, 1.4F);
 			yield return new WaitForSeconds(Time.deltaTime * 30);
 
-			tute = new QuoteGroup("Tute");
-			tute.AddQuote("What in the gears was that?",  Player.Classes[0], true, 1.0F);
-			//yield return StartCoroutine(UIManager.instance.Quote(tute.ToArray()));
-
 			TileMaster.instance.ReplaceTile(1,2, TileMaster.Types["grunt"], GENUS.STR);
 			yield return new WaitForSeconds(Time.deltaTime * 10);
-			tute = new QuoteGroup("Tute");
-			tute.AddQuote("A beast of mana!",  Player.Classes[0], true, 1.0F);
-			//yield return StartCoroutine(UIManager.instance.Quote(tute.ToArray()));
 
 			Alert("Enemy tiles attack\nyour health");
-			//
+		
 			current++;
 			break;
 
 			case 4:
-			tute = new QuoteGroup("Tute");
-			tute.AddQuote("Argh! It's attacking me!",  Player.Classes[0], true, 1.0F);
-			tute.AddQuote("I'll have to destroy it or it will keep attacking.",  Player.Classes[0], true, 1.0F);
-			//yield return StartCoroutine(UIManager.instance.Quote(tute.ToArray()));
 
 			Alert("Match enemy tiles\nto destroy");
+			
 			current++;
 			break;
 
@@ -106,10 +95,7 @@ public class Tutorial : Wave {
 			current++;
 			break;
 			case 6:
-			tute = new QuoteGroup("Tute");
-			tute.AddQuote("There's too many!",  Player.Classes[0], true, 1.0F);
-			//yield return StartCoroutine(UIManager.instance.Quote(tute.ToArray()));
-
+		
 			TileMaster.instance.ReplaceTile(0,2, TileMaster.Types["grunt"], GENUS.STR);
 			TileMaster.instance.ReplaceTile(1,2, TileMaster.Types["grunt"], GENUS.STR);
 			current++;
@@ -122,29 +108,27 @@ public class Tutorial : Wave {
 			case 8:
 			if(TileMaster.Enemies.Length == 0)
 			{
-				tute = new QuoteGroup("Tute");
-				tute.AddQuote("That's the last of them.",  Player.Classes[1], true, 1.0F);
-				tute.AddQuote("But now we're low on health!",  Player.Classes[1], true, 1.0F);
-				tute.AddQuote("...",  Player.Classes[0], true, 1.0F, 0.35F);
-				//yield return StartCoroutine(UIManager.instance.Quote(tute.ToArray()));
+				yield return StartCoroutine(UIManager.instance.ImageQuote(1.1F, Player.Classes[0], 
+														UIManager.Objects.QuoteAtlas, "heart"));
+				yield return StartCoroutine(UIManager.instance.ImageQuote(1.1F, Player.Classes[1], 
+														TileMaster.Types["health"].Atlas, "Red",
+														TileMaster.Genus.Frames, "Red"));
 
-				TileMaster.instance.ReplaceTile(0,2, TileMaster.Types["health"], GENUS.STR);
-
-				tute = new QuoteGroup("Tute");
-				tute.AddQuote("A health tile!",  Player.Classes[1], true, 1.0F);
-				//yield return StartCoroutine(UIManager.instance.Quote(tute.ToArray()));
+				TileMaster.instance.ReplaceTile(0,2, TileMaster.Types["health"], GENUS.STR,1,2);
 				Alert("Collect health tiles\nto regain health");
 				current++;
 			}
 			
 			break;
 			case 9:
-			
-			TileMaster.instance.ReplaceTile(1,0, TileMaster.Types["health"], GENUS.STR);
-			TileMaster.instance.ReplaceTile(2,0, TileMaster.Types["health"], GENUS.DEX);
-			TileMaster.instance.ReplaceTile(1,1, TileMaster.Types["health"], GENUS.STR);
-			TileMaster.instance.ReplaceTile(2,1, TileMaster.Types["health"], GENUS.DEX);
 
+			yield return StartCoroutine(UIManager.instance.Alert(0.3F, "", "Collect mana to\nfill a hero's meter", "", true, 60));
+			
+			TileMaster.instance.ReplaceTile(1,0, TileMaster.Types["health"], GENUS.STR, 1,2);
+			TileMaster.instance.ReplaceTile(2,0, TileMaster.Types["health"], GENUS.DEX, 1,2);
+			TileMaster.instance.ReplaceTile(1,1, TileMaster.Types["health"], GENUS.STR, 1,2);
+			TileMaster.instance.ReplaceTile(2,1, TileMaster.Types["health"], GENUS.DEX, 1,2);
+			
 			CameraUtility.instance.ScreenShake(0.6F, 1.4F);
 			yield return new WaitForSeconds(Time.deltaTime * 30);
 			Tile t = TileMaster.instance.ReplaceTile(1,2, TileMaster.Types["blob"], GENUS.STR, 2,3);
@@ -153,20 +137,32 @@ public class Tutorial : Wave {
 				StartCoroutine(SplitBlobBoss());
 			});
 
-			tute = new QuoteGroup("Tute");
-			tute.AddQuote("That one's huge!",  Player.Classes[0], true, 1.0F);
-			//yield return StartCoroutine(UIManager.instance.Quote(tute.ToArray()));
-
 			TileMaster.Types["grunt"]["Red"].ChanceInitial = 0.25F;
-			TileMaster.Types["grunt"]["Blue"].ChanceInitial = 0.25F;
+			TileMaster.Types["blob"]["Blue"].ChanceInitial = 0.25F;
 			TileMaster.Types.IgnoreAddedChances = false;
 			Spawner2.GetSpawnables(TileMaster.Types);
 
 			current++;
 			break;
 			case 10:
+				TileMaster.instance.MapSize_Default = new Vector2(5,5);
+				current++;
+			break;
+			case 11:
+			if(shownpowerupalert || Player.instance.Turns > 15)
+			{
 				yield return StartCoroutine(AddWizard());
 				current++;
+			}
+			break;
+			case 12:
+				Alert("Use tiles to help\ndefeat enemies.");
+				current++;
+			break;
+			case 13:
+			TileMaster.instance.MapSize_Default = new Vector2(5,6);
+				Current = Required;
+				
 			break;
 		}
 
@@ -176,89 +172,110 @@ public class Tutorial : Wave {
 			shownpowerupalert = true;
 			yield return StartCoroutine(UIManager.instance.Alert(0.3F, "Rogue has\npowered up!", "Tap on a powered\nhero's icon to\ncast a spell", "", true, 60));
 		}
+		else if(Player.Classes[0] != null && Player.Classes[0].MeterLvl == 1 && !shownpowerupalert)
+		{
+			shownpowerupalert = true;
+			yield return StartCoroutine(UIManager.instance.Alert(0.3F, "Barbarian has\npowered up!", "Tap on a powered\nhero's icon to\ncast a spell", "", true, 60));
+		}
 		yield return null;
 	}
+
+	public WaveUnit Warden;
 
 	private bool shownpowerupalert = false;
 
 	public IEnumerator SplitBlobBoss()
 	{
-		QuoteGroup split = new QuoteGroup("Blob split");
-		split.AddQuote("Now there's two of them!", Player.Classes[0], true, 1.0F);
-		split.AddQuote("I've got a plan! I just need to collect enough mana...", Player.Classes[1], true, 1.0F);
-		//yield return StartCoroutine(UIManager.instance.Quote(split.ToArray()));
 		Player.Classes[1].CanCollectMana = true;
-		Player.Classes[1].AddToMeter(15);
-		Alert("Collecting mana\nfills a hero's\nmana meters");
+		Player.Classes[0].CanCollectMana = true;
+		
+		
+		Player.Classes[1].AddToMeter(Player.Classes[1].MeterTop-5);
+		Player.Classes[0].AddToMeter(Player.Classes[0].MeterTop-5);
+		
 		yield return null;
 	}
 
-	MiniAlertUI alerter;
-	public MiniAlertUI Alert(string s)
-	{
-		if(alerter != null) alerter.PoolDestroy();
-		alerter = UIManager.instance.MiniAlert(UIManager.Objects.TopGear.transform.position + Vector3.down* 1.4F,
-						s, 70, Color.white, 3.4F, -0.2F, true);
-		alerter.transform.localScale *= 0.85F;
-		return alerter;
-	}
 
 
 	IEnumerator AddRogue()
 	{
-		QuoteGroup tute = new QuoteGroup("Tute");
-		tute.AddQuote("I can't kill them quick enough!",  Player.Classes[0], true, 1.0F);
+		yield return StartCoroutine(UIManager.instance.ImageQuote(1.1F, Player.Classes[0], 
+														UIManager.Objects.QuoteAtlas, "death"));
+		ThrowKnives p = GameData.instance.GetPowerup("Throw Knives", null) as ThrowKnives;
+		StartCoroutine(UIManager.instance.ImageQuote(1.1F, Player.Classes[0], 
+														UIManager.Objects.QuoteAtlas, "confused"));
+		for(int i = 0; i < TileMaster.Enemies.Length; i++)
+		{
+			yield return StartCoroutine(p.ThrowKnife(TileMaster.Enemies[i], 10));
+			yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
+		}
+		yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 		
-		//yield return StartCoroutine(UIManager.instance.Quote(tute.ToArray()));
+		TileMaster.instance.SetFillGrid(false);
+		PlayerControl.instance.AddTilesToSelected(TileMaster.Enemies);
+		yield return StartCoroutine(GameManager.instance.BeforeMatchRoutine());
+		yield return null;
+		yield return StartCoroutine(GameManager.instance.MatchRoutine(PlayerControl.instance.finalTiles.ToArray()));
+		yield return StartCoroutine(Player.instance.AfterMatch());
+		TileMaster.instance.SetFillGrid(true);
+		TileMaster.instance.ResetTiles(true);
+
+		for(int i = 0; i < p.knifelist.Count; i++)
+		{if(p.knifelist[i] != null) Destroy(p.knifelist[i].gameObject);}
+
+		Destroy(p.gameObject);
+
 		yield return StartCoroutine(Player.instance.AddClassToSlot(1, GameData.instance.GetClass("Rogue")));
 		Player.Classes[1].CanCollectMana = false;
+		Player.Classes[1].CanMutate = false;
 
 		TileMaster.Types["resource"]["Blue"].ChanceInitial = 1.0F;
 		Spawner2.GetSpawnables(TileMaster.Types);
 
-		tute = new QuoteGroup("Tute");
-		tute.AddQuote("Need some help, traveller?",  Player.Classes[1], true, 1.0F);
-		tute.AddQuote("I'll get rid of these monsters.",  Player.Classes[1], true, 1.0F);
-		//yield return StartCoroutine(UIManager.instance.Quote(tute.ToArray()));
-
-	 	Alert("The Barbarian has \nhigh Dexterity, which\ngives extra attack damage");
+		yield return StartCoroutine(UIManager.instance.ImageQuote(1.1F, Player.Classes[1], 
+													TileMaster.Types["resource"].Atlas, "Blue",
+													TileMaster.Genus.Frames, "Blue"));
+	 	Alert("The Rogue has \nhigh Dexterity");
 	}
 
 	
-	IEnumerator AddBard()
-	{
-		QuoteGroup tute = new QuoteGroup("Tute");
-		tute.AddQuote("Oi Yellow! You're gonna help out, right?", Player.Classes[1], true, 1.4F);
-		yield return StartCoroutine(UIManager.instance.Quote(tute.ToArray()));
 
-		Player.instance.AddClassToSlot(3, GameData.instance.GetClass("Bard"));
-		TileMaster.Types["resource"]["Yellow"].ChanceInitial = 1.0F;
-		Spawner2.GetSpawnables(TileMaster.Types);
-		yield return new WaitForSeconds(1.1F);
-
-		tute = new QuoteGroup("Tute");
-		tute.AddQuote("This oppressive rule won't keep the people down!", Player.Classes[3], true, 1.4F);
-		tute.AddQuote("Save it for your freeloading pals!", Slot1, true, 1.4F);
-		tute.AddQuote("You're here to clean up mana and you'd better do it fast!", Slot1, true, 1.4F);
-		tute.AddQuote("There's worse things down here than hard labour...", Slot1, true, 1.4F);
-		yield return StartCoroutine(UIManager.instance.Quote(tute.ToArray()));
-	}
 
 	IEnumerator AddWizard()
 	{
-		QuoteGroup tute = new QuoteGroup("Tute");
-		tute.AddQuote("Wait! Someone's coming!", Player.Classes[0], true, 1.4F);
-		//yield return StartCoroutine(UIManager.instance.Quote(tute.ToArray()));
+		Firestorm p = GameData.instance.GetPowerup("Firestorm", null) as Firestorm;
+		yield return StartCoroutine(p.Cast(TileMaster.Tiles[2,0]));
+		yield return StartCoroutine(p.Cast(TileMaster.Tiles[0,0]));
+		yield return StartCoroutine(p.Cast(TileMaster.Tiles[4,0]));
+
+		TileMaster.instance.SetFillGrid(false);
+		yield return StartCoroutine(GameManager.instance.BeforeMatchRoutine());
+		yield return null;
+		yield return StartCoroutine(GameManager.instance.MatchRoutine(PlayerControl.instance.finalTiles.ToArray()));
+		yield return StartCoroutine(Player.instance.AfterMatch());
+		
+		TileMaster.instance.ResetTiles(true);
+		TileMaster.instance.SetFillGrid(true);
+
+		Destroy(p.gameObject);
 
 		yield return StartCoroutine(Player.instance.AddClassToSlot(2, GameData.instance.GetClass("Wizard")));
 
 		TileMaster.Types["resource"]["Green"].ChanceInitial = 1.0F;
-		Spawner2.GetSpawnables(TileMaster.Types);
+		TileMaster.Types["minion"]["Green"].ChanceInitial = 0.25F;
 
-		tute = new QuoteGroup("Tute");
-		tute.AddQuote("... Hello.", Player.Classes[2], true, 1.0F, 0.4F);
-		tute.AddQuote("Do you have any mana you could spare?", Player.Classes[2], true, 1.0F);
-		//yield return StartCoroutine(UIManager.instance.Quote(tute.ToArray()));
-		Alert("The Barbarian has \nhigh Wisdom, which\ngives extra spell damage");
+		Player.Classes[2].CanCollectMana = true;
+		Player.Classes[2].CanMutate = false;
+		Spawner2.GetSpawnables(TileMaster.Types);
+		yield return StartCoroutine(UIManager.instance.ImageQuote(1.1F, Player.Classes[2], 
+													TileMaster.Types["resource"].Atlas, "Green",
+													TileMaster.Genus.Frames, "Green"));
+		Alert("The Wizard has \nhigh Wisdom");
+	}
+
+	protected override IEnumerator WaveEndRoutine()
+	{
+		yield return null;
 	}
 }

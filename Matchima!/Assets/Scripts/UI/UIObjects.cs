@@ -18,6 +18,22 @@ public class UIObjects : MonoBehaviour {
 	public UIObj BackingLight;
 	public Image Walls;
 
+	public tk2dSpriteCollectionData QuoteAtlas;
+
+	public UIObjtk WaveImageQuote;
+	public UIObjtk [] ClassImageQuote
+	{
+		get
+		{
+			UIObjtk [] final = new UIObjtk[ClassQuote.Length];
+			for(int i = 0; i < ClassQuote.Length; i++)
+			{
+				final[i] = ClassQuote[i] as UIObjtk;
+			}
+			return final;
+		}
+	}
+
 	public UIObj ArmourParent;
 	public UIObj DeathIcon;
 

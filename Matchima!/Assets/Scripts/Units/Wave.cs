@@ -537,6 +537,17 @@ public class Wave : Unit {
 		if(AllSlots[0] is WaveTileEndOnTileDestroy) (AllSlots[0] as WaveTileEndOnTileDestroy).AddTargets(new_targs);
 	}
 
+	MiniAlertUI alerter;
+	public MiniAlertUI Alert(string s)
+	{
+		if(alerter != null) alerter.PoolDestroy();
+		alerter = UIManager.instance.MiniAlert(UIManager.Objects.TopGear.transform.position + Vector3.down* 1.4F,
+						s, 70, Color.white, 3.4F, -0.2F, true);
+		alerter.transform.localScale *= 0.85F;
+		return alerter;
+	}
+
+
 
 }
 
