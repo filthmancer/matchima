@@ -538,12 +538,15 @@ public class Wave : Unit {
 	}
 
 	MiniAlertUI alerter;
-	public MiniAlertUI Alert(string s)
+	public MiniAlertUI Alert(string s, float life = 0.0F)
 	{
 		if(alerter != null) alerter.PoolDestroy();
+
 		alerter = UIManager.instance.MiniAlert(UIManager.Objects.TopGear.transform.position + Vector3.down* 1.4F,
-						s, 70, Color.white, 3.4F, -0.2F, true);
+						s, 70, Color.white, life, -0.2F, true);
 		alerter.transform.localScale *= 0.85F;
+		
+		if(life == 0.0F) alerter.DestroyOnEnd = false;
 		return alerter;
 	}
 

@@ -486,7 +486,7 @@ public class Stat
 
 	public float GetHealthRatio()
 	{
-		return (float)_Health / (float)_HealthMax;
+		return Mathf.Clamp((float)_Health / (float)_HealthMax, 0.0F, 1.0F);
 	}
 
 	public int GetAttack()

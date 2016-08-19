@@ -128,6 +128,16 @@ public class MiniAlertUI : UIObj {
 		ended = false;
 	}
 
+	public void SetToDamageIndicator()
+	{
+		Txt[0].color = Color.white;
+		Img[0].sprite = SpikyBack;
+		Img[0].color = GameData.instance.BadColour;
+		Img[0].enabled = true;
+		Img[1].enabled = false;
+		Img[2].enabled = false;
+	}
+
 	public void AddAction(Action m)
 	{
 		EndActions.Add(m);

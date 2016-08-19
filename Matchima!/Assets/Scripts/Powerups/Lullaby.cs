@@ -131,9 +131,11 @@ public class Lullaby : Powerup {
 
 	public void Sleep(Tile target, int duration)
 	{
-		
+		Transform par = UIManager.instance.Health.transform;
+		if(Parent != null) par = UIManager.ClassButtons[Parent.Index].transform;
+
 		target.SetState(TileState.Selected, true);
-		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[Parent.Index].transform, "spell");
+		GameObject initpart = EffectManager.instance.PlayEffect(par, "spell");
 		MoveToPoint charm = initpart.GetComponent<MoveToPoint>();
 		charm.enabled = true;
 		charm.SetTarget(target.transform.position);
@@ -149,9 +151,11 @@ public class Lullaby : Powerup {
 
 	void CharmAndValue(Tile target, int duration, int hpinc = 1, int atkinc = 3)
 	{
-		
+		Transform par = UIManager.instance.Health.transform;
+		if(Parent != null) par = UIManager.ClassButtons[Parent.Index].transform;
+
 		target.SetState(TileState.Selected, true);
-		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[Parent.Index].transform, "spell");
+		GameObject initpart = EffectManager.instance.PlayEffect(par, "spell");
 		MoveToPoint charm = initpart.GetComponent<MoveToPoint>();
 		charm.enabled = true;
 		charm.SetTarget(target.transform.position);

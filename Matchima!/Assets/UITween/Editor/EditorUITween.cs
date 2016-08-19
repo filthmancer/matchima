@@ -32,7 +32,7 @@ public class EditorUITween : Editor
 		if (tweenScript != null) {
 			if (tweenScript.rectTransform) {
 				Handles.color = new Color (1f, 0f, 0f, 0.5f);
-				Handles.DrawSolidDisc (tweenScript.rectTransform.position, Vector3.forward, 10f);
+				Handles.DrawSolidDisc (tweenScript.rectTransform.position, Vector3.forward, 1f);
 				Handles.color = Color.cyan;
 			}
 		}

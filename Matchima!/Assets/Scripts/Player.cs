@@ -469,6 +469,7 @@ public class Player : MonoBehaviour {
 		if (Stats._Health < Stats._HealthMax / 5 && Stats._Health > 0)
 		{
 			int randa = Random.Range(0, 4);
+			if(Classes[randa] != null)
 			StartCoroutine(UIManager.instance.Quote(Classes[randa].Quotes.Danger));
 		}
 

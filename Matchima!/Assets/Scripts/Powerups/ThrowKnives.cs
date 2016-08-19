@@ -226,6 +226,7 @@ public class ThrowKnives : Powerup {
 
 			Vector3 pos = TileMaster.Grid.GetPoint(child.Point.Point(0)) + Vector3.down * 0.3F;
 			MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + final_damage, info_start_size, classcol, info_time, 0.6F, false);
+			m.SetToDamageIndicator();
 			m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
 			m.SetVelocity(Utility.RandomVectorInclusive(0.2F) + (Vector3.up*0.4F));
 			m.Gravity = true;

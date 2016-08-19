@@ -15,7 +15,8 @@ public class UIManager : MonoBehaviour {
 
 	public Color BackingTint, WallTint;
 
-	public TextMeshProUGUI Health, Armour;
+	public UIObj Health;
+	public TextMeshProUGUI Armour;
 	public TextMeshProUGUI WaveHealthText;
 	public TextMeshProUGUI WaveTimer;
 
@@ -76,6 +77,7 @@ public class UIManager : MonoBehaviour {
 			ClassButtons.GetClass(i)._Frame.SetSprite(TileMaster.Genus.Frames, i);
 			ClassButtons.GetClass(i)._FrameMask.SetSprite(TileMaster.Genus.Frames, i);
 		}
+		
 	}
 
 	float update_interval_current = 0.0F;
@@ -102,11 +104,12 @@ public class UIManager : MonoBehaviour {
 			Objects.MiddleGear[5].SetActive(true);
 		Objects.MiddleGear[5].Txt[0].text = ""+Player.AttackValue;
 		Objects.MiddleGear[5].Txt[1].text = ""+Player.SpellValue;
-
 		Objects.TopRightButton.Txt[0].text = "" + GameManager.Floor;
 		Objects.TopRightButton.Txt[1].text = "" + GameManager.ZoneNum;
 		Objects.TopRightButton.Txt[2].enabled = false;//Player.NewItems;
-		Health.text = Player.Stats.Health + "/" + Player.Stats.HealthMax;
+		if(Player.Stats._HealthMax <= 0) Health.Txt[0].text = "";
+		else Health.Txt[0].text = Player.Stats.Health + "/" + Player.Stats.HealthMax;
+		Health.Txt[1].text = "HEALTH";
 
 		for(int i = 0; i < PlayerHealth.Length; i++)
 		{
@@ -1012,7 +1015,7 @@ public class UIManager : MonoBehaviour {
 		if(desc != null)
 		{
 			Transform TopParent = ScreenAlert.Child[1][0].transform;
-			ScreenAlert[1][0].Child = GenerateUIObjFromStCon(TopParent, title);
+			ScreenAlert[1][0].Child = GenerateUIObjFromStCon(TopParent, desc);
 			(ScreenAlert[1] as UIObjTweener).SetTween(0, true);
 		}
 
@@ -1022,11 +1025,15 @@ public class UIManager : MonoBehaviour {
 		if(wait_for_touch)
 		{
 			bool has_touched = false;
+			(ScreenAlert[4] as UIObjTweener).SetTween(0, true);
+			ScreenAlert[4].AddAction(UIAction.MouseUp, () =>{has_touched = true;});
 			while(!has_touched)
 			{
-				has_touched = Input.GetMouseButtonDown(0);
+			
 				yield return null;
 			}
+			(ScreenAlert[4] as UIObjTweener).SetTween(0,false);
+			ScreenAlert[4].ClearActions();
 		}
 
 		ScreenAlert.SetTween(0,false);
@@ -1382,13 +1389,15 @@ public class UIManager : MonoBehaviour {
 	public IEnumerator AddClass(Class c, int slot)
 	{
 		ClassButtons.GetClass(slot).Setup(c);
-		MiniAlert(Health.transform.position + Vector3.up * 1.3F,
-	  	c.Name + " joined the party!", 80, GameData.Colour((GENUS)slot), 1.2F);
+		
+		MiniAlert(Health.transform.position + Vector3.up * 2.5F,
+		c.Name + " joined\nthe party!", 80, GameData.Colour((GENUS)slot), 1.1F, 0.1F, true);
 
 	  	UIManager.ClassButtons.GetClass(slot).ShowClass(true);
 	  	GameObject powerup = EffectManager.instance.PlayEffect(UIManager.ClassButtons.GetClass(slot).transform, Effect.ManaPowerUp, GameData.Colour(c.Genus));
 	  	powerup.transform.localScale = Vector3.one;
-	  	yield return new WaitForSeconds(1.0F);
+	  	
+	  	yield return new WaitForSeconds(Time.deltaTime * 55);
 	  	UIManager.ClassButtons.GetClass(slot).ShowClass(false);
 	  	Destroy(powerup);
 	}

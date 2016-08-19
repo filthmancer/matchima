@@ -700,7 +700,7 @@ public class Class : Unit {
 		//Adding psuedochance factor to mutation chance
 		mutation_chance += mutation_psuedochance;
 
-		if(UnityEngine.Random.value < mutation_chance)
+		if(UnityEngine.Random.value < mutation_chance && CanMutate)
 		{
 			mutation_psuedochance = 0.0F;
 			yield return StartCoroutine(Mutate(power));
