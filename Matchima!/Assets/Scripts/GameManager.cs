@@ -300,13 +300,16 @@ public class GameManager : MonoBehaviour {
 				break;
 				case 3: //c
 				//TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["guard"], GENUS.DEX,1, 1);
-				StartCoroutine(Player.instance.AddXP(500));
-
+				//StartCoroutine(Player.instance.AddXP(500));
+				UIManager.Objects.DeathIcon.transform.position = UIManager.ClassButtons[1].transform.position + Vector3.up * 5;
+				UIManager.Objects.DeathIcon.gameObject.SetActive(true);
+				UIManager.Objects.DeathIcon.SetFrame(0);
+				UIManager.Objects.DeathIcon.Play("PlayDeath");
 				break;
 				case 4: //V
 				//GetTurn();
 				//PlayerControl.instance.focusTile.AddEffect("Charm", 5, "2", "1");
-				Player.Stats.Hit(5);
+				Player.Stats.Hit(50);
 				/*foreach(Class child in Player.Classes)
 				{
 					child.isKilled = true;

@@ -1661,25 +1661,21 @@ public class UIManager : MonoBehaviour {
 		ScreenAlert.SetActive(true);
 		ScreenAlert.SetTween(0,true);
 
-		Objects.DeathIcon.gameObject.SetActive(true);
+		yield return new WaitForSeconds(Time.deltaTime * 35);
+
+		Objects.DeathParent.SetTween(0, true);
 		Objects.DeathIcon.SetFrame(0);
-		Objects.DeathIcon.Play("Title Animation");
+		Objects.DeathIcon.Play("PlayDeath");
 
 		//Objects.DeathIcon.Img[0].enabled = true;
-		Transform death = Objects.DeathIcon.transform;
+		Transform death = Objects.DeathParent.transform;
+
 		Transform classbutton = ClassButtons.GetClass(c.Index).Img[0].transform;
-		death.position = classbutton.position;
+		death.position = classbutton.position + Vector3.down*0.4F;
+		death.localScale = new Vector3(c.Index > 1 ? -1:1,1,1);
 
-		float rising_time = 0.8F;
-		float rising_acc = 0.35F, rising_decay = 0.02F;
-		while((rising_time -= Time.deltaTime) > 0.0F)
-		{
-			death.position += Vector3.up * rising_acc;
-			if(rising_acc > 0.0F) rising_acc -= rising_decay;
-			yield return null;
-		}
-
-		yield return new WaitForSeconds(1.2F);
+		yield return new WaitForSeconds(0.8F);
+		yield return new WaitForSeconds(0.66F);
 
 		float spin_time = 1.3F;
 		float spin_acc = 35F, spin_decay = 0.7F;
@@ -1700,7 +1696,7 @@ public class UIManager : MonoBehaviour {
 			death.position += Vector3.down *falling_acc;
 			yield return null;
 		}
-		Objects.DeathIcon.gameObject.SetActive(false);
+		Objects.DeathParent.SetTween(0, false);
 
 		GameManager.instance.paused = false;
 		ScreenAlert.SetActive(false);
