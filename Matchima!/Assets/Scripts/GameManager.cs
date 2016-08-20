@@ -221,6 +221,7 @@ public class GameManager : MonoBehaviour {
 				}
 				if(GameData.loaded_assets)
 				{
+
 					Resources.UnloadUnusedAssets();
 					if(_ResumeGame) 
 					{
@@ -479,9 +480,11 @@ public class GameManager : MonoBehaviour {
 		CurrentFloorNum = 0;
 		gameStart = false;
 
+
 		Player.instance.Reset();
 		TileMaster.instance.Reset();
 		yield return StartCoroutine(UIManager.instance.Reset());
+		paused = false;
 		
 	}
 	void ClearUI()

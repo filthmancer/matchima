@@ -47,24 +47,32 @@ public class UIMenu : UIObj {
 	public MenuState State = MenuState.StartScreen;
 	private int top_division_last = 0;
 
+	private bool wedges_created;
 	bool loaded = false;
 
 	public IEnumerator LoadMenu()
 	{
 		State = MenuState.StartScreen;
-		int wedge_num = 8;
-		for(int i = 0; i < wedge_num; i++)
+		UIManager.Objects.BotGear[3].SetActive(true);
+		if(!wedges_created)
 		{
-			if(GameData.instance.Classes.Length <= i) break;
-			Class child = GameData.instance.Classes[i];
-			UIClassSelect obj = (UIClassSelect) Instantiate(ClassPrefab);
-			UIManager.Objects.BotGear[3].GetChild(0).AddChild(obj);
-			obj.transform.SetParent(UIManager.Objects.BotGear[3].GetChild(0).transform);
-			obj.Setup(child);
-			obj.transform.rotation = Quaternion.Euler(0,0,360 - (360/wedge_num * i));
+			wedges_created = true;
+			int wedge_num = 8;
+			for(int i = 0; i < wedge_num; i++)
+			{
+				if(GameData.instance.Classes.Length <= i) break;
+				Class child = GameData.instance.Classes[i];
+				UIClassSelect obj = (UIClassSelect) Instantiate(ClassPrefab);
+				UIManager.Objects.BotGear[3].GetChild(0).AddChild(obj);
+				obj.transform.SetParent(UIManager.Objects.BotGear[3].GetChild(0).transform);
+				obj.Setup(child);
+				obj.transform.rotation = Quaternion.Euler(0,0,360 - (360/wedge_num * i));
+			}
 		}
+		
 
 		UIManager.Objects.BotGear[3].GetChild(1).transform.SetAsLastSibling();
+		UIManager.Objects.BotGear[3][1].ClearActions();
 		UIManager.Objects.BotGear[3][1].AddAction(UIAction.MouseDown,
 			() => {
 				(UIManager.Objects.BotGear[3][0]).isPressed = true;
@@ -75,24 +83,27 @@ public class UIMenu : UIObj {
 				(UIManager.Objects.BotGear[3][0]).isPressed = false;
 				(UIManager.Objects.BotGear[3][0] as UIGear).Drag = false;
 				});
+
 		UIManager.Objects.BotGear[3].GetChild(0).SetActive(false);
 
-		UIManager.Objects.BotGear[3].GetChild(2).transform.SetAsLastSibling();
-		UIManager.Objects.BotGear[3].GetChild(2).AddAction(UIAction.MouseUp,
+		UIManager.Objects.BotGear[3][2].transform.SetAsLastSibling();
+		UIManager.Objects.BotGear[3][2].ClearActions();
+		UIManager.Objects.BotGear[3][2].AddAction(UIAction.MouseUp,
 			() => {
-				MainMenu(false);
-				bool filled = false;
+				
+				bool filled = true;
 				for(int i = 0; i < Player.instance._Classes.Length; i++)
 				{
 					if(Player.instance._Classes[i] == null)
 					{
 						PlayerPrefs.SetString("PrevClass_" + i, string.Empty);
-						filled = true;
+						filled = false;
 					}
 					else PlayerPrefs.SetString("PrevClass_" + i, Player.instance._Classes[i].Name);
-
 				}
+				print(filled);
 				PlayerPrefs.SetInt("PrevClass", filled ? 1 : 0);
+				MainMenu(false);
 		});
 		
 		yield return null;
@@ -124,6 +135,9 @@ public class UIMenu : UIObj {
 
 		}
 		bool activated = false;
+		UIManager.Objects.BotGear.ClearActions();
+		UIManager.Objects.TopGear.ClearActions();
+		UIManager.Objects.MiddleGear.ClearActions();
 		UIManager.Objects.BotGear.AddAction(UIAction.MouseUp, ()=>{activated = true;});
 		UIManager.Objects.TopGear.AddAction(UIAction.MouseUp, ()=>{activated = true;});
 		UIManager.Objects.MiddleGear.AddAction(UIAction.MouseUp, ()=>{activated = true;});
@@ -273,6 +287,10 @@ public class UIMenu : UIObj {
 		UIManager.Objects.TopGear.AddAction(UIAction.MouseUp,
 			() => {(UIManager.Objects.TopGear as UIGear).Drag = false;});
 
+
+		//UIManager.Objects.BotGear.AddAction(UIAction.MouseUp,
+		//	() => {HeroMenu(0);});
+
 		(UIManager.Objects.TopGear as UIObjTweener).SetTween(1, false);
 		(UIManager.Objects.BotGear as UIObjTweener).SetTween(1, false);
 		UIManager.ShowClassButtons(true);
@@ -311,12 +329,14 @@ public class UIMenu : UIObj {
 
 	public void HeroMenu(int x)
 	{
+		print(x);
 		if(!Player.instance.GetUnlock("charselect")) return;
 		top_division_last = UIManager.Objects.TopGear.LastDivision;
 		if(State != MenuState.Character)
 		{
 			State = MenuState.Character;
 			UIManager.Objects.MiddleGear.SetActive(false);
+			
 			(UIManager.Objects.BotGear as UIObjTweener).SetTween(2, true);
 			UIManager.Objects.BotGear[3][0].SetActive(true);
 			UIManager.Objects.BotGear[3][0].Img[1].gameObject.SetActive(false);
@@ -361,12 +381,20 @@ public class UIMenu : UIObj {
 			{
 				GetHeroMenu_Info(i);
 			});
+			//StartCoroutine(ClearBot());
 		}
 		else
 		{
 			if(x == 100) return;
 			SetTargetSlot(x);
 		}
+	}
+
+	IEnumerator ClearBot()
+	{
+		yield return null;
+		UIManager.Objects.BotGear.ClearActions();
+		yield return null;
 	}
 
 	private void GetHeroMenu_Info(int i)
@@ -636,6 +664,7 @@ public class UIMenu : UIObj {
 		UIManager.ClassButtons.GetClass(TargetSlot.Value).Setup(c._class);
 		UIManager.ClassButtons.GetClass(TargetSlot.Value).QuickPopup(0.1F);
 		(UIManager.Objects.BotGear[3][0] as UIGear).isFlashing = false;	
+		UIManager.ClassButtons.GetClass(TargetSlot.Value).TweenClass(false);
 		//If targetslot was initally null, set back to null
 		if(set_from_null) TargetSlot = null;
 	}

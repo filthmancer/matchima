@@ -17,7 +17,7 @@ private int _currentmanapower = 100;
 		bomb.Chance = 0.2F;
 		InitStats.TileChances.Add(bomb);
 
-		PowerupSpell = GameData.instance.GetPowerup("Color Swap", this);
+		PowerupSpell = GameData.instance.GetPowerup("Firestorm", this);
 
 		base.StartClass();	
 	}

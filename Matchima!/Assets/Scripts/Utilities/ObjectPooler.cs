@@ -50,7 +50,7 @@ public class ObjectPooler
 		{
 			Available.Push(t);
 			t.transform.position = PoolPos;
-			t.transform.parent = Parent;
+			t.transform.SetParent(Parent);
 			t.gameObject.SetActive(false);
 			return true;
 		}

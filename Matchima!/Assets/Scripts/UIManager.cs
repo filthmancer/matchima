@@ -241,7 +241,7 @@ public class UIManager : MonoBehaviour {
 	public IEnumerator Reset()
 	{
 		loaded = false;
-		
+		GameManager.inStartMenu = true;
 		yield return StartCoroutine(UnloadUI());
 		yield return StartCoroutine(Menu.LoadMenu());
 	}
@@ -365,6 +365,7 @@ public class UIManager : MonoBehaviour {
 
 		UIManager.Objects.MiddleGear.Img[0].enabled = false;
 
+		UIManager.Objects.BotGear[3].ClearActions();
 		UIManager.Objects.BotGear[3].AddAction(UIAction.MouseDown,()=>
 		{
 			UIManager.Menu.HeroMenu(0);

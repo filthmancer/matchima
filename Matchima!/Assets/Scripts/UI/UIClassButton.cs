@@ -38,6 +38,7 @@ public class UIClassButton : UIObj {
 	public override void Start()
 	{
 		base.Start();
+
 		AddAction(UIAction.MouseDown, ()=>
 		{
 			if(GameManager.inStartMenu)  UIManager.Menu.HeroMenu(ParentObj.Index);
@@ -53,7 +54,7 @@ public class UIClassButton : UIObj {
 			AddAction(UIAction.MouseDown, () => {
 				if(_class.MeterLvl > 0 && !GameManager.instance.isPaused) 
 				StartCoroutine(_class.UseManaPower());
-				});
+			});
 
 			if(ClassInit.IsObjectOpened()) ClassInit.OpenCloseObjectAnimation();
 		}
@@ -136,12 +137,14 @@ public class UIClassButton : UIObj {
 				SlotUI[i].Txt[0].text = (_class._Slots[i] as Item).ScaleString;
 			}
 		}
+		class_set = false;
 	}
 
 	public void Remove()
 	{
 		_class = null;
 		_Sprite.enabled = false;
+		class_set = false;
 		//this.GetComponent<Button>().enabled = false;
 	}
 

@@ -181,8 +181,8 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 
 	public void OnPointerDown(PointerEventData eventData)
 	{
-
 		//if(Application.isMobilePlatform) return;
+		print(Actions_MouseDown.Count + ":" +  this);
 		foreach(Action child in Actions_MouseDown)
 		{
 			child();
