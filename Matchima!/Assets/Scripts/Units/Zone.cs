@@ -59,23 +59,26 @@ public class Zone : MonoBehaviour {
 
 	public virtual Wave GetWaveProgressive()
 	{
-		if(!shown_intro_wave && Player.Options.StorySet == Ops_Story.AlwaysShow)
+		if(IntroWave != null)
 		{
-			shown_intro_wave = true;
-			PlayerPrefs.SetInt(Name + " Intro", 1);
-			return IntroWave;
-		}
-		else if(Player.Options.StorySet == Ops_Story.Default)
-		{
-			bool intro_in_past = PlayerPrefs.GetInt(Name + " Intro")==1;
-			if(!intro_in_past)
+			if(!shown_intro_wave && Player.Options.StorySet == Ops_Story.AlwaysShow)
 			{
 				shown_intro_wave = true;
 				PlayerPrefs.SetInt(Name + " Intro", 1);
 				return IntroWave;
-			}	
+			}
+			else if(Player.Options.StorySet == Ops_Story.Default)
+			{
+				bool intro_in_past = PlayerPrefs.GetInt(Name + " Intro")==1;
+				if(!intro_in_past)
+				{
+					shown_intro_wave = true;
+					PlayerPrefs.SetInt(Name + " Intro", 1);
+					return IntroWave;
+				}	
+			}
 		}
-
+		
 		if(Current >= Waves.Length) 
 		{
 			if(BossWave != null && !ShownBoss) 
@@ -85,7 +88,7 @@ public class Zone : MonoBehaviour {
 			}
 			else if(!Repeat) 
 			{
-				//GameManager.instance.EscapeZone();
+				GameManager.instance.EscapeZone();
 				return null;
 			}
 			else Current = 0;
@@ -97,26 +100,29 @@ public class Zone : MonoBehaviour {
 			w = Waves[Current];
 			Current++;
 		}
+		print(w);
 		return w;
 	}
 
 	public virtual Wave GetWaveRandom()
 	{
-		if(!shown_intro_wave && Player.Options.StorySet == Ops_Story.AlwaysShow)
-		{
-			shown_intro_wave = true;
-			PlayerPrefs.SetInt(Name + " Intro", 1);
-			return IntroWave;
-		}
-		else if(Player.Options.StorySet == Ops_Story.Default)
-		{
-			bool intro_in_past = PlayerPrefs.GetInt(Name + " Intro")==1;
-			if(!intro_in_past)
+		if(IntroWave != null){
+			if(!shown_intro_wave && Player.Options.StorySet == Ops_Story.AlwaysShow)
 			{
 				shown_intro_wave = true;
 				PlayerPrefs.SetInt(Name + " Intro", 1);
 				return IntroWave;
-			}	
+			}
+			else if(Player.Options.StorySet == Ops_Story.Default)
+			{
+				bool intro_in_past = PlayerPrefs.GetInt(Name + " Intro")==1;
+				if(!intro_in_past)
+				{
+					shown_intro_wave = true;
+					PlayerPrefs.SetInt(Name + " Intro", 1);
+					return IntroWave;
+				}	
+			}
 		}
 		List<Wave> choices = new List<Wave>();
 		List<float> chance = new List<float>();
@@ -140,15 +146,17 @@ public class Zone : MonoBehaviour {
 		int index = ChanceEngine.Index(chance.ToArray());
 		Current = index;
 		Wave w = choices[Current];
-		
+		print(w);
 		return w;
 	}
 
 	public virtual Wave CheckZone()
 	{
+		print(GameManager.Floor + ":" + Initial + ":" + Depth); 
 		if(Style == ZoneStyle.Progressive) return GetWaveProgressive();
 		else if(Style == ZoneStyle.Random)
 		{
+
 			if(GameManager.Floor >= Initial + Depth)
 			{
 				GameManager.instance.EscapeZone();

@@ -542,13 +542,14 @@ public class Wave : Unit {
 	{
 		if(alerter != null) alerter.PoolDestroy();
 
-		alerter = UIManager.instance.MiniAlert(UIManager.Objects.TopGear.transform.position + Vector3.down* 1.4F,
-						s, 70, Color.white, life, -0.2F, true);
-		alerter.transform.localScale *= 0.85F;
+		alerter = UIManager.instance.MiniAlert(UIManager.Objects.TopGear.transform.position + Vector3.down* 1.5F,
+						s, 70, Color.white, life, 0.0F, true);
+		alerter.transform.localScale *= 1.0F;
 		
 		if(life == 0.0F) alerter.DestroyOnEnd = false;
 		return alerter;
 	}
+
 
 
 

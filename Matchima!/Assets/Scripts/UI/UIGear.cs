@@ -56,7 +56,7 @@ public class UIGear : UIObjTweener {
 		}
 		else
 		{
-			if(Input.GetMouseButton(0) && Drag)
+			if(isPressed && Drag)
 			{
 				if(Input.GetMouseButtonDown(0)) 
 				{

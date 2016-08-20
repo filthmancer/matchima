@@ -65,15 +65,35 @@ public class UIMenu : UIObj {
 		}
 
 		UIManager.Objects.BotGear[3].GetChild(1).transform.SetAsLastSibling();
-		UIManager.Objects.BotGear[3].GetChild(0).AddAction(UIAction.MouseDown,
-			() => {(UIManager.Objects.BotGear[3][0] as UIGear).Drag = true;});
-		UIManager.Objects.BotGear[3].GetChild(0).AddAction(UIAction.MouseUp,
-			() => {(UIManager.Objects.BotGear[3][0] as UIGear).Drag = false;});
+		UIManager.Objects.BotGear[3][1].AddAction(UIAction.MouseDown,
+			() => {
+				(UIManager.Objects.BotGear[3][0]).isPressed = true;
+				(UIManager.Objects.BotGear[3][0] as UIGear).Drag = true;
+				});
+		UIManager.Objects.BotGear[3][1].AddAction(UIAction.MouseUp,
+			() => {
+				(UIManager.Objects.BotGear[3][0]).isPressed = false;
+				(UIManager.Objects.BotGear[3][0] as UIGear).Drag = false;
+				});
 		UIManager.Objects.BotGear[3].GetChild(0).SetActive(false);
 
 		UIManager.Objects.BotGear[3].GetChild(2).transform.SetAsLastSibling();
 		UIManager.Objects.BotGear[3].GetChild(2).AddAction(UIAction.MouseUp,
-			() => {MainMenu(false);});
+			() => {
+				MainMenu(false);
+				bool filled = false;
+				for(int i = 0; i < Player.instance._Classes.Length; i++)
+				{
+					if(Player.instance._Classes[i] == null)
+					{
+						PlayerPrefs.SetString("PrevClass_" + i, string.Empty);
+						filled = true;
+					}
+					else PlayerPrefs.SetString("PrevClass_" + i, Player.instance._Classes[i].Name);
+
+				}
+				PlayerPrefs.SetInt("PrevClass", filled ? 1 : 0);
+		});
 		
 		yield return null;
 		(UIManager.Objects.TopLeftButton as UIObjTweener).SetTween(0, false);
@@ -115,6 +135,7 @@ public class UIMenu : UIObj {
 
 		yield return new WaitForSeconds(Time.deltaTime * 10);
 		MainMenu(true);
+		UIManager.Objects.TopGear.MoveToDivision(PlayerPrefs.GetInt("PrevMode"));
 	}
 
 	public void NewGameActivate()
@@ -278,8 +299,8 @@ public class UIMenu : UIObj {
 		});
 
 		
-		UIManager.Objects.TopGear.MoveToDivision(top_division_last);
-		GetMiddleGearInfo(top_division_last);
+		UIManager.Objects.TopGear.MoveToDivision(PlayerPrefs.GetInt("PrevMode"));
+		GetMiddleGearInfo(PlayerPrefs.GetInt("PrevMode"));
 		UIManager.Objects.BotGear[3][0].SetActive(true);
 		UIManager.Objects.TopGear.Txt[0].text = "";
 		UIManager.Objects.BotGear.Txt[0].text = "";	
@@ -302,10 +323,26 @@ public class UIMenu : UIObj {
 			UIManager.Objects.BotGear.isFlashing = false;
 
 			UIManager.Objects.TopGear[1][0].Txt[0].text = "CUSTOM";
-			UIManager.Objects.TopGear[1][1].Txt[0].text = "SAVED";
-			UIManager.Objects.TopGear[1][2].Txt[0].text = "CHALLENGE";
+			UIManager.Objects.TopGear[1][1].Txt[0].text = "PREVIOUS";
+			UIManager.Objects.TopGear[1][2].Txt[0].text = "SAVED";
 			UIManager.Objects.TopGear[1][3].Txt[0].text = "TEAM OF THE WEEK";
-			UIManager.Objects.TopGear.MoveToDivision(0);
+
+			if(PlayerPrefs.GetInt("PrevClass") == 1)
+			{
+				UIManager.Objects.TopGear.MoveToDivision(1);
+				ReadClasses("PrevClass_");
+				SetClassUI();
+
+			}
+			else if(PlayerPrefs.GetInt("SavedClass") == 1)
+			{
+				UIManager.Objects.TopGear.MoveToDivision(2);
+				ReadClasses("SavedClass_");
+				SetClassUI();
+
+			}
+			else UIManager.Objects.TopGear.MoveToDivision(0);
+
 			(UIManager.Objects.BotGear[3][0] as UIGear).FlashArrows();	
 
 			UIManager.Objects.BotGear[1].Img[0].enabled = false;
@@ -403,6 +440,7 @@ public class UIMenu : UIObj {
 		bool unlocked = false;
 		//top_division_last = UIManager.Objects.TopGear.LastDivision;
 		//Reset();
+		if(i!= 1) PlayerPrefs.SetInt("PrevMode", i);
 		UIGear MidGear = UIManager.Objects.MiddleGear as UIGear;
 		switch(i)
 		{
@@ -450,21 +488,6 @@ public class UIMenu : UIObj {
 			(UIManager.Objects.BotGear as UIGear).SetTween(3, true);
 			
 			ShowSettingsUI(true);
-
-
-
-			/*UIManager.Objects.MiddleGear[0].Txt[0].text = 
-			"RESUME GAME\n" + 
-			"Turn: " + PlayerPrefs.GetInt("Turns");
-			(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, true);
-			(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, false);
-			UIManager.Objects.MiddleGear[0].GetChild(1).ClearActions();
-
-			UIManager.Objects.MiddleGear[0].GetChild(0).ClearActions(UIAction.MouseUp);
-			UIManager.Objects.MiddleGear[0].GetChild(0).AddAction(UIAction.MouseUp,
-			() => {
-				ResumeGameActivate();
-				});*/
 			break;
 
 			case 2:  // Endless
@@ -496,23 +519,8 @@ public class UIMenu : UIObj {
 			
 			(UIManager.Objects.BotGear as UIGear).SetTween(3, !Player.instance.GetUnlock("charselect"));
 
-			for(int n = 0; n < UIManager.ClassButtons.Length; n++)
-			{
-				if(Player.instance._Classes[n] == null)
-				{
-					UIManager.ClassButtons.GetClass(n)._Sprite.enabled = false;
-					UIManager.ClassButtons.GetClass(n)._SpriteMask.enabled = true;
-					UIManager.ClassButtons.GetClass(n)._SpriteMask.sprite = NoHeroInSlot;
-				}
-				else
-				{
-
-					UIManager.ClassButtons.GetClass(n)._Sprite.sprite = Player.instance._Classes[n].Icon;
-					UIManager.ClassButtons.GetClass(n)._Sprite.enabled = true;
-					UIManager.ClassButtons.GetClass(n)._SpriteMask.enabled = false;
-				}
-				
-			}
+			ReadClasses("PrevClass_");
+			SetClassUI();
 			break;
 
 			case 3:  // QUICK CRAWL
@@ -543,22 +551,46 @@ public class UIMenu : UIObj {
 			}
 			
 			(UIManager.Objects.BotGear as UIGear).SetTween(3, !Player.instance.GetUnlock("charselect"));
-			for(int n = 0; n < UIManager.ClassButtons.Length; n++)
+			ReadClasses("PrevClass_");
+			SetClassUI();
+
+			break;
+		}
+	}
+
+	public void ReadClasses(string type)
+	{
+		for(int n = 0; n < Player.instance._Classes.Length; n++)
+		{
+			Class c = GameData.instance.GetClass(PlayerPrefs.GetString(type + n));
+			if(c)
 			{
-				if(Player.instance._Classes[n] == null)
-				{
+				UIManager.ClassButtons.GetClass(n)._Sprite.enabled = true;
+				UIManager.ClassButtons.GetClass(n)._SpriteMask.enabled = false;
+				UIManager.ClassButtons.GetClass(n)._Sprite.sprite = c.Icon;
+				Player.instance._Classes[n] = c;
+			}
+		}
+		
+	}
+
+	public void SetClassUI()
+	{
+		for(int n = 0; n < UIManager.ClassButtons.Length; n++)
+		{
+			
+			if(Player.instance._Classes[n] != null)
+			{
+				UIManager.ClassButtons.GetClass(n)._Sprite.sprite = Player.instance._Classes[n].Icon;
+				UIManager.ClassButtons.GetClass(n)._Sprite.enabled = true;
+				UIManager.ClassButtons.GetClass(n)._SpriteMask.enabled = false;
+			}
+			else 
+			{
 					UIManager.ClassButtons.GetClass(n)._Sprite.enabled = false;
 					UIManager.ClassButtons.GetClass(n)._SpriteMask.enabled = true;
 					UIManager.ClassButtons.GetClass(n)._SpriteMask.sprite = NoHeroInSlot;
-				}
-				else
-				{
-					UIManager.ClassButtons.GetClass(n)._Sprite.sprite = Player.instance._Classes[n].Icon;
-					UIManager.ClassButtons.GetClass(n)._Sprite.enabled = true;
-					UIManager.ClassButtons.GetClass(n)._SpriteMask.enabled = false;
-				}
 			}
-			break;
 		}
 	}
 

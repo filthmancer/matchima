@@ -35,7 +35,7 @@ public class UIObjects : MonoBehaviour {
 	}
 
 	public UIObj ArmourParent;
-	public UIObj DeathIcon;
+	public tk2dSpriteAnimator DeathIcon;
 
 	public GameObject Options;
 	public UIScoreWindowNew ScoreWindowB;

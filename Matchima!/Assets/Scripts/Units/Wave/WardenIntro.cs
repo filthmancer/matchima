@@ -11,11 +11,11 @@ public class WardenIntro : Wave {
 		current++;
 		switch(current)
 		{
-			case 1:
-			yield return StartCoroutine(UIManager.instance.Alert(0.3F, "Heroes that cast spells\nget stronger", "Strong heroes live longer", "", true, 60));
+			case 3:
+			yield return StartCoroutine(UIManager.instance.Alert(0.3F, "Cast spells to\n strengthen heroes", "Strong heroes live longer", "", true, 60));
 			break;
 			case 2:
-			Alert("Using a spell can\ncause hero mutations");
+			//Alert("Using a spell can\ncause hero mutations");
 			break;
 		}
 		yield return null;
@@ -84,6 +84,6 @@ public class WardenIntro : Wave {
 		UIManager.Objects.TopGear.SetTween(0, false);
 		UIManager.instance.ScreenAlert.SetTween(0,false);
 		UIManager.Objects.BotGear.SetTween(3, false);
-		Alert("Collecting mana\nfills the enemy bar");
+		yield return StartCoroutine(UIManager.instance.Alert(0.3F, "Defeat the\nwarden", "Collect mana to\ndefeat enemy waves", "", true, 60));
 	}
 }

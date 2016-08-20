@@ -55,7 +55,7 @@ public class Thief : Class {
 			Quotes.StartQuotes.Add(barb_disgust);
 		}
 
-		PowerupSpell = GameData.instance.GetPowerup("Throw Knives", this);
+		PowerupSpell = GameData.instance.GetPowerup("Create Bombs", this);
 
 		base.StartClass();
 	}

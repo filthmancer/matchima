@@ -393,7 +393,11 @@ public class Class : Unit {
 		Destroy(powerup);
 		if(Manapower_audio != null) Destroy(Manapower_audio.gameObject);
 
-		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons.GetClass(Index).transform.position, "POWER\nUP", 75, GameData.Colour(Genus), 1.2F, 0.2F);
+		Vector3 alertpos = UIManager.ClassButtons.GetClass(Index).transform.position;
+		float hp_x = UIManager.instance.Health.transform.position.x;
+		alertpos.x = Mathf.Clamp(alertpos.x, hp_x-1.0F, hp_x+1.0F);
+		MiniAlertUI m = UIManager.instance.MiniAlert(alertpos, "SPELL " + newlvl + "\nREADY!", 120, GameData.Colour(Genus), 1.2F, 0.2F, true);
+		m.transform.localScale *= 0.85F;
 		MeterLvl = newlvl;
 		MeterDecay_soft = MeterDecayInit[MeterLvl];
 		MeterDecay = (int) MeterDecay_soft;

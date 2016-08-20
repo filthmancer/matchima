@@ -306,11 +306,11 @@ public class GameManager : MonoBehaviour {
 				case 4: //V
 				//GetTurn();
 				//PlayerControl.instance.focusTile.AddEffect("Charm", 5, "2", "1");
-				Player.Stats.Hit(10000);
-				foreach(Class child in Player.Classes)
+				Player.Stats.Hit(5);
+				/*foreach(Class child in Player.Classes)
 				{
 					child.isKilled = true;
-				}
+				}*/
 				break;
 				case 5: //B
 				PlayerControl.instance.focusTile.InitStats.TurnDamage += 1000;
@@ -448,7 +448,7 @@ public class GameManager : MonoBehaviour {
 		brackets[0] = new Vector2(1,1);
 		for(int i = 1; i < length; i ++)
 		{
-			int min = Random.Range(1,2);
+			int min = (i>0 ? 2:1);
 			int max = Random.Range(2,5);
 			brackets[i] = new Vector2(min, max);
 		}
@@ -531,6 +531,7 @@ public class GameManager : MonoBehaviour {
 
 	IEnumerator EndGame(End_Type e)
 	{
+
 		int [] xp = CalculateXP();
 		yield return new WaitForSeconds(0.1F);
 		TileMaster.instance.ClearGrid(true);
@@ -541,13 +542,16 @@ public class GameManager : MonoBehaviour {
 
 	int [] CalculateXP()
 	{
+		int turns = Player.instance.Turns;
+		if(turns == 0) turns = 1;
+
 		int turns_per_floor = 10;
 
 		int [] final = new int [2];
 		final[0] = GameManager.Floor * 10;
 
 		final[1] = GameManager.Floor * turns_per_floor;
-		final[1] = Mathf.Clamp(final[1]/Player.instance.Turns, 1, 100);
+		final[1] = Mathf.Clamp(final[1]/turns, 1, 100);
 		final[1] *= final[0];
 		return final;
 	}
@@ -677,6 +681,7 @@ public class GameManager : MonoBehaviour {
 			CurrentFloorNum ++;
 			if(w == null)
 			{
+
 				w = Zone.CheckZone();
 			}
 	

@@ -10,60 +10,6 @@ private int _currentmanapower = 100;
 
 	// Use this for initialization
 	public override void StartClass () {
-		
-		/*ClassUpgrade a = new ClassUpgrade((int val) => {InitStats.CooldownDecrease += 0.01F * val;});
-		a.Name = "Cooldowns";
-		a.ShortName = "CD%";
-		a.Description = " spell cooldowns";
-		a.BaseAmount = 1;
-		a.Prefix = "-";
-		a.Suffix = "%";
-		a.Rarity = Rarity.Common;
-
-		ClassUpgrade b = new ClassUpgrade((int val) => {InitStats.MagicPower += 1 * val;});
-		b.BaseAmount = 1;
-		b.Name = "Spell Power";
-		b.ShortName = "SP";
-		b.Description = " Spell Power.\nIncreases strength of spells";
-		b.Prefix = "+";
-		b.Rarity = Rarity.Uncommon;
-
-		wiz_cross = new TileChance();
-		wiz_cross.Genus = "Alpha";
-		wiz_cross.Type = "cross";
-		InitStats.TileChances.Add(wiz_cross);
-
-		ClassUpgrade c = new ClassUpgrade((int val) => {wiz_cross.Chance += 0.01F * val;});
-		c.Name = "Alpha Cross Tiles";
-		c.ShortName = "CRS";
-		c.BaseAmount = 1;
-		c.Description = " chance of Alpha Cross Tiles";
-		c.Prefix = "+";
-		c.Suffix = "%";
-		c.Rarity = Rarity.Magic;
-
-		wiz_arcane = new TileChance();
-		wiz_arcane.Genus = GameData.ResourceLong(Genus);
-		wiz_arcane.Type = "arcane";
-		InitStats.TileChances.Add(wiz_arcane);
-
-		ClassUpgrade wiz_arcane_up = new ClassUpgrade((int val) => {wiz_arcane.Chance += 0.02F * val;});
-		wiz_arcane_up.Name = GameData.ResourceLong(Genus) + " Arcane Tiles";
-		wiz_arcane_up.ShortName = GameData.Resource(Genus) + " ARC";
-		wiz_arcane_up.Description = " chance of\n" + GameData.ResourceLong(Genus) + " Arcane Tiles";
-		wiz_arcane_up.BaseAmount = 2;
-		wiz_arcane_up.Prefix = "+";
-		wiz_arcane_up.Suffix = "%";
-		wiz_arcane_up.Rarity = Rarity.Uncommon;
-
-		ClassUpgrade manamax = new ClassUpgrade((int val) => {InitStats.MeterMax += 5 * val;});
-		manamax.Name = "Mana Max";
-		manamax.ShortName = "MP MAX";
-		manamax.Description = " Maximum Mana";
-		manamax.BaseAmount = 5;
-		manamax.Prefix = "+";
-		manamax.Rarity = Rarity.Common;
-		AddUpgrades(new ClassUpgrade[] {a,b,c, wiz_arcane_up, manamax});*/
 
 		TileChance bomb = new TileChance();
 		bomb.Genus = GameData.ResourceLong(Genus);
@@ -71,31 +17,7 @@ private int _currentmanapower = 100;
 		bomb.Chance = 0.2F;
 		InitStats.TileChances.Add(bomb);
 
-		/*lightning = new TileChance();
-		lightning.Genus = GameData.ResourceLong(Genus);
-		lightning.Type = "lightning";
-		lightning.Chance = 0.2F;
-		InitStats.TileChances.Add(lightning);*/
-
-		//TileChance vanilla = new TileChance();
-		//vanilla.Genus = string.Empty;
-		//vanilla.Type = "lightning";
-		//vanilla.Chance = 0.1F;
-		//InitStats.TileChances.Add(vanilla);
-
-		//TileChance arcane = new TileChance();
-		//arcane.Genus = GameData.ResourceLong(Genus);
-		//arcane.Type = "cross";
-		//arcane.Chance = 0.1F;
-		//InitStats.TileChances.Add(arcane);
-
-		/*TileChance health = new TileChance();
-		health.Genus = GameData.ResourceLong(Genus);
-		health.Type = "health";
-		health.Chance = 0.05F;
-		InitStats.TileChances.Add(health);*/
-
-		PowerupSpell = GameData.instance.GetPowerup("Firestorm", this);
+		PowerupSpell = GameData.instance.GetPowerup("Color Swap", this);
 
 		base.StartClass();	
 	}

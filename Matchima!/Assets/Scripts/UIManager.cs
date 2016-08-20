@@ -114,8 +114,8 @@ public class UIManager : MonoBehaviour {
 		for(int i = 0; i < PlayerHealth.Length; i++)
 		{
 			float curr = PlayerHealth[i].clipBottomLeft.x;
-			PlayerHealth[i].clipBottomLeft = new Vector2(Mathf.Lerp(curr, 1.0f - Player.Stats.GetHealthRatio(), Time.deltaTime * 15), 0);
-			PlayerHealth[i].color = Color.Lerp(GameData.instance.ShieldEmpty, GameData.instance.ShieldFull, Player.Stats.GetHealthRatio());
+			PlayerHealth[i].clipBottomLeft = new Vector2(Mathf.Lerp(curr, 1.0F - (Player.Stats.GetHealthRatio()*0.65F), Time.deltaTime * 15), 0);
+			PlayerHealth[i].color = Color.Lerp(GameData.instance.BadColour, GameData.instance.GoodColour, Player.Stats.GetHealthRatio());
 		}
 		if(GameManager.Wave != null)
 		{
@@ -614,6 +614,7 @@ public class UIManager : MonoBehaviour {
 			classtarget_mover.SetIntMethod( 
 				(int [] amt) =>
 				{
+					if(Player.Classes[amt[0]] == null) return;
 					if((GENUS)amt[0] != GENUS.ALL) Player.Classes[amt[0]].AddToMeter(Meters[amt[0]]);
 					else
 					{
@@ -1389,17 +1390,18 @@ public class UIManager : MonoBehaviour {
 	public IEnumerator AddClass(Class c, int slot)
 	{
 		ClassButtons.GetClass(slot).Setup(c);
-		
-		MiniAlert(Health.transform.position + Vector3.up * 2.5F,
-		c.Name + " joined\nthe party!", 80, GameData.Colour((GENUS)slot), 1.1F, 0.1F, true);
-
+	
 	  	UIManager.ClassButtons.GetClass(slot).ShowClass(true);
 	  	GameObject powerup = EffectManager.instance.PlayEffect(UIManager.ClassButtons.GetClass(slot).transform, Effect.ManaPowerUp, GameData.Colour(c.Genus));
 	  	powerup.transform.localScale = Vector3.one;
 	  	
 	  	yield return new WaitForSeconds(Time.deltaTime * 55);
+	  	MiniAlert(Health.transform.position + Vector3.up * 2.5F,
+		c.Name + " joined\nthe party!", 80, GameData.Colour((GENUS)slot), 1.1F, 0.1F, true);
+
 	  	UIManager.ClassButtons.GetClass(slot).ShowClass(false);
 	  	Destroy(powerup);
+	  	yield return new WaitForSeconds(Time.deltaTime * 55);
 	}
 
 
@@ -1658,7 +1660,12 @@ public class UIManager : MonoBehaviour {
 		GameManager.instance.paused = true;
 		ScreenAlert.SetActive(true);
 		ScreenAlert.SetTween(0,true);
-		Objects.DeathIcon.Img[0].enabled = true;
+
+		Objects.DeathIcon.gameObject.SetActive(true);
+		Objects.DeathIcon.SetFrame(0);
+		Objects.DeathIcon.Play("Title Animation");
+
+		//Objects.DeathIcon.Img[0].enabled = true;
 		Transform death = Objects.DeathIcon.transform;
 		Transform classbutton = ClassButtons.GetClass(c.Index).Img[0].transform;
 		death.position = classbutton.position;
@@ -1671,6 +1678,8 @@ public class UIManager : MonoBehaviour {
 			if(rising_acc > 0.0F) rising_acc -= rising_decay;
 			yield return null;
 		}
+
+		yield return new WaitForSeconds(1.2F);
 
 		float spin_time = 1.3F;
 		float spin_acc = 35F, spin_decay = 0.7F;
@@ -1691,7 +1700,7 @@ public class UIManager : MonoBehaviour {
 			death.position += Vector3.down *falling_acc;
 			yield return null;
 		}
-		Objects.DeathIcon.Img[0].enabled = false;
+		Objects.DeathIcon.gameObject.SetActive(false);
 
 		GameManager.instance.paused = false;
 		ScreenAlert.SetActive(false);

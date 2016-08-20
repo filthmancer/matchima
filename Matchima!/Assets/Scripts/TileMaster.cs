@@ -25,6 +25,16 @@ public class TileMaster : MonoBehaviour {
 		get {return TileMaster.Grid.Tiles;}
 	}
 
+	public static Tile RandomTile
+	{
+		get
+		{
+			int x = Random.Range(0, Grid.Size[0]);
+			int y = Random.Range(0, Grid.Size[1]);
+			return Tiles[x,y];
+		}
+	}
+
 	private static float YScale
 	{
 		get {
@@ -607,8 +617,6 @@ public class TileMaster : MonoBehaviour {
 
 		if (!destroy) return;
 		if (Grid != null) Grid.DestroyThyself();
-
-		print(TileMaster.Grid);
 	}
 
 	public void NewGrid(SPECIES sp = null, GENUS g = GENUS.NONE, bool no_enemies = false)

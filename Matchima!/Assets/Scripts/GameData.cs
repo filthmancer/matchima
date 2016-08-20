@@ -829,7 +829,9 @@ public class GameData : MonoBehaviour {
 			"firestorm",
 			"throwknives",
 			"lullaby",
-			"colorswap"
+			"colorswap",
+			"calldown",
+			"createbombs"
 		};
 
 		public void LoadPowerups()

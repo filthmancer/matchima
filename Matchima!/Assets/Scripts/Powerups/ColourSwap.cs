@@ -9,8 +9,14 @@ public class ColourSwap : Powerup {
 
 	protected override IEnumerator Minigame(int Level)
 	{
+		GameManager.instance.paused = true;
+		yield return StartCoroutine(PowerupStartup());
 
+		UIManager.instance.ScreenAlert.SetTween(0, false);
 		yield return StartCoroutine(Cast(Level));
+
+		yield return new WaitForSeconds(Time.deltaTime * 30);
+		GameManager.instance.paused = false;
 	}
 
 	IEnumerator Cast(int Level)

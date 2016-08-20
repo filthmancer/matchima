@@ -32,7 +32,7 @@ public class Barbarian : Class {
 		sword.Chance = 0.01F;
 		InitStats.TileChances.Add(sword);
 
-		PowerupSpell = GameData.instance.GetPowerup("Heal", this);
+		PowerupSpell = GameData.instance.GetPowerup("Calldown", this);
 
 		Ups_Lvl1 = new Upgrade []
 		{

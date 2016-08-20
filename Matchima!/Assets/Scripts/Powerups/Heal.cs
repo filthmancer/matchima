@@ -16,7 +16,6 @@ public class Heal : Powerup {
 		
 		yield return StartCoroutine(PowerupStartup());
 
-		
 		float final_ratio = 0.0F;
 		UIObj MGame = (UIObj)Instantiate(MinigameObj[0]);
 		MGame.transform.SetParent(UIManager.Objects.MiddleGear.transform);

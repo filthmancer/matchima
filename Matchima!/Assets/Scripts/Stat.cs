@@ -465,7 +465,7 @@ public class Stat
 		float info_movespeed = 0.25F;
 		float info_finalscale = 0.65F;
 
-		Vector3 pos = UIManager.instance.Health.transform.position + Vector3.up * 0.3F;
+		Vector3 pos = UIManager.instance.Health.transform.position + Vector3.up * 2.1F;
 		MiniAlertUI m = UIManager.instance.MiniAlert(pos,  ""+final_hit, info_start_size, Color.white, info_time, 0.6F, false);
 		m.Img[0].sprite = m.SpikyBack;
 		m.Img[0].enabled = true;

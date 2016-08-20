@@ -18,12 +18,15 @@ public class Tutorial : Wave {
 
 		(UIManager.Objects.TopGear as UIGear).Drag = false;
 
-		Alert("Drag through\ntiles to match");
-		current++;
-		yield return new WaitForSeconds(Time.deltaTime * 15);
-		StartCoroutine(UIManager.instance.ImageQuote(1.1F, Player.Classes[0], 
+		yield return StartCoroutine(UIManager.instance.ImageQuote(1.1F, Player.Classes[0], 
 													TileMaster.Types["resource"].Atlas, "Red",
 													TileMaster.Genus.Frames, "Red"));
+
+		yield return new WaitForSeconds(Time.deltaTime * 10);
+		Alert("Drag through\ntiles to match");
+		current++;
+		
+		
 	}
 
 	protected override IEnumerator WaveActivateRoutine()
@@ -60,7 +63,7 @@ public class Tutorial : Wave {
 			TileMaster.instance.MapSize_Default = new Vector2(3,3);
 			TileMaster.Tiles[1,1].InitStats.Hits = 3;
 			TileMaster.Tiles[1,1].CheckStats();
-			Alert("Some tiles take\nmultiple hits to destroy", 3.4F);
+			Alert("Some tiles take\nmultiple hits to destroy");
 			//TileMaster.Tiles[0,1].InitStats.Hits = 2;
 			//TileMaster.Tiles[0,1].CheckStats();
 			current++;
@@ -72,7 +75,7 @@ public class Tutorial : Wave {
 			TileMaster.instance.ReplaceTile(1,2, TileMaster.Types["grunt"], GENUS.STR);
 			yield return new WaitForSeconds(Time.deltaTime * 10);
 
-			Alert("Enemy tiles attack your\nhealth after every turn", 3.4F);
+			Alert("Enemy tiles attack your\nhealth after every turn");
 			current++;
 			break;
 
@@ -82,12 +85,13 @@ public class Tutorial : Wave {
 			break;
 
 			case 5:
+			Alert("A red X means your\nattack will kill\nthe enemy");
 			TileMaster.instance.ReplaceTile(0,2, TileMaster.Types["grunt"], GENUS.STR);
 			TileMaster.instance.ReplaceTile(1,2, TileMaster.Types["grunt"], GENUS.STR);	
 			current++;
 			break;
 			case 6:
-		
+			Alert("Enemies have different\nattacks and health");
 			TileMaster.instance.ReplaceTile(0,2, TileMaster.Types["grunt"], GENUS.STR);
 			TileMaster.instance.ReplaceTile(1,2, TileMaster.Types["grunt"], GENUS.STR);
 			current++;
@@ -98,23 +102,27 @@ public class Tutorial : Wave {
 			current++;
 			break;
 			case 8:
-			if(TileMaster.Enemies.Length == 0)
+			if(dex_alert)
 			{
-				yield return StartCoroutine(UIManager.instance.ImageQuote(1.1F, Player.Classes[0], 
-														UIManager.Objects.QuoteAtlas, "heart"));
-				yield return StartCoroutine(UIManager.instance.ImageQuote(1.1F, Player.Classes[1], 
-														TileMaster.Types["health"].Atlas, "Red",
-														TileMaster.Genus.Frames, "Red"));
-
-				TileMaster.instance.ReplaceTile(0,2, TileMaster.Types["health"], GENUS.STR,1,2);
-				Alert("Collect health tiles\nto regain health");
+				Alert("Dexterity increases\nattack damage", 2.4F);
 				current++;
 			}
-			
 			break;
 			case 9:
+				if(TileMaster.Enemies.Length == 0)
+				{
+					yield return StartCoroutine(UIManager.instance.ImageQuote(1.1F, Player.Classes[0], 
+															UIManager.Objects.QuoteAtlas, "heart"));
+					yield return StartCoroutine(UIManager.instance.ImageQuote(1.1F, Player.Classes[1], 
+															TileMaster.Types["health"].Atlas, "Red",
+															TileMaster.Genus.Frames, "Red"));
 
-			yield return StartCoroutine(UIManager.instance.Alert(0.3F, "", "Collect mana to\nfill a hero's meter", "", true, 60));
+					TileMaster.instance.ReplaceTile(0,2, TileMaster.Types["health"], GENUS.STR,1,2);
+					Alert("Collect health tiles\nto regain health",2.4F);
+					current++;
+				}
+			break;
+			case 10:
 			
 			TileMaster.instance.ReplaceTile(1,0, TileMaster.Types["health"], GENUS.STR, 1,2);
 			TileMaster.instance.ReplaceTile(2,0, TileMaster.Types["health"], GENUS.DEX, 1,2);
@@ -126,7 +134,8 @@ public class Tutorial : Wave {
 			Tile t = TileMaster.instance.ReplaceTile(1,2, TileMaster.Types["blob"], GENUS.STR, 2,3);
 			t.AddAction(() =>
 			{
-				StartCoroutine(SplitBlobBoss());
+				current++;
+				//StartCoroutine(SplitBlobBoss());
 			});
 
 			TileMaster.Types["grunt"]["Red"].ChanceInitial = 0.25F;
@@ -136,29 +145,39 @@ public class Tutorial : Wave {
 
 			current++;
 			break;
-			case 10:
+			case 12:
+				Player.Classes[1].CanCollectMana = true;
+				Player.Classes[0].CanCollectMana = true;
+				yield return StartCoroutine(UIManager.instance.Alert(0.3F, "", "Collect mana to\ncast hero spells", "", true, 60));
 				TileMaster.instance.MapSize_Default = new Vector2(5,5);
 				current++;
 			break;
-			case 11:
-			if(shownpowerupalert || Player.instance.Turns > 15)
+			case 13:
+			if(shownpowerupalert || Player.instance.Turns > 19)
 			{
 				yield return StartCoroutine(AddWizard());
 				current++;
 			}
 			break;
-			case 12:
-				Alert("Use tiles to help\ndefeat enemies.", 3.4F);
+			case 14:
+			if(wis_alert)
+			{
+				Alert("Wisdom increases\nspell damage", 2.4F);
 				current++;
+			}
 			break;
-			case 13:
+			case 15:
 				yield return StartCoroutine(AddBard());
 				current++;
 			break;
-			case 14:
-			current++;
+			case 16:
+			if(cha_alert)
+			{
+				Alert("Charisma increases\ntile value", 2.4F);
+				current++;
+			}
 			break;
-			case 15:
+			case 17:
 			current++;
 			TileMaster.instance.MapSize_Default = new Vector2(5,6);
 			Current = Required;
@@ -172,7 +191,7 @@ public class Tutorial : Wave {
 				if(Player.Classes[i] == null) continue;
 				if(Player.Classes[i].MeterLvl >= 1)
 				{
-					yield return StartCoroutine(UIManager.instance.Alert(0.3F, "A hero\npowered up!", "Tap on a powered\nhero's icon to\ncast a spell", "", true, 60));
+					yield return StartCoroutine(UIManager.instance.Alert(0.3F, "A spell\nis ready!", "Tap on a powered\nhero's icon to\ncast a spell", "", true, 60));
 					shownpowerupalert = true;
 				}
 			}
@@ -184,14 +203,11 @@ public class Tutorial : Wave {
 	public WaveUnit Warden;
 
 	private bool shownpowerupalert = false;
+	private bool wis_alert, dex_alert, cha_alert;
 
 	public IEnumerator SplitBlobBoss()
 	{
-		Player.Classes[1].CanCollectMana = true;
-		Player.Classes[0].CanCollectMana = true;
 		
-		//Player.Classes[1].AddToMeter(Player.Classes[1].MeterTop-5);
-		//Player.Classes[0].AddToMeter(Player.Classes[0].MeterTop-5);
 		
 		yield return null;
 	}
@@ -234,7 +250,13 @@ public class Tutorial : Wave {
 		yield return StartCoroutine(UIManager.instance.ImageQuote(1.1F, Player.Classes[1], 
 													TileMaster.Types["resource"].Atlas, "Blue",
 													TileMaster.Genus.Frames, "Blue"));
-	 	Alert("The Rogue has \nhigh Dexterity", 3.4F);
+	 	MiniAlertUI al = Alert("The Rogue has \nhigh Dexterity", 2.4F);
+	 	al.AddAction( ()=>
+	 	{
+	 		dex_alert = true;
+	 		//Alert("Dexterity increases\nattack damage", 2.4F);
+	 	});
+	 	
 	}
 
 	IEnumerator AddWizard()
@@ -267,7 +289,12 @@ public class Tutorial : Wave {
 		yield return StartCoroutine(UIManager.instance.ImageQuote(1.1F, Player.Classes[2], 
 													TileMaster.Types["resource"].Atlas, "Green",
 													TileMaster.Genus.Frames, "Green"));
-		Alert("The Wizard has \nhigh Wisdom", 3.4F);
+		MiniAlertUI al = Alert("The Wizard has \nhigh Wisdom", 2.4F);
+	 	al.AddAction( ()=>
+	 	{
+	 		wis_alert = true;
+	 		//Alert("Wisdom increases\nspell damage", 2.4F);
+	 	});
 	}
 
 	IEnumerator AddBard()
@@ -290,6 +317,8 @@ public class Tutorial : Wave {
 		TileMaster.instance.SetFillGrid(true);
 
 		Destroy(p.gameObject);
+
+		yield return new WaitForSeconds(Time.deltaTime * 15);
 		yield return StartCoroutine(Player.instance.AddClassToSlot(3, GameData.instance.GetClass("Bard")));
 
 		TileMaster.Types["resource"]["Yellow"].ChanceInitial = 1.0F;
@@ -301,7 +330,13 @@ public class Tutorial : Wave {
 													TileMaster.Types["resource"].Atlas, "Yellow",
 													TileMaster.Genus.Frames, "Yellow"));
 		
-		Alert("The Bard has \nhigh Charisma", 3.4F);
+		
+		MiniAlertUI al = Alert("The Bard has \nhigh Charisma", 2.4F);
+	 	al.AddAction( ()=>
+	 	{
+	 		cha_alert = true;
+	 		//Alert("Charisma increases\n tile value", 2.4F);
+	 	});
 	}
 
 
