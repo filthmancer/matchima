@@ -255,7 +255,8 @@ public class UIManager : MonoBehaviour {
 	public IEnumerator LoadUI()
 	{
 		while(!Player.loaded) yield return null;
-		
+
+		SetLoadScreen(true);
 		Objects.TopGear.DivisionActions.Clear();
 		Objects.ShowObj(Objects.MainUI, true);
 		int i =0;
@@ -296,6 +297,12 @@ public class UIManager : MonoBehaviour {
 		Objects.MiddleGear[3][4].AddAction(UIAction.MouseUp, ()=>
 		{
 			AudioManager.PlayMusic = !AudioManager.PlayMusic;
+		});
+
+		Objects.MiddleGear[3][5].AddAction(UIAction.MouseUp, ()=>
+		{
+			Player.Options.CycleGameSpeed();
+			Objects.MiddleGear[3][5].Txt[1].text = Player.Options.GameSpeed + "x";
 		});
 
 		Objects.MiddleGear[3][6].AddAction(UIAction.MouseUp, ()=>
@@ -352,7 +359,6 @@ public class UIManager : MonoBehaviour {
 
 		Objects.TopRightButton.ClearActions();
 
-		
 		UIManager.ShowClassButtons(false);
 		UIManager.ShowWaveButtons(false);
 		
@@ -377,6 +383,23 @@ public class UIManager : MonoBehaviour {
 
 		UIManager.ShowWaveButtons(false);
 		yield return null;
+	}
+
+	public void SetLoadScreen(bool active)
+	{
+		(UIManager.Objects.TopGear as UIObjTweener).SetTween(1,active);
+		(UIManager.Objects.TopGear as UIGear).SetRotate(active, Vector3.forward * 0.7F);
+		
+		(UIManager.Objects.BotGear as UIObjTweener).SetTween(1,active);
+		(UIManager.Objects.BotGear as UIGear).SetRotate(active, Vector3.forward * 0.7F);
+
+		UIManager.Objects.BotGear[4].SetActive(active);
+		
+		(UIManager.Objects.TopLeftButton as UIObjTweener).SetTween(0, !active);
+		(UIManager.Objects.TopRightButton as UIObjTweener).SetTween(0,!active);
+		
+		UIManager.Objects.BotGear[0].SetActive(!active);
+		if(!active) UIManager.Objects.TopGear.Txt[0].text = "";
 	}
 
 

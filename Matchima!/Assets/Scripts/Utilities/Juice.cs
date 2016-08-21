@@ -66,7 +66,7 @@ public class Juice : MonoBehaviour {
 		StartCoroutine(JuiceRoutine(j, t, time, intensity));
 	}
 
-	IEnumerator JuiceRoutine(JuiceIt j, Transform t, float time, float inten)
+	public IEnumerator JuiceRoutine(JuiceIt j, Transform t, float time, float inten)
 	{
 		if(t == null) yield break;
 		float curr = 0.0F;

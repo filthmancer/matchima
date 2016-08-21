@@ -861,16 +861,56 @@ public class Ops
 	public float GameSpeed
 	{
 		get {return game_speed;}
-		set {game_speed = Mathf.Clamp(value, 0.0F, 2.0F);}
+		set {
+			game_speed = Mathf.Clamp(value, 0.0F, 3.0F);
+			PlayerPrefs.SetFloat("GameSpeed", game_speed);}
+	}
+	public void CycleGameSpeed(){
+		if(GameSpeed == 3.0F) GameSpeed = 0.25F;
+		else GameSpeed *= 2;
+	}
+
+	private bool real_hp = false;
+	public bool RealHP{
+		get{return real_hp;}
+		set{
+			real_hp = value;
+			PlayerPrefs.SetInt("RealHP", value ? 1 : 0);
+		}
+	}
+	private bool show_num = false;
+	public bool ShowNumbers{
+		get{return show_num;}
+		set{
+			show_num = value;
+			PlayerPrefs.SetInt("ShowNumbers", value ? 1 : 0);
+		}
+	}
+
+	private Ops_Story show_story = Ops_Story.Default;
+	public Ops_Story ShowStory
+	{
+		get{return show_story;}
+		set
+		{
+			show_story = (Ops_Story) value;
+			PlayerPrefs.SetInt("ShowStory", (int) value);
+		}
+	}
+
+	public void Setup()
+	{
+		GameSpeed = PlayerPrefs.GetFloat("GameSpeed");
+		real_hp = PlayerPrefs.GetInt("RealHP") == 1;
+		show_num = PlayerPrefs.GetInt("ShowNumbers") == 1;
+		show_story = (Ops_Story) PlayerPrefs.GetInt("ShowStory");
 	}
 
 	public KeyCode ViewTileStatsKey = KeyCode.LeftShift;
 
 	public KeyCode GravityUp = KeyCode.UpArrow, GravityDown = KeyCode.DownArrow, GravityLeft = KeyCode.LeftArrow, GravityRight = KeyCode.RightArrow;
 	//public bool HealthFromResource = false;
-	public bool RealHP = false;
-	public bool ShowNumbers = false;
-	public Ops_Story StorySet = Ops_Story.Default;
+
 
 	public bool PowerupAlerted = false;
 }
@@ -879,6 +919,7 @@ public enum Ops_Story
 {
 	Default, AlwaysShow, NeverShow
 }
+
 
 //Item Information
 [System.Serializable]

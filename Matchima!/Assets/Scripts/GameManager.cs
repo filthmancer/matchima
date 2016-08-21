@@ -101,6 +101,8 @@ public class GameManager : MonoBehaviour {
 	private float OverflowHitMulti = 1.0F;
 	private float AllOfTypeMulti = 1.2F;
 
+	public Zone QuickCrawlOverride;
+
 
 	public bool LevelUp = false;
 	
@@ -208,34 +210,7 @@ public class GameManager : MonoBehaviour {
 			if(Input.GetKeyDown(KeyCode.A))	Cheat(8);
 			if(Input.GetKeyDown(KeyCode.S))	Cheat(9);
 			CurrentZoneMap = ZoneMap;
-			if(Player.loaded && UIManager.loaded && !gameStart && !Player.Stats.isKilled)
-			{
-				if(!GameData.loading_assets) GameData.instance.LoadAssets();
-				if(Application.isMobilePlatform)
-				{
-					//Player.Options.GameSpeed = 0.5F;
-					//if (Time.frameCount % 60 == 0)
-					//{
-					//   System.GC.Collect();
-					//}
-				}
-				if(GameData.loaded_assets)
-				{
-
-					Resources.UnloadUnusedAssets();
-					if(_ResumeGame) 
-					{
-						StartCoroutine(ResumeGame());
-					}
-					else
-					{
-						//TileMaster.instance.SetFillGrid(true);
-						if(Mode == GameMode.Story) PlayStoryMode();
-						else if (Mode == GameMode.Endless) PlayEndlessMode();
-						else if (Mode == GameMode.Quick) PlayQuickMode();
-					}
-				}
-			}
+			
 	
 			if(EnemyTurn)
 			{
@@ -343,29 +318,56 @@ public class GameManager : MonoBehaviour {
 #endregion
 
 #region Start Conditions
-	public void LoadGame(bool resume)
+	public IEnumerator LoadGame(bool resume)
 	{
 		Class [] c = null;
 		if(resume)
 		{
 			_ResumeGame = true;
 			c = PlayerLoader.Load();
-			if(c == null) return;
+			if(c == null) yield break;
 		}
 
-		(UIManager.Objects.TopGear as UIObjTweener).SetTween(1,true);
-		(UIManager.Objects.BotGear as UIObjTweener).SetTween(1,true);
-
-		(UIManager.Objects.TopGear as UIGear).SetRotate(true, new Vector3(0,0,1));
-		(UIManager.Objects.BotGear as UIGear).SetRotate(true, new Vector3(0,0,-1));
-
+		UIManager.instance.SetLoadScreen(true);
 		TileMaster.instance.MapSize = new Vector2(1,1);
 
 		Player.instance.Load(c);
+		yield return StartCoroutine(UIManager.instance.LoadUI());
 
-		StartCoroutine(UIManager.instance.LoadUI());
+		yield return StartCoroutine(GameData.instance.LoadAssets_Routine());
 
-		
+		if(Application.isMobilePlatform)
+		{
+			//Player.Options.GameSpeed = 0.5F;
+			//if (Time.frameCount % 60 == 0)
+			//{
+			//   System.GC.Collect();
+			//}
+		}
+
+		UIManager.Objects.TopGear.Txt[0].text = "Touch to begin";
+		bool press_start = false;
+		while(!press_start)
+		{
+			if(Input.GetMouseButton(0)) press_start = true;
+			yield return null;
+		}
+
+		gameStart = true;
+		inStartMenu = false;
+		Resources.UnloadUnusedAssets();
+
+		if(_ResumeGame) 
+		{
+			yield return StartCoroutine(ResumeGame());
+		}
+		else
+		{
+			if(Mode == GameMode.Story) PlayStoryMode();
+			else if (Mode == GameMode.Endless) PlayEndlessMode();
+			else if (Mode == GameMode.Quick) PlayQuickMode();
+		}
+		yield return null;
 	}
 	public void LoadClass(ClassContainer targetClass)
 	{
@@ -374,12 +376,10 @@ public class GameManager : MonoBehaviour {
 
 	public IEnumerator ResumeGame()
 	{
-		inStartMenu = false;
-		gameStart = true;
 		StartCoroutine(Player.instance.BeginTurn());
 		RoundTokens = 0;
 
-		ClearUI();
+		UIManager.instance.SetLoadScreen(false);
 		Zone z = ZoneMap.CurrentBracket[ResumeZoneIndex];
 		yield return StartCoroutine(_EnterZone(z, ResumeWaveIndex));
 
@@ -396,12 +396,10 @@ public class GameManager : MonoBehaviour {
 
 	public void PlayStoryMode()
 	{
-		inStartMenu = false;
-		gameStart = true;
 		StartCoroutine(Player.instance.BeginTurn());
 		RoundTokens = 0;
 		Player.Options.PowerupAlerted = false;
-		ClearUI();
+		UIManager.instance.SetLoadScreen(false);
 
 		ZoneMap = GameData.instance.StoryModeMap;
 		UIManager.Objects.TopGear.Txt[0].text = "";
@@ -412,12 +410,10 @@ public class GameManager : MonoBehaviour {
 
 	public void PlayEndlessMode()
 	{
-		inStartMenu = false;
-		gameStart = true;
 		StartCoroutine(Player.instance.BeginTurn());
 		RoundTokens = 0;
 		Player.Options.PowerupAlerted = false;
-		ClearUI();
+		UIManager.instance.SetLoadScreen(false);
 
 		ZoneMap = GameData.instance.GenerateEndlessMode();
 		UIManager.Objects.TopGear.Txt[0].text = "";
@@ -428,11 +424,9 @@ public class GameManager : MonoBehaviour {
 
 	public void PlayQuickMode()
 	{
-		inStartMenu = false;
-		gameStart = true;
 		StartCoroutine(Player.instance.BeginTurn());
 		RoundTokens = 0;
-		ClearUI();
+		UIManager.instance.SetLoadScreen(false);
 		Player.Options.PowerupAlerted = false;
 
 		int length = 3;
@@ -457,6 +451,7 @@ public class GameManager : MonoBehaviour {
 			brackets[i] = new Vector2(min, max);
 		}
 		ZoneMap = GameData.instance.GenerateZoneMap(brackets);
+		if(QuickCrawlOverride) ZoneMap[0][0] = QuickCrawlOverride;
 
 		UIManager.Objects.TopGear.Txt[0].text = "";
 
@@ -487,17 +482,7 @@ public class GameManager : MonoBehaviour {
 		paused = false;
 		
 	}
-	void ClearUI()
-	{
-		(UIManager.Objects.TopGear as UIObjTweener).SetTween(1,false);
-		(UIManager.Objects.BotGear as UIObjTweener).SetTween(1,false);
-		(UIManager.Objects.TopLeftButton as UIObjTweener).SetTween(0, true);
-		(UIManager.Objects.TopRightButton as UIObjTweener).SetTween(0,true);
-		(UIManager.Objects.TopGear as UIGear).SetRotate(false);
-		(UIManager.Objects.BotGear as UIGear).SetRotate(false);
-		UIManager.Objects.BotGear[0].SetActive(true);
-		UIManager.Objects.TopGear.Txt[0].text = "";
-	}
+
 
 	public End_Type EndType;
 	public void Killed()
@@ -760,6 +745,9 @@ public class GameManager : MonoBehaviour {
 		{
 			yield return StartCoroutine(EnemyTurnRoutine());
 		}
+
+		TileMaster.instance.ResetTiles(true);
+		while(TileMaster.EnemiesAttacking()) yield return null;
 		
 		yield return StartCoroutine(TileMaster.instance.AfterTurn());
 		yield return StartCoroutine(CompleteTurnRoutine());
@@ -855,8 +843,9 @@ public class GameManager : MonoBehaviour {
 		if(allied_attackers.Count > 0) 
 		{
 			TileMaster.instance.ResetTiles();
-			yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+			yield return new WaitForSeconds(GameData.GameSpeed(0.13F));
 		}
+
 		foreach(Tile child in allied_attackers)
 		{
 			if(child == null) continue;

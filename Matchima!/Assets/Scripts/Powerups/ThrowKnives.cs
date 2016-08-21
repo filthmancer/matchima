@@ -34,7 +34,7 @@ public class ThrowKnives : Powerup {
 		for(int i = 0; i < knives; i++)
 		{
 			knifeobj.Add(CreateKnife());
-			yield return new WaitForSeconds(GameData.GameSpeed(0.7F));
+			yield return new WaitForSeconds(GameData.GameSpeed(0.5F));
 		}
 
 		bool knives_ended = false;
@@ -133,11 +133,11 @@ public class ThrowKnives : Powerup {
 	{
 		UIObj knife = CreateMinigameObj(0);
 		knife.transform.position = UIManager.Objects.BotGear.transform.position;
-		float velx = Random.Range(0.09F, 0.17F);
+		float velx = Random.Range(0.04F, 0.19F);
 		if(Random.value < 0.5F) velx = -velx;
 		Vector3 vel = new Vector3(velx, 1.6F * CameraUtility.OrthoFactor, 0.0F);
 		bool mobile = Application.isMobilePlatform;
-		knife.GetComponent<Velocitizer>().SetVelocity(vel, (mobile ? 21 : 30));
+		knife.GetComponent<Velocitizer>().SetVelocity(vel, (mobile ? 28 : 30));
 		knife.GetComponent<Velocitizer>().SetRotation(new Vector3(0,0,Random.Range(-1.2F, 1.2F)));
 		knife.GetComponent<Velocitizer>().AddTimedAction(() =>
 		{

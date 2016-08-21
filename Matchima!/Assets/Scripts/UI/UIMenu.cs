@@ -70,20 +70,20 @@ public class UIMenu : UIObj {
 			}
 		}
 		
-
 		UIManager.Objects.BotGear[3].GetChild(1).transform.SetAsLastSibling();
-		UIManager.Objects.BotGear[3][1].ClearActions();
-		UIManager.Objects.BotGear[3][1].AddAction(UIAction.MouseDown,
+		UIManager.Objects.BotGear[3].GetChild(1).ClearActions();
+		UIManager.Objects.BotGear[3].GetChild(1).AddAction(UIAction.MouseDown,
 			() => {
 				(UIManager.Objects.BotGear[3][0]).isPressed = true;
 				(UIManager.Objects.BotGear[3][0] as UIGear).Drag = true;
 				});
-		UIManager.Objects.BotGear[3][1].AddAction(UIAction.MouseUp,
+		UIManager.Objects.BotGear[3].GetChild(1).AddAction(UIAction.MouseUp,
 			() => {
 				(UIManager.Objects.BotGear[3][0]).isPressed = false;
 				(UIManager.Objects.BotGear[3][0] as UIGear).Drag = false;
 				});
 
+		UIManager.Objects.BotGear[4].SetActive(false);
 		UIManager.Objects.BotGear[3].GetChild(0).SetActive(false);
 
 		UIManager.Objects.BotGear[3][2].transform.SetAsLastSibling();
@@ -186,7 +186,7 @@ public class UIMenu : UIObj {
 			StartCoroutine(SetAlert());
 			return;
 		}*/
-		GameManager.instance.LoadGame(false);
+		StartCoroutine(GameManager.instance.LoadGame(false));
 	}
 
 	public void ResumeGameActivate()
@@ -206,7 +206,7 @@ public class UIMenu : UIObj {
 		(UIManager.Objects.BotGear as UIGear).SetTween(3, false);
 		UIManager.Objects.BotGear[1].ClearActions();
 		UIManager.Objects.BotGear[1].Img[0].enabled = false;
-		GameManager.instance.LoadGame(true);
+		StartCoroutine(GameManager.instance.LoadGame(true));
 	}
 	
 	public void Reset()
@@ -329,7 +329,6 @@ public class UIMenu : UIObj {
 
 	public void HeroMenu(int x)
 	{
-		print(x);
 		if(!Player.instance.GetUnlock("charselect")) return;
 		top_division_last = UIManager.Objects.TopGear.LastDivision;
 		if(State != MenuState.Character)
@@ -352,7 +351,6 @@ public class UIMenu : UIObj {
 				UIManager.Objects.TopGear.MoveToDivision(1);
 				ReadClasses("PrevClass_");
 				SetClassUI();
-
 			}
 			else if(PlayerPrefs.GetInt("SavedClass") == 1)
 			{
@@ -433,6 +431,7 @@ public class UIMenu : UIObj {
 				}
 			}
 			Reset();
+			UIManager.Objects.BotGear[4].Txt[0].text = "";
 			UIManager.Objects.TopGear.Txt[0].text = "LOADING\nENDLESS";
 			break;
 			case GameMode.Story:
@@ -442,6 +441,7 @@ public class UIMenu : UIObj {
 			Player.instance._Classes[3] = null;//GameData.instance.GetClass("Bard");
 			Reset();
 			UIManager.Objects.TopGear.Txt[0].text = "LOADING\nSTORY";
+			UIManager.Objects.BotGear[4].Txt[0].text = GameData.instance.StoryTip;
 			break;
 			case GameMode.Quick:
 			for(int i = 0; i < Player.instance._Classes.Length; i++)
@@ -454,6 +454,7 @@ public class UIMenu : UIObj {
 			}
 			Reset();
 			UIManager.Objects.TopGear.Txt[0].text = "LOADING\nQUICK CRAWL";
+			UIManager.Objects.BotGear[4].Txt[0].text = "";
 			break;
 		}
 		(UIManager.Objects.MiddleGear["resume"] as UIObjTweener).SetTween(0,false);
@@ -475,8 +476,8 @@ public class UIMenu : UIObj {
 			case 0: // STORY
 			top_division_last = 0;
 			ShowSettingsUI(false);
-			UIManager.Objects.MiddleGear[0].Txt[0].text = 
-			"FOUR ADVENTURERS BREAK INTO THE FORBIDDEN UNDERCITY TO EXPLORE AND GATHER THE PRECIOUS 'MANA' THAT SEEPS FROM BELOW";
+			UIManager.Objects.MiddleGear[0].Txt[0].text = "";
+			//"FOUR ADVENTURERS BREAK INTO THE FORBIDDEN UNDERCITY TO EXPLORE AND GATHER THE PRECIOUS 'MANA' THAT SEEPS FROM BELOW";
 			(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, true);
 			(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, true);
 
@@ -701,11 +702,11 @@ public class UIMenu : UIObj {
 			});
 
 
-			string title = Player.Options.StorySet == Ops_Story.Default ? "DEFAULT\nSTORY" : 
-						Player.Options.StorySet == Ops_Story.AlwaysShow ? "ALWAYS \nSHOW \nSTORY" :
+			string title = Player.Options.ShowStory == Ops_Story.Default ? "DEFAULT\nSTORY" : 
+						Player.Options.ShowStory == Ops_Story.AlwaysShow ? "ALWAYS \nSHOW \nSTORY" :
 						"NEVER\nSHOW\nSTORY";
-			 targ = Player.Options.StorySet == Ops_Story.Default ? GameData.Colour(GENUS.DEX) : 
-						Player.Options.StorySet == Ops_Story.AlwaysShow ? GameData.Colour(GENUS.WIS) :
+			 targ = Player.Options.ShowStory == Ops_Story.Default ? GameData.Colour(GENUS.DEX) : 
+						Player.Options.ShowStory == Ops_Story.AlwaysShow ? GameData.Colour(GENUS.WIS) :
 						GameData.Colour(GENUS.STR);
 
 			MidGear[0][3][2].Txt[0].text = title;									
@@ -714,16 +715,16 @@ public class UIMenu : UIObj {
 			MidGear[0][3][2].ClearActions();
 			MidGear[0][3][2].AddAction(UIAction.MouseUp, () =>
 			{
-				switch(Player.Options.StorySet)
+				switch(Player.Options.ShowStory)
 				{
 					case Ops_Story.Default:
-						Player.Options.StorySet = Ops_Story.AlwaysShow;
+						Player.Options.ShowStory = Ops_Story.AlwaysShow;
 					break;
 					case Ops_Story.AlwaysShow:
-						Player.Options.StorySet = Ops_Story.NeverShow;
+						Player.Options.ShowStory = Ops_Story.NeverShow;
 					break;
 					case Ops_Story.NeverShow:
-						Player.Options.StorySet = Ops_Story.Default;
+						Player.Options.ShowStory = Ops_Story.Default;
 					break;
 				}	
 				ShowSettingsUI(true);

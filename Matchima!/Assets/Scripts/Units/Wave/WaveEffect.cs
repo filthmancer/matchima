@@ -23,6 +23,12 @@ public class TileEffectInfo
 	public int Duration;
 	public string [] Args;
 	public bool ApplyToSpecies;
+	public TileEffectInfo(string n, int d, params string [] arg)
+	{
+		Name = n;
+		Duration = d;
+		Args = arg;
+	}
 }
 
 public enum WaveEffectType

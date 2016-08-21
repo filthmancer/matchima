@@ -30,7 +30,7 @@ public class CreateBombs : Powerup {
 
 	IEnumerator CreateBomb(Tile target)
 	{
-		GameObject swapper = ActionCaster(target, ()=>
+		GameObject swapper = GameData.instance.ActionCaster(UIManager.ClassButtons[Parent.Index].transform, target, ()=>
 		{
 			TileMaster.instance.ReplaceTile(target, TileMaster.Types["bomb"], (GENUS)Parent.Index, target.Point.Scale);
 		});

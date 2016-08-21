@@ -18,6 +18,7 @@ public class CameraUtility : MonoBehaviour {
 	}
 
 	public Light MainLight;
+	public Transform Background;
 
 	public static Vector3 TargetPos;
 	public static float TargetOrtho = 0.0F;
@@ -38,6 +39,8 @@ public class CameraUtility : MonoBehaviour {
 	private static Vector3 TurnOffsetA, TurnOffsetB;
 	private static bool TurnOffset_enabled;
 
+	public float background_factor_a = 2.0F, background_factor_b = 5.0F;
+
 	void Start() {
 		TargetPos = Cam.transform.position;
 		TargetOrtho = 6.6F;
@@ -53,6 +56,7 @@ public class CameraUtility : MonoBehaviour {
 		{
 			Cam.CameraSettings.orthographicSize = Mathf.Lerp(Cam.CameraSettings.orthographicSize, TargetOrtho, Time.deltaTime * 8);
 			UICam.HostCamera.orthographicSize = Mathf.Lerp(UICam.HostCamera.orthographicSize, TargetOrtho, Time.deltaTime * 8);
+			Background.localScale = (Vector3.one * background_factor_a) + Vector3.one * (OrthoFactor * background_factor_b);
 		}
 		Vector3 final_pos = TargetPos + (TurnOffset_enabled ? TurnOffsetA:TurnOffsetB);
 		if(!isShaking && TileMaster.Grid != null) Cam.transform.position = Vector3.Lerp(Cam.transform.position, final_pos, Time.deltaTime * 8);

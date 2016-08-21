@@ -25,6 +25,8 @@ public class Enemy : Tile {
 	protected bool HasAttackedThisTurn;
 
 	private float threat_anim, threat_anim_init = 0.4F;
+	private bool attacking;
+	public bool isAttacking{get{return attacking;}}
 
 	/*public override StCon [] Description
 	{
@@ -267,10 +269,18 @@ public class Enemy : Tile {
 	{
 		if(type == "Attack")
 		{
-			Juice.instance.JuiceIt(Juice._Attack, Params._render.transform, 0.7F, 1.0F);
+			StartCoroutine(AttackJuice());
 		} 
 		if(time != 0.0F) yield return new WaitForSeconds(time);
 		else yield return null;
+	}
+
+	IEnumerator AttackJuice()
+	{
+		attacking = true;
+		yield return StartCoroutine(Juice.instance.JuiceRoutine(Juice._Attack, Params._render.transform, 0.7F, 1.0F));
+		attacking = false;
+		yield return null;
 	}
 
 

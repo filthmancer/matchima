@@ -48,7 +48,7 @@ public class Minion : Enemy {
 	}
 
 	
-	private float MinionSpawnChance = 0.35F;
+	private float MinionSpawnChance = 0.15F;
 		public override IEnumerator AfterTurnRoutine()
 		{
 			yield return StartCoroutine(base.AfterTurnRoutine());
@@ -63,12 +63,23 @@ public class Minion : Enemy {
 				{
 					if(TileMaster.Tiles[xx,yy].IsType("resource") && TileMaster.Tiles[xx,yy].Isolated)
 					{
-						TileMaster.instance.ReplaceTile(xx,yy, TileMaster.Types["minion"], GENUS.RAND);
+						CreateMinion(TileMaster.Tiles[xx,yy]);
 						yield break;
 					}
 				}
 			}
 			yield break;
+			
+		}
+
+		private void CreateMinion(Tile t)
+		{
+			SetState(TileState.Selected);
+			t.SetState(TileState.Selected);
+			GameData.instance.ActionCaster(this.transform,t, ()=>
+			{
+				TileMaster.instance.ReplaceTile( t, TileMaster.Types["minion"], Genus);
+			});
 			
 		}
 }

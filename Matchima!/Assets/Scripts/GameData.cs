@@ -65,6 +65,7 @@ public class GameData : MonoBehaviour {
 	public static bool ChestsFromEnemies = true;
 
 	public bool PrintLogs;
+
 #endregion
 
 #region Generics
@@ -89,7 +90,7 @@ public class GameData : MonoBehaviour {
 
 	public static float GameSpeed(float f)
 	{
-		return f * Player.Options.GameSpeed * Time.deltaTime * 60;
+		return f / Player.Options.GameSpeed * Time.deltaTime * 60;
 	}
 
 	public static int StringToInt(string num)
@@ -139,6 +140,19 @@ public class GameData : MonoBehaviour {
 		"b",
 		"t"
 	};
+
+	public GameObject ActionCaster(Transform parent, Tile target, Action a)
+	{
+		target.SetState(TileState.Selected, true);
+		GameObject initpart = EffectManager.instance.PlayEffect(parent, Effect.Spell);
+		MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
+		mp.SetTarget(target.transform.position);
+		mp.SetPath(0.25F, 0.3F);
+		mp.Target_Tile = target;
+		mp.SetThreshold(0.1F);
+		mp.SetMethod(a);
+		return initpart;
+	}
 #endregion
 
 #region Tile/Type Info
@@ -786,8 +800,8 @@ public class GameData : MonoBehaviour {
 			"wizard",
 			"farmer",
 			"warden",
-			"witchdoctor"
-			
+			"witchdoctor",
+			"gyromancer"
 		};
 
 		public void LoadClasses()
@@ -854,7 +868,7 @@ public class GameData : MonoBehaviour {
 			Powerups = final.ToArray();
 		}
 
-		IEnumerator LoadAssets_Routine()
+		public IEnumerator LoadAssets_Routine()
 		{
 			
 			_Items = ItemNames;
@@ -968,6 +982,14 @@ public class GameData : MonoBehaviour {
 			else if(r >= 24 && r <= 50) return Rarity.Legendary;
 			else return Rarity.Ultimate;
 		}
+
+		public string [] TuteTips = new string [] 
+		{
+			""
+		};
+
+		public string StoryTip = "Four adventurers break into the forbidden undercity to explore and gather the precious 'Mana' that seeps from below...";
+
 #endregion
 }
 
@@ -1193,6 +1215,7 @@ public struct ZoneMapData
   public int Current_BracketIndex;
   public ZoneMapBracketData [] BracketData;
 }
+
 public struct ZoneMapBracketData
 {
   public ZoneData [] Zone;
@@ -1200,16 +1223,16 @@ public struct ZoneMapBracketData
 
 public struct ZoneData
 {
-  public string Name;
+  	public string Name;
 }
 
 public struct WaveData
 {
-  public bool HasWave;
+ 	public bool HasWave;
 	public bool Active;
 	public int Current;
-  public int Index;
-  public bool [] Slot;
+ 	public int Index;
+ 	public bool [] Slot;
 }
 
 public struct ClassData
@@ -1219,127 +1242,128 @@ public struct ClassData
 	public ItemContainerData [] Item;
 	public ModContainerData [] Mods;
 }
-   public struct StatData
-   {
-     	public int Level;
-		public int Class_Type;
-		public int _Health, _HealthMax;
-		public int _MeterMax;
-		public float MeterDecay_Global;
 
-		public int _Armour;
-		public int _ArmourMax;
-		public float ArmourReductionRate;
-			
-		public float MapSizeX, MapSizeY;
+public struct StatData
+{
+   	public int Level;
+	public int Class_Type;
+	public int _Health, _HealthMax;
+	public int _MeterMax;
+	public float MeterDecay_Global;
 
-		public int ComboCounter;
-		public float ComboBonus;
-		public int MatchNumberMod;
-
-		public int _Attack;
-		public float AttackRate;
-		public float SpellPower;
-
-		public int HealthRegen, HealthLeech;
-		public int MeterRegen, MeterLeech;
-
-		public int Spikes;
-
-		public float CooldownDecrease;
-		public float CostDecrease;
-		public int ValueInc;
-
-		public int Presence;
+	public int _Armour;
+	public int _ArmourMax;
+	public float ArmourReductionRate;
 		
-		public bool isKilled;
-		
-		public int PrevTurnKills;
-		public int HealThisTurn, DmgThisTurn;
+	public float MapSizeX, MapSizeY;
 
-		public int Shift;
-		public StatContainerData [] ContainerData;
-		//public TileChanceData [] TileChances;
-   }
+	public int ComboCounter;
+	public float ComboBonus;
+	public int MatchNumberMod;
 
-    public struct StatContainerData
-   {
-      public float StatCurrent_soft;
-		public float StatGain;
-	
-		public float StatLeech;
-		public float StatRegen;
-	
-		//public int ResCurrent;
-		//public int ResMax;
-		public float ResMultiplier;
-	
-		//public float ResGain;
-		
-		public int ResLeech;
-		public int ResRegen;
-	
-		public int ThisTurn;
-	
-		//public float ResMax_soft;
-   }
+	public int _Attack;
+	public float AttackRate;
+	public float SpellPower;
 
-   public struct ItemContainerData
-   {
-   		public SlotContainerData SlotData;
-   		public int Type;
-   		public int ScaleGenus;
-   		public float ScaleRate;
-   		//public UpgradeData [] Upgrades;
-   }
+	public int HealthRegen, HealthLeech;
+	public int MeterRegen, MeterLeech;
 
-   public struct SlotContainerData
-   {
-   	   	public string Name;
-   	   	public string IconString;
-   	   	public int Index;
-   	   	public int Cooldown;
-   }
+	public int Spikes;
 
-   public struct ModContainerData
-   {
-	   public SlotContainerData SlotData;
-   }
+	public float CooldownDecrease;
+	public float CostDecrease;
+	public int ValueInc;
 
-   public struct UpgradeData
-   {
-   		public int [] index;
-   		public string Prefix, Suffix;
-		public float chance;
-		public int ItemType;
-		public int ScaleType;
-		public float scalerate;
-		public int Points_total;
-   }
-
-   public struct AbilityContainerData
-   {
-   		public bool hasAbility;
-   		public string Name;
-		public string ShortName;
-		public string Description;
-		public int Level;
+	public int Presence;
 	
-		public string AbilityScript;
+	public bool isKilled;
 	
-		public int Cooldown;
-		public int [] Cost;
-		//public int CostType;
-	
-		public int StatType;
-		public int StatMultiplier;
-		public string [] Input;
-		public string [] Output;
-   }
+	public int PrevTurnKills;
+	public int HealThisTurn, DmgThisTurn;
 
-   public struct TileChanceData
-   {
-   		public string Genus, Type;
-   		public float Chance;
-   		public int Value;
-   }
+	public int Shift;
+	public StatContainerData [] ContainerData;
+	//public TileChanceData [] TileChances;
+}
+
+public struct StatContainerData
+{
+    public float StatCurrent_soft;
+	public float StatGain;
+	
+	public float StatLeech;
+	public float StatRegen;
+	
+	//public int ResCurrent;
+	//public int ResMax;
+	public float ResMultiplier;
+	
+	//public float ResGain;
+	
+	public int ResLeech;
+	public int ResRegen;
+	
+	public int ThisTurn;
+	
+	//public float ResMax_soft;
+}
+
+public struct ItemContainerData
+{
+	public SlotContainerData SlotData;
+	public int Type;
+	public int ScaleGenus;
+	public float ScaleRate;
+	//public UpgradeData [] Upgrades;
+}
+
+public struct SlotContainerData
+{
+	public string Name;
+	public string IconString;
+	public int Index;
+	public int Cooldown;
+}
+
+public struct ModContainerData
+{
+	public SlotContainerData SlotData;
+}
+
+public struct UpgradeData
+{
+	public int [] index;
+	public string Prefix, Suffix;
+	public float chance;
+	public int ItemType;
+	public int ScaleType;
+	public float scalerate;
+	public int Points_total;
+}
+
+public struct AbilityContainerData
+{
+	public bool hasAbility;
+	public string Name;
+	public string ShortName;
+	public string Description;
+	public int Level;
+	
+	public string AbilityScript;
+	
+	public int Cooldown;
+	public int [] Cost;
+	//public int CostType;
+	
+	public int StatType;
+	public int StatMultiplier;
+	public string [] Input;
+	public string [] Output;
+}
+
+public struct TileChanceData
+{
+	public string Genus, Type;
+	public float Chance;
+	public int Value;
+}

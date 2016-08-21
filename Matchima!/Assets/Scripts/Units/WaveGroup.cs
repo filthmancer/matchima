@@ -27,13 +27,13 @@ public class WaveGroup : MonoBehaviour {
 
 	public Wave GetWaveProgressive()
 	{
-		if(!shown_intro_wave && Player.Options.StorySet == Ops_Story.AlwaysShow)
+		if(!shown_intro_wave && Player.Options.ShowStory == Ops_Story.AlwaysShow)
 		{
 			shown_intro_wave = true;
 			PlayerPrefs.SetInt(Name + " Intro", 1);
 			return IntroWave;
 		}
-		else if(Player.Options.StorySet == Ops_Story.Default)
+		else if(Player.Options.ShowStory == Ops_Story.Default)
 		{
 			bool intro_in_past = PlayerPrefs.GetInt(Name + " Intro")==1;
 			if(!intro_in_past)
@@ -63,13 +63,13 @@ public class WaveGroup : MonoBehaviour {
 
 	public Wave GetWaveRandom()
 	{
-		if(!shown_intro_wave && Player.Options.StorySet == Ops_Story.AlwaysShow)
+		if(!shown_intro_wave && Player.Options.ShowStory == Ops_Story.AlwaysShow)
 		{
 			shown_intro_wave = true;
 			PlayerPrefs.SetInt(Name + " Intro", 1);
 			return IntroWave;
 		}
-		else if(Player.Options.StorySet == Ops_Story.Default)
+		else if(Player.Options.ShowStory == Ops_Story.Default)
 		{
 			bool intro_in_past = PlayerPrefs.GetInt(Name + " Intro")==1;
 			if(!intro_in_past)

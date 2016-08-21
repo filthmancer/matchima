@@ -49,6 +49,8 @@ public class Roaming : TileEffect {
 			}
 			if(final.Count == 0) yield break;
 			Tile target = final[Random.Range(0, final.Count)];
+			target.SetState(TileState.Selected,true);
+			_Tile.SetState(TileState.Selected,true);
 			TileMaster.instance.SwapTiles(target, _Tile);
 
 			yield return new WaitForSeconds(Time.deltaTime * 10);

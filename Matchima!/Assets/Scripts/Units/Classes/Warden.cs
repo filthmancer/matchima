@@ -27,4 +27,22 @@ public class Warden : Class {
 		}
 		
 	}
+
+	public override void StartClass () {
+
+		TileChance bomb = new TileChance();
+		bomb.Genus = GameData.ResourceLong(Genus);
+		bomb.Type = "bomb";
+		bomb.Chance = 0.2F;
+		InitStats.TileChances.Add(bomb);
+
+
+	//Charming guards
+		//TileMaster.Types["guard"].Effects.Add(new TileEffectInfo("Charm", -1));
+
+		PowerupSpell = GameData.instance.GetPowerup("Calldown", this);
+
+		base.StartClass();	
+	}
+
 }

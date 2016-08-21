@@ -40,18 +40,7 @@ public class Powerup : MonoBehaviour {
 		return obj;
 	}
 
-	protected GameObject ActionCaster(Tile target, Action a)
-	{
-		target.SetState(TileState.Selected, true);
-		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[Parent.Index].transform, Effect.Spell);
-		MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
-		mp.SetTarget(target.transform.position);
-		mp.SetPath(0.25F, 0.3F);
-		mp.Target_Tile = target;
-		mp.SetThreshold(0.1F);
-		mp.SetMethod(a);
-		return initpart;
-	}
+
 
 
 	public virtual void Setup(Class c)

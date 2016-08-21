@@ -17,7 +17,7 @@ public class Farmer : Class {
 		lightning.Chance = 0.1F;
 		InitStats.TileChances.Add(lightning);
 
-		PowerupSpell = GameData.instance.GetPowerup("Maturation", this);
+		PowerupSpell = GameData.instance.GetPowerup("Colour Swap", this);
 
 		base.StartClass();
 	}
