@@ -61,7 +61,7 @@ public class UIManager : MonoBehaviour {
 	private List<TextMeshProUGUI> levelupinfo = new List<TextMeshProUGUI>();
 	public bool isQuoting;
 
-	public UIObj HealPowerUp;
+	public bool LogUIObjs;
 	void Awake()
 	{
 		instance = this;
@@ -113,6 +113,7 @@ public class UIManager : MonoBehaviour {
 
 		for(int i = 0; i < PlayerHealth.Length; i++)
 		{
+			PlayerHealth[i].gameObject.SetActive(true);
 			float curr = PlayerHealth[i].clipBottomLeft.x;
 			PlayerHealth[i].clipBottomLeft = new Vector2(Mathf.Lerp(curr, 1.0F - (Player.Stats.GetHealthRatio()*0.65F), Time.deltaTime * 15), 0);
 			PlayerHealth[i].color = Color.Lerp(GameData.instance.BadColour, GameData.instance.GoodColour, Player.Stats.GetHealthRatio());
@@ -370,6 +371,13 @@ public class UIManager : MonoBehaviour {
 		UIManager.Objects.MiddleGear[0].Txt[0].text = "";
 
 		UIManager.Objects.MiddleGear.Img[0].enabled = false;
+
+		Objects.TopGear[1][1][3].Txt[0].text = "";
+
+
+		UIManager.Objects.TopGear.ClearActions();
+		UIManager.Objects.MiddleGear.ClearActions();
+		UIManager.Objects.BotGear.ClearActions();
 
 		UIManager.Objects.BotGear[3].ClearActions();
 		UIManager.Objects.BotGear[3].AddAction(UIAction.MouseDown,()=>

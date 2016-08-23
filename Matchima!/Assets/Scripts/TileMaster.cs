@@ -160,6 +160,7 @@ public class TileMaster : MonoBehaviour {
 					}
 					if (Tiles[x, y].isFalling || Tiles[x, y].UnlockedFromGrid)
 					{
+						if(Tiles[x,y].Destroyed) continue;
 						//Debug.LogWarning("WAITING FOR " + x + ":" + y);
 						return false;
 					}

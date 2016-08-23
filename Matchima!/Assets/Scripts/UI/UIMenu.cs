@@ -101,10 +101,16 @@ public class UIMenu : UIObj {
 					}
 					else PlayerPrefs.SetString("PrevClass_" + i, Player.instance._Classes[i].Name);
 				}
-				print(filled);
 				PlayerPrefs.SetInt("PrevClass", filled ? 1 : 0);
 				MainMenu(false);
 		});
+
+		UIManager.instance.Health.Txt[0].text = "";
+		UIManager.instance.Health.Txt[1].text = "";
+		UIManager.instance.PlayerHealth[0].gameObject.SetActive(false);
+		UIManager.instance.PlayerHealth[1].gameObject.SetActive(false);
+		UIManager.Objects.BotGear[3].SetActive(false);
+
 		
 		yield return null;
 		(UIManager.Objects.TopLeftButton as UIObjTweener).SetTween(0, false);
@@ -137,10 +143,10 @@ public class UIMenu : UIObj {
 		bool activated = false;
 		UIManager.Objects.BotGear.ClearActions();
 		UIManager.Objects.TopGear.ClearActions();
-		UIManager.Objects.MiddleGear.ClearActions();
-		UIManager.Objects.BotGear.AddAction(UIAction.MouseUp, ()=>{activated = true;});
-		UIManager.Objects.TopGear.AddAction(UIAction.MouseUp, ()=>{activated = true;});
-		UIManager.Objects.MiddleGear.AddAction(UIAction.MouseUp, ()=>{activated = true;});
+		UIManager.Objects.MiddleGear[0][2].ClearActions();
+		//UIManager.Objects.BotGear.AddAction(UIAction.MouseUp, ()=>{activated = true;});
+		//UIManager.Objects.TopGear.AddAction(UIAction.MouseUp, ()=>{activated = true;});
+		UIManager.Objects.MiddleGear[0][2].AddAction(UIAction.MouseUp, ()=>{activated = true;});
 
 		while(!activated)
 		{
@@ -233,6 +239,7 @@ public class UIMenu : UIObj {
 		(UIManager.Objects.TopGear as UIGear).SetRotate(false);
 		(UIManager.Objects.BotGear as UIGear).SetRotate(false);
 		UIManager.Objects.BotGear[0].SetActive(true);
+		UIManager.Objects.BotGear[3].SetActive(false);
 		//UIManager.Objects.TopGear[2].SetActive(true);
 		UIManager.Objects.TopGear.Txt[0].text = "";
 
@@ -282,10 +289,11 @@ public class UIMenu : UIObj {
 		UIManager.Objects.TopRightButton.Txt[0].text = "Level";
 		UIManager.Objects.TopRightButton.Txt[1].text = ""+Player.Level.Level;
 		
+		
 		UIManager.Objects.TopGear.AddAction(UIAction.MouseDown,
-			() => {(UIManager.Objects.TopGear as UIGear).Drag = true;});
+			() => {UIManager.Objects.TopGear.Drag = true;});
 		UIManager.Objects.TopGear.AddAction(UIAction.MouseUp,
-			() => {(UIManager.Objects.TopGear as UIGear).Drag = false;});
+			() => {UIManager.Objects.TopGear.Drag = false;});
 
 
 		//UIManager.Objects.BotGear.AddAction(UIAction.MouseUp,
@@ -302,6 +310,8 @@ public class UIMenu : UIObj {
 
 		UIManager.Objects.BotGear[1].Img[0].enabled = true;
 
+		UIManager.Objects.BotGear[3].SetActive(true);
+		UIManager.Objects.BotGear[3][0].SetActive(true);
 		(UIManager.Objects.BotGear[3][0] as UIGear).Drag = false;
 
 		UIManager.Objects.TopGear[1][0].Txt[0].text = "STORY";
@@ -319,7 +329,7 @@ public class UIMenu : UIObj {
 		
 		UIManager.Objects.TopGear.MoveToDivision(PlayerPrefs.GetInt("PrevMode"));
 		GetMiddleGearInfo(PlayerPrefs.GetInt("PrevMode"));
-		UIManager.Objects.BotGear[3][0].SetActive(true);
+		
 		UIManager.Objects.TopGear.Txt[0].text = "";
 		UIManager.Objects.BotGear.Txt[0].text = "";	
 

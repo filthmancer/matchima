@@ -23,8 +23,8 @@ bool alllanded
 float max_target_speed = 0.25F;
 int[] fireballs = new int[]
 {
+	1,
 	2,
-	3,
 	3
 };
 	protected override IEnumerator Minigame(int Level)
@@ -93,7 +93,7 @@ int[] fireballs = new int[]
 	IEnumerator Cast(IntVector [] targets)
 	{
 		float particle_time = 0.7F;
-		int radius = 1;
+		int radius = 2;
 
 		int Damage = 50;
 

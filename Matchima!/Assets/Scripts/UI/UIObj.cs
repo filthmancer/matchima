@@ -66,6 +66,7 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 			{
 				if(obj && obj.Index == i) return obj;
 			}
+			if(Child.Length > i) return Child[i];
 			return null;
 		}
 	}
@@ -182,7 +183,7 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 	public void OnPointerDown(PointerEventData eventData)
 	{
 		//if(Application.isMobilePlatform) return;
-		//print(Actions_MouseDown.Count + ":" +  this);
+		if(UIManager.instance.LogUIObjs) print(Actions_MouseDown.Count + ":" +  this);
 		foreach(Action child in Actions_MouseDown)
 		{
 			child();

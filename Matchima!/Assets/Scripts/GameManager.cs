@@ -586,6 +586,7 @@ public class GameManager : MonoBehaviour {
 				Destroy(CurrentWave.gameObject);
 				CurrentWave = null;
 			}
+
 			yield return StartCoroutine(CurrentZone.Enter());
 			yield return StartCoroutine(_GetWave(w));
 			
@@ -603,6 +604,7 @@ public class GameManager : MonoBehaviour {
 				Destroy(CurrentWave.gameObject);
 				CurrentWave = null;
 			}
+			print("ENTERING ZONE");
 			yield return StartCoroutine(CurrentZone.Enter());
 			CurrentZone.SetCurrent(wavenum);
 			yield return StartCoroutine(_GetWave());

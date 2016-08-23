@@ -25,11 +25,11 @@ public class Chicken : Tile {
 			PlayAudio("idle");
 			idle_audio_time = Random.Range(6.5F, 20.0F);
 		}
-		if(Point.Base[1] == 0 && !isleaving)
+		/*if(Point.Base[1] == 0 && !isleaving)
 		{
 			StartCoroutine(GoAway());
 			isleaving = true;
-		}
+		}*/
 	}
 
 	public void SetScare(bool _scared)
@@ -79,13 +79,12 @@ public class Chicken : Tile {
 
 	IEnumerator GoAway()
 	{
-		yield return new WaitForSeconds(0.2F);
 		//while(IsState(TileState.Falling) && !Destroyed) yield return null;
 		//while(Destroyed) yield return null;
 		//yield return new WaitForSeconds(0.05F);
 		Animate("Attack");
 		PlayAudio("death");
-		yield return new WaitForSeconds(0.05F);
+		yield return new WaitForSeconds(0.2F);
 		DestroyThyself();
 		TileMaster.instance.SetFillGrid(true);
 		yield return null;

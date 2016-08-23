@@ -639,7 +639,7 @@ public class Player : MonoBehaviour {
 			}
 		}*/
 		ResetStats();
-
+		Options.Setup();
 		Stats._Health = Stats._HealthMax;
 		//yield return new WaitForSeconds(0.1F);
 
@@ -875,7 +875,7 @@ public class Ops
 		get{return real_hp;}
 		set{
 			real_hp = value;
-			PlayerPrefs.SetInt("RealHP", value ? 1 : 0);
+			PlayerPrefs.SetInt("RealHP", value ? 0 : 1);
 		}
 	}
 	private bool show_num = false;
@@ -883,7 +883,7 @@ public class Ops
 		get{return show_num;}
 		set{
 			show_num = value;
-			PlayerPrefs.SetInt("ShowNumbers", value ? 1 : 0);
+			PlayerPrefs.SetInt("ShowNumbers", value ? 0 : 1);
 		}
 	}
 
@@ -900,9 +900,12 @@ public class Ops
 
 	public void Setup()
 	{
-		GameSpeed = PlayerPrefs.GetFloat("GameSpeed");
-		real_hp = PlayerPrefs.GetInt("RealHP") == 1;
-		show_num = PlayerPrefs.GetInt("ShowNumbers") == 1;
+		float spd = PlayerPrefs.GetFloat("GameSpeed");
+		if(spd != 0.0F) GameSpeed = spd;
+		else GameSpeed = 1.0F;
+
+		real_hp = PlayerPrefs.GetInt("RealHP") != 1;
+		show_num = PlayerPrefs.GetInt("ShowNumbers") != 1;
 		show_story = (Ops_Story) PlayerPrefs.GetInt("ShowStory");
 	}
 

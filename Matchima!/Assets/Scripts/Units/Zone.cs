@@ -78,7 +78,11 @@ public class Zone : MonoBehaviour {
 				}	
 			}
 
-			if(ShowIntroWave) return IntroWave;
+			if(ShowIntroWave && !shown_intro_wave)
+			{
+				shown_intro_wave = true;
+				return IntroWave;
+			}
 		}
 
 		
@@ -103,6 +107,7 @@ public class Zone : MonoBehaviour {
 			w = Waves[Current];
 			Current++;
 		}
+
 		return w;
 	}
 
@@ -126,30 +131,34 @@ public class Zone : MonoBehaviour {
 				}	
 			}
 			
-			if(ShowIntroWave) return IntroWave;
+			if(ShowIntroWave && !shown_intro_wave)
+			{
+				shown_intro_wave = true;
+				return IntroWave;
+			}
 		}
 		List<Wave> choices = new List<Wave>();
 		List<float> chance = new List<float>();
 		foreach(Wave child in Waves)
 		{
-			if(child.Chance > 0.0F && GameManager.Difficulty > child.RequiredDifficulty)
-			{
-				choices.Add(child);
-				chance.Add(child.Chance * 3);
-			}
-		}
-		foreach(Wave child in GameManager.instance.DefaultWaves.Waves)
-		{
-			if(child.Chance > 0.0F && GameManager.Difficulty > child.RequiredDifficulty)
+			if(child != null  && child.Chance > 0.0F && GameManager.Difficulty > child.RequiredDifficulty)
 			{
 				choices.Add(child);
 				chance.Add(child.Chance);
 			}
 		}
+		foreach(Wave child in GameManager.instance.DefaultWaves.Waves)
+		{
+			if(child != null && child.Chance > 0.0F && GameManager.Difficulty > child.RequiredDifficulty)
+			{
+				choices.Add(child);
+				chance.Add(child.Chance/3.0F);
+			}
+		}
 
 		int index = ChanceEngine.Index(chance.ToArray());
-		Current = index;
-		Wave w = choices[Current];
+		Wave w = choices[index];
+		Current++;
 		return w;
 	}
 
@@ -158,12 +167,11 @@ public class Zone : MonoBehaviour {
 		if(Style == ZoneStyle.Progressive) return GetWaveProgressive();
 		else if(Style == ZoneStyle.Random)
 		{
-
-			if(GameManager.Floor >= Initial + Depth)
+			if(Current >= Depth)
 			{
 				GameManager.instance.EscapeZone();
 			}
-			if(GameManager.Floor == Initial+Depth-1 && BossWave != null)
+			if(Current == Depth-1 && BossWave != null)
 			{
 				return BossWave;
 			}
@@ -223,6 +231,7 @@ public class Zone : MonoBehaviour {
 		StCon [] title = new StCon[]{new StCon(Name, WallTint * 1.5F, false, 110)};
 		
 		yield return StartCoroutine(UIManager.instance.Alert(0.9F, floor, title));
+		
 	}
 
 }
