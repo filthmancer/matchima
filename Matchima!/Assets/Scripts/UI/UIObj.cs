@@ -135,14 +135,16 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 
 	public void BooleanObjColor(bool good)
 	{
-		Img[0].color = good ? GameData.instance.GoodColour : GameData.instance.BadColour;
+		if(Img.Length == 0) return;
+		Color col = good ? GameData.instance.GoodColour : GameData.instance.BadColour;
+		Img[0].color = col;
+		init = col;
 	}
 
 	public virtual void LateUpdate()
 	{
 		if(isPressed)
 		{
-		
 			time_over += Time.deltaTime;
 		}
 	}

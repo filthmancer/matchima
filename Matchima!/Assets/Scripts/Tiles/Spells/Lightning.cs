@@ -100,7 +100,10 @@ public class Lightning : Tile {
 		{
 			if(child.Type.isEnemy)
 			{
-				child.InitStats.TurnDamage += final_damage;
+				Vector3 pos = TileMaster.Grid.GetPoint(child.Point.Point(0)) + Vector3.down * 0.3F;
+				MiniAlertUI hit = UIManager.instance.DamageAlert(pos, final_damage);
+
+				child.InitStats.Hits -= final_damage;
 				child.PlayAudio("Hit");
 				EffectManager.instance.PlayEffect(child.transform,Effect.Attack);
 			} 

@@ -168,18 +168,8 @@ public class Arcane : Tile {
 					//child.InitStats.TurnDamage += final_damage;
 					PlayerControl.instance.AddTilesToSelected(child);
 
-					float init_rotation = Random.Range(-3,3);
-					float info_time = 0.4F;
-					float info_start_size = 100 + (final_damage*2);
-					float info_movespeed = 0.25F;
-					float info_finalscale = 0.65F;
-
 					Vector3 pos = TileMaster.Grid.GetPoint(child.Point.Point(0)) + Vector3.down * 0.3F;
-					MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + final_damage, info_start_size, GameData.Colour(Genus), info_time, 0.6F, false);
-					m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
-					m.SetVelocity(Utility.RandomVectorInclusive(0.2F) + (Vector3.up*0.4F));
-					m.Gravity = true;
-					m.AddJuice(Juice.instance.BounceB, info_time/0.8F);
+					MiniAlertUI hit = UIManager.instance.DamageAlert(pos, final_damage);
 
 					CameraUtility.instance.ScreenShake(0.26F + 0.02F * final_damage,  GameData.GameSpeed(0.06F));
 					EffectManager.instance.PlayEffect(child.transform,Effect.Attack);

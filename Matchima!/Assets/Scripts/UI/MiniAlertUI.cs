@@ -93,6 +93,7 @@ public class MiniAlertUI : UIObj {
 		Img[0].enabled = back;
 		Img[1].enabled = back;
 		Img[2].enabled = back;
+		Img[3].enabled = false;
 		DestroyOnEnd = true;
 
 		GetComponent<HorizontalLayoutGroup>().padding = new RectOffset(0, 20, 10, 10);
@@ -121,6 +122,7 @@ public class MiniAlertUI : UIObj {
 		Img[0].enabled = prev.Img[0].enabled;
 		Img[1].enabled = prev.Img[1].enabled;
 		Img[2].enabled = prev.Img[2].enabled;
+		Img[3].enabled = false;
 		DestroyOnEnd = prev.DestroyOnEnd;
 		velocity = Vector3.up;
 		poolref = GetComponent<ObjectPoolerReference>();
@@ -131,11 +133,13 @@ public class MiniAlertUI : UIObj {
 	public void SetToDamageIndicator()
 	{
 		Txt[0].color = Color.white;
-		Img[0].sprite = SpikyBack;
-		Img[0].color = GameData.instance.BadColour;
-		Img[0].enabled = true;
+		
+		Img[0].enabled = false;
 		Img[1].enabled = false;
 		Img[2].enabled = false;
+		Img[3].enabled = true;
+		Img[3].color = GameData.instance.BadColour;
+		Gravity = true;
 	}
 
 	public void AddAction(Action m)

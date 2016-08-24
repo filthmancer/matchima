@@ -176,23 +176,10 @@ public class Enemy : Tile {
 		GameObject part = EffectManager.instance.PlayEffect(_Transform, Effect.Attack);
 		yield return new WaitForSeconds(GameData.GameSpeed(0.03F));
 
-		float init_rotation = Random.Range(-3,3);
-		float info_time = 0.5F;
-		float info_start_size = Mathf.Clamp(240 + (InitStats.TurnDamage*2), 240, 350);
-		float info_movespeed = 0.25F;
-		float info_finalscale = 0.65F;
+
 
 		Vector3 pos = TileMaster.Grid.GetPoint(Point.Point(0)) + Vector3.down * 0.3F;
-		MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + InitStats.TurnDamage, info_start_size,  Color.white, info_time, 0.6F, false);
-		m.Img[0].sprite = m.SpikyBack;
-		m.Img[0].enabled = true;
-		m.Img[0].color = GameData.instance.BadColour;
-		m.Img[0].transform.localScale *= 0.65F;
-		m.GetComponent<HorizontalLayoutGroup>().padding = new RectOffset(-50, 20, 10, 10);
-		m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
-		m.SetVelocity(Utility.RandomVectorInclusive(0.4F) + (Vector3.up*0.6F));
-		m.Gravity = true;
-		m.AddJuice(Juice.instance.BounceB, info_time/0.8F);
+		MiniAlertUI hit = UIManager.instance.DamageAlert(pos, InitStats.TurnDamage);
 
 		CameraUtility.instance.ScreenShake(0.26F + 0.02F * InitStats.TurnDamage,  GameData.GameSpeed(0.06F));
 		yield return new WaitForSeconds(GameData.GameSpeed(0.18F));

@@ -85,18 +85,8 @@ public class Cross : Tile {
 						{
 							_tiles[x,y].InitStats.Hits -= CrossDamage;
 
-							float init_rotation = Random.Range(-3,3);
-							float info_time = 0.4F;
-							float info_start_size = 100 + (CrossDamage*2);
-							float info_movespeed = 0.25F;
-							float info_finalscale = 0.65F;
-
 							Vector3 pos = TileMaster.Grid.GetPoint(_tiles[x,y].Point.Point(0)) + Vector3.down * 0.3F;
-							MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + CrossDamage, info_start_size, GameData.Colour(Genus), info_time, 0.6F, false);
-							m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
-							m.SetVelocity(Utility.RandomVectorInclusive(0.2F) + (Vector3.up*0.4F));
-							m.Gravity = true;
-							m.AddJuice(Juice.instance.BounceB, info_time/0.8F);
+							MiniAlertUI hit = UIManager.instance.DamageAlert(pos, CrossDamage);
 
 							_tiles[x,y].PlayAudio("Hit");
 							EffectManager.instance.PlayEffect(_tiles[x,y].transform,Effect.Attack);

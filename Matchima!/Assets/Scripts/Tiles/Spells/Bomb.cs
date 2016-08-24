@@ -84,7 +84,10 @@ public class Bomb : Tile {
 			}
 			if(to_collect[i].IsType("Enemy")) 
 			{
-				to_collect[i].InitStats.TurnDamage += BombDamage;
+				Vector3 pos = TileMaster.Grid.GetPoint(to_collect[i].Point.Point(0)) + Vector3.down * 0.3F;
+				MiniAlertUI hit = UIManager.instance.DamageAlert(pos, BombDamage);
+
+				to_collect[i].InitStats.Hits -= BombDamage;
 				to_collect[i].PlayAudio("hit");
 				EffectManager.instance.PlayEffect(to_collect[i].transform,Effect.Attack);
 			}
