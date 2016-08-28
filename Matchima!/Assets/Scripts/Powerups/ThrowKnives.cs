@@ -69,6 +69,7 @@ public class ThrowKnives : Powerup {
 
 		TileMaster.instance.SetAllTileStates(TileState.Locked, true);
 		int catchfinal = 0;
+		print(TileMaster.Enemies.Length);
 		for(int i = 0; i < TileMaster.Enemies.Length; i++)
 		{
 			Tile target = TileMaster.Enemies[i];
@@ -78,7 +79,7 @@ public class ThrowKnives : Powerup {
 			yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 			catchfinal++;
 			if(catchfinal > CatchNum) break;
-			else if(i == TileMaster.Enemies.Length-1) i = 0;
+			else if(i == TileMaster.Enemies.Length-1) i = -1;
 		}
 
 		TileMaster.instance.SetFillGrid(false);
@@ -107,7 +108,7 @@ public class ThrowKnives : Powerup {
 		rect.anchoredPosition = Vector2.zero;
 		
 
-		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "Drag the hand to begin", 100, GameData.Colour(Parent.Genus), 0.8F, 0.25F);
+		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "Drag the hand\n to catch knives!", 100, GameData.Colour(Parent.Genus), 0.8F, 0.25F);
 		m.DestroyOnEnd = false;
 		while(!Input.GetMouseButton(0)) yield return null;
 		m.PoolDestroy();
@@ -117,7 +118,6 @@ public class ThrowKnives : Powerup {
 
 	IEnumerator CatcherLoop(UIObj c_actual)
 	{
-		
 		while(c_actual != null)
 		{
 			Vector3 point = PlayerControl.InputPos;
@@ -137,7 +137,7 @@ public class ThrowKnives : Powerup {
 		if(Random.value < 0.5F) velx = -velx;
 		Vector3 vel = new Vector3(velx, 1.6F * CameraUtility.OrthoFactor, 0.0F);
 		bool mobile = Application.isMobilePlatform;
-		knife.GetComponent<Velocitizer>().SetVelocity(vel, (mobile ? 23 : 30));
+		knife.GetComponent<Velocitizer>().SetVelocity(vel, (mobile ? 24F : 30));
 		knife.GetComponent<Velocitizer>().SetRotation(new Vector3(0,0,Random.Range(-1.2F, 1.2F)));
 		knife.GetComponent<Velocitizer>().AddTimedAction(() =>
 		{

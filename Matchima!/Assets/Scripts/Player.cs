@@ -468,9 +468,7 @@ public class Player : MonoBehaviour {
 
 		if (Stats._Health < Stats._HealthMax / 5 && Stats._Health > 0)
 		{
-			int randa = Random.Range(0, 4);
-			if(Classes[randa] != null)
-			StartCoroutine(UIManager.instance.Quote(Classes[randa].Quotes.Danger));
+			UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "LOW HEALTH", 160, GameData.instance.BadColour, 1.2F, 0.2F);
 		}
 
 		if (Stats._Health <= 0)
@@ -698,9 +696,7 @@ public class Player : MonoBehaviour {
 
 		if (!Stats.isKilled && TileMaster.GridSetup)
 		{
-			Vector2 finalMap = TileMaster.instance.MapSize_Default
-			                   + Stats.MapSize;
-			TileMaster.instance.IncreaseGridTo(finalMap);
+			TileMaster.instance.CheckGrid();
 		}
 
 		RequiredMatchNumber = Mathf.Clamp(3 + Stats.MatchNumberModifier, 1, 10);

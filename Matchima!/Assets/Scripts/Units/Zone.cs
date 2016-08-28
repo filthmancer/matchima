@@ -95,7 +95,6 @@ public class Zone : MonoBehaviour {
 			}
 			else if(!Repeat) 
 			{
-				GameManager.instance.EscapeZone();
 				return null;
 			}
 			else Current = 0;
@@ -169,10 +168,11 @@ public class Zone : MonoBehaviour {
 		{
 			if(Current >= Depth)
 			{
-				GameManager.instance.EscapeZone();
+				return null;
 			}
 			if(Current == Depth-1 && BossWave != null)
 			{
+				Current ++;
 				return BossWave;
 			}
 			else return GetWaveRandom();

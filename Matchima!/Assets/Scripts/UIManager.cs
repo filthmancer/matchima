@@ -650,7 +650,12 @@ public class UIManager : MonoBehaviour {
 			classtarget_mover.SetIntMethod( 
 				(int [] amt) =>
 				{
-					if(Player.Classes[amt[0]] == null) return;
+					if(Player.Classes[amt[0]] == null) 
+					{
+						ShowingMeter[amt[0]] = false;
+						Meters[amt[0]] = 0;
+						return;
+					}
 					if((GENUS)amt[0] != GENUS.ALL) Player.Classes[amt[0]].AddToMeter(Meters[amt[0]]);
 					else
 					{
@@ -1224,7 +1229,8 @@ public class UIManager : MonoBehaviour {
 	}
 
 	public IEnumerator ImageQuote(float time, Unit parent, tk2dSpriteCollectionData inner, string inner_str,
-															tk2dSpriteCollectionData outer = null, string outer_str = "")
+															tk2dSpriteCollectionData outer = null, string outer_str = "",
+															Color? incol = null, Color? outcol = null)
 	{
 		while(isQuoting || InMenu) yield return null;
 		isQuoting = true;
@@ -1243,10 +1249,12 @@ public class UIManager : MonoBehaviour {
 		if(!eas.IsObjectOpened()) eas.OpenCloseObjectAnimation();
 
 		quoter.Imgtk[0].SetSprite(inner, inner_str);
+		quoter.Imgtk[0].color = incol ?? Color.white;
 		if(outer != null) 
 		{
 			quoter.Imgtk[1].gameObject.SetActive(true);
-			quoter.Imgtk[1].SetSprite(outer, outer_str);	
+			quoter.Imgtk[1].SetSprite(outer, outer_str);
+			quoter.Imgtk[1].color = outcol ?? Color.white;	
 		}
 		else quoter.Imgtk[1].gameObject.SetActive(false);
 
@@ -1727,7 +1735,8 @@ public class UIManager : MonoBehaviour {
 		ScreenAlert.SetActive(true);
 		ScreenAlert.SetTween(0,true);
 
-		yield return new WaitForSeconds(Time.deltaTime * 10);
+		MiniAlert(Objects.MiddleGear.transform.position + Vector3.up * 0.5F, "DEATH COMES", 160, GameData.instance.BadColour, 1.2F, 0.2F);
+		yield return new WaitForSeconds(Time.deltaTime * 40);
 
 		Objects.DeathParent.SetTween(0, true);
 		Objects.DeathIcon.SetFrame(0);

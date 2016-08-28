@@ -16,7 +16,7 @@ public class Velocitizer : ActiveTimer {
 	private Vector3 gravity_velocity
 	{
 		get{
-			return Gravity ? new Vector3(0.0F,-GameData.GameSpeed(0.09F), 0.0F) : Vector3.zero;
+			return Gravity ? new Vector3(0.0F,-GameData.GameSpeed(0.084F), 0.0F) : Vector3.zero;
 		}
 	}
 	// Update is called once per frame

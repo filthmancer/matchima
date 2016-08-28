@@ -288,7 +288,7 @@ public class Class : Unit {
 		mainStat = Stats.GetResourceFromGENUS(Genus);
 
 		MeterMax_soft = _MeterMax * (1.0F + (MeterGain * Level)) + Stats.MeterMax;
-		MeterMax_array = new int [] {0, (int)(MeterMax_soft), (int)(MeterMax_soft * 2F), (int)(MeterMax_soft * 4.8F)};
+		MeterMax_array = new int [] {0, (int)(MeterMax_soft), (int)(MeterMax_soft * 2.6F), (int)(MeterMax_soft * 5.8F)};
 	}
 
 	public virtual IEnumerator BeforeMatch(List<Tile> tiles)
@@ -746,7 +746,7 @@ public class Class : Unit {
 			{
 				if(chance >= current && chance < current + ModContainer.Boons[i].Chance)
 				{
-					GENUS g = (UnityEngine.Random.value > 0.9F ? GENUS.NONE : Genus);
+					GENUS g = (UnityEngine.Random.value > 0.98F ? GENUS.NONE : Genus);
 					u = new Upgrade(ModContainer.Boons[i].GetUpgrade(g));
 					break;
 				}
@@ -761,7 +761,7 @@ public class Class : Unit {
 			{
 				if(chance >= current && chance < current + ModContainer.Curses[i].Chance)
 				{
-					GENUS g = (UnityEngine.Random.value > 0.9F ? GENUS.NONE : Genus);
+					GENUS g = (UnityEngine.Random.value > 0.98F ? GENUS.NONE : Genus);
 					u = new Upgrade(ModContainer.Curses[i].GetUpgrade(g));
 					break;
 				}

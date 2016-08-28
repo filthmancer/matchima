@@ -71,19 +71,26 @@ public class Blob : Enemy {
 				Player.Stats.PrevTurnKills ++;			
 				CollectThyself(true);
 				PlayAudio("dying");
-				float item_chance = (float)Stats.Value/32.0F;
-				if(Stats.Value > 10) item_chance += 0.4F;
-				if(Random.value < item_chance) 
-				{
-					int x = Random.Range(Point.BaseX, Point.BaseX + Point.Scale);
-					int y = Random.Range(Point.BaseY, Point.BaseY + Point.Scale);
 
-					GENUS g = Genus;
-					float randg = Random.value;
-					if(Random.value < 0.4F) g = (GENUS) Random.Range(0,4);
-					if(Random.value < 0.95F) TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["chest"], g,  Point.Scale);
-					else TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["mimic"], g, Point.Scale);
+				if(GameData.ChestsFromEnemies)
+				{
+					float item_chance = (float)Stats.Value/32.0F;
+					if(Stats.Value > 10) item_chance += 0.4F;
+	
+					if(Random.value < item_chance) 
+					{
+						int x = Random.Range(Point.BaseX, Point.BaseX + Point.Scale);
+						int y = Random.Range(Point.BaseY, Point.BaseY + Point.Scale);
+	
+						GENUS g = Genus;
+						float randg = Random.value;
+						if(Random.value < 0.4F) g = (GENUS) Random.Range(0,4);
+						if(Random.value < 0.95F) TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["chest"], g,  Point.Scale);
+						else TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["mimic"], g, Point.Scale);
+					}
+					else TileMaster.Tiles[Point.Base[0], Point.Base[1]] = null;
 				}
+
 				else TileMaster.Tiles[Point.Base[0], Point.Base[1]] = null;
 				return true;
 			}

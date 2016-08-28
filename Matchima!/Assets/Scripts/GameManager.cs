@@ -37,9 +37,9 @@ public class GameManager : MonoBehaviour {
 	public static float GlobalManaMult = 1.0F,
 						GlobalHealthMult = 1.0F,
 						GlobalArmourMult = 1.0F;
-	public static float GrowthRate_Easy = 0.13F,
-						GrowthRate_Normal = 0.19F,
-						GrowthRate_Hard = 0.30F;
+	public static float GrowthRate_Easy = 0.1F,
+						GrowthRate_Normal = 0.16F,
+						GrowthRate_Hard = 0.26F;
 
 	public static float [] MeterDecay
 	{
@@ -327,7 +327,7 @@ public class GameManager : MonoBehaviour {
 			c = PlayerLoader.Load();
 			if(c == null) yield break;
 		}
-
+		inStartMenu = false;
 		UIManager.instance.SetLoadScreen(true);
 		TileMaster.instance.MapSize = new Vector2(1,1);
 
@@ -354,7 +354,7 @@ public class GameManager : MonoBehaviour {
 		}
 
 		gameStart = true;
-		inStartMenu = false;
+		
 		Resources.UnloadUnusedAssets();
 
 		if(_ResumeGame) 
@@ -393,6 +393,12 @@ public class GameManager : MonoBehaviour {
 		ResumeZoneIndex = 0;
 	}
 
+	public void ResetFactors()
+	{
+		Difficulty = (DifficultyMode == DiffMode.Easy ? 1.1F : 2.1F);
+		GameData.ChestsFromEnemies = true;
+		Player.instance.Turns = 0;
+	}
 
 	public void PlayStoryMode()
 	{
@@ -403,8 +409,9 @@ public class GameManager : MonoBehaviour {
 
 		ZoneMap = GameData.instance.StoryModeMap;
 		UIManager.Objects.TopGear.Txt[0].text = "";
-		Difficulty = (DifficultyMode == DiffMode.Easy ? 1.1F : 2.1F);
+		ResetFactors();
 
+		
 		UIManager.instance.GenerateZoneMap();
 		StartCoroutine(StartGameEnterZone());
 	}
@@ -418,7 +425,7 @@ public class GameManager : MonoBehaviour {
 
 		ZoneMap = GameData.instance.GenerateEndlessMode();
 		UIManager.Objects.TopGear.Txt[0].text = "";
-		Difficulty = (DifficultyMode == DiffMode.Easy ? 1.1F : 2.1F);
+		ResetFactors();
 
 		UIManager.instance.GenerateZoneMap();
 		StartCoroutine(StartGameEnterZone());
@@ -456,7 +463,7 @@ public class GameManager : MonoBehaviour {
 		if(QuickCrawlOverride) ZoneMap[0][0] = QuickCrawlOverride;
 
 		UIManager.Objects.TopGear.Txt[0].text = "";
-		Difficulty = (DifficultyMode == DiffMode.Easy ? 1.1F : 2.1F);
+		ResetFactors();
 
 		UIManager.instance.GenerateZoneMap();
 		StartCoroutine(StartGameEnterZone());
@@ -501,6 +508,7 @@ public class GameManager : MonoBehaviour {
 		EndType = End_Type.Victory;
 		paused = true;
 		gameStart = false;
+
 		StartCoroutine(EndGame(EndType));
 	}
 
@@ -525,7 +533,7 @@ public class GameManager : MonoBehaviour {
 
 	IEnumerator EndGame(End_Type e)
 	{
-
+		UIManager.instance.ShowZoneUI(false);	
 		int [] xp = CalculateXP();
 		yield return new WaitForSeconds(0.1F);
 		TileMaster.instance.ClearGrid(true);
@@ -615,7 +623,9 @@ public class GameManager : MonoBehaviour {
 	
 		public void EscapeZone()
 		{
+
 			bool end = ZoneMap.Progress();
+			print(ZoneMap.Current + " " + end);
 			if(end) UIManager.instance.ShowZoneUI(true);		
 			else Victory();
 		}
@@ -850,7 +860,7 @@ public class GameManager : MonoBehaviour {
 		if(allied_attackers.Count > 0) 
 		{
 			TileMaster.instance.ResetTiles();
-			yield return new WaitForSeconds(GameData.GameSpeed(0.13F));
+			yield return new WaitForSeconds(GameData.GameSpeed(0.17F));
 		}
 
 		foreach(Tile child in allied_attackers)
@@ -863,13 +873,14 @@ public class GameManager : MonoBehaviour {
 			Tile target = null;
 			if(TileMaster.Enemies.Length == 0) continue;
 			target = TileMaster.Enemies[Random.Range(0, TileMaster.Enemies.Length)];
-			if(target!= null) continue;
+			if(target == null) continue;
 			else
 			{
 				child.AttackTile(target);
 				yield return StartCoroutine(child.Animate("Attack", 0.05F));
 			}
 		}
+
 		if(allied_attackers.Count > 0) yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 	}
 #endregion

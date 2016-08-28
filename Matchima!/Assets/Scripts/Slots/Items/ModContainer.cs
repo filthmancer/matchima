@@ -144,7 +144,7 @@ public class ModContainer : MonoBehaviour {
 
 
 	//BOONS
-	public static UpgradeBracket Basic = new UpgradeBracket(0, "Basic", ItemType.Basic, 1.3F, new GenusBracket []
+	public static UpgradeBracket Basic = new UpgradeBracket(0, "Basic", ItemType.Basic, 1.4F, new GenusBracket []
 	{
 		new GenusBracket("Red",
 			new Upgrade("Hearty", " Max HP", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._HealthMax += 10 + (int)val*5;}, 5, 10),
@@ -304,7 +304,7 @@ public class ModContainer : MonoBehaviour {
 		)
 	});
 
-	public static UpgradeBracket Shift = new UpgradeBracket(2, "Shift", ItemType.Shift, 0.2F, new GenusBracket [] {
+	public static UpgradeBracket Shift = new UpgradeBracket(2, "Shift", ItemType.Shift, 0.3F, new GenusBracket [] {
 		new GenusBracket("Red",
 
 			new Upgrade("Bombers's", " Mana Value", 1.0F, ScaleType.GRADIENT, 0.2F,
@@ -677,7 +677,7 @@ public class ModContainer : MonoBehaviour {
 		
 	});
 
-	public static UpgradeBracket Curse_Generator = new UpgradeBracket(8,"Demonic", ItemType.Generator, 0.75F, new GenusBracket[]
+	public static UpgradeBracket Curse_Generator = new UpgradeBracket(8,"Demonic", ItemType.Generator, 0.35F, new GenusBracket[]
 	{
 		new GenusBracket("Red",
 			new Upgrade("Demon's", "% chance\n of Red Grunts", 0.45F, ScaleType.GRADIENT, 0.06F,
@@ -686,7 +686,7 @@ public class ModContainer : MonoBehaviour {
 				),
 			new Upgrade("Demon's", "% chance\n of Chickens", 0.45F, ScaleType.GRADIENT, 0.06F,
 				(Stat s, float value) => {
-					s.TileChances.Add(new TileChance("omega", "chicken", 0.1F + 0.03F * value));}, 3, 10
+					s.TileChances.Add(new TileChance("omega", "altar", 0.1F + 0.03F * value));}, 3, 10
 				)
 
 			),
@@ -698,7 +698,7 @@ public class ModContainer : MonoBehaviour {
 				),
 			new Upgrade("Demon's", "% chance\n of Chickens", 0.45F, ScaleType.GRADIENT, 0.06F,
 				(Stat s, float value) => {
-					s.TileChances.Add(new TileChance("omega", "chicken", 0.1F + 0.03F * value));}, 3, 10
+					s.TileChances.Add(new TileChance("omega", "altar", 0.1F + 0.03F * value));}, 3, 10
 				)
 		),
 		new GenusBracket("Green",
@@ -708,7 +708,7 @@ public class ModContainer : MonoBehaviour {
 				),
 			new Upgrade("Demon's", "% chance\n of Chickens", 0.45F, ScaleType.GRADIENT, 0.06F,
 				(Stat s, float value) => {
-					s.TileChances.Add(new TileChance("omega", "chicken", 0.1F + 0.03F * value));}, 3, 10
+					s.TileChances.Add(new TileChance("omega", "altar", 0.1F + 0.03F * value));}, 3, 10
 				)
 		),
 		new GenusBracket("Yellow",
@@ -718,7 +718,7 @@ public class ModContainer : MonoBehaviour {
 				),
 			new Upgrade("Demon's", "% chance\n of Chickens", 0.45F, ScaleType.GRADIENT, 0.06F,
 				(Stat s, float value) => {
-					s.TileChances.Add(new TileChance("omega", "chicken", 0.1F + 0.03F * value));}, 3, 10
+					s.TileChances.Add(new TileChance("omega", "altar", 0.1F + 0.03F * value));}, 3, 10
 				)
 		)
 	});

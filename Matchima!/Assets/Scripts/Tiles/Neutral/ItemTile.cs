@@ -44,7 +44,7 @@ public class ItemTile : Tile {
 		new RollCon("bomb", GENUS.RAND),
 		new RollCon("altar", GENUS.OMG),
 		new RollCon("minion", GENUS.RAND),
-		new RollCon("chicken", GENUS.OMG),
+		//new RollCon("chicken", GENUS.OMG),
 		new RollCon("health", GENUS.ALL)
 	};
 

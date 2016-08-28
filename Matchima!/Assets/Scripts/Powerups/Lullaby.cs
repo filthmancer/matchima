@@ -30,7 +30,17 @@ public class Lullaby : Powerup {
 		rect.sizeDelta = Vector2.one;
 		rect.anchoredPosition = Vector2.zero;
 
-		yield return new WaitForSeconds(Time.deltaTime * 15);
+		UIObj n = CreateNote();
+		n.transform.position = UIManager.Objects.MiddleGear.transform.position + Vector3.down;
+		n.transform.localScale *= 2.0F;
+		n.GetComponent<MoveToPoint>().enabled = false;
+
+		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.up/2, "Tap the notes\nto play!", 100, GameData.Colour(Parent.Genus), 0.8F, 0.25F);
+		m.DestroyOnEnd = false;
+		while(!Input.GetMouseButton(0)) yield return null;
+
+		m.PoolDestroy();
+		Destroy(n.gameObject);
 
 		int sleep_duration = 0; //Duration of mass sleep
 
@@ -54,16 +64,18 @@ public class Lullaby : Powerup {
 			}
 			yield return null;
 		}
-		yield return new WaitForSeconds(GameData.GameSpeed(0.15F));
+		
 
 		Destroy(Harp.gameObject);
+		yield return new WaitForSeconds(GameData.GameSpeed(0.15F));
 
 		sleep_duration = notes_hit/ sleep_ratio;
 
 		MiniAlertUI alert  = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.up * 2.0F,
-			sleep_duration + " Turn Sleep!", 120, GameData.Colour(Parent.Genus), 0.6F, 0.2F);
+			sleep_duration + " Turn Sleep!", 120, GameData.Colour(Parent.Genus), 1.0F, 0.2F);
 		alert.AddJuice(Juice.instance.BounceB, 0.1F);
-		yield return new WaitForSeconds(GameData.GameSpeed(0.6F));
+		yield return new WaitForSeconds(GameData.GameSpeed(0.7F));
+		alert.PoolDestroy();
 
 		UIManager.instance.ScreenAlert.SetTween(0,false);
 		TileMaster.instance.SetAllTileStates(TileState.Locked, true);
@@ -90,6 +102,7 @@ public class Lullaby : Powerup {
 		UIObj note = CreateMinigameObj(0);
 		note.transform.localScale = Vector3.one * 0.1F;
 		note.transform.position = Harp[line].transform.position;
+		note.Img[0].color = GameData.Colour((GENUS)line);
 		note.AddAction(UIAction.MouseDown, () =>
 		{
 			notes_hit ++;

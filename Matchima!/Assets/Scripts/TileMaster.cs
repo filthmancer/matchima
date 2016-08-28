@@ -405,6 +405,17 @@ public class TileMaster : MonoBehaviour {
 		}
 	}
 
+	public void CheckGrid()
+	{
+		Vector2 finalMap = TileMaster.instance.MapSize_Default
+		                   + Player.Stats.MapSize;
+
+		if(MapSize != finalMap)
+		{
+			IncreaseGridTo(finalMap);
+		}
+	}
+
 	public void IncreaseGridTo(Vector2 final)
 	{
 		GameData.Log("Changing Grid by " + final.x + ":" + final.y);
@@ -538,7 +549,7 @@ public class TileMaster : MonoBehaviour {
 			if (g != GENUS.NONE) t.ChangeGenus(g);
 			if (t._GenusEnum == GENUS.RAND)
 			{
-				t._GenusEnum = (GENUS) Random.Range(0, 4);
+				t._GenusEnum = (GENUS) Random.Range(0, 3);
 			}
 		}
 		else

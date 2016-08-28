@@ -48,6 +48,7 @@ public class Firestorm : Powerup {
 			yield return null;
 		}
 
+
 		while(!Input.GetMouseButtonDown(0))
 		{
 			for(int i = 0; i < MGame.Length; i++)

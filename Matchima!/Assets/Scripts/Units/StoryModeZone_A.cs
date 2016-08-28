@@ -25,7 +25,23 @@ public class StoryModeZone_A : Zone {
 		TileMaster.Types["health"]["Blue"].ChanceInitial = 0.0F;
 		TileMaster.Types["health"]["Yellow"].ChanceInitial = 0.0F;
 		
+		Randomise();
 		
-		yield return StartCoroutine(base.Enter());
+		(UIManager.Objects.MiddleGear[2] as UIObjTweener).SetTween(0, false);
+		(UIManager.Objects.MiddleGear[1] as UIObjTweener).SetTween(0, false);
+		UIManager.instance.BackingTint = Tint;
+		UIManager.instance.WallTint = WallTint;
+		
+		TileMaster.instance.MapSize_Default = GetMapSize();
+		
+		
+		Player.instance.ResetStats();
+		
+		if(GameManager.ZoneNum > 1) 
+		{
+			yield return null;
+			yield return StartCoroutine(TileMaster.instance.NewGridRoutine());
+		}
+		yield return null;
 	}
 }

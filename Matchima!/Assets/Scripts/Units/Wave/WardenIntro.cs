@@ -12,7 +12,7 @@ public class WardenIntro : Wave {
 		switch(current)
 		{
 			case 3:
-			yield return StartCoroutine(UIManager.instance.Alert(0.3F, "Cast spells to\n strengthen heroes", "Strong heroes live longer", "", true, 60));
+			yield return StartCoroutine(UIManager.instance.Alert(0.3F, "Strong heroes\nlive longer", "Cast spells to\nstrengthen heroes", "", true, 60));
 			break;
 			case 2:
 			//Alert("Using a spell can\ncause hero mutations");
@@ -52,9 +52,10 @@ public class WardenIntro : Wave {
 		UIManager.Objects.TopGear[2].SetActive(true);
 
 		UIManager.instance.ScreenAlert.SetTween(0,false);
-		yield return StartCoroutine(UIManager.instance.ImageQuote(1.3F, Slot1, UIManager.Objects.QuoteAtlas, "death"));
-		yield return StartCoroutine(UIManager.instance.ImageQuote(1.3F, Slot1, TileMaster.Types["guard"].Atlas, "Alpha", 
-																				TileMaster.Genus.Frames, "Omega"));
+		yield return StartCoroutine(UIManager.instance.ImageQuote(1.3F, Slot1, UIManager.Objects.QuoteAtlas, "barbarian", 
+																			   UIManager.Objects.QuoteAtlas, "cross", Color.white, Color.red));
+		yield return StartCoroutine(UIManager.instance.ImageQuote(1.3F, Slot1, TileMaster.Types["grunt"].Atlas, "Red", 
+																				TileMaster.Genus.Frames, "Red"));
 		for(int i = 0; i < AllSlots.Length; i++)
 		{
 			if(AllSlots[i] == null) continue;
@@ -78,6 +79,9 @@ public class WardenIntro : Wave {
 		Player.Classes[0].CanMutate = true;
 		Player.Classes[1].CanMutate = true;
 		Player.Classes[2].CanMutate = true;
+		Player.Classes[3].CanMutate = true;
+		
+		GameData.ChestsFromEnemies = true;
 
 		GameManager.instance.paused = false;
 		UIManager.Objects.BotGear.SetTween(0, true);

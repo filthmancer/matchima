@@ -31,7 +31,7 @@ public class Heal : Powerup {
 		});
 
 
-		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "Tap the heart to begin", 100, GameData.Colour(Parent.Genus), 0.8F, 0.25F);
+		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "Keep tapping the\nheart to fill!", 100, GameData.Colour(Parent.Genus), 0.8F, 0.25F);
 		m.DestroyOnEnd = false;
 		while(!Input.GetMouseButton(0)) yield return null;
 		m.PoolDestroy();

@@ -1132,6 +1132,7 @@ public class ZoneMapContainer
 	public ZoneMapContainer(int b = 0)
 	{
 		Brackets = new ZoneBracket[b];
+		Current = b;
 	}
 
 	public ZoneMapContainer(ZoneMapContainer z)
@@ -1142,8 +1143,9 @@ public class ZoneMapContainer
 
 	public bool Progress()
 	{
+		Debug.Log("ZONE BRACKET CURRENT: " + Current);
 		Current ++;
-		return Current < Length;
+		return Current <= Length;
 	}
 }
 

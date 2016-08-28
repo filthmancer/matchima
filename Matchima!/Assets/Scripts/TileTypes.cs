@@ -679,66 +679,6 @@ public class TileInfo
 	}
 }
 
-[System.Serializable]
-public class IntVector
-{
-	//public static IntVector zero = new IntVector(0,0);
-	public int x, y;
-	public IntVector(int a, int b)
-	{
-		x = a;
-		y = b;
-	}
-
-	public IntVector(float a, float b)
-	{
-		x = (int) a;
-		y = (int) b;
-	}
-	public IntVector(IntVector a)
-	{
-		x = a.x;
-		y = a.y;
-	}
-
-	public IntVector(int a)
-	{
-		x = a;
-		y = a;
-	}
-
-	public Vector2 ToVector2
-	{
-		get{
-			return new Vector2(x, y);
-		}
-	}
-
-	public int [] ToInt
-	{
-		get{
-			return new int[] {x,y};
-		}
-	}
-
-	public void Add(IntVector a)
-	{
-		x += a.x;
-		y += a.y;
-	}
-
-	public void Sub(IntVector a)
-	{
-		x -= a.x;
-		y -= a.y;
-	}
-
-	public void Mult(float m)
-	{
-		x = (int)((float)x*m);
-		y = (int)((float)y*m);
-	}
-}
 
 
 

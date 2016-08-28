@@ -54,51 +54,117 @@ public class Tutorial : Wave {
 		switch(current)
 		{
 			case 1:
+			GameManager.Zone.MapSize = new IntVector(2,3);
+			TileMaster.instance.MapSize_Default = GameManager.Zone.GetMapSize();
+			TileMaster.instance.CheckGrid();
+			yield return new WaitForSeconds(Time.deltaTime * 3);
+			while(!TileMaster.AllLanded) yield return null;
 
-			TileMaster.instance.MapSize_Default = new Vector2(2,3);
+			TileMaster.Tiles[0,2].ChangeGenus(GENUS.STR);
+			TileMaster.Tiles[1,2].ChangeGenus(GENUS.DEX);
+			TileMaster.Tiles[0,1].ChangeGenus(GENUS.DEX);
+			TileMaster.Tiles[1,1].ChangeGenus(GENUS.STR);
+			TileMaster.Tiles[0,0].ChangeGenus(GENUS.STR);
+			TileMaster.Tiles[1,0].ChangeGenus(GENUS.DEX);
+
 			Alert("Matches must have\n3 or more tiles");
+			
 			current++;
 			break;
 			case 2:
-			TileMaster.instance.MapSize_Default = new Vector2(3,3);
-			TileMaster.Tiles[1,1].InitStats.Hits = 3;
-			TileMaster.Tiles[1,1].CheckStats();
-			Alert("Some tiles take\nmultiple hits to destroy");
-			//TileMaster.Tiles[0,1].InitStats.Hits = 2;
-			//TileMaster.Tiles[0,1].CheckStats();
+
+			GameManager.Zone.MapSize = new IntVector(3,3);
+			TileMaster.instance.MapSize_Default = GameManager.Zone.GetMapSize();
+			TileMaster.instance.CheckGrid();
+			yield return new WaitForSeconds(Time.deltaTime * 3);
+			while(!TileMaster.AllLanded) yield return null;
+
+			TileMaster.Tiles[0,2].ChangeGenus(GENUS.STR);
+			TileMaster.Tiles[1,2].ChangeGenus(GENUS.DEX);
+			TileMaster.Tiles[2,2].ChangeGenus(GENUS.WIS);
+
+			TileMaster.Tiles[0,1].ChangeGenus(GENUS.STR);
+			TileMaster.Tiles[1,1].ChangeGenus(GENUS.STR);
+			TileMaster.Tiles[2,1].ChangeGenus(GENUS.WIS);
+
+			TileMaster.Tiles[0,0].ChangeGenus(GENUS.WIS);
+			TileMaster.Tiles[1,0].ChangeGenus(GENUS.DEX);
+			TileMaster.Tiles[2,0].ChangeGenus(GENUS.STR);
+
 			current++;
 			break;
 			case 3:
+
+			GameManager.Zone.MapSize = new IntVector(4,4);
+			TileMaster.instance.MapSize_Default = GameManager.Zone.GetMapSize();
+			TileMaster.instance.CheckGrid();
+			yield return new WaitForSeconds(Time.deltaTime * 3);
+			while(!TileMaster.AllLanded) yield return null;
+
+			TileMaster.Tiles[0,3].ChangeGenus(GENUS.STR);
+			TileMaster.Tiles[1,3].ChangeGenus(GENUS.DEX);
+			TileMaster.Tiles[2,3].ChangeGenus(GENUS.WIS);
+			TileMaster.Tiles[3,3].ChangeGenus(GENUS.CHA);
+
+			TileMaster.Tiles[0,2].ChangeGenus(GENUS.DEX);
+			TileMaster.Tiles[1,2].ChangeGenus(GENUS.STR);
+			TileMaster.Tiles[2,2].ChangeGenus(GENUS.CHA);
+			TileMaster.Tiles[3,2].ChangeGenus(GENUS.WIS);
+
+			TileMaster.Tiles[0,1].ChangeGenus(GENUS.DEX);
+			TileMaster.Tiles[1,1].ChangeGenus(GENUS.CHA);
+			TileMaster.Tiles[2,1].ChangeGenus(GENUS.STR);
+			TileMaster.Tiles[3,1].ChangeGenus(GENUS.WIS);
+
+			TileMaster.Tiles[0,0].ChangeGenus(GENUS.CHA);
+			TileMaster.Tiles[1,0].ChangeGenus(GENUS.DEX);
+			TileMaster.Tiles[2,0].ChangeGenus(GENUS.WIS);
+			TileMaster.Tiles[3,0].ChangeGenus(GENUS.STR);
+
+			TileMaster.Tiles[1,1].InitStats.Hits = 2;
+			TileMaster.Tiles[1,1].CheckStats();
+
+			TileMaster.Tiles[2,1].InitStats.Hits = 2;
+			TileMaster.Tiles[2,1].CheckStats();
+
+			TileMaster.Tiles[1,2].InitStats.Hits = 2;
+			TileMaster.Tiles[1,2].CheckStats();
+
+			TileMaster.Tiles[2,2].InitStats.Hits = 2;
+			TileMaster.Tiles[2,2].CheckStats();
+			Alert("Some tiles take\nmultiple hits to destroy");
+			current++;
+			break;
+
+			case 4:
 			CameraUtility.instance.ScreenShake(0.6F, 1.4F);
 			yield return new WaitForSeconds(Time.deltaTime * 30);
 
 			TileMaster.instance.ReplaceTile(1,2, TileMaster.Types["grunt"], GENUS.STR);
 			yield return new WaitForSeconds(Time.deltaTime * 10);
-
-			Alert("Enemy tiles attack your\nhealth after every turn");
-			current++;
-			break;
-
-			case 4:
 			Alert("Match enemy tiles\nto destroy");
 			current++;
 			break;
 
 			case 5:
-			Alert("A red X means your\nattack will kill\nthe enemy");
-			TileMaster.instance.ReplaceTile(0,2, TileMaster.Types["grunt"], GENUS.STR);
-			TileMaster.instance.ReplaceTile(1,2, TileMaster.Types["grunt"], GENUS.STR);	
+			if(alerter != null) Destroy(alerter.gameObject);
+			yield return StartCoroutine(UIManager.instance.Alert(0.3F, "", "Enemy tiles attack your\nhealth after every turn", "", true, 60));
 			current++;
 			break;
 			case 6:
-			Alert("Enemies have different\nattacks and health");
-			TileMaster.instance.ReplaceTile(0,2, TileMaster.Types["grunt"], GENUS.STR);
-			TileMaster.instance.ReplaceTile(1,2, TileMaster.Types["grunt"], GENUS.STR);
+			Alert("A red X means your\nattack will kill\nthe enemy");
+			TileMaster.instance.ReplaceTile(0,3, TileMaster.Types["grunt"], GENUS.STR);
+			TileMaster.instance.ReplaceTile(3,3, TileMaster.Types["grunt"], GENUS.DEX);	
 			current++;
+			
 			break;
 			case 7:
+			Alert("Enemies have different\nattacks and health");
+			TileMaster.instance.ReplaceTile(1,3, TileMaster.Types["grunt"], GENUS.CHA);
+			TileMaster.instance.ReplaceTile(2,3, TileMaster.Types["grunt"], GENUS.WIS);
+
 			yield return StartCoroutine(AddRogue());
-			TileMaster.instance.MapSize_Default = new Vector2(4,4);
+			
 			current++;
 			break;
 			case 8:
@@ -134,7 +200,7 @@ public class Tutorial : Wave {
 			Tile t = TileMaster.instance.ReplaceTile(1,2, TileMaster.Types["blob"], GENUS.STR, 2,1);
 			t.AddAction(() =>
 			{
-				current++;
+				//current++;
 				//StartCoroutine(SplitBlobBoss());
 			});
 
@@ -145,11 +211,17 @@ public class Tutorial : Wave {
 
 			current++;
 			break;
+			case 11:
+			TileMaster.instance.MapSize_Default = new Vector2(5,5);
+			current++;
+			break;
 			case 12:
 				Player.Classes[1].CanCollectMana = true;
 				Player.Classes[0].CanCollectMana = true;
+				Player.Classes[0].Meter = Player.Classes[0].MeterTop - 3;
+				Player.Classes[1].Meter = Player.Classes[1].MeterTop - 3;
 				yield return StartCoroutine(UIManager.instance.Alert(0.3F, "", "Collect mana to\ncast hero spells", "", true, 60));
-				TileMaster.instance.MapSize_Default = new Vector2(5,5);
+				
 				current++;
 			break;
 			case 13:
