@@ -9,16 +9,16 @@ public class Thief : Class {
 	private int _currentmanapower = 100;
 	public override void StartClass () {
 		
-		attack = new TileChance();
+		/*attack = new TileChance();
 		attack.Genus = "Alpha";
 		attack.Type = "sword";
 		attack.Chance = 0.06F;
-		InitStats.TileChances.Add(attack);
+		InitStats.TileChances.Add(attack);*/
 
 		TileChance attackgen = new TileChance();
 		attackgen.Genus = GameData.ResourceLong(Genus);
 		attackgen.Type = "sword";
-		attackgen.Chance = 0.06F;
+		attackgen.Chance = 0.1F;
 		InitStats.TileChances.Add(attackgen);
 
 		TileChance chest = new TileChance();
@@ -26,6 +26,12 @@ public class Thief : Class {
 		chest.Type = "chest";
 		chest.Chance = 0.003F;
 		InitStats.TileChances.Add(chest);
+
+		TileChance health = new TileChance();
+		health.Genus = GameData.ResourceLong(Genus);
+		health.Type = "health";
+		health.Chance = 0.05F;
+		InitStats.TileChances.Add(health);
 		
 
 		/*TileChance health = new TileChance();

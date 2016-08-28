@@ -16,31 +16,6 @@ public class Grunt : Enemy {
 	private int TerrorHPScale = 14, TerrorHPMult = 3;
 	private int TerrorATKScale = 19, TerrorATKMult = 1;
 
-	public override StCon [] Description
-	{
-		get{
-			string d = "";
-			switch(Rank)
-			{
-				case 1:
-				d = "A medium enemy with\n a weak attack. ";
-				break;
-				case 2:
-				d = "A strong enemy with\n a weak attack";
-				break;
-				case 3:
-				d = "A strong enemy that\n rallies nearby enemies. ";
-				break;
-				case 4:
-				d = "A highly dangerous\n enemy. ";
-				break;
-			}
-			return new StCon[]{new StCon(_EnemyType + " Enemy", Color.white, true, 40),
-				new StCon(d, Color.white, true, 40)
-							   };
-		}
-	}
-
 	public override StCon _Name {
 		get{
 			string d = "";

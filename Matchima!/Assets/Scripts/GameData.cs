@@ -88,9 +88,9 @@ public class GameData : MonoBehaviour {
 		else Debug.Log(s);
 	}
 
-	public static float GameSpeed(float f)
+	public static float GameSpeed(float f, float ratio = 1.0F)
 	{
-		return f / Player.Options.GameSpeed * Time.deltaTime * 60;
+		return f / (Player.Options.GameSpeed/ratio) * Time.deltaTime * 60;
 	}
 
 	public static int StringToInt(string num)

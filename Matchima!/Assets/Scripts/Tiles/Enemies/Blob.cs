@@ -15,7 +15,7 @@ public class Blob : Enemy {
 	{
 		get{
 			return new StCon[]{
-				new StCon(_EnemyType + " Enemy", Color.white, true,40),
+				//new StCon(_EnemyType + " Enemy", Color.white, true,40),
 				new StCon("Merges with other blobs", GameData.Colour(GENUS.PRP),true, 40)
 			};
 		}

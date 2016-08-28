@@ -6,16 +6,6 @@ public class Minion : Enemy {
 	private int MinionHPAdded = 1;
 	private int MinionATKAdded = 1;
 
-	public override StCon [] Description
-	{
-		get{
-			return new StCon[]{
-			new StCon((_EnemyType + " Enemy"), Color.white,true, 40),
-			new StCon("A weak enemy with\n a strong attack", Color.white,true, 40)
-			};
-		}
-	}
-
 	protected sealed override void SetupEnemy()
 	{
 
@@ -49,7 +39,7 @@ public class Minion : Enemy {
 
 	
 	private float MinionSpawnChance = 0.15F;
-		public override IEnumerator AfterTurnRoutine()
+		/*public override IEnumerator AfterTurnRoutine()
 		{
 			yield return StartCoroutine(base.AfterTurnRoutine());
 			if(Random.value > MinionSpawnChance) yield break;
@@ -70,7 +60,7 @@ public class Minion : Enemy {
 			}
 			yield break;
 			
-		}
+		}*/
 
 		private void CreateMinion(Tile t)
 		{

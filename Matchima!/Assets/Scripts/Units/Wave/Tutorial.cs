@@ -131,15 +131,15 @@ public class Tutorial : Wave {
 			
 			CameraUtility.instance.ScreenShake(0.6F, 1.4F);
 			yield return new WaitForSeconds(Time.deltaTime * 30);
-			Tile t = TileMaster.instance.ReplaceTile(1,2, TileMaster.Types["blob"], GENUS.STR, 2,3);
+			Tile t = TileMaster.instance.ReplaceTile(1,2, TileMaster.Types["blob"], GENUS.STR, 2,1);
 			t.AddAction(() =>
 			{
 				current++;
 				//StartCoroutine(SplitBlobBoss());
 			});
 
-			TileMaster.Types["grunt"]["Red"].ChanceInitial = 0.25F;
-			TileMaster.Types["blob"]["Blue"].ChanceInitial = 0.25F;
+			TileMaster.Types["grunt"]["Red"].ChanceInitial = 0.16F;
+			TileMaster.Types["blob"]["Blue"].ChanceInitial = 0.14F;
 			TileMaster.Types.IgnoreAddedChances = false;
 			Spawner2.GetSpawnables(TileMaster.Types);
 
@@ -186,14 +186,19 @@ public class Tutorial : Wave {
 
 		if(!shownpowerupalert)
 		{
-			for(int i = 0; i < Player.Classes.Length; i++)
+			if(Player.Classes[0].MeterLvl >= 1)
 			{
-				if(Player.Classes[i] == null) continue;
-				if(Player.Classes[i].MeterLvl >= 1)
-				{
-					yield return StartCoroutine(UIManager.instance.Alert(0.3F, "A spell\nis ready!", "Tap on a powered\nhero's icon to\ncast a spell", "", true, 60));
-					shownpowerupalert = true;
-				}
+				yield return StartCoroutine(UIManager.instance.Alert(0.3F, "A spell\nis ready!", "Tap Barbarian's\nicon to\ncast Heal", "",
+																	 true, 60, UIManager.ClassButtons.GetClass(0)));
+				yield return StartCoroutine(Player.Classes[0].UseManaPower());
+				shownpowerupalert = true;		
+			}
+			if(Player.Classes[1] != null && Player.Classes[1].MeterLvl >= 1)
+			{
+				yield return StartCoroutine(UIManager.instance.Alert(0.3F, "A spell\nis ready!", "Tap Rogue's\nicon to\ncast Throw Knives", "",
+																	 true, 60, UIManager.ClassButtons.GetClass(1)));
+				yield return StartCoroutine(Player.Classes[1].UseManaPower());
+				shownpowerupalert = true;
 			}
 		}
 
@@ -281,7 +286,7 @@ public class Tutorial : Wave {
 		yield return StartCoroutine(Player.instance.AddClassToSlot(2, GameData.instance.GetClass("Wizard")));
 
 		TileMaster.Types["resource"]["Green"].ChanceInitial = 1.0F;
-		TileMaster.Types["minion"]["Green"].ChanceInitial = 0.25F;
+		TileMaster.Types["minion"]["Green"].ChanceInitial = 0.16F;
 
 		Player.Classes[2].CanCollectMana = true;
 		Player.Classes[2].CanMutate = false;

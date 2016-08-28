@@ -9,7 +9,9 @@ public class Tile : MonoBehaviour {
 
 	public string Name;
 	public virtual StCon _Name {
-		get{return new StCon(Info._TypeName, GameData.Colour(Genus));}
+		get{
+			string pref = Stats.Value > 1 ? "+" + Stats.Value : "";
+			return new StCon(pref + " " + Info._TypeName, GameData.Colour(Genus));}
 	}
 	public int x{get{return Point.Base[0];}}
 	public int y{get{return Point.Base[1];}}
@@ -19,7 +21,7 @@ public class Tile : MonoBehaviour {
 		get{
 			List<StCon> basic = new List<StCon>();
 			if(Stats.Resource != 0)
-			basic.Add(new StCon("+" + Stats.GetValues()[0] + " Mana", GameData.Colour(Genus), false, 40));
+			//basic.Add(new StCon("+" + Stats.GetValues()[0] + " Mana", GameData.Colour(Genus), false, 40));
 			if(Stats.Heal != 0)
 			basic.Add(new StCon("+" + Stats.GetValues()[1] + "% Health", GameData.Colour(GENUS.STR), false, 40));
 			if(Stats.Armour != 0)

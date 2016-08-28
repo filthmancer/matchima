@@ -33,7 +33,7 @@ public class Powerup : MonoBehaviour {
 	{
 		UIObj obj = (UIObj)Instantiate(MinigameObj[i]);
 		RectTransform rect = obj.GetComponent<RectTransform>();
-		obj.transform.SetParent(UIManager.Objects.MiddleGear.transform);
+		obj.transform.SetParent(UIManager.Objects.MainUI.transform);
 		obj.transform.localScale = Vector3.one;
 		rect.sizeDelta = Vector2.one;
 		rect.anchoredPosition = Vector2.zero;
@@ -61,7 +61,7 @@ public class Powerup : MonoBehaviour {
 		powerup.transform.position = UIManager.ClassButtons.GetClass(Parent.Index).transform.position;
 		powerup.transform.localScale = Vector3.one;
 
-		float step_time = Time.deltaTime * 45;
+		float step_time = GameData.GameSpeed(1.05F, 0.7F);
 		float total_time = step_time * 3;
 		MiniAlertUI a = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.up*4.5F, 
 			Parent.Name + " Casts", 110, GameData.Colour(Parent.Genus), total_time, 0.2F);

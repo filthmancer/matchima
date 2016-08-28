@@ -403,6 +403,7 @@ public class GameManager : MonoBehaviour {
 
 		ZoneMap = GameData.instance.StoryModeMap;
 		UIManager.Objects.TopGear.Txt[0].text = "";
+		Difficulty = (DifficultyMode == DiffMode.Easy ? 1.1F : 2.1F);
 
 		UIManager.instance.GenerateZoneMap();
 		StartCoroutine(StartGameEnterZone());
@@ -417,6 +418,7 @@ public class GameManager : MonoBehaviour {
 
 		ZoneMap = GameData.instance.GenerateEndlessMode();
 		UIManager.Objects.TopGear.Txt[0].text = "";
+		Difficulty = (DifficultyMode == DiffMode.Easy ? 1.1F : 2.1F);
 
 		UIManager.instance.GenerateZoneMap();
 		StartCoroutine(StartGameEnterZone());
@@ -454,6 +456,7 @@ public class GameManager : MonoBehaviour {
 		if(QuickCrawlOverride) ZoneMap[0][0] = QuickCrawlOverride;
 
 		UIManager.Objects.TopGear.Txt[0].text = "";
+		Difficulty = (DifficultyMode == DiffMode.Easy ? 1.1F : 2.1F);
 
 		UIManager.instance.GenerateZoneMap();
 		StartCoroutine(StartGameEnterZone());
@@ -750,6 +753,8 @@ public class GameManager : MonoBehaviour {
 
 		TileMaster.instance.ResetTiles(true);
 		while(TileMaster.EnemiesAttacking()) yield return null;
+
+		yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 		
 		yield return StartCoroutine(TileMaster.instance.AfterTurn());
 		yield return StartCoroutine(CompleteTurnRoutine());
@@ -856,24 +861,10 @@ public class GameManager : MonoBehaviour {
 			child.OnAttack();
 
 			Tile target = null;
-			for(int x = 0; x < TileMaster.Tiles.GetLength(0); x++)
-			{
-				for(int y = 0; y < TileMaster.Tiles.GetLength(1); y++)
-				{
-					if(TileMaster.Tiles[x,y].Type.isEnemy)
-					{
-						if(TileMaster.Tiles[x,y] == null) continue;
-						if(TileMaster.Tiles[x,y] == child) continue;
-						if(TileMaster.Tiles[x,y].Type.isAlly) continue;
-					
-						target = TileMaster.Tiles[x,y];
-						break;
-					}
-				}
-				if(target!= null) break;
-			}
-			
-			if(target != null)
+			if(TileMaster.Enemies.Length == 0) continue;
+			target = TileMaster.Enemies[Random.Range(0, TileMaster.Enemies.Length)];
+			if(target!= null) continue;
+			else
 			{
 				child.AttackTile(target);
 				yield return StartCoroutine(child.Animate("Attack", 0.05F));

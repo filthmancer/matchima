@@ -922,6 +922,7 @@ public class Class : Unit {
 	{
 		isKilled = true;
 		killtimer = 4;
+		StartCoroutine(PowerDown());
 		//if(DeathWarning)
 		//{
 		//	StartCoroutine(UIManager.instance.Quote(Quotes.Death));

@@ -23,14 +23,8 @@ public class Barbarian : Class {
 		health = new TileChance();
 		health.Genus = GameData.ResourceLong(Genus);
 		health.Type = "health";
-		health.Chance = 0.19F;
+		health.Chance = 0.15F;
 		InitStats.TileChances.Add(health);
-
-		TileChance sword = new TileChance();
-		sword.Genus = GameData.ResourceLong(Genus);
-		sword.Type = "bomb";
-		sword.Chance = 0.01F;
-		InitStats.TileChances.Add(sword);
 
 		PowerupSpell = GameData.instance.GetPowerup("Heal", this);
 

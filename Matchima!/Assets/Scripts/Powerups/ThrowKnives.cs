@@ -55,8 +55,8 @@ public class ThrowKnives : Powerup {
 		Destroy(CatcherObjActual.gameObject);
 
 		UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, 
-		CatchNum + " Knives!", 100, GameData.Colour(Parent.Genus), 0.8F, 0.25F);
-		yield return new WaitForSeconds(GameData.GameSpeed(0.4F));
+		CatchNum + " Knives!", 120, GameData.Colour(Parent.Genus), 0.6F, 0.25F);
+		yield return new WaitForSeconds(GameData.GameSpeed(0.6F));
 
 		
 		UIManager.instance.ScreenAlert.SetTween(0,false);
@@ -133,11 +133,11 @@ public class ThrowKnives : Powerup {
 	{
 		UIObj knife = CreateMinigameObj(0);
 		knife.transform.position = UIManager.Objects.BotGear.transform.position;
-		float velx = Random.Range(0.04F, 0.19F);
+		float velx = Random.Range(0.03F, 0.12F);
 		if(Random.value < 0.5F) velx = -velx;
 		Vector3 vel = new Vector3(velx, 1.6F * CameraUtility.OrthoFactor, 0.0F);
 		bool mobile = Application.isMobilePlatform;
-		knife.GetComponent<Velocitizer>().SetVelocity(vel, (mobile ? 24 : 30));
+		knife.GetComponent<Velocitizer>().SetVelocity(vel, (mobile ? 23 : 30));
 		knife.GetComponent<Velocitizer>().SetRotation(new Vector3(0,0,Random.Range(-1.2F, 1.2F)));
 		knife.GetComponent<Velocitizer>().AddTimedAction(() =>
 		{
@@ -178,7 +178,8 @@ public class ThrowKnives : Powerup {
 
 		mp.enabled = true;
 		mp.SetTarget(target.transform.position);
-		mp.SetPath(GameData.GameSpeed(0.55F), 0.0F);
+		mp.SetPath(Time.deltaTime * 35, 0.0F);
+		mp.SetThreshold(0.1F);
 
 		float dist = Vector3.Distance(target.transform.position, classpos);
 		//mp.Speed = 0.1F + 0.05F * dist;

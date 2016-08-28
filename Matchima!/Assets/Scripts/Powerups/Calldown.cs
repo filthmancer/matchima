@@ -30,7 +30,7 @@ int[] fireballs = new int[]
 	protected override IEnumerator Minigame(int Level)
 	{
 		yield return StartCoroutine(PowerupStartup());
-		int fireballnum = fireballs[Level];
+		int fireballnum = fireballs[Level-1];
 
 		int currtile = 0;
 		int nexttile = 1;

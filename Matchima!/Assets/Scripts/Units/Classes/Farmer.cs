@@ -8,13 +8,13 @@ public class Farmer : Class {
 		TileChance health = new TileChance();
 		health.Genus = GameData.ResourceLong(Genus);
 		health.Type = "health";
-		health.Chance = 0.15F;
+		health.Chance = 0.08F;
 		InitStats.TileChances.Add(health);
 
 		TileChance lightning = new TileChance();
 		lightning.Genus = GameData.ResourceLong(Genus);
 		lightning.Type = "lightning";
-		lightning.Chance = 0.1F;
+		lightning.Chance = 0.07F;
 		InitStats.TileChances.Add(lightning);
 
 		PowerupSpell = GameData.instance.GetPowerup("Colour Swap", this);

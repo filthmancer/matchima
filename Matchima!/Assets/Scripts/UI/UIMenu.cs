@@ -54,6 +54,7 @@ public class UIMenu : UIObj {
 	{
 		State = MenuState.StartScreen;
 		UIManager.Objects.BotGear[3].SetActive(true);
+		
 		if(!wedges_created)
 		{
 			wedges_created = true;
@@ -68,6 +69,14 @@ public class UIMenu : UIObj {
 				obj.Setup(child);
 				obj.transform.rotation = Quaternion.Euler(0,0,360 - (360/wedge_num * i));
 			}
+		}
+
+		for(int n = 0; n < UIManager.ClassButtons.Length; n++)
+		{
+			UIManager.ClassButtons.GetClass(n)._Sprite.enabled = true;
+			UIManager.ClassButtons.GetClass(n)._Sprite.color = Color.white;
+			UIManager.ClassButtons.GetClass(n)._SpriteMask.enabled = false;
+			UIManager.ClassButtons.GetClass(n).Death.enabled = false;
 		}
 		
 		UIManager.Objects.BotGear[3].GetChild(1).transform.SetAsLastSibling();
@@ -626,9 +635,9 @@ public class UIMenu : UIObj {
 			}
 			else 
 			{
-					UIManager.ClassButtons.GetClass(n)._Sprite.enabled = false;
-					UIManager.ClassButtons.GetClass(n)._SpriteMask.enabled = true;
-					UIManager.ClassButtons.GetClass(n)._SpriteMask.sprite = NoHeroInSlot;
+				UIManager.ClassButtons.GetClass(n)._Sprite.enabled = false;
+				UIManager.ClassButtons.GetClass(n)._SpriteMask.enabled = true;
+				UIManager.ClassButtons.GetClass(n)._SpriteMask.sprite = NoHeroInSlot;
 			}
 		}
 	}

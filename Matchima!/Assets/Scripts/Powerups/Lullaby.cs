@@ -25,16 +25,12 @@ public class Lullaby : Powerup {
 
 		Harp = (UIObj) Instantiate(HarpObj);
 		RectTransform rect = Harp.GetComponent<RectTransform>();
-		Harp.transform.SetParent(UIManager.Objects.MiddleGear.transform);
+		Harp.transform.SetParent(UIManager.Objects.MainUI.transform);
 		Harp.transform.localScale = Vector3.one;
 		rect.sizeDelta = Vector2.one;
 		rect.anchoredPosition = Vector2.zero;
 
 		yield return new WaitForSeconds(Time.deltaTime * 15);
-
-		MiniAlertUI alert  = UIManager.instance.MiniAlert(UIManager.Objects.BotGear.transform.position + Vector3.down * 1,
-			"Play the\nnotes!", 100, GameData.Colour(Parent.Genus), 7.0F, 0.2F);
-		alert.AddJuice(Juice.instance.BounceB, 0.1F);
 
 		int sleep_duration = 0; //Duration of mass sleep
 
@@ -43,8 +39,8 @@ public class Lullaby : Powerup {
 		{
 			float time = Random.Range(0.1F, 0.6F);
 			notes.Add(CreateNote());
-			alert.transform.position = UIManager.Objects.TopGear.transform.position + Vector3.down * 3;
-			alert.text = notes_hit/sleep_ratio + " TURN SLEEP";
+			//alert.transform.position = UIManager.Objects.TopGear.transform.position + Vector3.down * 3;
+			//alert.text = notes_hit/sleep_ratio + " TURN SLEEP";
 			yield return new WaitForSeconds(GameData.GameSpeed(time));
 		}
 
@@ -59,14 +55,21 @@ public class Lullaby : Powerup {
 			yield return null;
 		}
 		yield return new WaitForSeconds(GameData.GameSpeed(0.15F));
-		if(alert != null) Destroy(alert.gameObject);
+
 		Destroy(Harp.gameObject);
-		yield return new WaitForSeconds(GameData.GameSpeed(0.15F));
+
+		sleep_duration = notes_hit/ sleep_ratio;
+
+		MiniAlertUI alert  = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.up * 2.0F,
+			sleep_duration + " Turn Sleep!", 120, GameData.Colour(Parent.Genus), 0.6F, 0.2F);
+		alert.AddJuice(Juice.instance.BounceB, 0.1F);
+		yield return new WaitForSeconds(GameData.GameSpeed(0.6F));
+
 		UIManager.instance.ScreenAlert.SetTween(0,false);
 		TileMaster.instance.SetAllTileStates(TileState.Locked, true);
 		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(true);
 
-		sleep_duration = notes_hit/ sleep_ratio;
+		
 		Tile [] targets  = TileMaster.Enemies;
 		for(int i = 0; i < targets.Length; i++)
 		{

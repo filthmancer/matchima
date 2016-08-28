@@ -25,7 +25,7 @@ public class Heal : Powerup {
 		MGame.AddAction(UIAction.MouseDown, () => 
 		{
 			final_ratio += 0.07F;
-			MiniAlertUI alert  = UIManager.instance.MiniAlert(PlayerControl.InputPos,
+			MiniAlertUI alert  = UIManager.instance.MiniAlert(PlayerControl.InputPos+Vector3.up,
 			(int)(final_ratio * HealTotal) + "%", 140, GameData.Colour(Parent.Genus), 0.3F, 0.4F);
 			alert.AddJuice(Juice.instance.BounceB, 0.1F);
 		});
@@ -49,10 +49,16 @@ public class Heal : Powerup {
 			if(taptimer <= 0.0F || final_ratio >= 1.0F) istapping = false;
 			yield return null;
 		}
-		MGame.ClearActions(UIAction.MouseDown);
+		Destroy(MGame.gameObject);
 
+		yield return new WaitForSeconds(Time.deltaTime * 5);
+		int final = (int) ((float)HealTotal * final_ratio);
+		MiniAlertUI finalert  = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.up * 2.0F,
+			final + "% Heal!", 120, GameData.Colour(Parent.Genus), 0.6F, 0.2F);
+		finalert.AddJuice(Juice.instance.BounceB, 0.1F);
+		yield return new WaitForSeconds(0.6F);
 		
-		GameObject initpart = EffectManager.instance.PlayEffect(MGame.transform, "spell");
+		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.Objects.MiddleGear.transform, "spell");
 		initpart.GetComponent<MoveToPoint>().enabled = true;
 		initpart.GetComponent<MoveToPoint>().SetTarget(UIManager.instance.Health.transform.position);
 		initpart.GetComponent<MoveToPoint>().SetPath(0.2F, 0.2F);
@@ -62,9 +68,9 @@ public class Heal : Powerup {
 		//part.transform.position = UIManager.instance.Health.transform.position;
 		//yield return new WaitForSeconds(part_time);
 
-		Destroy(MGame.gameObject);
+		
 
-		Player.Stats.Heal((int)(HealTotal * final_ratio));
+		Player.Stats.Heal(final);
 		Player.Stats.CompleteHealth();
 
 		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(false);

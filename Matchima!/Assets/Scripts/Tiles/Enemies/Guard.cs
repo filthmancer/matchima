@@ -13,7 +13,7 @@ public class Guard : Enemy {
 	{
 		get{
 			return new StCon[]{
-				new StCon(_EnemyType + " Enemy", Color.white, true,40),
+				//new StCon(_EnemyType + " Enemy", Color.white, true,40),
 				new StCon("Patrols left and right", GameData.Colour(GENUS.OMG),true, 40)
 			};
 		}

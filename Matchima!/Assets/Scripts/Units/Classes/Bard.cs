@@ -45,19 +45,13 @@ public class Bard : Class {
 		harp = new TileChance();
 		harp.Genus = GameData.ResourceLong(Genus);
 		harp.Type = "harp";
-		harp.Chance = 0.14F;
+		harp.Chance = 0.13F;
 		InitStats.TileChances.Add(harp);
-
-		TileChance sword = new TileChance();
-		sword.Genus = GameData.ResourceLong(Genus);
-		sword.Type = "sword";
-		sword.Chance = 0.01F;
-		InitStats.TileChances.Add(sword);
 
 		TileChance health = new TileChance();
 		health.Genus = GameData.ResourceLong(Genus);
 		health.Type = "health";
-		health.Chance = 0.05F;
+		health.Chance = 0.03F;
 		InitStats.TileChances.Add(health);
 
 		PowerupSpell = GameData.instance.GetPowerup("Lullaby", this);

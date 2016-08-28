@@ -68,6 +68,7 @@ public class UIManager : MonoBehaviour {
 		Objects = this.GetComponent<UIObjects>();
 		Canvas = this.transform.GetChild(0).GetComponent<Canvas>();
 		Menu = Objects.MenuUI.GetComponent<UIMenu>();
+		Objects.MiddleGear.SetActive(true);
 	}
 
 	void Start () {
@@ -1005,7 +1006,7 @@ public class UIManager : MonoBehaviour {
 	public bool AlertShowing = false;
 
 	public IEnumerator Alert(float time, string floor = "", string title = "", string desc = "",
-							 bool wait_for_touch = false, float size = 70)
+							 bool wait_for_touch = false, float size = 70, UIObj toucher = null)
 	{
 		StCon [] fl = null;
 		if(floor != string.Empty) fl = new StCon[] {new StCon(floor, Color.white, true, size)};
@@ -1013,10 +1014,11 @@ public class UIManager : MonoBehaviour {
 		if(title != string.Empty) ti = new StCon[] {new StCon(title, Color.white, true, size)};
 		StCon [] de = null;
 		if(desc != string.Empty) de = new StCon[] {new StCon(desc, Color.white, true, size)};
-		yield return StartCoroutine(Alert(time, fl, ti, de, wait_for_touch));
+		yield return StartCoroutine(Alert(time, fl, ti, de, wait_for_touch, toucher));
 	}
 	
-	public IEnumerator Alert(float time, StCon [] floor = null, StCon [] title = null, StCon [] desc = null, bool wait_for_touch = false)
+	public IEnumerator Alert(float time, StCon [] floor = null, StCon [] title = null, StCon [] desc = null,
+							 bool wait_for_touch = false, UIObj toucher = null)
 	{
 		while(AlertShowing) yield return null;
 		AlertShowing = true;
@@ -1072,15 +1074,32 @@ public class UIManager : MonoBehaviour {
 		if(wait_for_touch)
 		{
 			bool has_touched = false;
-			(ScreenAlert[4] as UIObjTweener).SetTween(0, true);
-			ScreenAlert[4].AddAction(UIAction.MouseUp, () =>{has_touched = true;});
+			UIObj targ = null;
+			if(toucher == null)
+			{
+				targ = ScreenAlert[4];
+				(ScreenAlert[4] as UIObjTweener).SetTween(0, true);
+			}
+			else
+			{
+				targ = (UIObj) Instantiate(toucher);
+				targ.transform.position = toucher.transform.position;
+				targ.transform.localScale = toucher.transform.localScale;
+				targ.transform.SetParent(Objects.MainUI.transform);
+			}
+
+			targ.AddAction(UIAction.MouseUp, () =>{has_touched = true;});	
+			
 			while(!has_touched)
 			{
-			
 				yield return null;
 			}
-			(ScreenAlert[4] as UIObjTweener).SetTween(0,false);
-			ScreenAlert[4].ClearActions();
+			if(toucher) Destroy(targ.gameObject);
+			else 
+			{
+				(ScreenAlert[4] as UIObjTweener).SetTween(0,false);
+				ScreenAlert[4].ClearActions();
+			}
 		}
 
 		ScreenAlert.SetTween(0,false);
@@ -1403,6 +1422,7 @@ public class UIManager : MonoBehaviour {
 		yield return null;
 	}
 
+
 	public void AddConfirmListener(UIObj obj, int i)
 	{
 		obj.GetComponent<Button>().onClick.AddListener(() => QuoteConfirm(i));
@@ -1707,7 +1727,7 @@ public class UIManager : MonoBehaviour {
 		ScreenAlert.SetActive(true);
 		ScreenAlert.SetTween(0,true);
 
-		yield return new WaitForSeconds(Time.deltaTime * 35);
+		yield return new WaitForSeconds(Time.deltaTime * 10);
 
 		Objects.DeathParent.SetTween(0, true);
 		Objects.DeathIcon.SetFrame(0);
