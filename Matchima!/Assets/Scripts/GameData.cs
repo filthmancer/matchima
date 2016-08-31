@@ -153,6 +153,17 @@ public class GameData : MonoBehaviour {
 		mp.SetMethod(a);
 		return initpart;
 	}
+
+	public static IEnumerator DeltaWait(float time)
+	{
+		float final = 0.0F;
+		while(final < time)
+		{
+			final += Time.deltaTime;
+			yield return null;
+		}
+		yield break;
+	}
 #endregion
 
 #region Tile/Type Info
@@ -1143,9 +1154,8 @@ public class ZoneMapContainer
 
 	public bool Progress()
 	{
-		Debug.Log("ZONE BRACKET CURRENT: " + Current);
 		Current ++;
-		return Current <= Length;
+		return Current < Length;
 	}
 }
 

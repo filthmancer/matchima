@@ -79,16 +79,7 @@ public class TileMaster : MonoBehaviour {
 					if (Tiles[x, y] == null) continue;
 					if (Tiles[x, y].Type.isEnemy && !Tiles[x,y].Type.isAlly) 
 					{
-						bool add = true;
-						for(int i = 0; i < final.Count; i++)
-						{
-							if(final[i] == Tiles[x,y])
-							{
-								add = false;
-								break;
-							}
-						}
-						if(add) final.Add(Tiles[x, y]);
+						if(!final.Contains(Tiles[x,y])) final.Add(Tiles[x,y]);
 					}
 				}
 			}
@@ -873,7 +864,6 @@ public class TileMaster : MonoBehaviour {
 	{
 		if (Tiles[x, y] != null && Tiles[x, y].gameObject != null)
 		{
-			//FillGrid = true;
 			Player.instance.OnTileDestroy(Tiles[x, y]);
 			int scale = Grid[x, y]._Tile.Point.Scale;
 			for (int xx = 0; xx < scale; xx++)
@@ -887,9 +877,8 @@ public class TileMaster : MonoBehaviour {
 				}
 			}
 
-			/*MiniTile2 TileObj = (MiniTile2) Instantiate(MiniTileObj);
-			TileObj.Setup(Tiles[x,y]);
-			TileObj.Explode();*/
+			Tiles[x,y].ClearActions();
+			Tiles[x,y].ClearEffects();
 
 			Tiles[x, y].Info._Type.TilePool.Unspawn(Tiles[x, y]);
 		}
@@ -897,7 +886,7 @@ public class TileMaster : MonoBehaviour {
 
 	public void DestroyTile(Tile t)
 	{
-		//FillGrid = true;
+		Player.instance.OnTileDestroy(t);
 		for (int xx = 0; xx < t.Point.Scale; xx++)
 		{
 			for (int yy = 0; yy < t.Point.Scale; yy++)
@@ -908,53 +897,23 @@ public class TileMaster : MonoBehaviour {
 				}
 			}
 		}
-		Player.instance.OnTileDestroy(t);
-
-
-
+		
+		t.ClearActions();
+		t.ClearEffects();
 		t.Info._Type.TilePool.Unspawn(t);
 		if (Player.Stats.Shift == ShiftType.None) ReplaceTile(t.Point.Base[0], t.Point.Base[1]);
 	}
 
 	public void CollectTile(Tile t, bool destroy)
 	{
+		t.CheckStats();
 		CollectTileResource(t, destroy);
-
 		Player.instance.OnTileCollect(t);
 	}
 
 	int [] points = new int [4];
 	private void CollectTileResource(Tile t, bool destroy)
 	{
-		RectTransform res = null;
-		t.CheckStats();
-
-		if (t.Genus == GENUS.ALL)
-		{
-			res = UIManager.instance.Health.transform as RectTransform;
-		}
-		else if (t.Genus == GENUS.OMG)
-		{
-			for (int i = 0; i < Player.Classes.Length; i++)
-			{
-				if (Player.Classes[i] == null) continue;
-				//INPUT CODE FOR CHECKING IF COLLECTING OMEGA HERE
-				if (Player.Classes[i].Genus == GENUS.OMG)
-				{
-					res = UIManager.ClassButtons[(int)t.Genus].transform as RectTransform;
-					break;
-				}
-				else return;
-			}
-		}
-		else if (t.Genus == GENUS.NONE) return;
-		else if (t.Genus == GENUS.PRP) return;
-		else
-		{
-			res = UIManager.ClassButtons[(int)t.Genus].transform as RectTransform;
-		}
-		if (res == null) res = UIManager.ClassButtons[0].transform as RectTransform;
-
 		ParticleSystem col = EffectManager.instance.PlayEffect(t.transform, Effect.Destroy, GameData.instance.GetGENUSColour(t.Genus)).GetComponent<ParticleSystem>();
 		int combo = GameManager.ComboSize;
 		if (combo < 10)
@@ -987,18 +946,6 @@ public class TileMaster : MonoBehaviour {
 			m.AddJuice(Juice.instance.BounceB, info_time);
 			UIManager.instance.GetMeterPoints(g, values[0]);
 			m.DestroyOnEnd = true;
-			/*Vector3 targ = Vector3.zero;
-			if(g > 3) targ = UIManager.instance.Health.transform.position;
-			else targ = UIManager.Objects.MiddleGear[4][g].transform.position;
-			mini.SetTarget(targ);
-			mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
-			//UIManager.instance.SetMeter(g, true);
-
-			mini.SetIntMethod((int [] num) =>
-			{
-
-
-			}, new int [] {g, values[0]});*/
 
 		}
 		if (values[1] > 0)
@@ -1013,14 +960,6 @@ public class TileMaster : MonoBehaviour {
 			m.AddAction(() => {mini.enabled = true;});
 			m.DestroyOnEnd = true;
 			Player.Stats.Heal(values[1]);
-
-			/*mini.SetTarget(UIManager.instance.Health.transform.position);
-			mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
-
-			mini.SetMethod(() => {
-				
-			}
-			              );*/
 		}
 		if (values[2] > 0)
 		{
@@ -1034,51 +973,10 @@ public class TileMaster : MonoBehaviour {
 			m.AddAction(() => {mini.enabled = true;});
 			m.DestroyOnEnd = true;
 
-			/*mini.SetTarget(UIManager.instance.Health.transform.position);
-			mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
-			mini.SetMethod(() => {
-				Player.Stats.Heal(values[2]);
-			}
-			              );*/
 		}
 		if (t.Type.isEnemy)
 		{
-			/*Vector3 pos = Grid.GetPoint(t.Point.Point(0)) + Vector3.down * 0.3F;
 
-			if(GameManager.Wave != null)
-			{
-				MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + t.Stats.GetValues()[0], info_start_size, GameData.Colour(t.Genus), info_time, 0.04F, false);
-				m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
-				MoveToPoint mover = m.GetComponent<MoveToPoint>();
-				m.AddJuice(Juice.instance.BounceB, info_time);
-				m.AddAction(() => {mover.enabled = true;});
-				m.DestroyOnEnd = false;
-
-				mover.SetTarget(UIManager.Objects.TopGear[1][0][0].transform.position
-					);
-				mover.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
-				mover.SetMethod(() =>{
-						if(GameManager.Wave != null) GameManager.Wave.EnemyKilled(t as Enemy);
-					}
-				);
-			}
-
-			if(Player.Classes.Length > (int)t.Genus)
-			{
-				MiniAlertUI manaalert = UIManager.instance.MiniAlert(pos,  "" + t.Stats.GetValues()[0], info_start_size, GameData.Colour(t.Genus), info_time, 0.04F, false);
-				manaalert.transform.rotation = Quaternion.Euler(0,0,init_rotation);
-				mini = manaalert.GetComponent<MoveToPoint>();
-				manaalert.AddJuice(Juice.instance.BounceB, info_time);
-				manaalert.AddAction(() => {mini.enabled = true;});
-				manaalert.DestroyOnEnd = false;
-
-				mini.SetTarget(UIManager.ClassButtons[(int)t.Genus].transform.position);
-				mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
-				mini.SetMethod(() =>{
-						c[i].AddToMeter(t.Stats.GetValues()[0]);
-					}
-				);
-			}*/
 		}
 
 		if (destroy) DestroyTile(t);

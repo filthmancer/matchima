@@ -56,6 +56,16 @@ public class IntVector
 {
 	//public static IntVector zero = new IntVector(0,0);
 	public int x, y;
+	public int this[int v]
+	{
+		get
+		{
+			if(v == 0) return x;
+			else if(v == 1) return y;
+			else return 0;
+		}
+		
+	}
 	public IntVector(int a, int b)
 	{
 		x = a;
@@ -77,6 +87,11 @@ public class IntVector
 	{
 		x = a;
 		y = a;
+	}
+
+	public static IntVector operator + (IntVector a, IntVector b)
+	{
+		return new IntVector(b.x+a.x, b.y+a.y);
 	}
 
 	public bool Equals(IntVector b) {return x == b.x && y == b.y;}

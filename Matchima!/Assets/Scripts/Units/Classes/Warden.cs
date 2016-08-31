@@ -32,14 +32,14 @@ public class Warden : Class {
 
 		TileChance bomb = new TileChance();
 		bomb.Genus = GameData.ResourceLong(Genus);
-		bomb.Type = "bomb";
+		bomb.Type = "flame";
 		bomb.Chance = 0.1F;
 		InitStats.TileChances.Add(bomb);
 
 		TileChance health = new TileChance();
 		health.Genus = GameData.ResourceLong(Genus);
 		health.Type = "health";
-		health.Chance = 0.05F;
+		health.Chance = 0.2F;
 		InitStats.TileChances.Add(health);
 
 

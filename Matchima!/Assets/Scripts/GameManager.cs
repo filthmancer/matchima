@@ -408,6 +408,7 @@ public class GameManager : MonoBehaviour {
 		UIManager.instance.SetLoadScreen(false);
 
 		ZoneMap = GameData.instance.StoryModeMap;
+
 		UIManager.Objects.TopGear.Txt[0].text = "";
 		ResetFactors();
 
@@ -424,6 +425,7 @@ public class GameManager : MonoBehaviour {
 		UIManager.instance.SetLoadScreen(false);
 
 		ZoneMap = GameData.instance.GenerateEndlessMode();
+		
 		UIManager.Objects.TopGear.Txt[0].text = "";
 		ResetFactors();
 
@@ -615,17 +617,15 @@ public class GameManager : MonoBehaviour {
 				Destroy(CurrentWave.gameObject);
 				CurrentWave = null;
 			}
-			print("ENTERING ZONE");
 			yield return StartCoroutine(CurrentZone.Enter());
 			CurrentZone.SetCurrent(wavenum);
 			yield return StartCoroutine(_GetWave());
 		}
 	
 		public void EscapeZone()
-		{
+		{	
 
 			bool end = ZoneMap.Progress();
-			print(ZoneMap.Current + " " + end);
 			if(end) UIManager.instance.ShowZoneUI(true);		
 			else Victory();
 		}
@@ -744,14 +744,13 @@ public class GameManager : MonoBehaviour {
 		{
 			yield return StartCoroutine(MatchRoutine(PlayerControl.instance.finalTiles.ToArray()));
 		}
-		else EnemyTurn = false;
+		else yield break;//EnemyTurn = false;
 
 
 		yield return StartCoroutine(Player.instance.AfterMatch());
-		
-		
-
 		yield return StartCoroutine(Player.instance.EndTurn());
+
+
 		//UIManager.Objects.BotGear.SetTween(3, false);
 		yield return StartCoroutine(TileMaster.instance.BeforeTurn());
 	/* ENEMY TURN *////////////////////////////////////////////////////
@@ -836,7 +835,7 @@ public class GameManager : MonoBehaviour {
 
 			foreach(Tile child in column_attackers)
 			{
-				if(child == null) continue;
+				if(child == null || !child.gameObject.activeSelf || child.Destroyed) continue;
 
 				child.SetState(TileState.Selected);
 				child.OnAttack();

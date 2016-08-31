@@ -1562,6 +1562,8 @@ public class UIManager : MonoBehaviour {
 		for(int i = 0; i < GameManager.ZoneMap.Length; i++)
 		{
 			UIObj bracket = GenerateZoneChoice(Objects.MiddleGear[1][0].transform, GameManager.ZoneMap[i].Choices);
+			
+			
 			Brackets.Add(bracket);
 			if(i > GameManager.ZoneMap.Current)
 			{
@@ -1571,6 +1573,8 @@ public class UIManager : MonoBehaviour {
 					bracket.Child[c].Img[0].color = Color.grey;
 				}
 			}
+			
+
 		}
 		Objects.MiddleGear[1][0].Child = Brackets.ToArray();
 	}
@@ -1627,9 +1631,10 @@ public class UIManager : MonoBehaviour {
 					}
 					else 
 					{
-						bracket.Child[c].Txt[0].text = GameManager.ZoneMap[i][c]._Name;
-						bracket.Child[c].Txt[0].color = Color.grey;
+						bracket.Child[c].Txt[0].text = "";
+						//bracket.Child[c].Txt[0].color = Color.grey;
 						bracket.Child[c].Img[0].color = GameManager.ZoneMap[i][c].Tint * 0.6F;
+						bracket.Child[c].Img[1].enabled = true;
 						bracket.Child[c].ClearActions();
 					}
 				}
@@ -1694,6 +1699,7 @@ public class UIManager : MonoBehaviour {
 			new_desc.transform.localRotation = Quaternion.Euler(0,0,0);
 			new_desc.Txt[0].text = zones[i]._Name;
 			new_desc.Img[0].color = zones[i].Tint;
+			new_desc.Img[1].enabled = false;
 			child.Add(new_desc);
 		}
 		ParentObj.Child = child.ToArray();
@@ -1736,7 +1742,7 @@ public class UIManager : MonoBehaviour {
 		ScreenAlert.SetTween(0,true);
 
 		MiniAlert(Objects.MiddleGear.transform.position + Vector3.up * 0.5F, "DEATH COMES", 160, GameData.instance.BadColour, 1.2F, 0.2F);
-		yield return new WaitForSeconds(Time.deltaTime * 40);
+		yield return StartCoroutine(GameData.DeltaWait(0.3F));
 
 		Objects.DeathParent.SetTween(0, true);
 		Objects.DeathIcon.SetFrame(0);
@@ -1749,8 +1755,7 @@ public class UIManager : MonoBehaviour {
 		death.position = classbutton.position + Vector3.down*0.4F;
 		death.localScale = new Vector3(c.Index > 1 ? -1:1,1,1);
 
-		yield return new WaitForSeconds(0.8F);
-		yield return new WaitForSeconds(0.66F);
+		yield return StartCoroutine(GameData.DeltaWait(1.2F));
 
 		float spin_time = 1.3F;
 		float spin_acc = 35F, spin_decay = 0.7F;
@@ -1847,6 +1852,26 @@ public class UIManager : MonoBehaviour {
 		fin.transform.localScale *= info_finalscale;
 		fin.SetVelocity(Utility.RandomVectorInclusive(0.4F) + (Vector3.up*0.6F));
 		fin.Gravity = true;
+		fin.AddJuice(Juice.instance.BounceB, info_time/0.8F);
+		return fin;
+	}
+
+	public MiniAlertUI HealAlert(Vector3 pos, int heal)
+	{
+		float init_rotation = Random.Range(-3,3);
+		float info_time = 0.5F;
+		float info_start_size = Mathf.Clamp(240 + (heal*2), 240, 350);
+		float info_movespeed = 0.25F;
+		float info_finalscale = 0.55F;
+
+		MiniAlertUI fin = MiniAlert(pos, "" + heal, info_start_size, Color.white, info_time, 0.1F);
+		fin.Txt[0].color = Color.green;
+		//fin.SetToDamageIndicator();
+		fin.GetComponent<HorizontalLayoutGroup>().padding = new RectOffset(-50, 20, 10, 10);
+		//fin.transform.rotation = Quaternion.Euler(0,0,init_rotation);
+		fin.transform.localScale *= info_finalscale;
+		//fin.SetVelocity(Utility.RandomVectorInclusive(0.4F) + (Vector3.up*0.6F));
+		fin.Gravity = false;
 		fin.AddJuice(Juice.instance.BounceB, info_time/0.8F);
 		return fin;
 	}

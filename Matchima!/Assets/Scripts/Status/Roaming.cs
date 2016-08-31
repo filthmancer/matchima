@@ -43,6 +43,7 @@ public class Roaming : TileEffect {
 			List<Tile> final = new List<Tile>();
 			foreach(Tile child in nbours)
 			{
+				if(_Tile.Point.BaseY == 0 && child.Point.BaseY > 0) continue;
 				if(child.Point.BaseY == 0) continue;
 				if(child.Point.BaseY < _Tile.Point.BaseY) continue;
 				if(!child.isMatching && child.Point.Scale == _Tile.Point.Scale) final.Add(child);

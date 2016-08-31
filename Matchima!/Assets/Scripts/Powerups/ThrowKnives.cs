@@ -135,9 +135,9 @@ public class ThrowKnives : Powerup {
 		knife.transform.position = UIManager.Objects.BotGear.transform.position;
 		float velx = Random.Range(0.03F, 0.12F);
 		if(Random.value < 0.5F) velx = -velx;
-		Vector3 vel = new Vector3(velx, 1.6F * CameraUtility.OrthoFactor, 0.0F);
+		Vector3 vel = new Vector3(velx, 1.1F * CameraUtility.OrthoFactor, 0.0F);
 		bool mobile = Application.isMobilePlatform;
-		knife.GetComponent<Velocitizer>().SetVelocity(vel, (mobile ? 24F : 30));
+		knife.GetComponent<Velocitizer>().SetVelocity(vel, 25);
 		knife.GetComponent<Velocitizer>().SetRotation(new Vector3(0,0,Random.Range(-1.2F, 1.2F)));
 		knife.GetComponent<Velocitizer>().AddTimedAction(() =>
 		{

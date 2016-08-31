@@ -107,16 +107,29 @@ public class Enemy : Tile {
 	public override void AddValue(float amt)
 	{
 		InitStats.value_soft = Mathf.Clamp(InitStats.value_soft += amt, 0, 999);
-		if((int) InitStats.value_soft != InitStats.Value)
+
+		int diff = (int) InitStats.value_soft - InitStats.Value;
+		if(diff != 0)
 		{
-			InitStats.Hits += (int) (InitStats.value_soft) - InitStats.Value;
+			StartCoroutine(ValueAlert(diff));
+		}
+	}
+
+	IEnumerator ValueAlert(int diff)
+	{
+		SetState(TileState.Selected, true);
+		Animate("Alert");
+		MiniAlertUI m = UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), "+" + Stats.Value, 150, GameData.Colour(Genus), 0.4F,0.00F);
+		m.AddJuice(Juice.instance.Ripple.Scale, 0.4F);
+		yield return new WaitForSeconds(0.4F);
+
+		InitStats.Hits += (int) (InitStats.value_soft) - InitStats.Value;
 			InitStats.Attack += (int) (InitStats.value_soft) - InitStats.Value;
 			InitStats.Value = (int)InitStats.value_soft;
-			CheckStats();
-			UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), "" + (Stats.Value), 75, Color.white,0.8F,0.0F);
-			Animate("Alert");
-		}
-		
+		CheckStats();
+		SetSprite();
+		Reset(true);
+		yield return null;
 	}
 
 	public override void Update () {

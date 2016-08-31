@@ -4,7 +4,7 @@ using System.Collections;
 public class Minion : Enemy {
 
 	private int MinionHPAdded = 1;
-	private int MinionATKAdded = 1;
+	private int MinionATKAdded = 2;
 
 	protected sealed override void SetupEnemy()
 	{
@@ -21,7 +21,7 @@ public class Minion : Enemy {
 		factor = factor * (InitStats.Value);
 
 		hpfactor    *= MinionHPAdded + factor / 6;
-		atkfactor   *= MinionATKAdded + factor / 5;
+		atkfactor   *= MinionATKAdded + factor / 7;
 
 		
 		InitStats.Hits        = (int)(hpfactor) * InitStats.Value;

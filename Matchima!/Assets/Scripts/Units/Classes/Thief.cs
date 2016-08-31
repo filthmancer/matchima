@@ -30,7 +30,7 @@ public class Thief : Class {
 		TileChance health = new TileChance();
 		health.Genus = GameData.ResourceLong(Genus);
 		health.Type = "health";
-		health.Chance = 0.05F;
+		health.Chance = 0.1F;
 		InitStats.TileChances.Add(health);
 		
 

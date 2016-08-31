@@ -35,7 +35,7 @@ public class Blob : Enemy {
 		factor = factor * (InitStats.Value);
 
 		hpfactor    *= BlobHPAdded + factor / 4.0F;
-		atkfactor   *= BlobATKAdded + factor / 4.0F;
+		atkfactor   *= BlobATKAdded + factor / 6.0F;
 
 		InitStats.Hits        = (int)(hpfactor);
 		InitStats.Attack      = (int)(atkfactor);

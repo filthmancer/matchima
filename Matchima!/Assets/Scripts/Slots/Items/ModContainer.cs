@@ -144,7 +144,7 @@ public class ModContainer : MonoBehaviour {
 
 
 	//BOONS
-	public static UpgradeBracket Basic = new UpgradeBracket(0, "Basic", ItemType.Basic, 1.4F, new GenusBracket []
+	public static UpgradeBracket Basic = new UpgradeBracket(0, "Basic", ItemType.Basic, 1.9F, new GenusBracket []
 	{
 		new GenusBracket("Red",
 			new Upgrade("Hearty", " Max HP", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._HealthMax += 10 + (int)val*5;}, 5, 10),
@@ -179,7 +179,7 @@ public class ModContainer : MonoBehaviour {
 		
 	});
 
-	public static UpgradeBracket Generator = new UpgradeBracket(1, "Generator", ItemType.Generator, 0.65F, new GenusBracket[]
+	public static UpgradeBracket Generator = new UpgradeBracket(1, "Generator", ItemType.Generator, 0.75F, new GenusBracket[]
 	{
 		new GenusBracket("Red",
 			new Upgrade("Bombers's", "% chance\n of Bomb", 0.45F, ScaleType.GRADIENT, 1.0F,
@@ -209,6 +209,14 @@ public class ModContainer : MonoBehaviour {
 			new Upgrade("Bombers's", "% chance\n of Red Lightning", 0.45F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("Red", "lightning", 0.1F + 0.03F * value));}, 3, 10
+				),
+			new Upgrade("Bombers's", "% chance\n of Red Flame", 0.45F, ScaleType.GRADIENT, 1.0F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("Red", "flame", 0.1F + 0.03F * value));}, 3, 10
+				),
+			new Upgrade("Bombers's", "% chance\n of Red lens", 0.45F, ScaleType.GRADIENT, 1.0F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("Red", "lens", 0.1F + 0.03F * value));}, 3, 10
 				)
 			),
 		
@@ -240,6 +248,14 @@ public class ModContainer : MonoBehaviour {
 			new Upgrade("Bombers's", "% chance\n of Blue Lightning", 0.45F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("Blue", "lightning", 0.1F + 0.03F * value));}, 3, 10
+				),
+			new Upgrade("Bombers's", "% chance\n of Blue flame", 0.45F, ScaleType.GRADIENT, 1.0F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("Blue", "flame", 0.1F + 0.03F * value));}, 3, 10
+				),
+			new Upgrade("Bombers's", "% chance\n of Blue lens", 0.45F, ScaleType.GRADIENT, 1.0F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("Blue", "lens", 0.1F + 0.03F * value));}, 3, 10
 				)
 		),
 		new GenusBracket("Green",
@@ -270,6 +286,14 @@ public class ModContainer : MonoBehaviour {
 			new Upgrade("Bombers's", "% chance\n of Green Lightning", 0.45F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("Green", "lightning", 0.1F + 0.03F * value));}, 3, 10
+				),
+			new Upgrade("Bombers's", "% chance\n of Green Flame", 0.45F, ScaleType.GRADIENT, 1.0F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("Green", "flame", 0.1F + 0.03F * value));}, 3, 10
+				),
+			new Upgrade("Bombers's", "% chance\n of Green lens", 0.45F, ScaleType.GRADIENT, 1.0F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("Green", "lens", 0.1F + 0.03F * value));}, 3, 10
 				)
 		),
 		new GenusBracket("Yellow",
@@ -300,11 +324,19 @@ public class ModContainer : MonoBehaviour {
 			new Upgrade("Bombers's", "% chance\n of Yellow Lightning", 0.45F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("Yellow", "lightning", 0.1F + 0.03F * value));}, 3, 10
+				),
+			new Upgrade("Bombers's", "% chance\n of Yellow Flame", 0.45F, ScaleType.GRADIENT, 1.0F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("Yellow", "flame", 0.1F + 0.03F * value));}, 3, 10
+				),
+			new Upgrade("Bombers's", "% chance\n of Yellow lens", 0.45F, ScaleType.GRADIENT, 1.0F,
+				(Stat s, float value) => {
+					s.TileChances.Add(new TileChance("Yellow", "lens", 0.1F + 0.03F * value));}, 3, 10
 				)
 		)
 	});
 
-	public static UpgradeBracket Shift = new UpgradeBracket(2, "Shift", ItemType.Shift, 0.3F, new GenusBracket [] {
+	public static UpgradeBracket Shift = new UpgradeBracket(2, "Shift", ItemType.Shift, 0.7F, new GenusBracket [] {
 		new GenusBracket("Red",
 
 			new Upgrade("Bombers's", " Mana Value", 1.0F, ScaleType.GRADIENT, 0.2F,
@@ -608,7 +640,7 @@ public class ModContainer : MonoBehaviour {
 		)
 		});
 	
-	public static UpgradeBracket Developers = new UpgradeBracket(6, "Developer's", ItemType.Developers, 0.32F, new GenusBracket[]
+	public static UpgradeBracket Developers = new UpgradeBracket(6, "Developer's", ItemType.Developers, 0.52F, new GenusBracket[]
 	{
 		new GenusBracket("Red",
 			new Upgrade("Cook's", " Map X", 1.0F, ScaleType.RANK, 0.4F,

@@ -45,7 +45,9 @@ public class ItemTile : Tile {
 		new RollCon("altar", GENUS.OMG),
 		new RollCon("minion", GENUS.RAND),
 		//new RollCon("chicken", GENUS.OMG),
-		new RollCon("health", GENUS.ALL)
+		new RollCon("health", GENUS.ALL),
+		new RollCon("flame", GENUS.RAND),
+		new RollCon("lens", GENUS.RAND)
 	};
 
 	public override bool Match(int resource)
@@ -66,7 +68,7 @@ public class ItemTile : Tile {
 		else
 		{
 			RollCon type = Rolls[Random.Range(0, Rolls.Length)];
-			TileMaster.instance.ReplaceTile(this, TileMaster.Types[type.species], type.genus, 1, Stats.Value);
+			TileMaster.instance.ReplaceTile(this, TileMaster.Types[type.species], type.genus, Point.Scale, Stats.Value);
 			return false;
 		}
 	//CHANGE ITEM STATS BASED ON VALUE

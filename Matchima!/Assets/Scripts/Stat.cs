@@ -392,12 +392,38 @@ public class Stat
 		}
 	}
 
-	public void Heal(int heal)
+	public bool in_overheal = false;
+	public void Heal(int heal, bool overheal = false)
 	{
-
 		int healperc = (int) (_HealthMax * ((float)heal/100.0F));
 		HealThisTurn = Mathf.Clamp(HealThisTurn + healperc, 0, 1000000);
-		_Health = Mathf.Clamp(_Health + healperc, 0, _HealthMax);
+		_Health = Mathf.Clamp(_Health + healperc, 0, _HealthMax);	
+
+		if(healperc != 0)
+		{	
+			Vector3 pos = UIManager.instance.Health.transform.position + Vector3.up * 1.5F;
+			MiniAlertUI hit = UIManager.instance.HealAlert(pos, healperc);
+		}
+		
+
+		/*if(overheal)
+		{
+			_Health = _Health + healperc;
+			if(_Health > _HealthMax) in_overheal = true;
+		}
+		else 
+		{
+			if(in_overheal)
+			{
+				if(_Health < _HealthMax) 
+				{
+					_Health = Mathf.Clamp(_Health + healperc, 0, _HealthMax);
+					in_overheal = false;
+				}
+			}
+			else _Health = Mathf.Clamp(_Health + healperc, 0, _HealthMax);	
+		}*/
+		
 		GameData.Log("Healed " + heal + "% HP (" + healperc+")");
 	}
 
@@ -528,18 +554,11 @@ public class Stat
 
 		if(total != 0 && newhealth != _Health)
 		{
-			Vector3 tpos = Vector3.right * 2.5F;
-			UIManager.instance.MiniAlert(
-				UIManager.instance.Health.transform.position + tpos, 
-				(total > 0 ? "+":"") + total, 38, 
-				total > 0 ? GameData.instance.GoodColour : GameData.instance.BadColour, 1.7F,
-				total > 0 ? 0.01F: -0.01F);
+			Vector3 pos = UIManager.instance.Health.transform.position + Vector3.up * 1.5F;
+			MiniAlertUI hit = UIManager.instance.HealAlert(pos, healperc);
 		}
 
 		_Health = newhealth;
-
-		HealThisTurn = 0;
-		DmgThisTurn = 0;
 	}
 
 	public void Setup()

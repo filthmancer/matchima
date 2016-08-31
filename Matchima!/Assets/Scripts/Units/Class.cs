@@ -935,6 +935,7 @@ public class Class : Unit {
 	{
 		killtimer = 0;
 		isKilled = false;
+		UIManager.instance.MiniAlert(UIManager.ClassButtons.GetClass(Index).Img[0].transform.position, "REVIVE!", 75, GameData.Colour(Genus), 1.2F, 0.2F);
 	}
 
 	public virtual void OnLowHealth()

@@ -10,17 +10,24 @@ public class Tile : MonoBehaviour {
 	public string Name;
 	public virtual StCon _Name {
 		get{
-			string pref = Stats.Value > 1 ? "+" + Stats.Value : "";
-			return new StCon(pref + " " + Info._TypeName, GameData.Colour(Genus));}
+			string valpref = Stats.Value > 1 ? "+" + Stats.Value : "";
+			string effectpref = "";
+			for(int i = 0; i < Effects.Count; i++)
+			{
+				if(Effects[i].Duration == -1) effectpref += " " + Effects[i].Description[0].Value;
+			}
+			return new StCon(valpref + effectpref + " " + Info._TypeName, GameData.Colour(Genus));}
 	}
+	
 	public int x{get{return Point.Base[0];}}
 	public int y{get{return Point.Base[1];}}
+	public int GetValue(){CheckStats(); return Stats.Value;}
 
 	public virtual StCon [] BaseDescription
 	{
 		get{
 			List<StCon> basic = new List<StCon>();
-			if(Stats.Resource != 0)
+			//if(Stats.Resource != 0)
 			//basic.Add(new StCon("+" + Stats.GetValues()[0] + " Mana", GameData.Colour(Genus), false, 40));
 			if(Stats.Heal != 0)
 			basic.Add(new StCon("+" + Stats.GetValues()[1] + "% Health", GameData.Colour(GENUS.STR), false, 40));
@@ -122,6 +129,8 @@ public class Tile : MonoBehaviour {
 	private float defaultScale = 1.1f;
 
 	private SphereCollider collider;
+
+	public bool NewVisuals = false;
 
 
 	Vector3 rotation = Vector3.zero;
@@ -226,10 +235,9 @@ public class Tile : MonoBehaviour {
 		//collider.enabled = true;
 		for(int i = 0; i < Effects.Count; i++)
 		{
-			TileEffect t = Effects[i];
-			Effects.RemoveAt(i);
-			Destroy(t.gameObject);
+			Destroy(Effects[i].gameObject);
 		}
+		Effects = new List<TileEffect>();
 
 		defaultScale = 1.1F * scale;
 		targetScale = defaultScale;
@@ -655,7 +663,6 @@ public class Tile : MonoBehaviour {
 		if(Stats.Hits <= 0)
 		{
 			isMatching = true;
-
 			Stats.Value *=  resource;
 			
 			CollectThyself(true);
@@ -666,6 +673,8 @@ public class Tile : MonoBehaviour {
 		else 
 		{
 			isMatching = false;
+
+			CollectThyself(false);
 			EffectManager.instance.PlayEffect(_Transform,Effect.Attack);
 		}
 		return false;
@@ -719,29 +728,50 @@ public class Tile : MonoBehaviour {
 		DestroyActions.Clear();
 	}
 
+	public void ClearEffects()
+	{
+		for(int i = 0; i < Effects.Count; i++)
+		{
+			Destroy(Effects[i].gameObject);
+		}
+		Effects = new List<TileEffect>();
+	}
+
 	public virtual void CollectThyself(bool destroy)
 	{
-		if(this == null) return;
+		if(this == null || !this.gameObject.activeSelf || this.Destroyed) return;
 
 		if(destroy)
 		{
 			TileMaster.instance.AddVelocityToColumn(Point.Base[0], Point.Base[1], 0.2F + Stats.Value * 0.5F);
 			Destroyed = true;
+			for(int i = 0; i < DestroyActions.Count; i++)
+			{
+				DestroyActions[i]();
+			}
 			GetComponent<SphereCollider>().enabled = false;
 		}
-
-		for(int i = 0; i < DestroyActions.Count; i++)
-		{
-			DestroyActions[i]();
-		}
 		TileMaster.instance.CollectTile(this, destroy);
+
+		/*if(destroy)
+		{
+			TileMaster.
+			DestroyThyself(false);
+		}
+		else
+		{
+
+			TileMaster.instance.CollectTile(this, destroy);
+		}*/
+
+		
 	}
 
 	public virtual void DestroyThyself(bool collapse = false)
 	{
-		if(this == null || !this.gameObject.activeSelf) return;
+		if(this == null || !this.gameObject.activeSelf || this.Destroyed) return;
 
-		//TileMaster.instance.AddVelocityToColumn(Point.Base[0], Point.Base[1], 0.2F + Stats.Value * 0.5F);
+		TileMaster.instance.AddVelocityToColumn(Point.Base[0], Point.Base[1], 0.2F + Stats.Value * 0.5F);
 		Destroyed = true;
 		for(int i = 0; i < DestroyActions.Count; i++)
 		{
@@ -756,10 +786,7 @@ public class Tile : MonoBehaviour {
 	{
 		if(collapse)
 		{
-			/*MiniTile2 TileObj = (MiniTile2) Instantiate(TileMaster.instance.MiniTileObj);
-			TileObj.Setup(this);
-			TileObj.Explode();*/
-			/*bool dest = true;
+			bool dest = true;
 			float gravity = 0.03F;
 			float vel = -0.2F;
 			float life = 0.5F;
@@ -774,7 +801,7 @@ public class Tile : MonoBehaviour {
 				if(life < 0.0F) dest = false;
 				else life-= Time.deltaTime;
 				yield return null;
-			}*/
+			}
 		}
 		TileMaster.instance.DestroyTile(this);
 		yield return null;
@@ -1083,13 +1110,23 @@ public class Tile : MonoBehaviour {
 		int diff = (int) InitStats.value_soft - InitStats.Value;
 		if(diff != 0)
 		{
-			InitStats.Value = (int) InitStats.value_soft;
-			CheckStats();
-			UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), "" + Stats.Value, 75, Color.white, 0.8F,0.00F);
-			
-			Animate("Alert");
-			SetSprite();
+			StartCoroutine(ValueAlert(diff));
 		}
+	}
+
+	IEnumerator ValueAlert(int diff)
+	{
+		SetState(TileState.Selected, true);
+		Animate("Alert");
+		MiniAlertUI m = UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), "+" + Stats.Value, 150, GameData.Colour(Genus), 0.4F,0.00F);
+		m.AddJuice(Juice.instance.Ripple.Scale, 0.4F);
+		yield return new WaitForSeconds(0.4F);
+
+		InitStats.Value = (int) InitStats.value_soft;
+		CheckStats();
+		SetSprite();
+		Reset(true);
+		yield return null;
 	}
 
 	public void CheckStats()
@@ -1180,15 +1217,23 @@ public class Tile : MonoBehaviour {
 
 	public  void SetBorder(int border)
 	{
-		if(Params._border != null) Params._border.SetSprite(TileMaster.Genus.Frames, border);
+		if(NewVisuals) Params._border.gameObject.SetActive(false);
+		else if(Params._border != null) 
+		{
+			Params._border.gameObject.SetActive(true);
+			Params._border.SetSprite(TileMaster.Genus.Frames, border);
+		}
 	}
 	public  void SetRender(string render)
 	{
+
 		if(Params._render != null && Info.Inner != null) 
 		{
+
 			tk2dSpriteDefinition id = Info.Inner.GetSpriteDefinition(render);
 			if(id == null) render = "Alpha";
 			Params._render.SetSprite(Info.Inner, render);
+			if(NewVisuals) Params._render.scale = new Vector3(0.8F, 0.8F, 1.0F);
 		}
 	}
 

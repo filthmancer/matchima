@@ -31,11 +31,12 @@ public class Zone : MonoBehaviour {
 
 	public bool isNew = true;
 	public Color Tint, WallTint;
-	[SerializeField]
+
 	public IntVector MapSize;
 	[SerializeField]
+	private Vector2 MapSize_IncreaseRate;
+	[SerializeField]
 	private IntVector _Depth;
-
 	[SerializeField]
 	private int Depth;
 	private int Initial;
@@ -110,6 +111,7 @@ public class Zone : MonoBehaviour {
 		return w;
 	}
 
+	List<Wave> random_shown = new List<Wave>();
 	public virtual Wave GetWaveRandom()
 	{
 		if(IntroWave != null){
@@ -140,6 +142,7 @@ public class Zone : MonoBehaviour {
 		List<float> chance = new List<float>();
 		foreach(Wave child in Waves)
 		{
+			if(random_shown.Contains(child)) continue;
 			if(child != null  && child.Chance > 0.0F && GameManager.Difficulty > child.RequiredDifficulty)
 			{
 				choices.Add(child);
@@ -148,15 +151,17 @@ public class Zone : MonoBehaviour {
 		}
 		foreach(Wave child in GameManager.instance.DefaultWaves.Waves)
 		{
+			if(random_shown.Contains(child)) continue;
 			if(child != null && child.Chance > 0.0F && GameManager.Difficulty > child.RequiredDifficulty)
 			{
 				choices.Add(child);
-				chance.Add(child.Chance/3.0F);
+				chance.Add(child.Chance/4.0F);
 			}
 		}
 
 		int index = ChanceEngine.Index(chance.ToArray());
 		Wave w = choices[index];
+		random_shown.Add(w);
 		Current++;
 		return w;
 	}
@@ -187,7 +192,16 @@ public class Zone : MonoBehaviour {
 	}
 	public Vector2 GetMapSize()
 	{
-		return MapSize.ToVector2;
+		int depth_size = GameManager.ZoneMap.Current/2;
+		Vector2 added_size = Vector2.zero;
+		for(int i = 0; i < depth_size; i++)
+		{
+			added_size += MapSize_IncreaseRate;
+		}
+		added_size.x = Mathf.Clamp(added_size.x, 0, 5);
+		added_size.y = Mathf.Clamp(added_size.y, 0, 5);
+		
+		return MapSize.ToVector2 + added_size;
 	}
 
 	public int CurrentDepthInZone
@@ -216,6 +230,7 @@ public class Zone : MonoBehaviour {
 		UIManager.instance.BackingTint = Tint;
 		UIManager.instance.WallTint = WallTint;
 		
+
 		TileMaster.instance.MapSize_Default = GetMapSize();
 		
 		

@@ -5,12 +5,14 @@ using System.Collections.Generic;
 public class Flame : Tile {
 
 	public GameObject Particle;
+	public GameObject TargetObj;
+
 	private int total_cycles
 	{
 		get
 		{
 			CheckStats();
-			return (int)Mathf.Sqrt(Stats.Value);
+			return (int)Mathf.Sqrt(Stats.Value)*3;
 		}
 	}
 
@@ -19,7 +21,7 @@ public class Flame : Tile {
 	{
 		get{
 			return new StCon[]{
-				new StCon("Collects a " + total_cycles + "L cone", GameData.Colour(Genus), true, 40),
+				new StCon("Collects a cone of tiles", GameData.Colour(Genus), true, 40),
 				new StCon("Deals ", Color.white, false, 40),
 				new StCon(damage + " damage", GameData.Colour(Genus), true, 40)
 			};
@@ -36,50 +38,106 @@ public class Flame : Tile {
 
 	//FIND TILE AFTER THIS IN MATCH (OR BEFORE IF LAST TILE)
 		Tile [] nbours = Point.GetNeighbours(false);
-		Tile nexttile = nbours[Random.Range(0, nbours.Length)];
+		Tile nexttile = null;
+		IntVector tile_pos = new IntVector(Point.BaseX, Point.BaseY);
+		IntVector nexttile_pos = new IntVector(Point.BaseX, Point.BaseY);
+		IntVector velocity = new IntVector(0,0);
+		switch(Genus)
+		{
+		case GENUS.STR:
+		velocity = new IntVector(-1,-1);
+		break;
+		case GENUS.DEX:
+		velocity = new IntVector(1,-1);
+		break;
+		case GENUS.CHA:
+		velocity = new IntVector(1,1);
+		break;
+		case GENUS.WIS:
+		velocity = new IntVector(-1,1);
+		break;
+		}
+
+		nexttile_pos = tile_pos + velocity;
+
+		if(nexttile_pos.x >= TileMaster.Grid.Size[0] || nexttile_pos.x < 0)
+		{
+			velocity.x = - velocity.x;
+			
+		}
+
+		if(nexttile_pos.y >= TileMaster.Grid.Size[1] || nexttile_pos.y < 0)
+		{
+			velocity.y = -velocity.y;
+		}
+
+		nexttile_pos = tile_pos + velocity;
+
+		
+		//nbours[Random.Range(0, nbours.Length)];
 
 	//COLLECT ALL TILES ALONG VELOCITY BETWEEN THIS TILE AND NEXT TILE
+		/*nexttile = TileMaster.Tiles[nexttile_pos.x, nexttile_pos.y];
 		int d;
 		int [] closest = Point.Closest(nexttile.Point.Base, out d);
 		int [] vel = Utility.IntNormal(closest, nexttile.Point.Base);
-		int [] cross_vel = new int[] {vel[0] != 0 ? 0 : 1, vel[1] != 0 ? 0 : 1};
-		int [] final = new int [] { closest[0] + vel[0], closest[1] + vel[1]};
+		//int [] cross_vel = new int[] {vel[0] != 0 ? 0 : 1, vel[1] != 0 ? 0 : 1};
+		int [] final = new int [] { closest[0] + vel[0], closest[1] + vel[1]};*/
 
 		List<Tile> to_collect = new List<Tile>();
-		int x = final[0], y = final[1];
+		//int x = final[0], y = final[1];
+		int x = nexttile_pos.x, y = nexttile_pos.y;
 		int cycle = 0;
-		while(x >= 0 && x < TileMaster.Grid.Size[0] && y >= 0 && y < TileMaster.Grid.Size[1])
-		{
-			if(cycle > total_cycles) break;
-			if(!TileMaster.Tiles[x,y].isMatching || TileMaster.Tiles[x,y] == this)
+
+		GameObject targ = (GameObject)Instantiate(TargetObj);
+		targ.transform.position = TileMaster.Tiles[x,y].transform.position;
+
+		while(cycle < total_cycles)
+		{	
+			if(x <= 0 || x >= TileMaster.Grid.Size[0]-1)
+			{
+				velocity.x = -velocity.x;
+			}
+			
+			if(y <= 0 || y >= TileMaster.Grid.Size[1]-1)
+			{
+				velocity.y = -velocity.y;
+			}
+
+			if(!TileMaster.Tiles[x,y].isMatching && TileMaster.Tiles[x,y] != this)
 			{
 				FlameTile(TileMaster.Tiles[x,y]);
 				to_collect.Add(TileMaster.Tiles[x,y]);	
-
-				for(int i = 0; i < cycle; i++)
-				{
-					int factor = i + 1;
-					int [] left = new int [] {x + cross_vel[0]*factor, y + cross_vel[1]*factor};
-					int [] right = new int [] {x-cross_vel[0]*factor,y-cross_vel[1]*factor};
-					if(TileMaster.instance.GetTile(left[0], left[1]) != null) 
-					{
-						FlameTile(TileMaster.instance.GetTile(left[0], left[1]));
-						to_collect.Add(TileMaster.instance.GetTile(left[0], left[1]));
-					}
-					if(TileMaster.instance.GetTile(right[0], right[1]) != null) 
-					{
-						FlameTile(TileMaster.instance.GetTile(right[0], right[1]));
-						to_collect.Add(TileMaster.instance.GetTile(right[0], right[1]));
-					}
-				}
 				
-				yield return new WaitForSeconds(Time.deltaTime * 5);
-			}	
+				//yield return new WaitForSeconds(Time.deltaTime * 5);
+			}
+
+			if(cycle < total_cycles-1)
+			{
+				Vector3 initpos = TileMaster.Tiles[x,y].transform.position;
+				Vector3 nextpos = TileMaster.Tiles[x+velocity.x, y+velocity.y].transform.position;
+				bool isLerping = true;
+				float rate = 0.0F;
+
+				while(isLerping)
+				{
+					targ.transform.position = Vector3.Lerp(initpos, nextpos, rate);
+					rate += Time.deltaTime * 10;
+					if(rate >= 1.0F) isLerping = false;
+					yield return null;
+				}	
+			}
+			
+			
+			x += velocity.x;
+			y += velocity.y;
+
 			cycle ++;
-			x += vel[0];
-			y += vel[1];
+			
 			yield return null;
 		}
+
+		Destroy(targ.gameObject);
 
 		if(to_collect.Count == 0) yield break;
 
