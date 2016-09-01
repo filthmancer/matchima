@@ -83,6 +83,7 @@ public class Enemy : Tile {
 		base.Setup(x,y, scale, sp, value_inc);
 		_Effect = Params._effect;
 		_Effect.enabled = false;
+		InitStats._Team = Team.Enemy;
 		SetupEnemy();
 	}
 

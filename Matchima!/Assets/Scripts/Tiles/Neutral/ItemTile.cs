@@ -42,8 +42,9 @@ public class ItemTile : Tile {
 		new RollCon("cross", GENUS.RAND),
 		new RollCon("lightning", GENUS.RAND),
 		new RollCon("bomb", GENUS.RAND),
-		new RollCon("altar", GENUS.OMG),
-		new RollCon("minion", GENUS.RAND),
+		new RollCon("arcane", GENUS.RAND),
+	//	new RollCon("altar", GENUS.OMG),
+		//new RollCon("minion", GENUS.RAND),
 		//new RollCon("chicken", GENUS.OMG),
 		new RollCon("health", GENUS.ALL),
 		new RollCon("flame", GENUS.RAND),
@@ -57,20 +58,10 @@ public class ItemTile : Tile {
 
 		InitStats.Value *=  resource;
 		CheckStats();
-		if(Random.value > 0.8F)
-		{
-			InitStats.Resource = 15;
-			CollectThyself(true);
-			TileMaster.Tiles[Point.Base[0], Point.Base[1]] = null;
-			CheckStats();
-			return true;
-		}
-		else
-		{
-			RollCon type = Rolls[Random.Range(0, Rolls.Length)];
-			TileMaster.instance.ReplaceTile(this, TileMaster.Types[type.species], type.genus, Point.Scale, Stats.Value);
-			return false;
-		}
+		
+		RollCon type = Rolls[Random.Range(0, Rolls.Length)];
+		TileMaster.instance.ReplaceTile(this, TileMaster.Types[type.species], type.genus, Point.Scale, Stats.Value);
+		return false;
 	//CHANGE ITEM STATS BASED ON VALUE
 
 	/*	GameObject item_obj = Instantiate(ItemObj);

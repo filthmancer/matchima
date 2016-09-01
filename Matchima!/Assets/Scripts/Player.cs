@@ -639,6 +639,7 @@ public class Player : MonoBehaviour {
 		ResetStats();
 		Options.Setup();
 		Stats._Health = Stats._HealthMax;
+		print("HP " + Stats._Health + ":" + Stats._HealthMax);
 		//yield return new WaitForSeconds(0.1F);
 
 
@@ -659,6 +660,7 @@ public class Player : MonoBehaviour {
 
 	public void ResetStats()
 	{
+		
 		float ratio = (float) Stats._Health / (float) Stats._HealthMax;
 		int armour = Stats._Armour;
 		Stats.SetStats(InitStats, false);
@@ -673,7 +675,7 @@ public class Player : MonoBehaviour {
 				if (!Classes[i].isKilled)
 				{
 					Stats.AddStats(Classes[i].Stats);
-					finalattack += Classes[i].Stats._Attack;
+					//finalattack += Classes[i].Stats._Attack;
 					//finalhealth += Classes[i].Stats._Health;
 				}
 			}
@@ -685,14 +687,17 @@ public class Player : MonoBehaviour {
 			_Status[i].StatusEffect();
 		}
 
-		Stats._Health = (int) Mathf.Clamp(Stats._HealthMax * ratio, 0, Stats._HealthMax);
+		Stats.ApplyStatInc();
+
 		Stats._Armour = armour;
-		Stats._Attack = finalattack;
+		//Stats._Attack = finalattack;
 
 		Stats.MapSize.x = Mathf.Clamp(Stats.MapSize.x, 0, 4);
 		Stats.MapSize.y = Mathf.Clamp(Stats.MapSize.y, 0, 4);
 
-		Stats.MatchNumberModifier = Mathf.Clamp(Stats.MatchNumberModifier, -2, 100);;
+		Stats._Health = (int) Mathf.Clamp(Stats._HealthMax * ratio, 0, Stats._HealthMax);
+
+		Stats.MatchNumberModifier = Mathf.Clamp(Stats.MatchNumberModifier, -2, 100);
 
 		if (!Stats.isKilled && TileMaster.GridSetup)
 		{
@@ -786,8 +791,8 @@ public class Player : MonoBehaviour {
 		if(lvl < 1) lvl = 1;
 	 	_Level.Level = lvl;
 	 	_Level.XP_Current = xp;
-	 	_Level.XP_RequiredArray_num = lvl-1;
-	 	_Level.XP_Required = Level.XP_RequiredArray[lvl-1];
+	 	_Level.SetXP(lvl-1);
+	 	//_Level.XP_Required = Level.XP_RequiredArray[lvl-1];
 	 	while(_Level.AddXP(0))
 	 	{
 
@@ -1000,7 +1005,7 @@ public class LevelContainer
 	public int XP_Current;
 	public int XP_Required;
 
-	public int [] XP_RequiredArray = new int[]
+	private int [] XP_RequiredArray = new int[]
 	{
 		100,
 		250,
@@ -1009,7 +1014,10 @@ public class LevelContainer
 		1500,
 		3500,
 		7000,
-		18000
+		18000,
+		40000,
+		95000,
+		200001
 	};
 	public Color [] Level_Colors;
 	public int XP_RequiredArray_num = 0;
@@ -1023,6 +1031,12 @@ public class LevelContainer
 		XP_RequiredArray_num = 0;
 	}
 
+	public void SetXP(int num)
+	{
+		XP_Required = XP_RequiredArray[num];
+		XP_RequiredArray_num = num;
+	}
+
 	public bool AddXP(int num)
 	{
 		XP_Current = Mathf.Clamp(XP_Current + num, 0, XP_Required);
@@ -1030,7 +1044,11 @@ public class LevelContainer
 		{
 			Level++;
 			XP_RequiredArray_num++;
-			XP_Required = XP_RequiredArray[XP_RequiredArray_num];
+			if(XP_RequiredArray_num > XP_RequiredArray.Length)
+			{
+				return false;
+			}
+			else XP_Required = XP_RequiredArray[XP_RequiredArray_num];
 			XP_Current = 0;
 			return true;
 		}

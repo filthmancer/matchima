@@ -48,6 +48,7 @@ public class Stoneform : TileEffect {
 				yield return null;
 			}
 			
+			StoneformTime_current ++;
 			if(StoneformTime_current >= StoneformTime)
 			{
 				StoneformDelay_current ++;
@@ -55,25 +56,29 @@ public class Stoneform : TileEffect {
 				{
 					StoneformTime_current = 0;
 					StoneformDelay_current = 0;
-					MiniAlertUI m = UIManager.instance.MiniAlert(_Tile.Point.targetPos, "Stone!", 120, GameData.Colour(_Tile.Genus), 0.3F, 0.1F);
+					MiniAlertUI m = UIManager.instance.MiniAlert(_Tile.Point.targetPos, "Stone!", 120, GameData.Colour(_Tile.Genus), 0.4F, 0.1F);
 					_Tile.ChangeGenus(GENUS.OMG);
-					yield return new WaitForSeconds(Time.deltaTime * 10);
+					yield return new WaitForSeconds(GameData.GameSpeed(0.3F));
 				}
 				else if(_Tile.Genus == GENUS.OMG)
 				{
 					_Tile.ChangeGenus(initial_genus);
-					yield return new WaitForSeconds(Time.deltaTime * 10);
+					yield return new WaitForSeconds(GameData.GameSpeed(0.3F));
 				}
 			}
 			else 
 			{
-				StoneformTime_current ++;
 				if(_Tile.Genus != GENUS.OMG)
 				{
-					MiniAlertUI m = UIManager.instance.MiniAlert(_Tile.Point.targetPos, "Stone!", 120, GameData.Colour(_Tile.Genus), 0.3F, 0.1F);
+					MiniAlertUI m = UIManager.instance.MiniAlert(_Tile.Point.targetPos, "Stone!", 120, GameData.Colour(_Tile.Genus), 0.4F, 0.1F);
 					_Tile.ChangeGenus(GENUS.OMG);
-					yield return new WaitForSeconds(Time.deltaTime * 10);
+					yield return new WaitForSeconds(GameData.GameSpeed(0.3F));
 				}
+				else 
+				{
+					UIManager.instance.MiniAlert(_Tile.Point.targetPos, (StoneformTime - StoneformTime_current) + "", 120, GameData.Colour(_Tile.Genus), 0.4F, 0.1F);
+					yield return new WaitForSeconds(GameData.GameSpeed(0.3F));
+				}	
 			}
 		}
 		yield break;

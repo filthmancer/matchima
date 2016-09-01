@@ -23,7 +23,7 @@ public class ThrowKnives : Powerup {
 	protected override IEnumerator Minigame(int level)
 	{
 		int knives = KnivesThrown[level-1];
-		int power = KnifeDamage[level-1];
+		int power = (int) ((float)KnifeDamage[level-1] * Player.SpellPower);
 
 		CatchNum = 0;
 		yield return StartCoroutine(PowerupStartup());
@@ -55,7 +55,7 @@ public class ThrowKnives : Powerup {
 		Destroy(CatcherObjActual.gameObject);
 
 		UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, 
-		CatchNum + " Knives!", 120, GameData.Colour(Parent.Genus), 0.6F, 0.25F);
+		"+" + CatchNum + " Knives!", 120, GameData.Colour(Parent.Genus), 0.6F, 0.25F);
 		yield return new WaitForSeconds(GameData.GameSpeed(0.6F));
 
 		
@@ -133,11 +133,13 @@ public class ThrowKnives : Powerup {
 	{
 		UIObj knife = CreateMinigameObj(0);
 		knife.transform.position = UIManager.Objects.BotGear.transform.position;
-		float velx = Random.Range(0.03F, 0.12F);
+		knife.transform.position += Vector3.right * (Random.value - Random.value);
+
+		float velx = Random.Range(0.0F, 0.05F);
 		if(Random.value < 0.5F) velx = -velx;
-		Vector3 vel = new Vector3(velx, 1.1F * CameraUtility.OrthoFactor, 0.0F);
+		Vector3 vel = new Vector3(velx, 1.0F, 0.0F);
 		bool mobile = Application.isMobilePlatform;
-		knife.GetComponent<Velocitizer>().SetVelocity(vel, 25);
+		knife.GetComponent<Velocitizer>().SetVelocity(vel, 50 * CameraUtility.OrthoFactor);
 		knife.GetComponent<Velocitizer>().SetRotation(new Vector3(0,0,Random.Range(-1.2F, 1.2F)));
 		knife.GetComponent<Velocitizer>().AddTimedAction(() =>
 		{
@@ -178,7 +180,7 @@ public class ThrowKnives : Powerup {
 
 		mp.enabled = true;
 		mp.SetTarget(target.transform.position);
-		mp.SetPath(Time.deltaTime * 35, 0.0F);
+		mp.SetPath(30.0F, 0.0F);
 		mp.SetThreshold(0.1F);
 
 		float dist = Vector3.Distance(target.transform.position, classpos);

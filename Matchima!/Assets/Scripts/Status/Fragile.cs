@@ -21,32 +21,24 @@ public class Fragile : TileEffect {
 		initial_point = _Tile.Point.Base;
 	}
 
-
-
-	public override bool CheckDuration()
+	public override IEnumerator StatusEffectRoutine()
 	{
-		Duration -= 1;
 		if(Duration != 0)
 		{
-			if(!after_first)
+			if(!after_first) 
 			{
+				initial_point = _Tile.Point.Base;
 				after_first = true;
+				yield break;
 			}
-			else if(_Tile.Point.Base[0] != initial_point[0] || _Tile.Point.Base[1] != initial_point[1])
+
+			//print(_Tile.Point.Base[0] + ":" + _Tile.Point.Base[1] + "-" + initial_point[0] + ":" + initial_point[1]);
+			if(_Tile.Point.Base[0] != initial_point[0] || _Tile.Point.Base[1] != initial_point[1])
 			{
+				UIManager.instance.MiniAlert(_Tile.transform.position, "BREAK!", 95, GameData.Colour(_Tile.Genus), 0.3F);
+				yield return new WaitForSeconds(GameData.GameSpeed(0.3F));
 				_Tile.DestroyThyself();
 			}
-
-		}
-		return Duration == 0;
-	}
-
-	public override void StatusEffect()
-	{
-		if(!after_first) return;
-		if(_Tile.Point.Base != initial_point)
-		{
-			_Tile.DestroyThyself();
 		}
 	}
 }

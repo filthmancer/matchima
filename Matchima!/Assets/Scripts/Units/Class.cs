@@ -281,9 +281,9 @@ public class Class : Unit {
 			child.Up(Stats, child.RateFinal);
 		}
 
-		Stats.ApplyStatInc();
-		Stats._Health = (int) Mathf.Clamp(Stats._HealthMax * ratio, 0, Stats._HealthMax);
-		Stats.HealThisTurn = heal;
+		//Stats.ApplyStatInc();
+		//Stats._Health = (int) Mathf.Clamp(Stats._HealthMax * ratio, 0, Stats._HealthMax);
+		//Stats.HealThisTurn = heal;
 		Stats.Class_Type = Genus;
 		mainStat = Stats.GetResourceFromGENUS(Genus);
 
@@ -576,7 +576,7 @@ public class Class : Unit {
 
 		float info_time = 0.95F;
 		float info_size = 140;
-		float info_movespeed = 0.11F;
+		float info_movespeed = 25.0F;
 		float info_finalscale = 0.5F;
 
 		int current_meter = ManaThisTurn;
@@ -739,33 +739,33 @@ public class Class : Unit {
 		bool Boon = UnityEngine.Random.value > cursechance;
 
 		if(Boon)
-		{
-			float chance = UnityEngine.Random.value * ModContainer.AllChance;
+		{	
+			float chance = UnityEngine.Random.value * BoonChances;
 			float current = 0.0F;
-			for(int i = 0; i < ModContainer.Boons.Length; i++)
+			for(int i = 0; i < Boons.Length; i++)
 			{
-				if(chance >= current && chance < current + ModContainer.Boons[i].Chance)
+				if(chance >= current && chance < current + Boons[i].chance)
 				{
-					GENUS g = (UnityEngine.Random.value > 0.98F ? GENUS.NONE : Genus);
-					u = new Upgrade(ModContainer.Boons[i].GetUpgrade(g));
+					u = new Upgrade(Boons[i]);
 					break;
 				}
-				current += ModContainer.Boons[i].Chance;
+				current += Boons[i].chance;
 			}
+			
 		}
 		else
 		{
-			float chance = UnityEngine.Random.value * ModContainer.CurseChance;
+			
+			float chance = UnityEngine.Random.value * CurseChances;
 			float current = 0.0F;
-			for(int i = 0; i < ModContainer.Curses.Length; i++)
+			for(int i = 0; i < Curses.Length; i++)
 			{
-				if(chance >= current && chance < current + ModContainer.Curses[i].Chance)
+				if(chance >= current && chance < current + Curses[i].chance)
 				{
-					GENUS g = (UnityEngine.Random.value > 0.98F ? GENUS.NONE : Genus);
-					u = new Upgrade(ModContainer.Curses[i].GetUpgrade(g));
+					u = new Upgrade(Curses[i]);
 					break;
 				}
-				current += ModContainer.Curses[i].Chance;
+				current += Curses[i].chance;
 			}
 		}
 		
@@ -800,6 +800,35 @@ public class Class : Unit {
 		yield return StartCoroutine(UIManager.instance.Alert(1.4F, null, title));
 
 		yield return null;
+	}
+
+	public virtual Upgrade [] Boons
+	{
+		get{return null;}
+	}
+	public virtual Upgrade [] Curses
+	{
+		get{return null;}
+	}
+	public float BoonChances{
+		get{
+			float c = 0.0F;
+			for(int i = 0; i < Boons.Length; i++)
+			{
+				c += Boons[i].chance;
+			}
+			return c;
+		}
+	}
+	public float CurseChances{
+		get{
+			float c = 0.0F;
+			for(int i = 0; i < Curses.Length; i++)
+			{
+				c += Curses[i].chance;
+			}
+			return c;
+		}
 	}
 
 	public Slot AddMod(string name, params string [] args)

@@ -8,14 +8,14 @@ public class Bomb : Tile {
 		get
 		{
 			CheckStats();
-			return 1 + (Stats.Value/5);
+			return 1 + (Stats.Value/4);
 		}
 	}
 	public GameObject Particles;
 	private int BombDamage
 	{
 		get{
-			return (5 * Stats.Value) + (int)Player.SpellValue;
+			return (2 * Stats.Value) + (int)Player.SpellValue;
 		}
 	}
 

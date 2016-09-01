@@ -32,7 +32,7 @@ public class Charm : TileEffect {
 	public override TileStat CheckStats()
 	{
 		TileStat s = new TileStat();
-		s.isAlly = true;
+		s._Team = Team.Ally;
 		return s;
 	}
 }

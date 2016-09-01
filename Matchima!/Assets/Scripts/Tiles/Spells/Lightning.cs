@@ -4,12 +4,10 @@ using System.Collections.Generic;
 
 public class Lightning : Tile {
 
-	private int LDamage = 10;
-	private int added_damage;
 	private int final_damage
 	{
 		get{
-			return (int) ((LDamage + added_damage) * Stats.Value) + (int) Player.SpellValue;
+			return (int) (10 * Stats.Value) + (int) Player.SpellValue;
 		}
 	}
 
@@ -47,13 +45,14 @@ public class Lightning : Tile {
 			{
 				Tile tile = _tiles[x,y];
 				if(tile == null || tile.Genus == this.Genus) continue;
+				if(tile.isMatching || tile.Destroyed) continue;
 				bool add = true;
 				for(int i = 0; i < onScreen.Count; i++)
 				{
 					if(tile.Genus == onScreen[i])
 					{
 						add = false;
-						onScreen_chances[i] += 0.1F;
+						onScreen_chances[i] += 0.2F;
 						break;
 					}
 				}

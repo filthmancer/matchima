@@ -37,7 +37,7 @@ public class WaveTileEndOnTileDestroy : WaveTile {
 			GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Spell);
 			MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
 			mp.SetTarget(TileMaster.Tiles[randx,randy].transform.position);
-			mp.SetPath(0.55F, 0.2F);
+			mp.SetPath(30, 0.2F);
 			//mp.Target_Tile = TileMaster.Tiles[randx,randy];
 			mp.SetTileMethod(TileMaster.Tiles[randx,randy], (Tile t) => 
 				{

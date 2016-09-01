@@ -51,16 +51,16 @@ public class MoveToPoint : MonoBehaviour {
 			{
 				velocity = Point - transform.position;
 				velocity.Normalize();
-				transform.position += velocity * Speed;
+				transform.position += velocity * Speed * Time.deltaTime;
 			}
 
 			if(ArcingMovement)
 			{
-				transform.position += arc_velocity * arc_power;
+				transform.position += arc_velocity * arc_power * Time.deltaTime;
 				arc_power -= arc_decay;
 			} 
 
-			if(Vector3.Distance(transform.position,Point) < threshold + Speed) 
+			if(Vector3.Distance(transform.position,Point) < threshold + (Speed* Time.deltaTime)) 
 			{
 				if(delay <= 0.0F)
 				{
@@ -83,7 +83,8 @@ public class MoveToPoint : MonoBehaviour {
 				else delay -= Time.deltaTime;
 			}
 		}
-		else if(poolref) poolref.Unspawn();//Destroy(this.gameObject);
+		else if(poolref) poolref.Unspawn();
+		else Destroy(this.gameObject);
 	}
 
 	public void SetTarget(Vector3 pos)
@@ -99,7 +100,7 @@ public class MoveToPoint : MonoBehaviour {
 		threshold = thresh;
 	}
 
-	public void SetPath(float speed = 0.1F, float _arc = 0.0F, float _lerp = 0.0F, float scale = 1.0F)
+	public void SetPath(float speed = 25.0F, float _arc = 0.0F, float _lerp = 0.0F, float scale = 1.0F)
 	{
 		Speed = speed;
 		if(_arc != 0.0F)

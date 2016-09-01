@@ -185,8 +185,8 @@ public class Stat
 			Stat_HealthInc = prev.Stat_HealthInc;
 			Stat_MeterInc = prev.Stat_MeterInc;
 			Stat_AtkInc = prev.Stat_AtkInc;
-			Stat_MeterInc = prev.Stat_MeterInc;
 			Stat_SplInc = prev.Stat_SplInc;
+			Stat_ValueInc = prev.Stat_ValueInc;
 		//}
 
 		_Strength          = new StatContainer(prev._Strength, GENUSs);
@@ -247,8 +247,8 @@ public class Stat
 		Stat_HealthInc += other.Stat_HealthInc;
 		Stat_MeterInc += other.Stat_MeterInc;
 		Stat_AtkInc += other.Stat_AtkInc;
-		Stat_MeterInc += other.Stat_MeterInc;
 		Stat_SplInc += other.Stat_SplInc;
+		Stat_ValueInc += other.Stat_ValueInc;
 
 		_Strength.AddValues(other._Strength);
 		_Dexterity.AddValues(other._Dexterity);

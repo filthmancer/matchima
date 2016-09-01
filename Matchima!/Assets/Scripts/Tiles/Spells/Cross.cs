@@ -8,6 +8,18 @@ public class Cross : Tile {
 			return Stats.Value/2 + 2;
 		}
 	}
+
+	public override StCon _Name {
+		get{
+			string valpref = Stats.Value > 1 ? "+" + Stats.Value : "";
+			string effectpref = "";
+			for(int i = 0; i < Effects.Count; i++)
+			{
+				if(Effects[i].Duration == -1) effectpref += " " + Effects[i].Description[0].Value;
+			}
+			return new StCon(valpref + effectpref + " Beam", GameData.Colour(Genus));}
+		}
+		
 	public GameObject CrossParts;
 	public ParticleSystem [] Particles;
 	int[] UpLeft = new int[] {-1, 1};
@@ -19,7 +31,7 @@ public class Cross : Tile {
 	{
 		get
 		{
-			return (int) (10 * Stats.Value) + (int) Player.SpellPower;
+			return (int) (2 * Stats.Value) + (int) Player.SpellPower;
 		}
 	}
 
@@ -27,7 +39,7 @@ public class Cross : Tile {
 	{
 		get{
 			return new StCon[]{
-				new StCon("Collects in " + Stats.Value + "L cross", GameData.Colour(Genus), true, 40),
+				new StCon("Collects in a" + Stats.Value + " cross", GameData.Colour(Genus), true, 40),
 				new StCon("Deals ", Color.white, false, 40),
 				new StCon(CrossDamage + " damage", GameData.Colour(Genus), true, 40)
 			};

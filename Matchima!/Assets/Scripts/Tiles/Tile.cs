@@ -16,7 +16,7 @@ public class Tile : MonoBehaviour {
 			{
 				if(Effects[i].Duration == -1) effectpref += " " + Effects[i].Description[0].Value;
 			}
-			return new StCon(valpref + effectpref + " " + Info._TypeName, GameData.Colour(Genus));}
+			return new StCon(valpref + effectpref + " " + Info._TypeName, GameData.Colour(Genus), true, 60);}
 	}
 	
 	public int x{get{return Point.Base[0];}}
@@ -59,7 +59,7 @@ public class Tile : MonoBehaviour {
 			List<StCon> final = new List<StCon>();
 			foreach(TileEffect child in Effects)
 			{
-				final.AddRange(child.Description);
+				if(child.Duration != -1) final.AddRange(child.Description);
 			}
 			return final.ToArray();
 		}
@@ -253,7 +253,7 @@ public class Tile : MonoBehaviour {
 		{
 			val *= 2;
 		}
-		InitStats.Value = Info.Value;
+		InitStats.Value = Info.Value + Player.Stats.ValueInc;
 		if(InitStats.Hits == 0) InitStats.Hits = 1;
 		AddUpgrades(val);
 
@@ -296,8 +296,8 @@ public class Tile : MonoBehaviour {
 		if(TileMaster.Tiles.GetLength(0) <= Point.Base[0] || TileMaster.Tiles.GetLength(1) <= Point.Base[1]) return;
 		if(TileMaster.Tiles[Point.Base[0], Point.Base[1]] != this && TileMaster.Tiles[Point.Base[0], Point.Base[1]] != null && !Destroyed) 
 		{
-			//TileMaster.instance.SetFillGrid(true);
-			//DestroyThyself();
+			TileMaster.instance.SetFillGrid(true);
+			DestroyThyself();
 		}
 
 		if(GameManager.instance.EnemyTurn && !IsState(TileState.Selected)) SetState(TileState.Locked);
@@ -461,8 +461,8 @@ public class Tile : MonoBehaviour {
 	void LateUpdate()
 	{
 		_Transform.rotation = Quaternion.Slerp(_Transform.rotation, Quaternion.Euler(rotation), Time.deltaTime * 8);
-		Params.counter.transform.rotation = Quaternion.Euler(Vector3.zero);
-		Params.otherWarning.transform.rotation = Quaternion.Euler(Vector3.zero);
+		//Params.counter.transform.rotation = Quaternion.Euler(Vector3.zero);
+		//Params.otherWarning.transform.rotation = Quaternion.Euler(Vector3.zero);
 	}
 
 	
@@ -622,7 +622,7 @@ public class Tile : MonoBehaviour {
 	{
 		//PlayAudio("alert");
 		InitStats.isAlerted = true;
-		MiniAlertUI m = UIManager.instance.MiniAlert(transform.position, "!", 180, Color.black);
+		MiniAlertUI m = UIManager.instance.MiniAlert(transform.position, "!", 220, Color.black, 0.4F, 0.07F);
 		m.Txt[0].outlineColor = GameData.Colour(Genus);
 	}
 
@@ -1007,7 +1007,7 @@ public class Tile : MonoBehaviour {
 
 		float info_time = 0.43F;
 		float info_size = init_size + (GetAttack() * 2);
-		float info_movespeed = Time.deltaTime * 20;
+		float info_movespeed = 25;
 		float info_finalscale = 0.75F;
 
 		Vector3 pos = TileMaster.Grid.GetPoint(Point.Point(0));
@@ -1037,7 +1037,7 @@ public class Tile : MonoBehaviour {
 
 		float info_time = 0.43F;
 		float info_size = init_size + (GetAttack() * 2);
-		float info_movespeed = Time.deltaTime * 20;
+		float info_movespeed = 25;
 		float info_finalscale = 0.75F;
 
 		Vector3 pos = TileMaster.Grid.GetPoint(Point.Point(0));
@@ -1068,7 +1068,7 @@ public class Tile : MonoBehaviour {
 
 		float info_time = 0.43F;
 		float info_size = init_size + (GetAttack() * 2);
-		float info_movespeed = Time.deltaTime * 20;
+		float info_movespeed = 25;
 		float info_finalscale = 0.75F;
 
 		Vector3 pos = TileMaster.Grid.GetPoint(Point.Point(0));
@@ -1321,7 +1321,7 @@ public class Tile : MonoBehaviour {
 
 		MoveToPoint mp = this.gameObject.AddComponent<MoveToPoint>();
 		mp.SetTarget(newpoint);
-		mp.SetPath(0.13F, arc);
+		mp.SetPath(10.0F, arc);
 		mp.SetThreshold(0.1F);
 		mp.DontDestroy = true;
 
@@ -1361,6 +1361,11 @@ public enum TileState{
 	Falling
 }
 
+public enum Team
+{
+	None, Enemy, Ally
+}
+
 [System.Serializable]
 public class TileStat
 {
@@ -1385,7 +1390,14 @@ public class TileStat
 	public bool isFrozen    = false;
 	public bool isBroken    = false;
 	public bool isAlerted   = false;
-	public bool isAlly      = false;
+	public Team _Team = Team.None;
+	
+	public bool isAlly
+	{
+		get{return _Team == Team.Ally;}
+	}
+	public bool isEnemy{get{return _Team == Team.Enemy;}}
+
 	public int  AllyAttackType = 0;
 
 	public int DOT = 0;
@@ -1417,7 +1429,7 @@ public class TileStat
 			isFrozen = t.isFrozen;
 			isBroken = t.isBroken;
 			isAlerted = t.isAlerted;
-			isAlly 	= t.isAlly;
+			_Team = t._Team;
 			AllyAttackType = t.AllyAttackType;
 			isNew = t.isNew;
 		}
@@ -1425,12 +1437,8 @@ public class TileStat
 		{
 			if(t.isFrozen) isFrozen    = true;
 			if(t.isBroken) isBroken    = true;
+			if(t._Team != Team.None) _Team = t._Team;
 			//if(!t.isAlerted) isAlerted = false;
-			if(t.isAlly)	
-			{
-				isAlly = true;
-				AllyAttackType = 0;
-			}
 		}
 		
 	}
@@ -1457,7 +1465,7 @@ public class TileStat
 			isFrozen = t.isFrozen;
 			isBroken = t.isBroken;
 			isAlerted = t.isAlerted;
-			isAlly 	= t.isAlly;
+			_Team = t._Team;
 			AllyAttackType = t.AllyAttackType;
 			isNew = t.isNew;
 			Shift = t.Shift;
@@ -1466,7 +1474,7 @@ public class TileStat
 
 	public int [] GetValues()
 	{
-		return new int [] {(int) (Resource * Value), (int)(Heal * Value), (int)(Armour * Value)};
+		return new int [] {(int) (Resource * Value), (int)(Heal + (Heal > 0 ? (Value*2):0)), (int)(Armour + (Armour > 0 ? (Value*2):0))};
 	}
 }
 

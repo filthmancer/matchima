@@ -147,7 +147,7 @@ public class GameData : MonoBehaviour {
 		GameObject initpart = EffectManager.instance.PlayEffect(parent, Effect.Spell);
 		MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
 		mp.SetTarget(target.transform.position);
-		mp.SetPath(0.25F, 0.3F);
+		mp.SetPath(25.0F, 0.3F);
 		mp.Target_Tile = target;
 		mp.SetThreshold(0.1F);
 		mp.SetMethod(a);

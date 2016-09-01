@@ -145,7 +145,8 @@ public class UIClassButton : UIObj {
 		_class = null;
 		_Sprite.enabled = false;
 		class_set = false;
-		//this.GetComponent<Button>().enabled = false;
+		Death.enabled = false;
+		Txt[0].text = "";
 	}
 
 	void GetCooldown()

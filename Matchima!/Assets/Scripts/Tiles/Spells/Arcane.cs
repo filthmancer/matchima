@@ -5,26 +5,6 @@ using System.Collections.Generic;
 public class Arcane : Tile {
 
 	public string InputGenus, InputType;
-
-	public string EndGenus;
-	//{
-	//	get
-	//	{
-	//		if(InputGenus == "Random") return GameData.ResourceLong((GENUS)Random.Range(0,4));
-	//		else if(InputGenus == "RandomAll") return GameData.ResourceLong((GENUS)Random.Range(0,7));
-	//		else if(InputGenus == "Genus") return GameData.ResourceLong(Genus);
-	//		else return InputGenus;
-	//	}
-	//}
-
-	public string EndType;
-	//{
-	//	get
-	//	{
-	//		if(InputType == "Random") return "Resource";
-	//		else return InputType;
-	//	}
-	//}
 	public int EndValueAdded = 0;
 	public int TilesCollected
 	{
@@ -40,7 +20,7 @@ public class Arcane : Tile {
 		get
 		{
 			CheckStats();
-			return (2 * (Stats.Value)) + (int)Player.SpellValue;
+			return (1 * (Stats.Value)) + (int)Player.SpellValue;
 		}
 	}
 
@@ -59,27 +39,17 @@ public class Arcane : Tile {
 	public override void Setup(int x, int y, int scale, TileInfo inf, int value_inc)
 	{
 		base.Setup(x, y, scale, inf, value_inc);	
-		EndGenus = GameData.ResourceLong(Genus);
 	}
 
 	public override void SetArgs(params string [] args)
 	{
-		InputGenus = args[0];
-		InputType = args[1];
-		EndGenus = args[2];
-		EndType = args[3];
-
-		if(InputGenus == "Random") InputGenus = GameData.ResourceLong((GENUS)Random.Range(0,4));
-		else if(InputGenus == "RandomAll") InputGenus = GameData.ResourceLong((GENUS)Random.Range(0,6));
-
-		if(EndGenus == "Random") EndGenus = GameData.ResourceLong((GENUS)Random.Range(0,4));
-		else if(EndGenus == "RandomAll") EndGenus = GameData.ResourceLong((GENUS)Random.Range(0,6));
+		
 	}
 
 
 	public override IEnumerator BeforeMatch(bool original, int Damage = 0)
 	{
-		float part_time = 0.6F;
+		float part_time = 0.2F;
 		if(isMatching) yield break;
 
 		isMatching = true;
@@ -109,16 +79,16 @@ public class Arcane : Tile {
 
 			MoveToPoint mp = part.GetComponent<MoveToPoint>();
 			mp.SetTarget(child.transform.position);
-			mp.SetPath(0.5F, 0.2F);
+			mp.SetPath(28.0F, 0.2F);
 			part.GetComponent<ParticleSystem>().startColor = GameData.Colour(Genus);
 
 			float dist = Vector3.Distance(child.transform.position, this.transform.position);
-			mp.Speed = 0.1F + 0.05F * dist;
-			part_time = 0.2F + (0.03F * dist);
+			//mp.Speed = 0.1F + 0.05F * dist;
+			//part_time = 0.2F + (0.03F * dist);
 			mp.SetTileMethod(child, (Tile c) =>
 			{
 				child.SetState(TileState.Selected, true);
-				if(EndType == string.Empty)
+				/*if(EndType == string.Empty)
 				{
 					c.ChangeGenus(Genus);	
 					c.AddValue(EndValueAdded);
@@ -126,8 +96,10 @@ public class Arcane : Tile {
 				else if(EndGenus == string.Empty)
 				{
 					TileMaster.instance.ReplaceTile(c, TileMaster.Types[EndType], c.Genus, 1, EndValueAdded);
-				}
-				else TileMaster.instance.ReplaceTile(c, TileMaster.Types[EndType], TileMaster.Genus[EndGenus], 1, EndValueAdded);
+				}*/
+				//else 
+				//TileMaster.instance.ReplaceTile(c, TileMaster.Types[EndType], TileMaster.Genus[EndGenus], 1, EndValueAdded);
+				c.ChangeGenus(Genus);
 				EffectManager.instance.PlayEffect(c.transform, Effect.Replace, GameData.instance.GetGENUSColour(c.Genus));	
 			});
 
@@ -153,13 +125,13 @@ public class Arcane : Tile {
 				part.transform.position = this.transform.position;
 				MoveToPoint mp = part.GetComponent<MoveToPoint>();
 				mp.SetTarget(c.transform.position);
-				mp.SetPath(0.5F, 0.2F);
+				mp.SetPath(28.0F, 0.2F);
 				mp.DontDestroy = false;
 
 				part.GetComponent<ParticleSystem>().startColor = GameData.Colour(Genus);
 				float dist = Vector3.Distance(c.transform.position, this.transform.position);
-				mp.Speed = 0.1F + 0.05F * dist;
-				part_time = 0.2F;// + (0.03F * dist);
+				///mp.Speed = 0.1F + 0.05F * dist;
+				//part_time = 0.2F;// + (0.03F * dist);
 
 				mp.SetTileMethod(c, (Tile child) =>
 				{

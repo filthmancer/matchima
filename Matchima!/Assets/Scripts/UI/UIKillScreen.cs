@@ -10,9 +10,9 @@ public class UIKillScreen : UIObj {
 	public TextMeshProUGUI EndType;
 	public TextMeshProUGUI Blurb;
 
-	public void Activate(End_Type e, int [] xp_steps)
+	public IEnumerator Activate(End_Type e, int [] xp_steps)
 	{
-		StartCoroutine(CheckPoints(e, xp_steps));
+		yield return StartCoroutine(CheckPoints(e, xp_steps));
 	}
 
 	public void Deactivate()
@@ -25,6 +25,7 @@ public class UIKillScreen : UIObj {
 	{
 
 		string endtext = "";
+		int totalxp = 0;
 		Color endcol = Color.white;
 		switch(e)
 		{
@@ -58,19 +59,22 @@ public class UIKillScreen : UIObj {
 		KillBox.SetActive(true);
 		yield return new WaitForSeconds(Time.deltaTime * 15);
 		//EndType.enabled = true;
-		MiniAlertUI xp = UIManager.instance.MiniAlert(EndType.transform.position, endtext, 200);
+		MiniAlertUI xp = UIManager.instance.MiniAlert(EndType.transform.position, endtext, 170);
 		xp.AddJuice(Juice.instance.BounceB, 0.1F);
 		xp.DestroyOnEnd = false;
 		xp.Txt[0].color = endcol;
 
 		Txt[2].enabled = true;
+		totalxp += xp_steps[0];
+		Txt[2].text = "" + totalxp;
 
 		yield return new WaitForSeconds(Time.deltaTime * 45);
 		//Txt[0].enabled = true;
 		MiniAlertUI depth = UIManager.instance.MiniAlert(Txt[0].transform.position, GameManager.Floor + " Depth", 130);
 		depth.AddJuice(Juice.instance.BounceB, 0.1F);
 		depth.DestroyOnEnd = false;
-		Txt[2].text = "" + xp_steps[0];
+		totalxp += xp_steps[1];
+		Txt[2].text = "" + totalxp;
 
 		yield return new WaitForSeconds(Time.deltaTime * 45);
 		//Txt[1].enabled = true;
@@ -78,11 +82,12 @@ public class UIKillScreen : UIObj {
 		turns.AddJuice(Juice.instance.BounceB, 0.1F);
 		turns.DestroyOnEnd = false;
 
-		Txt[2].text = "" + xp_steps[1];
+		totalxp += xp_steps[2];
+		Txt[2].text = "" + totalxp;
+
 		UIManager.instance.UpdatePlayerLvl();
 		(UIManager.Objects.MiddleGear["zoneui"] as UIObjTweener).SetTween(1, true);
 		yield return new WaitForSeconds(Time.deltaTime * 25);
-		yield return StartCoroutine(Player.instance.AddXP(xp_steps[1]));
 
 		Child[0].ClearActions();
 		Child[0].AddAction(UIAction.MouseDown, () => {

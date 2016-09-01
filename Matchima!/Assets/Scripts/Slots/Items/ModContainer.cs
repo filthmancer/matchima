@@ -430,8 +430,6 @@ public class ModContainer : MonoBehaviour {
 			new Upgrade("Bombers's", " Beam Value", 1.0F, ScaleType.GRADIENT, 0.2F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("", "cross", 0, 1 + (int)value));}, 1, 1)
-			
-
 		)
 	});
 

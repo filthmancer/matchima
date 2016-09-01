@@ -535,28 +535,47 @@ public class GameManager : MonoBehaviour {
 
 	IEnumerator EndGame(End_Type e)
 	{
-		UIManager.instance.ShowZoneUI(false);	
+		UIManager.instance.CloseZoneUI();	
 		int [] xp = CalculateXP();
+		int total = xp[0] + xp[1] + xp[2];
 		yield return new WaitForSeconds(0.1F);
 		TileMaster.instance.ClearGrid(true);
 
 		yield return new WaitForSeconds(0.3F);
-		UIManager.instance.ShowKillUI(e, xp);
+		yield return StartCoroutine(UIManager.instance.ShowKillUI(e, xp));
+		yield return StartCoroutine(Player.instance.AddXP(total));
 	}
 
 	int [] CalculateXP()
 	{
+		int xp_diff_rate = 4;
+		int xp_depth_rate = 20;
+		int xp_turns_rate = 5;
+
+		int avg_turns_per_floor = 10;
+
+		int difficulty = (int) (GameManager.Difficulty * (int) DifficultyMode);
+
+		int depth = GameManager.Floor;
 		int turns = Player.instance.Turns;
 		if(turns == 0) turns = 1;
+		
+		int [] final = new int[3];
+	//The base XP amount, taken from difficulty
+		final[0] = difficulty * xp_diff_rate;
 
-		int turns_per_floor = 10;
+	//XP from depth
+		final[1] = GameManager.Floor * xp_depth_rate;
 
-		int [] final = new int [2];
-		final[0] = GameManager.Floor * 10;
+	//XP gained from position on average turns scale
+		int avg_turns_xp = GameManager.Floor * avg_turns_per_floor;
+		int actual_turns_xp = GameManager.Floor * Player.instance.Turns;
 
-		final[1] = GameManager.Floor * turns_per_floor;
-		final[1] = Mathf.Clamp(final[1]/turns, 1, 100);
-		final[1] *= final[0];
+	//Caluculate turn xp by subtracting the actual turn number from the average turn number at that depth
+		int final_turns_xp = Mathf.Clamp(avg_turns_xp-actual_turns_xp, 0, 100);
+
+		final[2] = final_turns_xp * xp_turns_rate;
+
 		return final;
 	}
 #endregion

@@ -158,7 +158,7 @@ int[] fireballs = new int[]
 		MoveToPoint mp = missile.GetComponent<MoveToPoint>();
 		mp.enabled = true;
 		mp.SetTarget(targ.transform.position);
-		mp.SetPath(0.6F, 0.0F);
+		mp.SetPath(30.0F, 0.0F);
 
 		//COLLECT TILES AROUND HIT TILE
 		mp.SetMethod(() =>

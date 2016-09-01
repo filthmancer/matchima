@@ -3,31 +3,6 @@ using System.Collections;
 
 public class Warden : Class {
 
-	public override void GetSpellTile(int x, int y, GENUS g, int points)
-	{
-		int rand = Random.Range(0,4);
-		switch(rand)
-		{
-			case 0:
-				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["arcane"], GENUS.RAND, 1, points);
-				(TileMaster.Tiles[x,y] as Arcane).InputGenus = "Genus";
-			break;
-			case 1:
-				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["lightning"], GENUS.RAND, 1, points);	
-			break;
-			case 2:
-				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["lens"], GENUS.ALL, 1, points);	
-			break;
-			case 3:
-				TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["cross"], GENUS.RAND, 1, points);	
-			break;
-			case 4:
-
-			break;
-		}
-		
-	}
-
 	public override void StartClass () {
 
 		TileChance bomb = new TileChance();
@@ -39,7 +14,7 @@ public class Warden : Class {
 		TileChance health = new TileChance();
 		health.Genus = GameData.ResourceLong(Genus);
 		health.Type = "health";
-		health.Chance = 0.2F;
+		health.Chance = 0.15F;
 		InitStats.TileChances.Add(health);
 
 
@@ -49,6 +24,64 @@ public class Warden : Class {
 		PowerupSpell = GameData.instance.GetPowerup("Calldown", this);
 
 		base.StartClass();	
+	}
+
+		public override Upgrade [] Boons
+	{
+		get{
+			return new Upgrade []
+			{
+				new Upgrade("Hearty", " Max HP", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._HealthMax += 10 + (int)val*5;}, 5, 10),
+				new Upgrade("Healing", " HP Regen", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.HealthRegen += 1 + (int) val;}, 1, 1),
+				new Upgrade("Sharp", " Attack", 0.5F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._Attack += 1 + (int)val;}, 1, 1),
+				new Upgrade("Spiked", " Spikes", 1.0F, ScaleType.GRADIENT,1.0F, (Stat s, float val) => {s.Spikes += 1 + (int)val;}, 1, 1),
+
+				new Upgrade("Soldier's", "% chance\n of Health", 0.4F, ScaleType.GRADIENT, 1.0F,
+					(Stat s, float value) => {
+						s.TileChances.Add(new TileChance(GameData.ResourceLong(Genus), "health", 0.1F + 0.03F * value));}, 3, 10
+					),
+				new Upgrade("Bombers's", "% chance\n of Bomb", 0.4F, ScaleType.GRADIENT, 1.0F,
+					(Stat s, float value) => {
+						s.TileChances.Add(new TileChance(GameData.ResourceLong(Genus), "bomb", 0.1F + 0.03F * value));}, 3, 10
+					),
+				new Upgrade("Bombers's", "% chance\n of flame", 0.4F, ScaleType.GRADIENT, 1.0F,
+					(Stat s, float value) => {
+						s.TileChances.Add(new TileChance(GameData.ResourceLong(Genus), "flame", 0.1F + 0.03F * value));}, 3, 10
+					),
+
+				new Upgrade("Lucky", "% Death Save Chance",
+						1.0F, ScaleType.GRADIENT, 1.0F,
+						(Stat s, float value) =>
+						{
+							s.DeathSaveChance += 0.05F + (value * 0.03F);
+						}, 3, 5),
+				new Upgrade("Strengthening", " Tile Per Match", 1.0F, ScaleType.RANK, 0.0F,
+					(Stat s, float value) =>
+					{
+						s.MatchNumberModifier -= 1;
+						}, -1, -1),
+
+				new Upgrade("Cook's", " Map X", 0.4F, ScaleType.RANK, 0.4F,
+							(Stat s, float value) => {
+								s.MapSize.x += 1 + (int) (1 * value);},1,1
+							),
+				new Upgrade("Magellan's", " Map Y", 0.2F, ScaleType.RANK, 0.4F,
+					(Stat s, float value) => {
+						s.MapSize.y += 1 + (int) (1 * value);},1,1
+						)
+			};
+		}
+	}
+
+	public override Upgrade [] Curses
+	{
+		get
+		{
+ 			return new Upgrade [] 
+ 			{
+ 				new Upgrade("Hearty", " Max HP", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._HealthMax -= 10 + (int)val*5;}, -5, -10)
+ 			};
+		}
 	}
 
 }

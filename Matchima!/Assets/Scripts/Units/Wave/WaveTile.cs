@@ -122,7 +122,7 @@ public class WaveTile : WaveUnit
 			GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Spell);
 			MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
 			mp.SetTarget(TileMaster.Tiles[randx,randy].transform.position);
-			mp.SetPath(0.55F, 0.2F);
+			mp.SetPath(30, 0.2F);
 			mp.SetTileMethod(TileMaster.Tiles[randx,randy], (Tile t) => 
 				{
 					Tile newtile = TileMaster.instance.ReplaceTile(t, TileMaster.Types[SpeciesFinal], Genus, Scale, FinalValue);
@@ -137,7 +137,7 @@ public class WaveTile : WaveUnit
 
 			yield return new WaitForSeconds(Time.deltaTime * 10);
 		}
-		yield return new WaitForSeconds(Time.deltaTime * 10);
+		yield return new WaitForSeconds(Time.deltaTime * 30);
 	}
 
 
@@ -180,7 +180,7 @@ public class WaveTile : WaveUnit
 			GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Spell);
 			MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
 			mp.SetTarget(TileMaster.Tiles[randx,randy].transform.position);
-			mp.SetPath(0.55F, 0.2F);
+			mp.SetPath(30, 0.2F);
 			mp.SetTileMethod(TileMaster.Tiles[randx,randy], (Tile t) => 
 				{
 					Tile newtile = TileMaster.instance.ReplaceTile(t, TileMaster.Types[SpeciesFinal], Genus, Scale, FinalValue);

@@ -613,7 +613,7 @@ public class UIManager : MonoBehaviour {
 
 		yield return new WaitForSeconds(GameData.GameSpeed(0.08F));
 
-		float info_movespeed = 0.66F;
+		float info_movespeed = 20.0F;
 		float info_finalscale = 0.3F;
 		
 		for(int g = 0; g < Meters.Length; g++)
@@ -708,9 +708,9 @@ public class UIManager : MonoBehaviour {
 			_class.Setup(c);
 		}
 	}
-	public void ShowKillUI(End_Type e, int [] xp_steps)
+	public IEnumerator ShowKillUI(End_Type e, int [] xp_steps)
 	{
-		KillUI.Activate(e, xp_steps);
+		yield return StartCoroutine(KillUI.Activate(e, xp_steps));
 	}
 
 
@@ -771,6 +771,7 @@ public class UIManager : MonoBehaviour {
 
 		Objects.TopGear[1][1][3].Txt[0].text = t._Name.Value;
 		Objects.TopGear[1][1][3].Txt[0].color = t._Name.Colour;
+		Objects.TopGear[1][1][3].Txt[0].fontSize = t._Name.Size;
 
 		if(t.BaseDescription.Length > 0)
 		{
@@ -1577,6 +1578,11 @@ public class UIManager : MonoBehaviour {
 
 		}
 		Objects.MiddleGear[1][0].Child = Brackets.ToArray();
+	}
+
+	public void CloseZoneUI()
+	{
+		(Objects.MiddleGear[1] as UIObjTweener).SetTween(0, false);
 	}
 
 	public void ShowZoneUI(bool ended)

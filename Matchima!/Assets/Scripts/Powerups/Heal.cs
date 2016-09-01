@@ -61,7 +61,7 @@ public class Heal : Powerup {
 		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.Objects.MiddleGear.transform, "spell");
 		initpart.GetComponent<MoveToPoint>().enabled = true;
 		initpart.GetComponent<MoveToPoint>().SetTarget(UIManager.instance.Health.transform.position);
-		initpart.GetComponent<MoveToPoint>().SetPath(0.2F, 0.2F);
+		initpart.GetComponent<MoveToPoint>().SetPath(25.0F, 0.2F);
 		yield return new WaitForSeconds(0.7F);
 
 		//GameObject part = Instantiate(Particle);

@@ -69,7 +69,7 @@ public class Lullaby : Powerup {
 		Destroy(Harp.gameObject);
 		yield return new WaitForSeconds(GameData.GameSpeed(0.15F));
 
-		sleep_duration = notes_hit/ sleep_ratio;
+		sleep_duration = Mathf.Clamp(notes_hit/ sleep_ratio, 1, 100);
 
 		MiniAlertUI alert  = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.up * 2.0F,
 			sleep_duration + " Turn Sleep!", 120, GameData.Colour(Parent.Genus), 1.0F, 0.2F);
@@ -116,8 +116,8 @@ public class Lullaby : Powerup {
 		MoveToPoint mp = note.GetComponent<MoveToPoint>();
 		mp.enabled = true;
 		mp.SetTarget(Harp.Img[line].transform.position);
-		mp.SetPath(0.2F * CameraUtility.OrthoFactor, 0.0F, 0.0F);
-		mp.SetScale(0.5F, 0.4F);
+		mp.SetPath(10 * CameraUtility.OrthoFactor, 0.0F, 0.0F);
+		mp.SetScale(0.3F, 0.6F);
 
 		return note;
 	}
@@ -132,7 +132,7 @@ public class Lullaby : Powerup {
 		MoveToPoint charm = initpart.GetComponent<MoveToPoint>();
 		charm.enabled = true;
 		charm.SetTarget(target.transform.position);
-		charm.SetPath(0.45F, 0.3F);
+		charm.SetPath(25.0F, 0.3F);
 		charm.Target_Tile = target;
 		charm.SetThreshold(0.15F);
 		charm.SetMethod(() =>
@@ -152,7 +152,7 @@ public class Lullaby : Powerup {
 		MoveToPoint charm = initpart.GetComponent<MoveToPoint>();
 		charm.enabled = true;
 		charm.SetTarget(target.transform.position);
-		charm.SetPath(0.45F, 0.3F);
+		charm.SetPath(25.0F, 0.3F);
 		charm.Target_Tile = target;
 		charm.SetThreshold(0.15F);
 		charm.SetMethod(() =>

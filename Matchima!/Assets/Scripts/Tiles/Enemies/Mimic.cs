@@ -33,7 +33,7 @@ public class Mimic : Enemy {
 				//new StCon((_EnemyType + " Enemy"),Color.white, true, 40),
 				new StCon("High damage trickster enemy.", GameData.Colour(Genus),true, 40)
 			};
-			else return new StCon[]{new StCon("Contains an item.", GameData.Colour(Genus),true, 40)};
+			else return new StCon[]{new StCon("Contains an secret tile", GameData.Colour(Genus),true, 40)};
 		}
 	}
 
@@ -72,9 +72,11 @@ public class Mimic : Enemy {
 
 		InitStats.Hits        = (int)(hpfactor);
 		InitStats.Attack      = (int)(atkfactor);
+		InitStats._Team = Team.None;
 
 		Stats = new TileStat(InitStats);
 		SetSprite();
+		revealed = false;
 
 		if(!revealed)
 		{
@@ -92,7 +94,7 @@ public class Mimic : Enemy {
 
 			if(originalMatch)
 			{
-				UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), "MIMIC!", 72, Color.white, 0.8F,0.15F);
+				UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), "MIMIC!", 95, GameData.Colour(Genus), 0.8F,0.15F);
 				Vector3 pos = transform.position + (GameData.RandomVector*1.4F);
 				/*MoveToPoint mini = TileMaster.instance.CreateMiniTile(transform.position, UIManager.instance.Health.transform, Info.Outer);
 				mini.SetPath(0.3F, 0.5F, 0.0F, 0.08F);
@@ -132,7 +134,7 @@ public class Mimic : Enemy {
 				{
 					float item_chance = (float)Stats.Value/32.0F;
 					if(Stats.Value > 10) item_chance += 0.4F;
-					if(Random.value < 0.99F)//item_chance) 
+					if(Random.value < 0.98F)//item_chance) 
 					{
 						for(int reward = 0; reward < Point.Scale; reward++)
 						{
@@ -181,6 +183,7 @@ public class Mimic : Enemy {
 	{
 		revealed = true;
 		InitStats.isAlerted = true;
+		InitStats._Team = Team.Enemy;
 		Rank = 2;
 		SetSprite();
 		Params.HitCounter.SetActive(true);

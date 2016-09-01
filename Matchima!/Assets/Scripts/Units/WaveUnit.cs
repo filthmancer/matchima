@@ -144,7 +144,7 @@ public class WaveUnit : Unit {
 		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Spell);
 		MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
 		mp.SetTarget(targ.transform.position);
-		mp.SetPath(0.55F, 0.2F);
+		mp.SetPath(20.0F, 0.2F);
 		mp.SetTileMethod(targ, a);
 	}
 
