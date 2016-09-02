@@ -59,7 +59,8 @@ public class Wave : Unit {
 		get{return new WaveUnit [] {Slot1, Slot2, Slot3};}
 	}
 
-	public bool IntroAlert = false, EnterAlert = false;
+	public bool IntroAlert = false, EnterAlert = false, ExitAlert = true;
+	public bool EnterAlert_ShowFloor = true;
 
 	public virtual StCon [] IntroText
 	{
@@ -307,7 +308,6 @@ public class Wave : Unit {
 
 	protected virtual IEnumerator WaveStartRoutine()
 	{
-
 		PlayerControl.instance.ResetSelected();
 		if(IntroAlert)
 		{
@@ -351,12 +351,18 @@ public class Wave : Unit {
 		UIManager.Objects.TopGear.FreeWheelDrag = false;
 		UIManager.Objects.TopGear.MoveToDivision(0);
 		//yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
-		StCon [] floor = new StCon[] {new StCon("Floor"), new StCon(GameManager.Floor + "")};
+		if(EnterAlert)
+		{
+			StCon [] floor = null;
+			if(EnterAlert_ShowFloor)
+			{
+				floor = new StCon[] {new StCon("Floor"), new StCon(GameManager.Floor + "")};
+			}
+			StCon [] namecon = new StCon[] {_Name};
+			yield return StartCoroutine(UIManager.instance.Alert(1.25F, floor, namecon));
+		}
 
 		if(Current > -1) Current = 0;
-		StCon [] namecon = new StCon[] {_Name};
-		yield return StartCoroutine(UIManager.instance.Alert(1.25F, floor, namecon));
-
 		UIManager.Objects.TopGear[2].SetActive(true);
 		for(int i = 0; i < AllSlots.Length; i++)
 		{
@@ -381,9 +387,10 @@ public class Wave : Unit {
 
 	protected virtual IEnumerator WaveEndRoutine()
 	{
-
-		yield return StartCoroutine(UIManager.instance.Alert(1.05F, ExitText));
-
+		if(ExitAlert)
+		{
+			yield return StartCoroutine(UIManager.instance.Alert(1.05F, ExitText));
+		}
 		if(ExplodeOnEnd)
 		{
 			
@@ -410,6 +417,13 @@ public class Wave : Unit {
 			yield return StartCoroutine(GameManager.instance.CompleteTurnRoutine());
 			yield return new WaitForSeconds(GameData.GameSpeed(0.3F));
 		}
+		OnWaveDestroy();
+		yield return null;
+	}
+
+	public virtual void OnWaveDestroy()
+	{
+
 	}
 
 	IEnumerator Cast(Tile target, int radius)

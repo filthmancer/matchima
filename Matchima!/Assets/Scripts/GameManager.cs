@@ -136,12 +136,13 @@ public class GameManager : MonoBehaviour {
 			GameData.instance.Save();
 			PlayerPrefs.SetInt("PlayerLevel", Player.Level.Level);
 			PlayerPrefs.SetInt("PlayerXP", Player.Level.XP_Current);
+			PlayerPrefs.Save();
 			if(!gameStart) return;
 			PlayerLoader.Save();
 			PlayerPrefs.SetInt("Resume", gameStart ? 1 : 0);
 			PlayerPrefs.SetString("Name", Player.Classes[0].Name);
 			PlayerPrefs.SetInt("Turns", Player.instance.Turns);
-	
+			PlayerPrefs.Save();
 		}
 	
 		void OnApplicationPause()
@@ -151,11 +152,13 @@ public class GameManager : MonoBehaviour {
 				GameData.instance.Save();
 				PlayerPrefs.SetInt("PlayerLevel", Player.Level.Level);
 				PlayerPrefs.SetInt("PlayerXP", Player.Level.XP_Current);
+				PlayerPrefs.Save();
 				if(!gameStart)  return;
 				PlayerLoader.Save();
 				PlayerPrefs.SetInt("Resume", gameStart ? 1 : 0);
 				PlayerPrefs.SetString("Name", Player.Classes[0].Name);
 				PlayerPrefs.SetInt("Turns", Player.instance.Turns);
+				PlayerPrefs.Save();
 			} 
 		}
 	
@@ -276,16 +279,18 @@ public class GameManager : MonoBehaviour {
 				break;
 				case 3: //c
 				//TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["guard"], GENUS.DEX,1, 1);
-				//StartCoroutine(Player.instance.AddXP(500));
-				UIManager.Objects.DeathIcon.transform.position = UIManager.ClassButtons[1].transform.position + Vector3.up * 5;
+				Player.instance.ResetLevel();
+				
+				/*UIManager.Objects.DeathIcon.transform.position = UIManager.ClassButtons[1].transform.position + Vector3.up * 5;
 				UIManager.Objects.DeathIcon.gameObject.SetActive(true);
 				UIManager.Objects.DeathIcon.SetFrame(0);
-				UIManager.Objects.DeathIcon.Play("PlayDeath");
+				UIManager.Objects.DeathIcon.Play("PlayDeath");*/
 				break;
 				case 4: //V
+				StartCoroutine(Player.instance.AddXP(500));
 				//GetTurn();
 				//PlayerControl.instance.focusTile.AddEffect("Charm", 5, "2", "1");
-				Player.Stats.Hit(50);
+				//Player.Stats.Hit(50);
 				/*foreach(Class child in Player.Classes)
 				{
 					child.isKilled = true;
@@ -499,6 +504,7 @@ public class GameManager : MonoBehaviour {
 	public End_Type EndType;
 	public void Killed()
 	{
+		print(true);
 		EndType = End_Type.Defeat;
 		paused = true;
 		gameStart = false;
@@ -518,7 +524,7 @@ public class GameManager : MonoBehaviour {
 	{
 		EndType = End_Type.Retire;
 		UIManager.instance.ShowOptions();
-		Player.Stats.isKilled = true;
+		//Player.Stats.isKilled = true;
 		Player.instance.retired = true;
 		paused = true;
 		StartCoroutine(EndGame(EndType));
@@ -535,9 +541,11 @@ public class GameManager : MonoBehaviour {
 
 	IEnumerator EndGame(End_Type e)
 	{
-		UIManager.instance.CloseZoneUI();	
-		int [] xp = CalculateXP();
-		int total = xp[0] + xp[1] + xp[2];
+		if(Wave) Wave.OnWaveDestroy();
+		UIManager.instance.CloseZoneUI();
+
+		int [] xp = CalculateXP(e);
+		int total = xp[1] + xp[2] + xp[3];
 		yield return new WaitForSeconds(0.1F);
 		TileMaster.instance.ClearGrid(true);
 
@@ -546,7 +554,7 @@ public class GameManager : MonoBehaviour {
 		yield return StartCoroutine(Player.instance.AddXP(total));
 	}
 
-	int [] CalculateXP()
+	int [] CalculateXP(End_Type e)
 	{
 		int xp_diff_rate = 4;
 		int xp_depth_rate = 20;
@@ -560,12 +568,26 @@ public class GameManager : MonoBehaviour {
 		int turns = Player.instance.Turns;
 		if(turns == 0) turns = 1;
 		
-		int [] final = new int[3];
+		int [] final = new int[4];
 	//The base XP amount, taken from difficulty
 		final[0] = difficulty * xp_diff_rate;
 
+	//XP multiplier from ending type
+		switch(e)
+		{
+			case End_Type.Victory:
+			final[1] = (int) ((float)final[0] * 2.0F);
+			break;
+			case End_Type.Defeat:
+			final[1] = (int) ((float)final[0] * 1.7F);
+			break;
+			case End_Type.Retire:
+			final[1] = (int) ((float)final[0] * 1.0F);
+			break;
+		}
+
 	//XP from depth
-		final[1] = GameManager.Floor * xp_depth_rate;
+		final[2] = GameManager.Floor * xp_depth_rate;
 
 	//XP gained from position on average turns scale
 		int avg_turns_xp = GameManager.Floor * avg_turns_per_floor;
@@ -574,7 +596,7 @@ public class GameManager : MonoBehaviour {
 	//Caluculate turn xp by subtracting the actual turn number from the average turn number at that depth
 		int final_turns_xp = Mathf.Clamp(avg_turns_xp-actual_turns_xp, 0, 100);
 
-		final[2] = final_turns_xp * xp_turns_rate;
+		final[3] = final_turns_xp * xp_turns_rate;
 
 		return final;
 	}

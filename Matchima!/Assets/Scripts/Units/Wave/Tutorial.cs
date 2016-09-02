@@ -45,12 +45,12 @@ public class Tutorial : Wave {
 	}
 
 	int current = 0;
+	MiniAlertUI TuteAlert;
 	public override IEnumerator BeginTurn()
 	{
 		yield return StartCoroutine(base.BeginTurn());
 		UIManager.Objects.BotGear.SetTween(0, true);
 		QuoteGroup tute;
-		MiniAlertUI mini;
 		switch(current)
 		{
 			case 1:
@@ -67,7 +67,7 @@ public class Tutorial : Wave {
 			TileMaster.Tiles[0,0].ChangeGenus(GENUS.STR);
 			TileMaster.Tiles[1,0].ChangeGenus(GENUS.DEX);
 
-			Alert("Matches must have\n3 or more tiles");
+			TuteAlert = Alert("Matches must have\n3 or more tiles");
 			
 			current++;
 			break;
@@ -132,7 +132,7 @@ public class Tutorial : Wave {
 
 			TileMaster.Tiles[2,2].InitStats.Hits = 2;
 			TileMaster.Tiles[2,2].CheckStats();
-			Alert("Some tiles take\nmultiple hits to destroy");
+			TuteAlert = Alert("Some tiles take\nmultiple hits to destroy");
 			current++;
 			break;
 
@@ -142,7 +142,7 @@ public class Tutorial : Wave {
 
 			TileMaster.instance.ReplaceTile(1,2, TileMaster.Types["grunt"], GENUS.STR);
 			yield return new WaitForSeconds(Time.deltaTime * 10);
-			Alert("Match enemy tiles\nto destroy");
+			TuteAlert = Alert("Match enemy tiles\nto destroy");
 			current++;
 			break;
 
@@ -152,14 +152,14 @@ public class Tutorial : Wave {
 			current++;
 			break;
 			case 6:
-			Alert("A red X means your\nattack will kill\nthe enemy");
+			TuteAlert = Alert("A red X means your\nattack will kill\nthe enemy");
 			TileMaster.instance.ReplaceTile(0,3, TileMaster.Types["grunt"], GENUS.STR);
 			TileMaster.instance.ReplaceTile(3,3, TileMaster.Types["grunt"], GENUS.DEX);	
 			current++;
 			
 			break;
 			case 7:
-			Alert("Enemies have different\nattacks and health");
+			TuteAlert = Alert("Enemies have different\nattacks and health");
 			TileMaster.instance.ReplaceTile(1,3, TileMaster.Types["grunt"], GENUS.CHA);
 			TileMaster.instance.ReplaceTile(2,3, TileMaster.Types["grunt"], GENUS.WIS);
 
@@ -170,7 +170,7 @@ public class Tutorial : Wave {
 			case 8:
 			if(dex_alert)
 			{
-				Alert("Dexterity increases\nattack damage", 2.4F);
+				TuteAlert = Alert("Dexterity increases\nattack damage", 2.4F);
 				current++;
 			}
 			break;
@@ -184,7 +184,7 @@ public class Tutorial : Wave {
 															TileMaster.Genus.Frames, "Red"));
 
 					TileMaster.instance.ReplaceTile(0,2, TileMaster.Types["health"], GENUS.STR,1,2);
-					Alert("Collect health tiles\nto regain health",2.4F);
+					TuteAlert = Alert("Collect health tiles\nto regain health",2.4F);
 					current++;
 				}
 			break;
@@ -234,7 +234,7 @@ public class Tutorial : Wave {
 			case 14:
 			if(wis_alert)
 			{
-				Alert("Wisdom increases\nspell damage", 2.4F);
+				TuteAlert = Alert("Wisdom increases\nspell damage", 2.4F);
 				current++;
 			}
 			break;
@@ -245,7 +245,7 @@ public class Tutorial : Wave {
 			case 16:
 			if(cha_alert)
 			{
-				Alert("Charisma increases\ntile value", 2.4F);
+				TuteAlert = Alert("Charisma increases\ntile value", 2.4F);
 				current++;
 			}
 			break;
@@ -253,6 +253,7 @@ public class Tutorial : Wave {
 			current++;
 			TileMaster.instance.MapSize_Default = new Vector2(5,6);
 			Current = Required;
+
 			break;
 		}
 
@@ -327,8 +328,8 @@ public class Tutorial : Wave {
 		yield return StartCoroutine(UIManager.instance.ImageQuote(1.1F, Player.Classes[1], 
 													TileMaster.Types["resource"].Atlas, "Blue",
 													TileMaster.Genus.Frames, "Blue"));
-	 	MiniAlertUI al = Alert("The Rogue has \nhigh Dexterity", 2.4F);
-	 	al.AddAction( ()=>
+	 	TuteAlert =  Alert("The Rogue has \nhigh Dexterity", 2.4F);
+	 	TuteAlert.AddAction( ()=>
 	 	{
 	 		dex_alert = true;
 	 		//Alert("Dexterity increases\nattack damage", 2.4F);
@@ -366,8 +367,8 @@ public class Tutorial : Wave {
 		yield return StartCoroutine(UIManager.instance.ImageQuote(1.1F, Player.Classes[2], 
 													TileMaster.Types["resource"].Atlas, "Green",
 													TileMaster.Genus.Frames, "Green"));
-		MiniAlertUI al = Alert("The Wizard has \nhigh Wisdom", 2.4F);
-	 	al.AddAction( ()=>
+		TuteAlert = Alert("The Wizard has \nhigh Wisdom", 2.4F);
+	 	TuteAlert.AddAction( ()=>
 	 	{
 	 		wis_alert = true;
 	 		//Alert("Wisdom increases\nspell damage", 2.4F);
@@ -408,8 +409,8 @@ public class Tutorial : Wave {
 													TileMaster.Genus.Frames, "Yellow"));
 		
 		
-		MiniAlertUI al = Alert("The Bard has \nhigh Charisma", 2.4F);
-	 	al.AddAction( ()=>
+		TuteAlert = Alert("The Bard has \nhigh Charisma", 2.4F);
+	 	TuteAlert.AddAction( ()=>
 	 	{
 	 		cha_alert = true;
 	 		//Alert("Charisma increases\n tile value", 2.4F);
@@ -419,6 +420,13 @@ public class Tutorial : Wave {
 
 	protected override IEnumerator WaveEndRoutine()
 	{
+		OnWaveDestroy();
+		if(Player.Level.Level <= 1) yield return StartCoroutine(Player.instance.AddXP(100));
 		yield return null;
+	}
+
+	public override void OnWaveDestroy()
+	{
+		if(TuteAlert != null) Destroy(TuteAlert.gameObject);
 	}
 }

@@ -1321,7 +1321,7 @@ public class Tile : MonoBehaviour {
 
 		MoveToPoint mp = this.gameObject.AddComponent<MoveToPoint>();
 		mp.SetTarget(newpoint);
-		mp.SetPath(10.0F, arc);
+		mp.SetPath(6.0F, arc);
 		mp.SetThreshold(0.1F);
 		mp.DontDestroy = true;
 

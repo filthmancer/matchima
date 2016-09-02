@@ -97,6 +97,7 @@ public class Flame : Tile {
 
 		while(cycle < total_cycles)
 		{	
+			PlayAudio("cast");
 			if(x <= 0 || x >= TileMaster.Grid.Size[0]-1)
 			{
 				velocity.x = -velocity.x;
@@ -129,6 +130,8 @@ public class Flame : Tile {
 					if(rate >= 1.0F) isLerping = false;
 					yield return null;
 				}	
+
+				
 			}
 			
 			
@@ -137,7 +140,7 @@ public class Flame : Tile {
 
 			cycle ++;
 			
-			yield return null;
+			yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 		}
 
 		Destroy(targ.gameObject);
@@ -176,4 +179,31 @@ public class Flame : Tile {
 		p.transform.position = t.transform.position;
 		p.GetComponent<MoveToPoint>().enabled = false;
 	}
+
+	public override void SetSprite()
+	{
+		int sprite = Stats.Value / 5;
+		SetBorder(Info.Outer);
+		SetRender(Info._GenusName);
+		
+		//transform.position = new Vector3(Point.targetPos.x, Point.targetPos.y, transform.position.z);
+		Params.transform.position = transform.position;
+		Params._render.transform.localPosition = Vector3.zero;
+		switch(Genus)
+		{
+			case GENUS.STR:
+			Params._render.transform.rotation = Quaternion.Euler(0,0,180);
+			break;
+			case GENUS.DEX:
+			Params._render.transform.rotation = Quaternion.Euler(0,0,90);
+			break;
+			case GENUS.WIS:
+			Params._render.transform.rotation = Quaternion.Euler(0,0,270);
+			break;
+			case GENUS.CHA:
+			Params._render.transform.rotation = Quaternion.Euler(0,0,0);
+			break;
+		}		
+	}
+
 }

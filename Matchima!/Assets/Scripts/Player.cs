@@ -759,17 +759,24 @@ public class Player : MonoBehaviour {
 	}
 
 #region Player Level/Unlocks
+
+	public void ResetLevel()
+	{
+		_Level.Reset();
+	}
+
 	public IEnumerator AddXP(int xp)
 	{
 		int rate = 1;
-		float rate_soft = 1.0F;
+		float rate_soft = 2.0F;
 		int current = 0;
+		UIManager.instance.ShowPlayerLvl(1, true);
 		while(current < xp)
 		{
 			int actual = Mathf.Clamp(rate, 0, xp-current);
 			current += actual;
 			
-			rate_soft *= 1.05F;
+			rate_soft *= 1.1F;
 			rate = (int)rate_soft;
 			if(_Level.AddXP(actual))
 			{
@@ -782,6 +789,13 @@ public class Player : MonoBehaviour {
 			UIManager.instance.UpdatePlayerLvl();
 			yield return null;
 		}
+		PlayerPrefs.SetInt("PlayerLevel", _Level.Level);
+		PlayerPrefs.SetInt("PlayerXP", _Level.XP_Current);
+		PlayerPrefs.Save();
+
+		UIManager.instance.ShowPlayerLvl(1, false);
+		GameData.instance.LoadUnlocks();
+
 		yield return null;
 	}
 
@@ -1031,6 +1045,14 @@ public class LevelContainer
 		XP_RequiredArray_num = 0;
 	}
 
+	public void Reset()
+	{
+		Level = 1;
+		XP_Current = 0;
+		XP_Required = XP_RequiredArray[0];
+		XP_RequiredArray_num = 0;
+	}
+
 	public void SetXP(int num)
 	{
 		XP_Required = XP_RequiredArray[num];
@@ -1050,6 +1072,7 @@ public class LevelContainer
 			}
 			else XP_Required = XP_RequiredArray[XP_RequiredArray_num];
 			XP_Current = 0;
+
 			return true;
 		}
 		return false;

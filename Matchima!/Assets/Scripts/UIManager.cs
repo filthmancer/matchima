@@ -1480,11 +1480,12 @@ public class UIManager : MonoBehaviour {
 	}
 
 
-	public void ShowPlayerLvl()
+	public void ShowPlayerLvl(int num = 0, bool? active = null)
 	{
+		bool open = !(Objects.MiddleGear[1] as UIObjTweener).Tweens[num].IsObjectOpened();
+		if(active.HasValue) open = active.Value;
 
-		(Objects.MiddleGear[1] as UIObjTweener).SetTween(0);
-		bool open = (Objects.MiddleGear[1] as UIObjTweener).Tween.IsObjectOpened();
+		(Objects.MiddleGear[1] as UIObjTweener).SetTween(num, open);
 		GameManager.instance.paused = open;
 		ScreenAlert.SetTween(0, open);
 		if(!open) UIManager.instance.SetClassButtons(false);
@@ -1498,8 +1499,10 @@ public class UIManager : MonoBehaviour {
 		Objects.MiddleGear[1][2].SetActive(true);
 		Objects.MiddleGear[1].Txt[0].text = "Unlocks";
 		Objects.MiddleGear[1].Txt[3].enabled = false;
+
 		Objects.MiddleGear[1][2].Txt[0].text = Player.Level.XP_Current + "/" + Player.Level.XP_Required;
 		Objects.MiddleGear[1][2].Txt[1].text = "" + Player.Level.Level;
+		
 		Objects.MiddleGear[1][2].Txt[2].text = "Player Level";
 		Objects.MiddleGear[1][2].Img[1].fillAmount = Player.Level.XP_Ratio;
 		Objects.MiddleGear[1][2].Img[2].color = Player.Level.LevelColor;

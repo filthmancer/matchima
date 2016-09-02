@@ -623,19 +623,28 @@ public class GameData : MonoBehaviour {
 #region Loading Data
 	public IEnumerator LoadInitialData()
 		{
-			int lvl = PlayerPrefs.GetInt("PlayerLevel");
-			int xp = PlayerPrefs.GetInt("PlayerXP");
-			Player.instance.SetLevelInfo(lvl, xp);
-
+			LoadUnlocks();
+			
 			LoadClasses();
 			LoadPowerups();
-			LoadModes();
+			
 			Load();
 			
 			yield return null;
 			yield return StartCoroutine(UIManager.instance.UnloadUI());
 			yield return null;
 			yield return StartCoroutine(UIManager.Menu.LoadMenu());
+		}
+
+		public void LoadUnlocks()
+		{
+			int lvl = PlayerPrefs.GetInt("PlayerLevel");
+			int xp = PlayerPrefs.GetInt("PlayerXP");
+			Player.instance.SetLevelInfo(lvl, xp);
+
+			//MODES
+			ModeUnlocked_Quick = Player.instance.GetUnlock("quickmode");
+			ModeUnlocked_Endless = Player.instance.GetUnlock("endlessmode");
 		}
 
 		public void LoadModes()

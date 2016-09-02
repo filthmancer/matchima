@@ -38,21 +38,13 @@ public class WardenBattle : Wave {
 		Current = 0;
 		Timer = 0;
 
-		QuoteGroup tute = new QuoteGroup("Tute");
-		tute.AddQuote("Excellent work, making it this far.",  Slot1, true, 0.8F);
-		tute.AddQuote("But I can't let you go any further.",  Slot1, true, 0.8F);
-		tute.AddQuote("The more mana you absorb, the stronger you'll be...",  Slot1, true, 0.8F);
-		tute.AddQuote("And I can't have you escaping back to the surface.",  Slot1, true, 0.8F);
-
-		tute.AddQuote("So I'll just get rid of you now.",  Slot1, true, 0.8F);
-
-		yield return StartCoroutine(UIManager.instance.Quote(tute.ToArray()));
 		Slot2.Timer = 0;
 		Slot2.Activate();
 		Slot3.Timer = 0;
 		Slot3.Activate();
 		
 		//Current = warden_actual_health;
+		yield return null;
 	}
 
 	public override IEnumerator BeginTurn()

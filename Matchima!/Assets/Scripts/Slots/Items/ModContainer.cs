@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System;
 
@@ -932,6 +932,7 @@ public class UpgradeBracket
 		Title = _title;
 		Type = _type;
 		Chance = _chance;
+
 		Genus = b;
 		foreach(GenusBracket child in Genus)
 		{

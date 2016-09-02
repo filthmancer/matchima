@@ -134,10 +134,9 @@ public class WaveTile : WaveUnit
 					}
 				});
 			
-
-			yield return new WaitForSeconds(Time.deltaTime * 10);
+			if(Factor > 1) yield return new WaitForSeconds(Time.deltaTime * 10);
 		}
-		yield return new WaitForSeconds(Time.deltaTime * 30);
+		yield return new WaitForSeconds(Time.deltaTime * 55);
 	}
 
 
