@@ -253,7 +253,8 @@ public class Tile : MonoBehaviour {
 		{
 			val *= 2;
 		}
-		InitStats.Value = Info.Value + Player.Stats.ValueInc;
+		InitStats.Value = Info.Value;
+		if(!Type.isEnemy) InitStats.Value += Player.Stats.ValueInc;
 		if(InitStats.Hits == 0) InitStats.Hits = 1;
 		AddUpgrades(val);
 
@@ -1091,6 +1092,7 @@ public class Tile : MonoBehaviour {
 					t.PlayAudio("hit");
 					EffectManager.instance.PlayEffect(t.transform,Effect.Attack);
 					t.Match(1);
+					UIManager.instance.CashMeterPoints();
 					GameData.Log(this +  " dealt " + GetAttack() + "damage to " + t);
 				} 
 			}

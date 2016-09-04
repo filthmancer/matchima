@@ -108,11 +108,16 @@ public class Flame : Tile {
 				velocity.y = -velocity.y;
 			}
 
-			if(!TileMaster.Tiles[x,y].isMatching && TileMaster.Tiles[x,y] != this)
+			if(!TileMaster.Tiles[x,y].isMatching)
 			{
-				FlameTile(TileMaster.Tiles[x,y]);
-				to_collect.Add(TileMaster.Tiles[x,y]);	
 				
+				if(TileMaster.Tiles[x,y] != this)
+				{
+					to_collect.Add(TileMaster.Tiles[x,y]);	
+				}
+					
+				FlameTile(TileMaster.Tiles[x,y]);
+				yield return new WaitForSeconds(GameData.GameSpeed(0.05F));
 				//yield return new WaitForSeconds(Time.deltaTime * 5);
 			}
 
@@ -126,7 +131,7 @@ public class Flame : Tile {
 				while(isLerping)
 				{
 					targ.transform.position = Vector3.Lerp(initpos, nextpos, rate);
-					rate += Time.deltaTime * 10;
+					rate += Time.deltaTime * 8;
 					if(rate >= 1.0F) isLerping = false;
 					yield return null;
 				}	
@@ -140,7 +145,7 @@ public class Flame : Tile {
 
 			cycle ++;
 			
-			yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+			
 		}
 
 		Destroy(targ.gameObject);
@@ -178,6 +183,7 @@ public class Flame : Tile {
 		GameObject p = (GameObject)Instantiate(Particle);
 		p.transform.position = t.transform.position;
 		p.GetComponent<MoveToPoint>().enabled = false;
+		CameraUtility.instance.ScreenShake((float)Stats.Value/10,  GameData.GameSpeed(0.2F));
 	}
 
 	public override void SetSprite()
@@ -195,10 +201,10 @@ public class Flame : Tile {
 			Params._render.transform.rotation = Quaternion.Euler(0,0,180);
 			break;
 			case GENUS.DEX:
-			Params._render.transform.rotation = Quaternion.Euler(0,0,90);
+			Params._render.transform.rotation = Quaternion.Euler(0,0,270);
 			break;
 			case GENUS.WIS:
-			Params._render.transform.rotation = Quaternion.Euler(0,0,270);
+			Params._render.transform.rotation = Quaternion.Euler(0,0,90);
 			break;
 			case GENUS.CHA:
 			Params._render.transform.rotation = Quaternion.Euler(0,0,0);

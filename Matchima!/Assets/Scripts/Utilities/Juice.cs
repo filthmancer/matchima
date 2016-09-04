@@ -12,6 +12,7 @@ public class Juice : MonoBehaviour {
 	public JuiceIt Ripple;
 	public JuiceIt Twitch;
 	public JuiceIt Attack;
+	public JuiceIt Spooky;
 
 	public static JuiceIt _Squish
 	{

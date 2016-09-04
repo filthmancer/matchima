@@ -170,7 +170,7 @@ public class Tutorial : Wave {
 			case 8:
 			if(dex_alert)
 			{
-				TuteAlert = Alert("Dexterity increases\nattack damage", 2.4F);
+				TuteAlert = Alert("10 Dexterity increases\n+1 attack damage", 2.4F);
 				current++;
 			}
 			break;
@@ -209,6 +209,7 @@ public class Tutorial : Wave {
 			TileMaster.Types.IgnoreAddedChances = false;
 			Spawner2.GetSpawnables(TileMaster.Types);
 
+
 			current++;
 			break;
 			case 11:
@@ -234,25 +235,29 @@ public class Tutorial : Wave {
 			case 14:
 			if(wis_alert)
 			{
-				TuteAlert = Alert("Wisdom increases\nspell damage", 2.4F);
+				TuteAlert = Alert("5 Wisdom gives\n+1 spell damage", 2.4F);
 				current++;
 			}
 			break;
 			case 15:
+				TuteAlert = Alert("1 Strength gives\n+5 health points",2.4F);
+				current ++;
+			break;
+			case 16:
 				yield return StartCoroutine(AddBard());
 				current++;
 			break;
-			case 16:
+			case 17:
 			if(cha_alert)
 			{
-				TuteAlert = Alert("Charisma increases\ntile value", 2.4F);
+				TuteAlert = Alert("30 Charisma increases\n+1 tile value", 2.4F);
 				current++;
 			}
 			break;
-			case 17:
+			case 18:
 			current++;
 			TileMaster.instance.MapSize_Default = new Vector2(5,6);
-			Current = Required;
+			Current = RequiredFinal;
 
 			break;
 		}

@@ -407,6 +407,8 @@ public class Player : MonoBehaviour {
 			if (child == null) continue;
 			yield return StartCoroutine(child.EndTurn());
 		}
+		AddedAttackPower = 0;
+		AddedSpellPower = 0;
 		ResetStats();
 		Turns ++;
 		yield return null;
@@ -695,6 +697,7 @@ public class Player : MonoBehaviour {
 		Stats.MapSize.x = Mathf.Clamp(Stats.MapSize.x, 0, 4);
 		Stats.MapSize.y = Mathf.Clamp(Stats.MapSize.y, 0, 4);
 
+		Stats._HealthMax = (int) Mathf.Clamp(Stats._HealthMax, 1, 999999);
 		Stats._Health = (int) Mathf.Clamp(Stats._HealthMax * ratio, 0, Stats._HealthMax);
 
 		Stats.MatchNumberModifier = Mathf.Clamp(Stats.MatchNumberModifier, -2, 100);

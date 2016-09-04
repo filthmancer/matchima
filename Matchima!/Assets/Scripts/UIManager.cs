@@ -1750,8 +1750,11 @@ public class UIManager : MonoBehaviour {
 		ScreenAlert.SetActive(true);
 		ScreenAlert.SetTween(0,true);
 
-		MiniAlert(Objects.MiddleGear.transform.position + Vector3.up * 0.5F, "DEATH COMES", 160, GameData.instance.BadColour, 1.2F, 0.2F);
-		yield return StartCoroutine(GameData.DeltaWait(0.3F));
+		yield return StartCoroutine(GameData.DeltaWait(0.08F));
+		MiniAlertUI deathcomes = MiniAlert(Objects.MiddleGear.transform.position + Vector3.up * 1.5F, "DEATH COMES", 160, GameData.instance.BadColour, 1.9F, 0.2F);
+		//deathcomes.AddJuice(Juice.instance.Spooky, 0.45F);
+		ClassButtons.GetClass(c.Index).ShowClass(true);
+		yield return StartCoroutine(GameData.DeltaWait(0.65F));
 
 		Objects.DeathParent.SetTween(0, true);
 		Objects.DeathIcon.SetFrame(0);
@@ -1759,23 +1762,27 @@ public class UIManager : MonoBehaviour {
 
 		//Objects.DeathIcon.Img[0].enabled = true;
 		Transform death = Objects.DeathParent.transform;
+		tk2dSprite deathimg = Objects.DeathIcon.GetComponent<tk2dSprite>();
+		deathimg.color = Color.white;
 
+		
 		Transform classbutton = ClassButtons.GetClass(c.Index).Img[0].transform;
-		death.position = classbutton.position + Vector3.down*0.4F;
+		death.position = classbutton.position + Vector3.down*0.65F;
 		death.localScale = new Vector3(c.Index > 1 ? -1:1,1,1);
 
-		yield return StartCoroutine(GameData.DeltaWait(1.2F));
-
+		yield return StartCoroutine(GameData.DeltaWait(1.35F));
+		StartCoroutine(DeathFade(deathimg, 0.45F, 0.75F));
 		float spin_time = 1.3F;
 		float spin_acc = 35F, spin_decay = 0.7F;
 		while((spin_time -= Time.deltaTime) > 0.0F)
 		{
 			classbutton.Rotate(0,spin_acc, 0);
 			spin_acc -= spin_decay;
+
 			yield return null;
 		}
 		if(outcome_death) c.OnDeath();
-		MiniAlertUI m = UIManager.instance.MiniAlert(classbutton.position, (outcome_death ? "DEATH!" : "SAFE!"), 75, GameData.Colour(c.Genus), 1.2F, 0.2F);
+		MiniAlertUI m = UIManager.instance.MiniAlert(classbutton.position, (outcome_death ? "DEATH!" : "SAFE!"), 100, GameData.Colour(c.Genus), 1.2F, 0.2F);
 		(ClassButtons.GetClass(c.Index) as UIClassButton).Death.enabled = outcome_death;
 		float falling_time = 0.8F;
 		float falling_acc = 0.5F;
@@ -1783,15 +1790,35 @@ public class UIManager : MonoBehaviour {
 		{
 			classbutton.rotation = Quaternion.Slerp(classbutton.rotation, Quaternion.Euler(0,0,0), 0.2F);
 			death.position += Vector3.down *falling_acc;
+			//deathcol.a -= Time.deltaTime * 4;
+			//deathimg.color = deathcol;
 			yield return null;
 		}
-		Objects.DeathParent.SetTween(0, false);
 
+		Objects.DeathParent.SetTween(0, false);
+		ClassButtons.GetClass(c.Index).ShowClass(false);
 		GameManager.instance.paused = false;
 		ScreenAlert.SetActive(false);
 		ScreenAlert.SetTween(0,false);
 
+
 		yield return null;
+	}
+
+	IEnumerator DeathFade(tk2dSprite deathimg, float time, float delay)
+	{
+		yield return StartCoroutine(GameData.DeltaWait(delay));
+		Color deathcol = Color.white;
+		deathimg.color = deathcol;
+		float current = 0.0F;
+		while(current < time)
+		{
+			deathcol.a -= Time.deltaTime * 4;
+			deathimg.color = deathcol;
+			current+= Time.deltaTime;
+			yield return null;
+		}
+
 	}
 
 

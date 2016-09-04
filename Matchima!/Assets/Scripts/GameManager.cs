@@ -287,10 +287,10 @@ public class GameManager : MonoBehaviour {
 				UIManager.Objects.DeathIcon.Play("PlayDeath");*/
 				break;
 				case 4: //V
-				StartCoroutine(Player.instance.AddXP(500));
+				//StartCoroutine(Player.instance.AddXP(500));
 				//GetTurn();
 				//PlayerControl.instance.focusTile.AddEffect("Charm", 5, "2", "1");
-				//Player.Stats.Hit(50);
+				Player.Stats.Hit(50);
 				/*foreach(Class child in Player.Classes)
 				{
 					child.isKilled = true;

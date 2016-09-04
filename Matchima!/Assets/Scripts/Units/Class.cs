@@ -442,8 +442,8 @@ public class Class : Unit {
 		if(Manapower_audio != null) Destroy(Manapower_audio.gameObject);
 		MeterLvl = 0;
 		Meter = 0;
-		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons.GetClass(Index).transform.position, "POWER\nDOWN", 75, GameData.Colour(Genus), 1.2F, 0.2F);
-		yield return new WaitForSeconds(0.1F);
+		//MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons.GetClass(Index).transform.position, "POWER\nDOWN", 75, GameData.Colour(Genus), 1.2F, 0.2F);
+		//yield return new WaitForSeconds(0.1F);
 		MeterDecay_soft = MeterDecayInit[0];
 		MeterDecay = (int) MeterDecay_soft;
 		if(ManaPowerParticle != null) Destroy(ManaPowerParticle);

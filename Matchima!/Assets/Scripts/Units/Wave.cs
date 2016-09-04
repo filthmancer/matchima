@@ -43,7 +43,15 @@ public class Wave : Unit {
 	public int RequiredDifficulty = 1;
 
 	public int Current;
-	public int Required;
+	[SerializeField]
+	private int Required;
+	[SerializeField]
+	private int RequiredDiffIncrease = 0;
+	public int RequiredFinal
+	{
+		get{return Required + (RequiredDiffIncrease * (int) (GameManager.ZoneNum));}
+	}
+	
 	private int PointsThisTurn;
 	public int PointsPerTurn;
 
@@ -83,14 +91,14 @@ public class Wave : Unit {
 
 	public float GetRatio()
 	{
-		return (float) Current / Required;
+		return (float) Current / RequiredFinal;
 	}
 
 	public string WaveNumbers
 	{
 		get{
-			if(Required == -1) return "";
-			else return Current + "/" + Required;
+			if(RequiredFinal == -1) return "";
+			else return Current + "/" + RequiredFinal;
 		}
 	}
 
@@ -136,11 +144,11 @@ public class Wave : Unit {
 	public void AddPoints(int p, bool overridepoints = false)
 	{
 		if(p == 0) return;
-		if(!Active || Ended || Required == -1) return;
+		if(!Active || Ended || RequiredFinal == -1) return;
 		if(!PointsFromTiles && !overridepoints) return;
 
 		PointsThisTurn += p;
-		Current = Mathf.Clamp(Current + p, 0, Required);
+		Current = Mathf.Clamp(Current + p, 0, RequiredFinal);
 		if(!ShowingHealth)
 		{
 			StartCoroutine(ShowHealthRoutine());
@@ -222,7 +230,7 @@ public class Wave : Unit {
 				AllSlots[i].Complete();
 			}
 		}
-		if(Current == Required && Active)
+		if(Current == RequiredFinal && Active)
 		{
 			for(int i = 0; i < AllSlots.Length; i++)
 			{

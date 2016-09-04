@@ -45,7 +45,7 @@ public class Lightning : Tile {
 			{
 				Tile tile = _tiles[x,y];
 				if(tile == null || tile.Genus == this.Genus) continue;
-				if(tile.isMatching || tile.Destroyed) continue;
+				//if(tile.isMatching || tile.Destroyed) continue;
 				bool add = true;
 				for(int i = 0; i < onScreen.Count; i++)
 				{

@@ -42,9 +42,10 @@ public class MiniAlertUI : UIObj {
 			
 		}
 		
+		Txt[0].text = text;
+
 		if(lifetime < -1.0F) 
 		{
-			Txt[0].text = text;
 			return;
 		}
 		if(lifetime > 0.0F){
@@ -53,11 +54,12 @@ public class MiniAlertUI : UIObj {
 
 			lifetime -= Time.deltaTime;
 			_speed = Mathf.Lerp(_speed, 0.0F, Time.deltaTime * 10);
-			Txt[0].text = text;
+			
 			
 		}
 		else 
 		{
+
 			if(ended) return;
 			ended = true;
 			foreach(Action child in EndActions)
@@ -163,6 +165,20 @@ public class MiniAlertUI : UIObj {
 		juice_time_curr = 0.0F;
 		DoJuiceScale = true;
 	}
+
+	JuiceIt JuiceTotal;
+	bool DoJuice;
+	public void AddJuice(JuiceIt j, float total = 1.0F)
+	{
+		JuiceTotal = j;
+		juice_time_total = total;
+		if(juice_time_total > lifetime) juice_time_total = lifetime;
+		Juice.instance.JuiceIt(JuiceTotal, Txt[0].transform, 0.0F, 1.0F);
+
+		juice_time_curr = 0.0F;
+		DoJuice = true;
+	}
+
 
 	public void ResetJuice(float f = 0.0F){juice_time_curr = f;}
 
