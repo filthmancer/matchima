@@ -1016,10 +1016,10 @@ public class Tile : MonoBehaviour {
 		m.Txt[0].outlineColor = GameData.Colour(Genus);
 		m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
 		MoveToPoint mini = m.GetComponent<MoveToPoint>();
+		mini.enabled = true;
 		m.AddJuice(Juice.instance.BounceB, info_time);
 		m.AddAction(() => {mini.enabled = true;});
 		m.DestroyOnEnd = false;
-
 
 		mini.SetTarget(UIManager.instance.Health.transform.position);
 		mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
@@ -1046,6 +1046,7 @@ public class Tile : MonoBehaviour {
 		m.Txt[0].outlineColor = GameData.Colour(Genus);
 		m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
 		MoveToPoint mini = m.GetComponent<MoveToPoint>();
+		mini.enabled = true;
 		m.AddJuice(Juice.instance.BounceB, info_time);
 		m.AddAction(() => {mini.enabled = true;});
 		m.DestroyOnEnd = false;
@@ -1077,6 +1078,7 @@ public class Tile : MonoBehaviour {
 		m.Txt[0].outlineColor = GameData.Colour(Genus);
 		m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
 		MoveToPoint mini = m.GetComponent<MoveToPoint>();
+		mini.enabled = true;
 		m.AddJuice(Juice.instance.BounceB, info_time);
 		m.AddAction(() => {mini.enabled = true;});
 		m.DestroyOnEnd = false;

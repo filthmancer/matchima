@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour {
 #region Variables
 	public static GameManager instance;
 	public static _GameSaveLoad PlayerLoader;
+	public Scumworks Scum;
 
 	public static bool debug = false;
 	public static bool inStartMenu;

@@ -141,20 +141,13 @@ public class UIMenu : UIObj {
 
 		if(PlayerPrefs.GetInt("Resume") == 1) 
 		{	
-			UIObj res = UIManager.Objects.MiddleGear["resume"];	
-			res.AddAction(UIAction.MouseUp, ()=>
-			{
-				ResumeGameActivate();
-			});
-			(res as UIObjTweener).SetTween(0, true);
-
+			PlayerPrefs.SetInt("PrevMode", 1);
 		}
+
 		bool activated = false;
 		UIManager.Objects.BotGear.ClearActions();
 		UIManager.Objects.TopGear.ClearActions();
 		UIManager.Objects.MiddleGear[0][2].ClearActions();
-		//UIManager.Objects.BotGear.AddAction(UIAction.MouseUp, ()=>{activated = true;});
-		//UIManager.Objects.TopGear.AddAction(UIAction.MouseUp, ()=>{activated = true;});
 		UIManager.Objects.MiddleGear[0][2].AddAction(UIAction.MouseUp, ()=>{activated = true;});
 
 		while(!activated)
@@ -187,20 +180,7 @@ public class UIMenu : UIObj {
 		(UIManager.Objects.BotGear as UIGear).SetTween(3, false);
 		UIManager.Objects.BotGear[1].ClearActions();
 		UIManager.Objects.BotGear[1].Img[0].enabled = false;
-		/*bool alert = false;
-		for(int i = 0; i < Player.instance._Classes.Length; i++)
-		{
-			if(Player.instance._Classes[i] == null)
-			{
-				alert = true;
-				break;
-			}
-		}
-		if(alert)
-		{
-			StartCoroutine(SetAlert());
-			return;
-		}*/
+
 		StartCoroutine(GameManager.instance.LoadGame(false));
 	}
 
@@ -287,6 +267,42 @@ public class UIMenu : UIObj {
 		{
 			UIManager.instance.ShowOptions();
 		});
+
+		UIManager.Objects.MiddleGear[3].ClearChildActions();
+		UIManager.Objects.MiddleGear[3][0].AddAction(UIAction.MouseUp, ()=>
+		{
+			GameManager.instance.SaveAndQuit();
+		});
+
+		UIManager.Objects.MiddleGear[3][1].AddAction(UIAction.MouseUp, ()=>
+		{
+			GameManager.instance.Retire();
+		});
+
+		UIManager.Objects.MiddleGear[3][2].AddAction(UIAction.MouseUp, ()=>
+		{
+			AudioManager.PlaySFX = !AudioManager.PlaySFX;
+			UIManager.instance.RefreshOptions();
+		});
+
+		UIManager.Objects.MiddleGear[3][3].AddAction(UIAction.MouseUp, ()=>
+		{
+
+			AudioManager.PlayMusic = !AudioManager.PlayMusic;
+			UIManager.instance.RefreshOptions();
+		});
+
+		UIManager.Objects.MiddleGear[3][4].AddAction(UIAction.MouseUp, ()=>
+		{
+			Player.Options.CycleGameSpeed();
+			UIManager.instance.RefreshOptions();
+		});
+		UIManager.Objects.MiddleGear["advancedops"].ClearActions();
+		UIManager.Objects.MiddleGear["advancedops"].AddAction(UIAction.MouseUp, () =>
+		{
+			if(!GameData.FullVersion) UIManager.instance.ShowFullVersionAlert();
+		});
+
 		UIManager.Objects.TopRightButton.ClearActions();
 		UIManager.Objects.TopRightButton.AddAction(UIAction.MouseUp, () =>
 		{
@@ -325,7 +341,7 @@ public class UIMenu : UIObj {
 
 		UIManager.Objects.TopGear[1][0].Txt[0].text = "STORY";
 		UIManager.Objects.TopGear[1][1].Txt[0].text = "QUICK CRAWL";
-		UIManager.Objects.TopGear[1][2].Txt[0].text = "SETTINGS";
+		UIManager.Objects.TopGear[1][2].Txt[0].text = "RESUME";
 		UIManager.Objects.TopGear[1][3].Txt[0].text = "ENDLESS";
 
 		UIManager.Objects.TopGear.DoDivisionLerpActions = true;
@@ -436,7 +452,6 @@ public class UIMenu : UIObj {
 
 	public void StartGame(GameMode g)
 	{
-
 		GameManager.instance.Mode = g;
 		switch(GameManager.instance.Mode)
 		{
@@ -477,7 +492,27 @@ public class UIMenu : UIObj {
 			break;
 		}
 		(UIManager.Objects.MiddleGear["resume"] as UIObjTweener).SetTween(0,false);
-		NewGameActivate();
+		//NewGameActivate();
+
+		UIManager.Objects.MiddleGear[0].SetActive(false);
+		UIManager.Objects.MiddleGear.Img[0].enabled = false;
+		UIManager.Objects.TopGear[2].SetActive(false);
+		(UIManager.Objects.TopLeftButton as UIObjTweener).SetTween(0, false);
+		(UIManager.Objects.TopRightButton as UIObjTweener).SetTween(0,false);
+		
+		UIManager.Objects.TopGear[1][0].Txt[0].enabled = false;
+		UIManager.Objects.TopGear[1][1].Txt[0].enabled = false;
+		UIManager.Objects.TopGear[1][2].Txt[0].enabled = false;
+		UIManager.Objects.TopGear[1][3].Txt[0].enabled = false;
+		UIManager.Objects.BotGear[3].SetActive(false);
+		UIManager.Objects.TopGear.isFlashing = false;
+		UIManager.Objects.BotGear.isFlashing = false;
+		(UIManager.Objects.BotGear[3][0] as UIGear).isFlashing = false;	
+		(UIManager.Objects.BotGear as UIGear).SetTween(3, false);
+		UIManager.Objects.BotGear[1].ClearActions();
+		UIManager.Objects.BotGear[1].Img[0].enabled = false;
+		
+		StartCoroutine(GameManager.instance.LoadGame(false));
 	}
 
 	public Sprite NoHeroInSlot;
@@ -494,7 +529,6 @@ public class UIMenu : UIObj {
 		{
 			case 0: // STORY
 			top_division_last = 0;
-			ShowSettingsUI(false);
 			UIManager.Objects.MiddleGear[0].Txt[0].text = "";
 			//"FOUR ADVENTURERS BREAK INTO THE FORBIDDEN UNDERCITY TO EXPLORE AND GATHER THE PRECIOUS 'MANA' THAT SEEPS FROM BELOW";
 			(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, true);
@@ -527,21 +561,29 @@ public class UIMenu : UIObj {
 
 			break;
 
-			case 1: // Settings
+			case 1: // Resume
 
 			
-			MidGear[0].Txt[0].text = "";
-			(MidGear[0][0] as UIObjTweener).SetTween(0, false);
-			(MidGear[0][1] as UIObjTweener).SetTween(0, false);
+			UIManager.Objects.MiddleGear[0].GetChild(0).ClearActions(UIAction.MouseUp);
+			UIManager.Objects.MiddleGear[0].GetChild(0).AddAction(UIAction.MouseUp,
+			() => {
+				ResumeGameActivate();
+				});
+
+			MidGear[0].Txt[0].text = "RESUME GAME";
+			(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, true);
+			(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, true);
 			(UIManager.Objects.BotGear as UIGear).SetTween(3, true);
+
+			ReadClasses("PrevClass_");
+			SetClassUI();
 			
-			ShowSettingsUI(true);
+			//ShowSettingsUI(true);
 			break;
 
 			case 2:  // Endless
 			unlocked = GameData.instance.ModeUnlocked_Endless;
 			top_division_last = 2;
-			ShowSettingsUI(false);
 			UIManager.Objects.MiddleGear[0].Txt[0].text = unlocked ? 
 			"ENDLESSLY EXPLORE THE UNDERCITY, DELVING EVER DEEPER" : "LOCKED";
 			
@@ -573,7 +615,6 @@ public class UIMenu : UIObj {
 
 			case 3:  // QUICK CRAWL
 			unlocked = GameData.instance.ModeUnlocked_Quick;
-			ShowSettingsUI(false);
 			top_division_last = 3;
 			UIManager.Objects.MiddleGear[0].Txt[0].text = unlocked ? 
 			"EXPLORE A GENERATED DUNGEON" : "Locked";
@@ -692,29 +733,29 @@ public class UIMenu : UIObj {
 	public void ShowSettingsUI(bool open)
 	{
 		Color targ;
-		UIGear MidGear = UIManager.Objects.MiddleGear as UIGear;
-			MidGear[0][3].SetActive(open);
+		UIGear Options = UIManager.Objects.MiddleGear[0] as UIGear;
+			Options[3].SetActive(open);
 			if(!open) return;
 
-			MidGear[0][3][0].Txt[0].text = "Real\nHP";
+			Options[3][0].Txt[0].text = "Real\nHP";
 			 targ = Player.Options.RealHP ? GameData.instance.GoodColour : GameData.instance.BadColour;
-			MidGear[0][3][0].SetInitCol(targ);
-			MidGear[0][3][0].Img[0].color = targ;
+			Options[3][0].SetInitCol(targ);
+			Options[3][0].Img[0].color = targ;
 
-			MidGear[0][3][0].ClearActions();
-			MidGear[0][3][0].AddAction(UIAction.MouseUp, () =>
+			Options[3][0].ClearActions();
+			Options[3][0].AddAction(UIAction.MouseUp, () =>
 			{
 				Player.Options.RealHP = !Player.Options.RealHP;	
 				ShowSettingsUI(true);
 			});
 
-			MidGear[0][3][1].Txt[0].text = "Show\nNumbers";
+			Options[3][1].Txt[0].text = "Show\nNumbers";
 			 targ = Player.Options.ShowNumbers ? GameData.instance.GoodColour : GameData.instance.BadColour;
-			MidGear[0][3][1].SetInitCol(targ);
-			MidGear[0][3][1].Img[0].color = targ;
+			Options[3][1].SetInitCol(targ);
+			Options[3][1].Img[0].color = targ;
 			
-			MidGear[0][3][1].ClearActions();
-			MidGear[0][3][1].AddAction(UIAction.MouseUp, () =>
+			Options[3][1].ClearActions();
+			Options[3][1].AddAction(UIAction.MouseUp, () =>
 			{
 				Player.Options.ShowNumbers = !Player.Options.ShowNumbers;	
 				ShowSettingsUI(true);
@@ -728,11 +769,11 @@ public class UIMenu : UIObj {
 						Player.Options.ShowStory == Ops_Story.AlwaysShow ? GameData.Colour(GENUS.WIS) :
 						GameData.Colour(GENUS.STR);
 
-			MidGear[0][3][2].Txt[0].text = title;									
-			MidGear[0][3][2].SetInitCol(targ);
-			MidGear[0][3][2].Img[0].color = targ;
-			MidGear[0][3][2].ClearActions();
-			MidGear[0][3][2].AddAction(UIAction.MouseUp, () =>
+			Options[3][2].Txt[0].text = title;									
+			Options[3][2].SetInitCol(targ);
+			Options[3][2].Img[0].color = targ;
+			Options[3][2].ClearActions();
+			Options[3][2].AddAction(UIAction.MouseUp, () =>
 			{
 				switch(Player.Options.ShowStory)
 				{
@@ -750,11 +791,11 @@ public class UIMenu : UIObj {
 			});
 
 
-			MidGear[0][3][3].SetActive(false);
-			MidGear[0][3][3].Txt[0].text = "Real HP";
-			MidGear[0][3][3].Img[0].color = Player.Options.RealHP ? GameData.instance.GoodColour : GameData.instance.BadColour;
-			MidGear[0][3][3].ClearActions();
-			MidGear[0][3][3].AddAction(UIAction.MouseUp, () =>
+			Options[3][3].SetActive(false);
+			Options[3][3].Txt[0].text = "Real HP";
+			Options[3][3].Img[0].color = Player.Options.RealHP ? GameData.instance.GoodColour : GameData.instance.BadColour;
+			Options[3][3].ClearActions();
+			Options[3][3].AddAction(UIAction.MouseUp, () =>
 			{
 				Player.Options.RealHP = !Player.Options.RealHP;	
 			});

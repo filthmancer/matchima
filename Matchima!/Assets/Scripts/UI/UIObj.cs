@@ -274,6 +274,14 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 		}
 	}
 
+	public void ClearChildActions(UIAction a = UIAction.None)
+	{
+		for(int i = 0; i < Child.Length; i++)
+		{
+			Child[i].ClearActions(a);
+		}
+	}
+
 	public virtual void ClearActions(UIAction a = UIAction.None)
 	{
 		if(a == UIAction.None)

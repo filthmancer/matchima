@@ -30,6 +30,8 @@ public class UIManager : MonoBehaviour {
 
 	public TextMeshProUGUI [] TDebug;
 
+	public UIObj FullVersionAlert;
+
 
 	public ClassSlotsUI _ClassButtons;
 	public static ClassSlotsUI ClassButtons{get{return UIManager.instance._ClassButtons;}}
@@ -277,48 +279,7 @@ public class UIManager : MonoBehaviour {
 			(Objects.MiddleGear[2] as UIObjTweener).SetTween(0, false);
 		});
 
-		Objects.MiddleGear[3][0].AddAction(UIAction.MouseUp, () =>
-		{
-			ShowOptions();
-		});
-		Objects.MiddleGear[3][2].AddAction(UIAction.MouseUp, ()=>
-		{
-			GameManager.instance.Retire();
-		});
 
-		Objects.MiddleGear[3][1].AddAction(UIAction.MouseUp, ()=>
-		{
-			GameManager.instance.SaveAndQuit();
-		});
-
-		Objects.MiddleGear[3][3].AddAction(UIAction.MouseUp, ()=>
-		{
-			AudioManager.PlaySFX = !AudioManager.PlaySFX;
-			RefreshOptions();
-		});
-
-		Objects.MiddleGear[3][4].AddAction(UIAction.MouseUp, ()=>
-		{
-
-			AudioManager.PlayMusic = !AudioManager.PlayMusic;
-			RefreshOptions();
-		});
-
-		Objects.MiddleGear[3][5].AddAction(UIAction.MouseUp, ()=>
-		{
-			Player.Options.CycleGameSpeed();
-			RefreshOptions();
-		});
-
-		Objects.MiddleGear[3][6].AddAction(UIAction.MouseUp, ()=>
-		{	
-			Objects.TopGear.SetActive(false);
-			});
-
-		Objects.MiddleGear[3][7].AddAction(UIAction.MouseUp, ()=>
-		{	
-			Objects.BotGear.SetActive(false);
-			});
 
 		Objects.MiddleGear[1].SetActive(false);
 		Objects.MiddleGear[2].SetActive(false);
@@ -353,13 +314,7 @@ public class UIManager : MonoBehaviour {
 		ScreenAlert.SetTween(0, false);
 		KillUI.Deactivate();
 		Objects.MiddleGear[2][0].ClearActions(); 
-		Objects.MiddleGear[3][0].ClearActions(); 
-		Objects.MiddleGear[3][2].ClearActions(); 
-		Objects.MiddleGear[3][1].ClearActions(); 
-		Objects.MiddleGear[3][3].ClearActions();
-		Objects.MiddleGear[3][4].ClearActions(); 
-		Objects.MiddleGear[3][6].ClearActions(); 
-		Objects.MiddleGear[3][7].ClearActions(); 
+		Objects.MiddleGear[3].ClearChildActions();
 		Objects.MiddleGear[5].SetActive(false);
 
 		Objects.TopRightButton.ClearActions();
@@ -394,6 +349,7 @@ public class UIManager : MonoBehaviour {
 		UIManager.Objects.BotGear.Txt[0].text = "";	
 
 		UIManager.ShowWaveButtons(false);
+		if(borderactual != null) Destroy(borderactual);
 		yield return null;
 	}
 
@@ -942,30 +898,45 @@ public class UIManager : MonoBehaviour {
 
 	public void ShowOptions()
 	{
-		
 		bool open = (UIManager.Objects.MiddleGear[3] as UIObjTweener).Tween.IsObjectOpened();
 		if(!open && !GameManager.instance.paused)
 		{
+			int num = 0;
+			if(GameManager.instance.gameStart)
+			{
+				
+				num = 1;
+			}
+			else Objects.MiddleGear.SetActive(false);
+			
 			ScreenAlert.SetTween(0,true);
 			GameManager.instance.paused = true;
-			(UIManager.Objects.MiddleGear[3] as UIObjTweener).SetTween(0, true);
+			(UIManager.Objects.MiddleGear[3] as UIObjTweener).SetTween(num, true);
+			(UIManager.Objects.MiddleGear["advancedops"] as UIObjTweener).SetTween(0, true);
 			RefreshOptions();
 		}
 		else
 		{
+			int num = 0;
+			if(GameManager.instance.gameStart)
+			{
+				num = 1;
+			}
+			else Objects.MiddleGear.SetActive(true);
 			ScreenAlert.SetTween(0,false);
 			GameManager.instance.paused = false;
-			(UIManager.Objects.MiddleGear[3] as UIObjTweener).SetTween(0, false);			
+			(UIManager.Objects.MiddleGear[3] as UIObjTweener).SetTween(num, false);		
+			(UIManager.Objects.MiddleGear["advancedops"] as UIObjTweener).SetTween(0, false);	
 		}
 	}
 
 	public void RefreshOptions()
 	{
-		Objects.MiddleGear[3][5].Txt[1].text =  Player.Options.GameSpeed + "x";
+		Objects.MiddleGear[3][4].Txt[1].text =  Player.Options.GameSpeed + "x";
 
-		Objects.MiddleGear[3][3].BooleanObjColor(AudioManager.PlaySFX);
+		Objects.MiddleGear[3][2].BooleanObjColor(AudioManager.PlaySFX);
 
-		Objects.MiddleGear[3][4].BooleanObjColor(AudioManager.PlayMusic);
+		Objects.MiddleGear[3][3].BooleanObjColor(AudioManager.PlayMusic);
 	}
 
 
@@ -1752,6 +1723,20 @@ public class UIManager : MonoBehaviour {
 		ParentObj.Child = child.ToArray();
 
 		return ParentObj;
+	}
+
+	public void ShowFullVersionAlert(bool? active = null)
+	{
+		FullVersionAlert.ClearChildActions();
+		FullVersionAlert[0].AddAction(UIAction.MouseUp, () =>
+		{
+			GameManager.instance.Scum.BuySubscription();
+			});
+		FullVersionAlert[1].AddAction(UIAction.MouseUp, () =>
+		{
+			FullVersionAlert.SetActive(false);
+			});
+		FullVersionAlert.SetActive(active);
 	}
 
 

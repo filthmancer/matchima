@@ -96,7 +96,11 @@ public class TileMaster : MonoBehaviour {
 				if (Tiles[x, y] == null) continue;
 				if (Tiles[x, y].Stats.isEnemy || Tiles[x,y].Stats.isAlly) 
 				{
-					if((Tiles[x,y] as Enemy).isAttacking) return true;
+					if((Tiles[x,y] as Enemy).isAttacking) 
+					{
+						Debug.LogWarning("ENEMIES ATTACKING");
+						return true;
+					}
 				}
 			}
 		}
