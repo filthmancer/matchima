@@ -31,6 +31,7 @@ public class Zone : MonoBehaviour {
 
 	public bool isNew = true;
 	public Color Tint, WallTint;
+	//public GameObject BorderPrefab;
 
 	public IntVector MapSize;
 	[SerializeField]
@@ -56,6 +57,7 @@ public class Zone : MonoBehaviour {
 			Waves[i].Index = i;
 		}
 		isNew = true;
+		
 	}
 
 	public virtual Wave GetWaveProgressive()
@@ -229,6 +231,7 @@ public class Zone : MonoBehaviour {
 		(UIManager.Objects.MiddleGear[1] as UIObjTweener).SetTween(0, false);
 		UIManager.instance.BackingTint = Tint;
 		UIManager.instance.WallTint = WallTint;
+		UIManager.instance.AddBorderPrefab(this);
 		
 
 		TileMaster.instance.MapSize_Default = GetMapSize();

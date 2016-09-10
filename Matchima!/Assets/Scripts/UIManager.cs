@@ -591,11 +591,18 @@ public class UIManager : MonoBehaviour {
 	{
 		float bonus_time = 0.32F;
 
+
 		for(int i = 0; i < BonusGroups[0].Length; i++)
 		{
 			MiniAlertUI BonusObj = UIManager.instance.MiniAlert(
 				UIManager.Objects.MiddleGear[4][4].transform.position, 
 				BonusGroups[0][i].Name, 230, BonusGroups[0][i].col, bonus_time, 0.1F);
+
+			if(BonusGroups[0][i].Multiplier > 1.7F)
+			{
+				StartCoroutine(PlayHorns(bonus_time*2));
+			}
+					
 			//BonusObj.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
 			BonusObj.transform.rotation = Quaternion.Euler(0,0,0);
 			BonusObj.AddJuice(Juice.instance.BounceB, 0.45F);
@@ -891,6 +898,37 @@ public class UIManager : MonoBehaviour {
 	public void TopGearTween(bool? open = null)
 	{
 		Objects.WaveUI.SetActive(open);
+	}
+
+	private GameObject borderprefab, borderactual;
+	[SerializeField]
+	private GameObject borderactual_parent;
+	public void AddBorderPrefab(Zone z)
+	{
+		if(borderactual != null)
+		{
+			Destroy(borderactual);
+			Resources.UnloadAsset(borderprefab);
+		}
+		borderprefab = (GameObject)Resources.Load("zones/"+z._Name);
+		if(borderprefab == null) return;
+		borderactual = (GameObject)Instantiate(borderprefab);
+		borderactual.transform.SetParent(borderactual_parent.transform);
+		borderactual.transform.localScale = Vector3.one;
+		borderactual.GetComponent<RectTransform>().sizeDelta = Vector2.one;
+  	 	borderactual.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
+	}
+
+	[SerializeField]
+	private UIObjTweener HornsLeft, HornsRight;
+	public IEnumerator PlayHorns(float time = 0.8F)
+	{
+		HornsLeft.SetTween(0, true);
+		HornsRight.SetTween(0,true);
+		yield return new WaitForSeconds(time);
+		HornsLeft.SetTween(0, false);
+		HornsRight.SetTween(0, false);
+		yield return null;
 	}
 
 
