@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Purchasing;
+using UnityEngine.Advertisements;
 
 
 public class Scumworks : MonoBehaviour,IStoreListener {
@@ -239,4 +240,80 @@ public class Scumworks : MonoBehaviour,IStoreListener {
 	          // this reason with the user to guide their troubleshooting actions.
 	          Debug.Log(string.Format("OnPurchaseFailed: FAIL. Product: '{0}', PurchaseFailureReason: {1}", product.definition.storeSpecificId, failureReason));
 	      }
+
+//ADS
+
+	public void ShowStarterAd()
+	  {
+
+	  	#if UNITY_ADS
+
+        if (Advertisement.IsReady())
+        {   
+	      var options = new ShowOptions { resultCallback = StarterAd };
+	      Advertisement.Show("", options);
+        }
+		#endif
+	  }
+
+	  private void StarterAd(ShowResult result)
+	  {
+	    switch (result)
+	    {
+	      case ShowResult.Finished:
+	        Debug.Log("The ad was successfully shown.");
+	        //
+	        // YOUR CODE TO REWARD THE GAMER
+	        // Give coins etc.
+	        GameManager.instance.SetQueueReward(true, 3);
+	      //  TileMaster.QueueTilesSpawnOnStart("chest", GENUS.RAND, 3);
+	        
+
+	        break;
+	      case ShowResult.Skipped:
+	        Debug.Log("The ad was skipped before reaching the end.");
+	        GameManager.instance.SetQueueReward(true, 1);
+	        break;
+	      case ShowResult.Failed:
+	        Debug.LogError("The ad failed to be shown.");
+	        break;
+	    }
+	  }
+
+	  	public void ShowEnderAd()
+	  {
+
+	  	#if UNITY_ADS
+
+        if (Advertisement.IsReady())
+        {   
+	      var options = new ShowOptions { resultCallback = EnderAd };
+	      Advertisement.Show("", options);
+        }
+		#endif
+	  }
+
+	  private void EnderAd(ShowResult result)
+	  {
+	    switch (result)
+	    {
+	      case ShowResult.Finished:
+	        Debug.Log("The ad was successfully shown.");
+	        //
+	        // YOUR CODE TO REWARD THE GAMER
+	        // Give coins etc.
+	        GameManager.instance.SetDeathReward(true);
+	      //  TileMaster.QueueTilesSpawnOnStart("chest", GENUS.RAND, 3);
+	        
+
+	        break;
+	      case ShowResult.Skipped:
+	        Debug.Log("The ad was skipped before reaching the end.");
+	        GameManager.instance.SetDeathReward(false);
+	        break;
+	      case ShowResult.Failed:
+	        Debug.LogError("The ad failed to be shown.");
+	        break;
+	    }
+	  }
 }

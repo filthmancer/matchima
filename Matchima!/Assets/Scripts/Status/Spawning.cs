@@ -23,15 +23,17 @@ public class Spawning : TileEffect {
 		AddedValueRatio = GameData.StringToFloat(args[2]);
 	}
 
+	bool setupturn = false;
 	public override void Setup(Tile t)
 	{
 		base.Setup(t);
 		_Tile.AfterTurnEffect = true;
+		setupturn = true;
 	}
 
 	public override IEnumerator StatusEffectRoutine()
 	{
-		if(Duration != 0)
+		if(Duration != 0 && !setupturn)
 		{
 			Tile [] nbours = _Tile.Point.GetNeighbours();
 			List<Tile> final = new List<Tile>();
@@ -40,6 +42,7 @@ public class Spawning : TileEffect {
 			
 			if(Genus == "Genus") final_genus =  _Tile.Info._GenusName;
 			if(Species == "Species") final_species =  _Tile.Info._TypeName;
+
 
 			foreach(Tile child in nbours)
 			{
@@ -61,12 +64,15 @@ public class Spawning : TileEffect {
 
 				foreach(TileEffect child in _Tile.Effects)
 				{
-					if(child == this) continue;
+					print(child.Name);
+					if(child == this || child.Name == "Spawning") continue;
+					
 					TileEffect neweff = (TileEffect) Instantiate(child);
 					t.AddEffect(neweff);
 				}
 				yield return new WaitForSeconds(Time.deltaTime*2);
 			}
 		}
+		else setupturn = false;
 	}
 }

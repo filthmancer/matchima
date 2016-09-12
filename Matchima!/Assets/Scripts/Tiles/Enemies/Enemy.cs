@@ -104,19 +104,8 @@ public class Enemy : Tile {
 			AddEffect("Sleep",1);
 		}
 	}
-
-	public override void AddValue(float amt)
-	{
-		InitStats.value_soft = Mathf.Clamp(InitStats.value_soft += amt, 0, 999);
-
-		int diff = (int) InitStats.value_soft - InitStats.Value;
-		if(diff != 0)
-		{
-			StartCoroutine(ValueAlert(diff));
-		}
-	}
-
-	IEnumerator ValueAlert(int diff)
+	
+	protected override IEnumerator ValueAlert(int diff)
 	{
 		SetState(TileState.Selected, true);
 		Animate("Alert");
@@ -125,8 +114,9 @@ public class Enemy : Tile {
 		yield return new WaitForSeconds(0.4F);
 
 		InitStats.Hits += (int) (InitStats.value_soft) - InitStats.Value;
-			InitStats.Attack += (int) (InitStats.value_soft) - InitStats.Value;
-			InitStats.Value = (int)InitStats.value_soft;
+		InitStats.Attack += (int) (InitStats.value_soft) - InitStats.Value;
+		InitStats.Value = (int)InitStats.value_soft;
+
 		CheckStats();
 		SetSprite();
 		Reset(true);

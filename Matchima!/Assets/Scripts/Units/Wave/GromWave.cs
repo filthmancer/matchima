@@ -13,7 +13,7 @@ public class GromWaveTile : WaveTileEndOnTileDestroy {
 		bool [,] replacedtile = new bool [(int)TileMaster.instance.MapSize.x, (int)TileMaster.instance.MapSize.y];
 
 		List<TileEffectInfo> Effects = Parent.GetEffects();
-		for(int x = 0; x < (int)Factor; x++)
+		for(int x = 0; x < (int)Style.Value; x++)
 		{
 			int randx = (int)Random.Range(0, TileMaster.instance.MapSize.x);
 			int randy = (int)Random.Range(0, TileMaster.instance.MapSize.y);

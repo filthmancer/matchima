@@ -26,6 +26,8 @@ public class Zone : MonoBehaviour {
 	public bool SkipAllStory;
 	public bool ShowIntroWave;
 	public bool UseInGeneration = true;
+	public IntVector GenerationDepths = new IntVector(0, 5);
+	public bool TakeFromRandomWavePool = false;
 	public bool Repeat;
 	public int StartAt = 0;
 
@@ -151,15 +153,19 @@ public class Zone : MonoBehaviour {
 				chance.Add(child.Chance);
 			}
 		}
-		foreach(Wave child in GameManager.instance.DefaultWaves.Waves)
-		{
-			if(random_shown.Contains(child)) continue;
-			if(child != null && child.Chance > 0.0F && GameManager.Difficulty > child.RequiredDifficulty)
+		if(TakeFromRandomWavePool)
+		{	
+			foreach(Wave child in GameManager.instance.DefaultWaves.Waves)
 			{
-				choices.Add(child);
-				chance.Add(child.Chance/4.0F);
+				if(random_shown.Contains(child)) continue;
+				if(child != null && child.Chance > 0.0F && GameManager.Difficulty > child.RequiredDifficulty)
+				{
+					choices.Add(child);
+					chance.Add(child.Chance);
+				}
 			}
 		}
+		
 
 		int index = ChanceEngine.Index(chance.ToArray());
 		Wave w = choices[index];
@@ -175,7 +181,12 @@ public class Zone : MonoBehaviour {
 		{
 			if(Current >= Depth)
 			{
-				return null;
+				if(!Repeat) return null;
+				else 
+				{
+					random_shown.Clear();
+					Current = 0;
+				}
 			}
 			if(Current == Depth-1 && BossWave != null)
 			{

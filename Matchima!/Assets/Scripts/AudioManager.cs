@@ -135,8 +135,25 @@ public class AudioManager : MonoBehaviour {
 		Tiles = new AudioGroup[TileMaster.Types.Species.Count];
 		for(int i = 0; i < TileMaster.Types.Species.Count; i++)
 		{
-			Tiles[i] = GenerateGroup(path, TileMaster.Types.Species[i].Name);
-			yield return null;
+			//Tiles[i] = GenerateGroup(path, TileMaster.Types.Species[i].Name);
+			string name = TileMaster.Types.Species[i].Name;
+
+			string pathfinal = path + "/" + name + "/audio";
+			AudioClip [] obj = Resources.LoadAll<AudioClip>(pathfinal);
+			if(AudioManager.instance.PrintLogs) print("loaded " + obj.Length + " clips at " + pathfinal);
+
+			AudioGroup groupfinal = new AudioGroup(obj.Length);
+			groupfinal.Name = name;
+			for(int a = 0; a < obj.Length; a++)
+			{
+				string [] array = obj[a].name.Split('_');
+				groupfinal.AddClip(a, array[0], obj[a]);
+				yield return null;
+			}
+			groupfinal.Minimize();
+			Tiles[i] =  groupfinal;
+
+			yield return new WaitForSeconds(Time.deltaTime * 3);
 		}
 		yield return null;
 	}

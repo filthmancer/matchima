@@ -8,6 +8,7 @@ public class TileEffect : Status {
 	public virtual void Setup(Tile t)
 	{
 		_Tile = t;
+		this.transform.SetParent(_Tile.transform);
 		if(FX != string.Empty)
 		{
 			particle = EffectManager.instance.PlayEffect(this.transform, FX);

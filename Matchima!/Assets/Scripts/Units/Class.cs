@@ -207,8 +207,8 @@ public class Class : Unit {
 		}
 		if(InitMod!= null)
 		{
-			InitMod.Parent = this;
-			InitMod.Init(i++);
+			//InitMod.Parent = this;
+			//InitMod.Init(i++);
 		}
 		
 		for(int m = 0; m < AllMods.Count; m++)

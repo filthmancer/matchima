@@ -108,7 +108,6 @@ int[] fireballs = new int[]
 		for(int i = 0; i < targets.Length; i++)
 		{
 			Tile targ = TileMaster.Tiles[targets[i].x, targets[i].y];
-			print(targ);
 			yield return StartCoroutine(CreateFireball(targ, radius, i));
 		}
 		
@@ -207,6 +206,8 @@ int[] fireballs = new int[]
 			}
 			
 		}
+		if(closest.x == 0) closest.x = 1;
+		else if(closest.y == 0) closest.y = 1;
 		return closest;
 	}
 }

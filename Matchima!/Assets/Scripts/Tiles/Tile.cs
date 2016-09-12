@@ -1016,7 +1016,7 @@ public class Tile : MonoBehaviour {
 		m.Txt[0].outlineColor = GameData.Colour(Genus);
 		m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
 		MoveToPoint mini = m.GetComponent<MoveToPoint>();
-		mini.enabled = true;
+		//mini.enabled = true;
 		m.AddJuice(Juice.instance.BounceB, info_time);
 		m.AddAction(() => {mini.enabled = true;});
 		m.DestroyOnEnd = false;
@@ -1046,7 +1046,7 @@ public class Tile : MonoBehaviour {
 		m.Txt[0].outlineColor = GameData.Colour(Genus);
 		m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
 		MoveToPoint mini = m.GetComponent<MoveToPoint>();
-		mini.enabled = true;
+		//mini.enabled = true;
 		m.AddJuice(Juice.instance.BounceB, info_time);
 		m.AddAction(() => {mini.enabled = true;});
 		m.DestroyOnEnd = false;
@@ -1078,7 +1078,7 @@ public class Tile : MonoBehaviour {
 		m.Txt[0].outlineColor = GameData.Colour(Genus);
 		m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
 		MoveToPoint mini = m.GetComponent<MoveToPoint>();
-		mini.enabled = true;
+		//mini.enabled = true;
 		m.AddJuice(Juice.instance.BounceB, info_time);
 		m.AddAction(() => {mini.enabled = true;});
 		m.DestroyOnEnd = false;
@@ -1118,7 +1118,7 @@ public class Tile : MonoBehaviour {
 		}
 	}
 
-	IEnumerator ValueAlert(int diff)
+	protected virtual IEnumerator ValueAlert(int diff)
 	{
 		SetState(TileState.Selected, true);
 		Animate("Alert");
@@ -1263,6 +1263,7 @@ public class Tile : MonoBehaviour {
 
 	public virtual TileEffect AddEffect(string name, int duration, params string [] args)
 	{
+		print(name);
 		foreach(TileEffect child in Effects)
 		{
 			if(child.Name == name)

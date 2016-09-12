@@ -321,6 +321,7 @@ public class Wave : Unit {
 		{
 			yield return StartCoroutine(UIManager.instance.Alert(1.25F, IntroText));
 		}
+		AddPoints(PointsPerTurn);
 		yield return null;
 		Player.instance.ResetStats();
 	}
@@ -577,12 +578,4 @@ public class Wave : Unit {
 
 }
 
-public enum WaveTileSpawn
-{
-	XAtStart,
-	XPerTurn,
-	XChance,
-	XPsuedoChance,
-	XOnScreen
 
-}

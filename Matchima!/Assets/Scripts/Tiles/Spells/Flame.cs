@@ -18,7 +18,7 @@ public class Flame : Tile {
 
 	private int damage
 	{
-		get{return (int) (20.0F*Player.SpellPower) + (int) Player.SpellValue;}
+		get{return (int) (5.0F*Player.SpellPower) + (int) Player.SpellValue;}
 	}
 	public override StCon [] Description
 	{

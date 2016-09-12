@@ -30,7 +30,7 @@ public class UIManager : MonoBehaviour {
 
 	public TextMeshProUGUI [] TDebug;
 
-	public UIObj FullVersionAlert;
+	public UIObj FullVersionAlert, AdAlert, AdAlertMini;
 
 
 	public ClassSlotsUI _ClassButtons;

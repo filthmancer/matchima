@@ -149,11 +149,18 @@ public class TileTypes : MonoBehaviour {
 	string [] SPS = new string [] {"red", "blue", "green", "yellow", "purple", "alpha", "grey"};
 	public IEnumerator LoadSprites(string path)
 	{
-		
+		Debug.Log("LOADING SPRITES");	
 		foreach(SPECIES child in Species)
 		{
 			string spritefinal = path + "/" + child.Name + "/" + child.Name + "atlas";
-			UnityEngine.Object _atlas = Resources.Load(spritefinal);
+			
+			ResourceRequest _atlassync = Resources.LoadAsync(spritefinal);
+			while(!_atlassync.isDone) 
+			{
+				
+				yield return null;
+			}
+			UnityEngine.Object _atlas = _atlassync.asset;//Resources.Load(spritefinal);
 			if(_atlas == null) continue;
 			tk2dSpriteCollectionData atlas = (_atlas as GameObject).GetComponent<tk2dSpriteCollectionData>();
 			child.Atlas = atlas;
@@ -166,7 +173,7 @@ public class TileTypes : MonoBehaviour {
 				//child[i].Sprites = textures;
 				
 			}*/ 
-			yield return null;
+			yield return new WaitForSeconds(Time.deltaTime * 3);
 		}
 		print("FINISHED SPRITES");
 		yield return null;
@@ -176,6 +183,7 @@ public class TileTypes : MonoBehaviour {
 	int prefabs_per_spec = 0;
 	public IEnumerator LoadPrefabs()
 	{
+		Debug.Log("LOADING PREFABS");	
 		GameObject poolpar = new GameObject("Pooled Tiles");
 		poolpar.transform.SetParent(this.transform);
 		foreach(SPECIES child in Species)
@@ -185,7 +193,7 @@ public class TileTypes : MonoBehaviour {
 			child.TilePool = new TilePooler(child.Prefab, prefabs_per_spec, par.transform);
 			yield return null;
 		}
-
+		Debug.Log("FINISHED PREFABS");	
 		yield return null;
 	}
 	

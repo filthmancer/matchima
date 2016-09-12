@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.Advertisements;
 
 public enum DiffMode
 {
@@ -103,6 +104,7 @@ public class GameManager : MonoBehaviour {
 	private float AllOfTypeMulti = 1.2F;
 
 	public Zone QuickCrawlOverride;
+	public Zone EndlessMode;
 
 
 	public bool LevelUp = false;
@@ -258,6 +260,7 @@ public class GameManager : MonoBehaviour {
 	
 			if(Player.Stats.isKilled && !isPaused)
 			{
+
 				Killed();
 				return;
 			}
@@ -292,10 +295,10 @@ public class GameManager : MonoBehaviour {
 				//GetTurn();
 				//PlayerControl.instance.focusTile.AddEffect("Charm", 5, "2", "1");
 				Player.Stats.Hit(50);
-				/*foreach(Class child in Player.Classes)
+				foreach(Class child in Player.Classes)
 				{
 					child.isKilled = true;
-				}*/
+				}
 				break;
 				case 5: //B
 				PlayerControl.instance.focusTile.InitStats.TurnDamage += 1000;
@@ -310,9 +313,10 @@ public class GameManager : MonoBehaviour {
 				Player.instance.ResetStats();
 				break;
 				case 8: //A
-				PlayerPrefs.SetInt("PlayerLevel", 0);
-				Player.Level.Level = 0;
-				UIManager.instance.UpdatePlayerLvl();
+				//PlayerPrefs.SetInt("PlayerLevel", 0);
+				//Player.Level.Level = 0;
+				//UIManager.instance.UpdatePlayerLvl();
+				StartCoroutine(Player.instance.AddXP(5000));
 				//CameraUtility.instance.ScreenShake(0.6F, 1.1F);
 				break;
 				case 9: //S
@@ -324,7 +328,7 @@ public class GameManager : MonoBehaviour {
 #endregion
 
 #region Start Conditions
-	public IEnumerator LoadGame(bool resume)
+	public IEnumerator LoadGame(bool resume, bool show_starter = false)
 	{
 		Class [] c = null;
 		if(resume)
@@ -335,12 +339,19 @@ public class GameManager : MonoBehaviour {
 		}
 		inStartMenu = false;
 		UIManager.instance.SetLoadScreen(true);
+		
+		if(show_starter) StartCoroutine(ShowStarterAd());
 		TileMaster.instance.MapSize = new Vector2(1,1);
-
 		Player.instance.Load(c);
-		yield return StartCoroutine(UIManager.instance.LoadUI());
 
+
+		yield return StartCoroutine(UIManager.instance.LoadUI());
 		yield return StartCoroutine(GameData.instance.LoadAssets_Routine());
+
+		while(!Advertisement.IsReady())
+	  	{
+	  		yield return null;
+	  	}
 
 		if(Application.isMobilePlatform)
 		{
@@ -350,8 +361,13 @@ public class GameManager : MonoBehaviour {
 			//   System.GC.Collect();
 			//}
 		}
-
+		//yield return new WaitForSeconds(0.2F);
+		(UIManager.instance.AdAlertMini as UIObjTweener).SetTween(0, false);
+		(UIManager.instance.AdAlertMini[0] as UIObjTweener).SetTween(0, false);
+		//(UIManager.instance.AdAlert[0] as UIObjTweener).SetTween(0, false);
+		yield return new WaitForSeconds(0.1F);
 		UIManager.Objects.TopGear.Txt[0].text = "Touch to begin";
+		
 		bool press_start = false;
 		while(!press_start)
 		{
@@ -375,6 +391,41 @@ public class GameManager : MonoBehaviour {
 		}
 		yield return null;
 	}
+
+	IEnumerator ShowStarterAd()
+	{
+		UIObjTweener alerter = UIManager.instance.AdAlertMini as UIObjTweener;
+		alerter.SetTween(0, false);
+
+		UIObjTweener adflash = alerter[0] as UIObjTweener;
+		adflash.SetTween(0,false);
+		while(!Advertisement.IsReady())
+	  	{
+	  		yield return null;
+	  	}
+
+	  	yield return new WaitForSeconds(1.65F);
+
+	  	//alerter.Txt[0].text = "Watch an ad\nfor 3 Bonus\nTiles?";
+	  //	alerter.SetActive(true);
+	 	 alerter.SetTween(0, true);
+		
+		
+		adflash.ClearActions();
+		adflash.AddAction(UIAction.MouseUp, () => {
+			Scum.ShowStarterAd();
+			//(alerter[0] as UIObjTweener).SetTween(0, false);
+			(UIManager.instance.AdAlertMini as UIObjTweener).SetTween(0, false);
+			(UIManager.instance.AdAlertMini[0] as UIObjTweener).SetTween(0, false);
+			});
+
+		yield return StartCoroutine(GameData.DeltaWait(0.95F));
+		adflash.SetTween(0, true);
+		yield return null;
+	}
+
+
+
 	public void LoadClass(ClassContainer targetClass)
 	{
 		StartCoroutine(UIManager.instance.LoadUI());
@@ -430,7 +481,7 @@ public class GameManager : MonoBehaviour {
 		Player.Options.PowerupAlerted = false;
 		UIManager.instance.SetLoadScreen(false);
 
-		ZoneMap = GameData.instance.GenerateEndlessMode();
+		ZoneMap = GameData.instance.EndlessModeMap;
 		
 		UIManager.Objects.TopGear.Txt[0].text = "";
 		ResetFactors();
@@ -477,10 +528,38 @@ public class GameManager : MonoBehaviour {
 		StartCoroutine(StartGameEnterZone());
 	}
 
+	private bool QueueReward;
+	private int QueueRewardNum = 3;
+	public void SetQueueReward(bool active, int num)
+	{
+		QueueReward = active;
+		QueueRewardNum = num;
+	}
 	IEnumerator StartGameEnterZone()
 	{
 		while(GameManager.instance.paused) yield return null;
-		StartCoroutine(_EnterZone(ZoneMap.CurrentBracket[0], 0));
+		yield return StartCoroutine(_EnterZone(ZoneMap.CurrentBracket[0], 0));
+
+		ShownEndAd = false;
+		if(QueueReward)
+		{
+			List<Tile> targs = new List<Tile>();
+			for(int i = 0; i < QueueRewardNum; i++)
+			{
+				Tile t = TileMaster.RandomTile;
+				while(targs.Contains(t)) t = TileMaster.RandomTile;
+				targs.Add(t);
+
+				CastReward(t);
+			}
+		}
+	}
+
+	private void CastReward(Tile t)
+	{
+		GameData.instance.ActionCaster(UIManager.Objects.TopGear.transform, t, () => {
+					TileMaster.instance.ReplaceTile(t, TileMaster.Types["chest"], GENUS.RAND,1, 5);
+				});
 	}
 #endregion
 
@@ -505,11 +584,10 @@ public class GameManager : MonoBehaviour {
 	public End_Type EndType;
 	public void Killed()
 	{
-		print(true);
 		EndType = End_Type.Defeat;
 		paused = true;
 		gameStart = false;
-		StartCoroutine(EndGame(EndType));
+		StartCoroutine(EndGame(EndType,true));
 	}
 
 	public void Victory()
@@ -518,7 +596,7 @@ public class GameManager : MonoBehaviour {
 		paused = true;
 		gameStart = false;
 
-		StartCoroutine(EndGame(EndType));
+		StartCoroutine(EndGame(EndType, false));
 	}
 
 	public void Retire()
@@ -528,7 +606,7 @@ public class GameManager : MonoBehaviour {
 		//Player.Stats.isKilled = true;
 		Player.instance.retired = true;
 		paused = true;
-		StartCoroutine(EndGame(EndType));
+		StartCoroutine(EndGame(EndType, false));
 	}
 
 	public void SaveAndQuit()
@@ -540,8 +618,15 @@ public class GameManager : MonoBehaviour {
 		Application.LoadLevel(0);
 	}
 
-	IEnumerator EndGame(End_Type e)
+	public bool ShownEndAd = false;
+	IEnumerator EndGame(End_Type e, bool enderad)
 	{
+		if(enderad && !ShownEndAd)
+		{
+			ShownEndAd = true;
+			yield return StartCoroutine(ShowEnderAd());
+			}
+		if(enderad && !Player.Stats.isKilled) yield break;
 		if(Wave) Wave.OnWaveDestroy();
 		UIManager.instance.CloseZoneUI();
 
@@ -601,6 +686,70 @@ public class GameManager : MonoBehaviour {
 
 		return final;
 	}
+
+	
+	IEnumerator ShowEnderAd()
+	{
+		EnderAd_showing = false;
+		UIObjTweener adflash = UIManager.instance.AdAlert[0] as UIObjTweener;
+		adflash.SetTween(0, false);
+
+		yield return new WaitForSeconds(0.2F);
+		while(!Advertisement.IsReady())
+	  	{
+	  		yield return null;
+	  	}
+		
+	  	float EndTimer = 3.4F;
+
+		adflash.ClearActions();
+		adflash.AddAction(UIAction.MouseUp, () => {
+			Scum.ShowEnderAd();
+			EnderAd_showing = true;
+			//(UIManager.Objects.MiddleGear[0][4] as UIObjTweener).SetTween(0, false);
+			//UIManager.Objects.TopGear.Txt[0].text = "Loading";
+			UIManager.instance.AdAlert.SetActive(false);
+			});
+		
+		
+		UIManager.instance.AdAlert.Txt[0].text = "Watch an ad\nto cheat death?";
+		UIManager.instance.AdAlert.SetActive(true);
+
+		yield return StartCoroutine(GameData.DeltaWait(0.85F));
+		adflash.SetTween(0, true);
+
+		while((EndTimer -= Time.deltaTime) > 0.0F || EnderAd_showing)
+		{
+			adflash.Txt[0].text = (int) EndTimer + "";
+			yield return null;
+		}
+
+		adflash.SetTween(0, false);
+		UIManager.instance.AdAlert.SetActive(false);
+		
+		yield return StartCoroutine(GameData.DeltaWait(0.25F));
+	}
+
+	bool EnderAd_showing = false;
+
+	public void SetDeathReward(bool active){
+
+		int num = active ? 4 : 2;
+		string title = active ? "MASS REVIVE!" : "PARTIAL REVIVE!";
+			UIManager.instance.AdAlert.SetActive(false);
+			EnderAd_showing = false;
+			UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, title, 180, Color.white, 0.6F, 0.1F, true);
+			for(int i = 0; i < num; i++)
+			{
+				Player.Classes[i].isKilled = false;
+			}
+			Player.instance.ResetStats();
+			Player.Stats.isKilled = false;
+			Player.Stats._Health = Player.Stats._HealthMax;
+			//EndType = End_Type.Defeat;
+			paused = false;
+			gameStart = true;
+	}
 #endregion
 
 #region Waves/Zones
@@ -644,6 +793,8 @@ public class GameManager : MonoBehaviour {
 
 			yield return StartCoroutine(CurrentZone.Enter());
 			yield return StartCoroutine(_GetWave(w));
+
+			yield return StartCoroutine(TileMaster.instance.BeforeTurn());
 			
 		}
 

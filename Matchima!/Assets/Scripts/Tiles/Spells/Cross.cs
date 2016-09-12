@@ -31,7 +31,7 @@ public class Cross : Tile {
 	{
 		get
 		{
-			return (int) (2 * Stats.Value) + (int) Player.SpellPower;
+			return (int) (2 * Stats.Value) + (int) Player.SpellValue;
 		}
 	}
 

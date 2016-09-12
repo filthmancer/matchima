@@ -141,7 +141,7 @@ public class UIMenu : UIObj {
 
 		if(PlayerPrefs.GetInt("Resume") == 1) 
 		{	
-			PlayerPrefs.SetInt("PrevMode", 1);
+			//PlayerPrefs.SetInt("PrevMode", 1);
 		}
 
 		bool activated = false;
@@ -512,7 +512,7 @@ public class UIMenu : UIObj {
 		UIManager.Objects.BotGear[1].ClearActions();
 		UIManager.Objects.BotGear[1].Img[0].enabled = false;
 		
-		StartCoroutine(GameManager.instance.LoadGame(false));
+		StartCoroutine(GameManager.instance.LoadGame(false, GameManager.instance.Mode != GameMode.Story));
 	}
 
 	public Sprite NoHeroInSlot;

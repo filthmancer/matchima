@@ -62,12 +62,13 @@ public class CameraUtility : MonoBehaviour {
 		if(!isShaking && TileMaster.Grid != null) Cam.transform.position = Vector3.Lerp(Cam.transform.position, final_pos, Time.deltaTime * 8);
 	}
 
+	float max_intensity = 1.5F;
 	public void ScreenShake(float intensity, float time)
 	{
 		if(isShaking)
 		{
-			currentIntensity += intensity;
-			currentTime += time;
+			currentIntensity = Mathf.Clamp(currentIntensity + intensity, 0.0F, max_intensity);
+			currentTime += time*0.7F;
 			//if(currentIntensity < intensity)
 			//{
 				//StopAllCoroutines();
@@ -83,7 +84,7 @@ public class CameraUtility : MonoBehaviour {
 	IEnumerator ScreenShakeRoutine(float time, float intensity)
 	{
 		isShaking = true;
-		currentIntensity = intensity;
+		currentIntensity = Mathf.Clamp(intensity, 0, max_intensity);
 		currentTime = time;
 
 		Vector3 init_pos = transform.position;

@@ -261,26 +261,25 @@ public class Mimic : Enemy {
 		}
 	}
 
-	public override void AddValue(float amt)
+	protected override IEnumerator ValueAlert(int diff)
 	{
-		InitStats.value_soft = Mathf.Clamp(InitStats.value_soft += amt, 0, 999);
-		if((int) InitStats.value_soft != InitStats.Value)
-		{
-			InitStats.Resource *= (int) (InitStats.value_soft / InitStats.Value);
-			InitStats.Heal *= (int) (InitStats.value_soft / InitStats.Value);
-			InitStats.Armour *= (int) (InitStats.value_soft / InitStats.Value);
-
-			InitStats.Hits += (int) (InitStats.value_soft) - InitStats.Value;
-			InitStats.Attack += (int) (InitStats.value_soft) - InitStats.Value;
-			InitStats.Value = (int)InitStats.value_soft;
-			CheckStats();
-			
-			if(revealed)
-			{
-				UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), "" + (Stats.Value), 75, Color.white,0.8F,0.0F);
-				Animate("Alert");
-			}
-		}
+		SetState(TileState.Selected, true);
+		Animate("Alert");
 		
+		revealed = true;
+
+		MiniAlertUI m = UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), "+" + Stats.Value, 150, GameData.Colour(Genus), 0.4F,0.00F);
+		m.AddJuice(Juice.instance.Ripple.Scale, 0.4F);
+		yield return new WaitForSeconds(0.4F);
+
+		InitStats.Hits += (int) (InitStats.value_soft) - InitStats.Value;
+		InitStats.Attack += (int) (InitStats.value_soft) - InitStats.Value;
+		InitStats.Value = (int)InitStats.value_soft;
+
+		CheckStats();
+		SetSprite();
+		Reset(true);
+		yield return null;
 	}
+
 }

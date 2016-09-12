@@ -15,7 +15,7 @@ public class Barbarian : Class {
 		health = new TileChance();
 		health.Genus = GameData.ResourceLong(Genus);
 		health.Type = "health";
-		health.Chance = 0.2F;
+		health.Chance = 0.25F;
 		InitStats.TileChances.Add(health);
 
 		PowerupSpell = GameData.instance.GetPowerup("Heal", this);
@@ -33,7 +33,7 @@ public class Barbarian : Class {
 				new Upgrade("Sharp", " Attack", 0.5F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._Attack += 1 + (int)val;}, 1, 1),
 
 
-				new Upgrade("Soldier's", "% chance\n of Health", 1.0F, ScaleType.GRADIENT, 1.0F,
+				new Upgrade("Soldier's", "% chance\n of Health", 0.7F, ScaleType.GRADIENT, 1.0F,
 					(Stat s, float value) => {
 						s.TileChances.Add(new TileChance(GameData.ResourceLong(Genus), "health", 0.1F + 0.03F * value));}, 3, 10
 					),

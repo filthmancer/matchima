@@ -1005,6 +1005,11 @@ public class TileMaster : MonoBehaviour {
 		return mover;
 	}
 
+	public void QueueTilesSpawnOnStart(SPECIES spec, GENUS g, int num)
+	{
+		
+	}
+
 	public void QueueTile(SPECIES spec, GENUS g = GENUS.NONE, int value = 0)
 	{
 		QueuedTiles.Add(spec);

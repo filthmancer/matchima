@@ -50,7 +50,7 @@ public class GameData : MonoBehaviour {
 	public static Status [] _Status;
 	public ItemInfo [] _Icons;
 
-	public ZoneMapContainer StoryModeMap;
+	public ZoneMapContainer StoryModeMap, EndlessModeMap;
 	public Zone [] Zones;
 	public bool ModeUnlocked_Endless, ModeUnlocked_Quick;
 
@@ -488,6 +488,7 @@ public class GameData : MonoBehaviour {
 	{
 		return GenerateZoneMap(new Vector2[]{new Vector2(2,2), new Vector2(2,2)});
 	}
+
 	public ZoneMapContainer GenerateZoneMap(Vector2 [] zonenum)
 	{
 		ZoneMapContainer final = new ZoneMapContainer();
@@ -496,9 +497,10 @@ public class GameData : MonoBehaviour {
 		{
 			int targ = (int)UnityEngine.Random.Range(zonenum[i].x, zonenum[i].y);
 			br[i] = new ZoneBracket(targ);
+			List<Zone> choices = GetRandomZones(i);
 			for(int z = 0; z < targ; z++)
 			{
-				br[i].Choices[z] = Zones[UnityEngine.Random.Range(0,Zones.Length)];
+				br[i].Choices[z] = choices[UnityEngine.Random.Range(0,choices.Count)];
 			}
 		}
 		final.Brackets = br;
@@ -518,6 +520,19 @@ public class GameData : MonoBehaviour {
 			}
 		}
 		final.Brackets = br;
+		return final;
+	}
+
+	public List<Zone> GetRandomZones(int depth)
+	{
+		List<Zone> final = new List<Zone>();
+
+		for(int i = 0; i < Zones.Length; i++)
+		{
+			if(!Zones[i].UseInGeneration) continue;
+			if(Zones[i].GenerationDepths.x > depth || Zones[i].GenerationDepths.y < depth) continue;
+			final.Add(Zones[i]);
+		}
 		return final;
 	}
 #endregion
@@ -906,7 +921,7 @@ public class GameData : MonoBehaviour {
 			UnityEngine.Object[] textures = Resources.LoadAll("Icons");
 			//Sprite [] textures = (Sprite[]) Resources.LoadAll("Icons");
 			_Icons = new ItemInfo[textures.Length];
-			for(int i = 0; i < _Icons.Length; i++)
+			/*for(int i = 0; i < _Icons.Length; i++)
 			{
 				_Icons[i] = new ItemInfo();
 				_Icons[i]._Name = textures[i].name;
@@ -915,13 +930,13 @@ public class GameData : MonoBehaviour {
 				_Icons[i]._Sprite = newSprite;
 				if(i % 5 == 0) yield return null;
 			}
-
+			*/
 			_Abilities = new Ability[AbilityParent.transform.childCount];
-			for(int i = 0; i < AbilityParent.transform.childCount; i++)
+			/*for(int i = 0; i < AbilityParent.transform.childCount; i++)
 			{
 				_Abilities[i] = AbilityParent.transform.GetChild(i).GetComponent<Ability>();
 				//_Abilities[i].Index = i;
-			}
+			}*/
 			AbilityParent.SetActive(false);
 
 			_Status = new Status[TileEffectParent.transform.childCount];
@@ -936,7 +951,6 @@ public class GameData : MonoBehaviour {
 
 			yield return null;
 			//LoadAbilities();
-
 
 
 			yield return StartCoroutine(AudioManager.instance.LoadAudio("Tiles"));

@@ -10,7 +10,7 @@ public class Harp : Tile {
 		get
 		{
 			CheckStats();
-			return 4 + (Stats.Value);
+			return (int)(3 + (Stats.Value) * Player.SpellPower);
 		}
 	}
 
