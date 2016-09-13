@@ -341,7 +341,7 @@ public class UIMenu : UIObj {
 
 		UIManager.Objects.TopGear[1][0].Txt[0].text = "STORY";
 		UIManager.Objects.TopGear[1][1].Txt[0].text = "QUICK CRAWL";
-		UIManager.Objects.TopGear[1][2].Txt[0].text = "RESUME";
+		UIManager.Objects.TopGear[1][2].Txt[0].text = "FULL VERSION";
 		UIManager.Objects.TopGear[1][3].Txt[0].text = "ENDLESS";
 
 		UIManager.Objects.TopGear.DoDivisionLerpActions = true;
@@ -525,6 +525,7 @@ public class UIMenu : UIObj {
 		//Reset();
 		if(i!= 1) PlayerPrefs.SetInt("PrevMode", i);
 		UIGear MidGear = UIManager.Objects.MiddleGear as UIGear;
+		UIManager.instance.ShowFullVersionAlert(false);
 		switch(i)
 		{
 			case 0: // STORY
@@ -545,8 +546,6 @@ public class UIMenu : UIObj {
 				});
 			(UIManager.Objects.BotGear as UIGear).SetTween(3, true);
 
-			
-
 			UIManager.ClassButtons.GetClass(0)._Sprite.sprite = GameData.instance.GetClass("Barbarian").Icon;
 			UIManager.ClassButtons.GetClass(1)._Sprite.sprite = GameData.instance.GetClass("Rogue").Icon;
 			UIManager.ClassButtons.GetClass(2)._Sprite.sprite = GameData.instance.GetClass("Wizard").Icon;
@@ -561,10 +560,13 @@ public class UIMenu : UIObj {
 
 			break;
 
-			case 1: // Resume
+			case 1: // Full Version (Was Resume)
 
+			UIManager.instance.ShowFullVersionAlert(true);
+			(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, false);
+			(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, false);
 			
-			UIManager.Objects.MiddleGear[0].GetChild(0).ClearActions(UIAction.MouseUp);
+			/*UIManager.Objects.MiddleGear[0].GetChild(0).ClearActions(UIAction.MouseUp);
 			UIManager.Objects.MiddleGear[0].GetChild(0).AddAction(UIAction.MouseUp,
 			() => {
 				ResumeGameActivate();
@@ -576,7 +578,7 @@ public class UIMenu : UIObj {
 			(UIManager.Objects.BotGear as UIGear).SetTween(3, true);
 
 			ReadClasses("PrevClass_");
-			SetClassUI();
+			SetClassUI();*/
 			
 			//ShowSettingsUI(true);
 			break;

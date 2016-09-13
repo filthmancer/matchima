@@ -25,10 +25,10 @@ public class Scumworks : MonoBehaviour,IStoreListener {
 	      public static string kProductIDSubscription =  "subscription"; 
 	       
 	      // Apple App Store-specific product identifier for the subscription product.
-	      private static string kProductNameAppleSubscription =  "com.unity3d.subscription.new";
+	      private static string kProductNameAppleSubscription =  "com.unity3d.fullversion.new";
 	      
 	      // Google Play Store-specific product identifier subscription product.
-	      private static string kProductNameGooglePlaySubscription =  "com.unity3d.subscription.original"; 
+	      private static string kProductNameGooglePlaySubscription =  "com.unity3d.fullversion.original"; 
 	      
 	      void Start()
 	      {
