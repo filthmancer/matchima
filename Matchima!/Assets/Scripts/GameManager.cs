@@ -137,32 +137,30 @@ public class GameManager : MonoBehaviour {
 	void OnApplicationQuit()
 		{
 			GameData.instance.Save();
-			PlayerPrefs.SetInt("PlayerLevel", Player.Level.Level);
-			PlayerPrefs.SetInt("PlayerXP", Player.Level.XP_Current);
-			PlayerPrefs.Save();
-			if(!gameStart) return;
-			PlayerLoader.Save();
-			PlayerPrefs.SetInt("Resume", gameStart ? 1 : 0);
-			PlayerPrefs.SetString("Name", Player.Classes[0].Name);
-			PlayerPrefs.SetInt("Turns", Player.instance.Turns);
-			PlayerPrefs.Save();
-		}
-	
-		void OnApplicationPause()
-		{
-			if(!Application.isEditor)
+			//PlayerPrefs.SetInt("PlayerLevel", Player.Level.Level);
+			//PlayerPrefs.SetInt("PlayerXP", Player.Level.XP_Current);
+			if(gameStart) 
 			{
-				GameData.instance.Save();
-				PlayerPrefs.SetInt("PlayerLevel", Player.Level.Level);
-				PlayerPrefs.SetInt("PlayerXP", Player.Level.XP_Current);
-				PlayerPrefs.Save();
-				if(!gameStart)  return;
 				PlayerLoader.Save();
 				PlayerPrefs.SetInt("Resume", gameStart ? 1 : 0);
 				PlayerPrefs.SetString("Name", Player.Classes[0].Name);
 				PlayerPrefs.SetInt("Turns", Player.instance.Turns);
-				PlayerPrefs.Save();
-			} 
+			}
+		}
+	
+		void OnApplicationPause()
+		{
+			GameData.instance.Save();
+			//PlayerPrefs.SetInt("PlayerLevel", Player.Level.Level);
+			//PlayerPrefs.SetInt("PlayerXP", Player.Level.XP_Current);
+			if(gameStart)
+			{
+				PlayerLoader.Save();
+				PlayerPrefs.SetInt("Resume", gameStart ? 1 : 0);
+				PlayerPrefs.SetString("Name", Player.Classes[0].Name);
+				PlayerPrefs.SetInt("Turns", Player.instance.Turns);
+			}
+			PlayerPrefs.Save();
 		}
 	
 		void Awake()

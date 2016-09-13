@@ -556,22 +556,11 @@ public class GameData : MonoBehaviour {
 		XmlElement build = (XmlElement) data.AppendChild(file.CreateElement("Build"));
 		build.InnerText = "" + AppVersion;
 
-		//XmlElement classes = (XmlElement) data.AppendChild(file.CreateElement("Classes"));
-		/*foreach(ClassContainer child in Classes)
-		{
-			XmlElement title = (XmlElement) classes.AppendChild(file.CreateElement("Class"));
-
-			XmlElement name = (XmlElement) title.AppendChild(file.CreateElement("Name"));
-			name.InnerText = child.Name;
-			XmlElement unlocked = (XmlElement) title.AppendChild(file.CreateElement("Unlocked"));
-			unlocked.InnerText = child.Unlocked ? "T" : "F";
-			XmlElement level = (XmlElement) title.AppendChild(file.CreateElement("Level"));
-			level.InnerText =  "" + child.Level;
-			XmlElement ptl = (XmlElement) title.AppendChild(file.CreateElement("LevelUpCost"));
-			ptl.InnerText =  "" + child.LevelUpCost;
-		}*/
-
-
+		XmlElement lvl = (XmlElement) data.AppendChild(file.CreateElement("PlayerLevel"));
+		lvl.InnerText = "" + Player.Level.Level;
+		XmlElement xp = (XmlElement) data.AppendChild(file.CreateElement("PlayerXP"));
+		xp.InnerText = "" + Player.Level.XP_Current;
+		
 		XmlSerializer SerializerObj = new XmlSerializer(typeof(PlayerData));
 			
 		// Create a new file stream to write the serialized object to a file
@@ -590,7 +579,7 @@ public class GameData : MonoBehaviour {
 		WriteFileStream.Close();
 
 		//finished_save = true;
-		Debug.Log("Generated level at " + filepos +  "/PlayerData" + ".xml");	
+		Debug.Log("Generated data at " + filepos +  "/PlayerData" + ".xml");	
 		
 	}
 
@@ -614,6 +603,12 @@ public class GameData : MonoBehaviour {
 				Load();
 				return;
 			}
+
+			int level = StringToInt(root.ChildNodes[1].InnerText);
+			int xp = StringToInt(root.ChildNodes[2].InnerText);
+			Player.instance.SetLevelInfo(level, xp);
+
+			Debug.Log("Loaded data at " + datapath);	
 			
 		//Class Data
 		//XmlNode classroot = root.ChildNodes[1];
@@ -639,13 +634,11 @@ public class GameData : MonoBehaviour {
 #region Loading Data
 	public IEnumerator LoadInitialData()
 		{
+			Load();
 			LoadUnlocks();
-			
 			LoadClasses();
 			LoadPowerups();
-			
-			Load();
-			
+					
 			yield return null;
 			yield return StartCoroutine(UIManager.instance.UnloadUI());
 			yield return null;
@@ -656,7 +649,10 @@ public class GameData : MonoBehaviour {
 		{
 			int lvl = PlayerPrefs.GetInt("PlayerLevel");
 			int xp = PlayerPrefs.GetInt("PlayerXP");
+
 			Player.instance.SetLevelInfo(lvl, xp);
+
+			//MiniAlertUI al = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, Player.Level.Level + "L", 250);
 
 			//MODES
 			ModeUnlocked_Quick = Player.instance.GetUnlock("quickmode");
@@ -1042,7 +1038,9 @@ public enum Rarity
 [Serializable, XmlRoot("PlayerData")]
 public class PlayerData
 {
-	public string [] Classes { get; set; }
+	public string Level;
+	public string XP;
+
 }
 
 [System.Serializable]

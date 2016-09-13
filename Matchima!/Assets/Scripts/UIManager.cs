@@ -1925,7 +1925,7 @@ public class UIManager : MonoBehaviour {
 
 		MiniAlertUI fin = MiniAlert(pos, "" + heal, info_start_size, Color.white, info_time, 0.1F);
 		fin.Txt[0].color = Color.green;
-		//fin.SetToDamageIndicator();
+		fin.SetToHealIndicator();
 		fin.GetComponent<HorizontalLayoutGroup>().padding = new RectOffset(-50, 20, 10, 10);
 		//fin.transform.rotation = Quaternion.Euler(0,0,init_rotation);
 		fin.transform.localScale *= info_finalscale;

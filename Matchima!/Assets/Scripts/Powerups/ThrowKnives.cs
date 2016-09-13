@@ -69,7 +69,6 @@ public class ThrowKnives : Powerup {
 
 		TileMaster.instance.SetAllTileStates(TileState.Locked, true);
 		int catchfinal = 0;
-		print(TileMaster.Enemies.Length);
 		for(int i = 0; i < TileMaster.Enemies.Length; i++)
 		{
 			Tile target = TileMaster.Enemies[i];

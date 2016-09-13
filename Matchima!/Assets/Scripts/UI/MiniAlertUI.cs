@@ -14,7 +14,7 @@ public class MiniAlertUI : UIObj {
 	public float size;
 	public bool Gravity;
 	public bool DestroyOnEnd = true;
-	public Sprite SpikyBack;
+	public Sprite SpikyBack, HealthBack;
 	public Sprite ScrollBack;
 	private List<Action> EndActions = new List<Action>();
 
@@ -140,7 +140,21 @@ public class MiniAlertUI : UIObj {
 		Img[1].enabled = false;
 		Img[2].enabled = false;
 		Img[3].enabled = true;
+		Img[3].sprite = SpikyBack;
 		Img[3].color = GameData.instance.BadColour;
+		Gravity = true;
+	}
+
+	public void SetToHealIndicator()
+	{
+		Txt[0].color = Color.white;
+		
+		Img[0].enabled = false;
+		Img[1].enabled = false;
+		Img[2].enabled = false;
+		Img[3].enabled = true;
+		Img[3].sprite = HealthBack;
+		Img[3].color = GameData.instance.GoodColour;
 		Gravity = true;
 	}
 

@@ -87,7 +87,8 @@ public class WardenIntro : Wave {
 		UIManager.Objects.BotGear.SetTween(0, true);
 		UIManager.Objects.TopGear.SetTween(0, false);
 		UIManager.instance.ScreenAlert.SetTween(0,false);
+		UIManager.Objects.TopGear.FreeWheelDrag = false;
 		UIManager.Objects.BotGear.SetTween(3, false);
-		yield return StartCoroutine(UIManager.instance.Alert(0.3F, "Defeat the\nwarden", "Collect mana to\ndefeat enemy waves", "", true, 60));
+		yield return StartCoroutine(UIManager.instance.Alert(0.3F, "Defeat the\nwarden", "Keep enemy numbers\ndown to survive", "", true, 60));
 	}
 }

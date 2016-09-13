@@ -641,7 +641,7 @@ public class Player : MonoBehaviour {
 		ResetStats();
 		Options.Setup();
 		Stats._Health = Stats._HealthMax;
-		print("HP " + Stats._Health + ":" + Stats._HealthMax);
+		//print("HP " + Stats._Health + ":" + Stats._HealthMax);
 		//yield return new WaitForSeconds(0.1F);
 
 
@@ -792,9 +792,12 @@ public class Player : MonoBehaviour {
 			UIManager.instance.UpdatePlayerLvl();
 			yield return null;
 		}
-		PlayerPrefs.SetInt("PlayerLevel", _Level.Level);
-		PlayerPrefs.SetInt("PlayerXP", _Level.XP_Current);
-		PlayerPrefs.Save();
+		GameData.instance.Save();
+		//PlayerPrefs.SetInt("PlayerLevel", _Level.Level);
+		//PlayerPrefs.SetInt("PlayerXP", _Level.XP_Current);
+		//PlayerPrefs.Save();
+
+		//MiniAlertUI al = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.up, Player.Level.Level + "", 250);
 
 		UIManager.instance.ShowPlayerLvl(1, false);
 		GameData.instance.LoadUnlocks();

@@ -1263,7 +1263,6 @@ public class Tile : MonoBehaviour {
 
 	public virtual TileEffect AddEffect(string name, int duration, params string [] args)
 	{
-		print(name);
 		foreach(TileEffect child in Effects)
 		{
 			if(child.Name == name)
