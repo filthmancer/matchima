@@ -292,11 +292,18 @@ public class UIMenu : UIObj {
 			UIManager.instance.RefreshOptions();
 		});
 
+
 		UIManager.Objects.MiddleGear[3][4].AddAction(UIAction.MouseUp, ()=>
 		{
 			Player.Options.CycleGameSpeed();
 			UIManager.instance.RefreshOptions();
 		});
+
+		UIManager.Objects.MiddleGear[3][5].AddAction(UIAction.MouseUp, ()=>
+		{
+			StartCoroutine(Player.instance.AddXP(1000));
+		});
+
 		UIManager.Objects.MiddleGear["advancedops"].ClearActions();
 		UIManager.Objects.MiddleGear["advancedops"].AddAction(UIAction.MouseUp, () =>
 		{

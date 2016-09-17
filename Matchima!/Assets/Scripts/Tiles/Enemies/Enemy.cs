@@ -15,11 +15,10 @@ public enum EnemyType
 public class Enemy : Tile {
 
 	public SpriteRenderer _Effect;
-
+	protected int Rank = 1;
 	public Vector2 HPRange, ATKRange;
 	public bool SpecialEnemy;
 	public EnemyType _EnemyType = EnemyType.Demon;
-	protected int Rank = 1;
 	private float threat_time = 0.0F;
 
 	protected bool HasAttackedThisTurn;
@@ -94,7 +93,6 @@ public class Enemy : Tile {
 		float atkfactor = Random.Range(ATKRange.x, ATKRange.y);
 
 		factor *= Random.Range(0.8F, 1.4F);
-		Rank = 1;
 
 		InitStats.Hits        = (int)(hpfactor);
 		InitStats.Attack      = (int)(atkfactor);

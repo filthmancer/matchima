@@ -65,8 +65,7 @@ public class Flame : Tile {
 
 		if(nexttile_pos.x >= TileMaster.Grid.Size[0] || nexttile_pos.x < 0)
 		{
-			velocity.x = - velocity.x;
-			
+			velocity.x = -velocity.x;
 		}
 
 		if(nexttile_pos.y >= TileMaster.Grid.Size[1] || nexttile_pos.y < 0)
@@ -75,7 +74,6 @@ public class Flame : Tile {
 		}
 
 		nexttile_pos = tile_pos + velocity;
-
 		
 		//nbours[Random.Range(0, nbours.Length)];
 
@@ -94,10 +92,10 @@ public class Flame : Tile {
 
 		GameObject targ = (GameObject)Instantiate(TargetObj);
 		targ.transform.position = TileMaster.Tiles[x,y].transform.position;
-
+		PlayAudio("cast");
 		while(cycle < total_cycles)
 		{	
-			PlayAudio("cast");
+			
 			if(x <= 0 || x >= TileMaster.Grid.Size[0]-1)
 			{
 				velocity.x = -velocity.x;
@@ -117,7 +115,7 @@ public class Flame : Tile {
 				}
 					
 				FlameTile(TileMaster.Tiles[x,y]);
-				yield return new WaitForSeconds(GameData.GameSpeed(0.05F));
+				yield return new WaitForSeconds(GameData.GameSpeed(0.04F));
 				//yield return new WaitForSeconds(Time.deltaTime * 5);
 			}
 

@@ -68,7 +68,6 @@ public class Mimic : Enemy {
 		factor += factor * InitStats.Value / 50;
 		hpfactor *= factor;
 		atkfactor *= factor;
-		Rank = 1;
 
 		InitStats.Hits        = (int)(hpfactor);
 		InitStats.Attack      = (int)(atkfactor);

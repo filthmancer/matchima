@@ -136,7 +136,7 @@ public class GameManager : MonoBehaviour {
 #region Generics/Cheats
 	void OnApplicationQuit()
 		{
-			GameData.instance.Save();
+			//GameData.instance.Save();
 			//PlayerPrefs.SetInt("PlayerLevel", Player.Level.Level);
 			//PlayerPrefs.SetInt("PlayerXP", Player.Level.XP_Current);
 			if(gameStart) 
@@ -150,7 +150,7 @@ public class GameManager : MonoBehaviour {
 	
 		void OnApplicationPause()
 		{
-			GameData.instance.Save();
+			//GameData.instance.Save();
 			//PlayerPrefs.SetInt("PlayerLevel", Player.Level.Level);
 			//PlayerPrefs.SetInt("PlayerXP", Player.Level.XP_Current);
 			if(gameStart)

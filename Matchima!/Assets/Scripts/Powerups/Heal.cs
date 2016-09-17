@@ -51,12 +51,12 @@ public class Heal : Powerup {
 		}
 		Destroy(MGame.gameObject);
 
-		yield return new WaitForSeconds(Time.deltaTime * 5);
+		yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 		int final = (int) ((float)HealTotal * final_ratio);
-		MiniAlertUI finalert  = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.up * 2.0F,
-			final + "% Heal!", 120, GameData.Colour(Parent.Genus), 0.6F, 0.2F);
+		MiniAlertUI finalert  = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.up * 3.0F,
+			final + "% Heal!", 130, GameData.Colour(Parent.Genus), 0.65F, 0.2F);
 		finalert.AddJuice(Juice.instance.BounceB, 0.1F);
-		yield return new WaitForSeconds(0.6F);
+		yield return new WaitForSeconds(0.5F);
 		
 		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.Objects.MiddleGear.transform, "spell");
 		initpart.GetComponent<MoveToPoint>().enabled = true;

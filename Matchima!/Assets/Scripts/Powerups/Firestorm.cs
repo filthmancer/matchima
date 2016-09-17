@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class Firestorm : Powerup {
 
+	public Sprite ClosedTome, OpenTome;
 	public int [] _Lines = new int []
 	{
 		1,2,5
@@ -37,39 +38,49 @@ public class Firestorm : Powerup {
 		float taptimer = 3.0F;
 		int nexttile_acc = 1;
 
+		yield return new WaitForSeconds(Time.deltaTime * 10);
 		UIObj [] MGame = new UIObj[lines];
 		int [] MGame_target = new int[lines];
 		float [] MGame_vel = new float[lines];
 		for(int i = 0; i < MGame.Length; i++)
 		{
 			MGame[i] = CreateTarget(TileMaster.Grid.Size[0]/2);
+			MGame[i].transform.localScale *= 1.3F;
 			MGame_vel[i] = Random.Range(0.03F, 0.09F * lines);
 			if(Random.value > 0.5F) MGame_vel[i] = -MGame_vel[i];
 			yield return null;
 		}
 
 
+		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "Tap to cast\nfirestorm!", 100, GameData.Colour(Parent.Genus), 0.8F, 0.25F);
+		m.DestroyOnEnd = false;
 		while(!Input.GetMouseButtonDown(0))
 		{
 			for(int i = 0; i < MGame.Length; i++)
 			{
 				MGame[i].transform.position += Vector3.right * MGame_vel[i];
 				MGame_target[i] = ClosestPoint(MGame[i].transform.position);
-				if(Mathf.Abs(MGame_vel[i]) < 0.45F) MGame_vel[i] *= 1.008F;
+				if(Mathf.Abs(MGame_vel[i]) < 0.4F) MGame_vel[i] *= 1.008F;
 				if(MGame[i].transform.position.x > TileMaster.Tiles[TileMaster.Grid.Size[0]-1,0].transform.position.x) MGame_vel[i] = -MGame_vel[i];
 				else if(MGame[i].transform.position.x < TileMaster.Tiles[0,0].transform.position.x) MGame_vel[i] = -MGame_vel[i];
 			}
 			yield return null;
 		}
+		m.PoolDestroy();
 
 		TileMaster.instance.SetAllTileStates(TileState.Locked, true);
 		UIManager.instance.ScreenAlert.SetTween(0,false);
 		for(int i = 0; i < lines;i++)
 		{
-			Destroy(MGame[i].gameObject);
+			MGame[i].Img[0].enabled= false;
+			MGame[i].Img[1].enabled= true;
 			yield return Cast(TileMaster.Tiles[MGame_target[i],0]);
 		}
-		
+		yield return new WaitForSeconds(Time.deltaTime * 10);
+		for(int i = 0; i < lines;i++)
+		{
+			Destroy(MGame[i].gameObject);
+		}
 		TileMaster.instance.SetFillGrid(false);
 		yield return StartCoroutine(GameManager.instance.BeforeMatchRoutine());
 		yield return null;
@@ -89,6 +100,8 @@ public class Firestorm : Powerup {
 	UIObj CreateTarget(int i)
 	{
 		UIObj obj = (UIObj)Instantiate(MinigameObj[0]);
+		obj.Img[0].enabled= true;
+		obj.Img[1].enabled= false;
 		RectTransform rect = obj.GetComponent<RectTransform>();
 		obj.transform.SetParent(UIManager.Objects.MiddleGear.transform);
 		obj.transform.localScale = Vector3.one;

@@ -12,9 +12,6 @@ public class Minion : Enemy {
 		float factor = GameManager.Difficulty;//(Mathf.Exp(GameManager.GrowthRate * Player.instance.Difficulty));
 		float hpfactor = Random.Range(HPRange.x, HPRange.y);
 		float atkfactor = Random.Range(ATKRange.x, ATKRange.y);
-
-		Rank = 1;
-
 		Name        = "Minion";
 
 		factor *= Random.Range(0.8F, 1.1F);

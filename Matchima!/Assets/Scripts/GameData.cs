@@ -548,6 +548,7 @@ public class GameData : MonoBehaviour {
 
 	public void Save()
 	{
+		print(true);
 		//bool finished_save = false;
 		XmlDocument file = new XmlDocument();
 		
@@ -565,13 +566,13 @@ public class GameData : MonoBehaviour {
 			
 		// Create a new file stream to write the serialized object to a file
 
-		string filepos = Application.persistentDataPath;
+		string filepos = Application.persistentDataPath + "\\PlayerData.xml";
 		/*if(Application.platform == RuntimePlatform.IPhonePlayer)
 		{
 			filepos = GetIOSPath();
 		}*/	
 
-		FileStream WriteFileStream = File.Create(filepos +  "/PlayerData" + ".xml");
+		FileStream WriteFileStream = File.Create(filepos);
 
 		SerializerObj.Serialize(WriteFileStream, file);
 		 
@@ -579,8 +580,11 @@ public class GameData : MonoBehaviour {
 		WriteFileStream.Close();
 
 		//finished_save = true;
-		Debug.Log("Generated data at " + filepos +  "/PlayerData" + ".xml");	
-		
+		Debug.Log("Generated data at " + filepos);	
+		UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.down * 5, "SAVED", 150, Color.white, 2.4F);
+		UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.down * 3, "L" + Player.Level.Level, 150, Color.white, 2.4F);	
+
+		UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.down,  filepos, 35, Color.white, 2.4F);
 	}
 
 	public void Load()
@@ -588,27 +592,29 @@ public class GameData : MonoBehaviour {
 		#if !UNITY_WEBPLAYER
 		
 		XmlDocument xmldoc = new XmlDocument (); 
-		string datapath = Application.persistentDataPath + "/" + "PlayerData" + ".xml";
+		string datapath = Application.persistentDataPath + "\\PlayerData.xml";
 		
 		if(System.IO.File.Exists(datapath))
 		{
+			//UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.down * 5, "FOUND", 250, Color.white, 2.4F);
 			xmldoc.LoadXml (System.IO.File.ReadAllText(datapath));
 			XmlNode root = xmldoc.ChildNodes[1];
 
 			XmlNode build = root.ChildNodes[0];
-
-			if(StringToInt(build.InnerText) != AppVersion)
-			{
-				Save();
-				Load();
-				return;
-			}
-
 			int level = StringToInt(root.ChildNodes[1].InnerText);
 			int xp = StringToInt(root.ChildNodes[2].InnerText);
 			Player.instance.SetLevelInfo(level, xp);
 
-			Debug.Log("Loaded data at " + datapath);	
+			//if(StringToInt(build.InnerText) != AppVersion)
+			//{
+			//	Save();
+			//	Load();
+			//	return;
+			//}
+
+			Debug.Log("Loaded data at " + datapath);
+
+			//UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.down * 3, datapath, 250, Color.white, 2.4F);	
 			
 		//Class Data
 		//XmlNode classroot = root.ChildNodes[1];
@@ -624,7 +630,11 @@ public class GameData : MonoBehaviour {
 			//UIManager.Menu.CheckClassButtons();
 			
 		}
-		else Save();
+		else 
+		{
+			//Save();
+			//UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "LOST", 250, Color.white, 2.4F);
+		}
 		#elif UNITY_WEBPLAYER
 		LoadAbilities();
 		#endif
@@ -647,11 +657,6 @@ public class GameData : MonoBehaviour {
 
 		public void LoadUnlocks()
 		{
-			int lvl = PlayerPrefs.GetInt("PlayerLevel");
-			int xp = PlayerPrefs.GetInt("PlayerXP");
-
-			Player.instance.SetLevelInfo(lvl, xp);
-
 			//MiniAlertUI al = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, Player.Level.Level + "L", 250);
 
 			//MODES

@@ -72,7 +72,7 @@ public class Lullaby : Powerup {
 		sleep_duration = Mathf.Clamp(notes_hit/ sleep_ratio, 1, 100);
 
 		MiniAlertUI alert  = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.up * 2.0F,
-			sleep_duration + " Turn Sleep!", 120, GameData.Colour(Parent.Genus), 1.0F, 0.2F);
+			sleep_duration + " Turn Sleep!", 120, GameData.Colour(Parent.Genus), 1.2F, 0.2F);
 		alert.AddJuice(Juice.instance.BounceB, 0.1F);
 		yield return new WaitForSeconds(GameData.GameSpeed(0.7F));
 		alert.PoolDestroy();
@@ -81,12 +81,17 @@ public class Lullaby : Powerup {
 		TileMaster.instance.SetAllTileStates(TileState.Locked, true);
 		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(true);
 
-		
 		Tile [] targets  = TileMaster.Enemies;
 		for(int i = 0; i < targets.Length; i++)
 		{
-			if(targets[i].HasEffect("Charm") || targets[i].Stats.isAlly) CharmAndValue(targets[i], sleep_duration);
-			else Sleep(targets[i], sleep_duration);
+			Sleep(targets[i], sleep_duration);
+			yield return new WaitForSeconds(GameData.GameSpeed(0.11F));
+		}
+
+		targets  = TileMaster.Allies;
+		for(int i = 0; i < targets.Length; i++)
+		{
+			CharmAndValue(targets[i], sleep_duration);
 			yield return new WaitForSeconds(GameData.GameSpeed(0.11F));
 		}
 
@@ -144,6 +149,7 @@ public class Lullaby : Powerup {
 
 	void CharmAndValue(Tile target, int duration, int hpinc = 1, int atkinc = 3)
 	{
+		print("CHARMING " + target);
 		Transform par = UIManager.instance.Health.transform;
 		if(Parent != null) par = UIManager.ClassButtons[Parent.Index].transform;
 

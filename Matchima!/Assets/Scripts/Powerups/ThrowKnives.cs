@@ -134,7 +134,7 @@ public class ThrowKnives : Powerup {
 		knife.transform.position = UIManager.Objects.BotGear.transform.position;
 		knife.transform.position += Vector3.right * (Random.value - Random.value);
 
-		float velx = Random.Range(0.0F, 0.05F);
+		float velx = Random.Range(0.0F, 0.09F);
 		if(Random.value < 0.5F) velx = -velx;
 		Vector3 vel = new Vector3(velx, 1.0F, 0.0F);
 		bool mobile = Application.isMobilePlatform;

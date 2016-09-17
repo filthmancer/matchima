@@ -67,8 +67,6 @@ public class Grunt : Enemy {
 			else if(Random.value < terror_chance) Rank = 4;
 		}
 
-		
-		
 		switch(Rank)
 		{
 			case 1:
@@ -97,6 +95,7 @@ public class Grunt : Enemy {
 			break;
 		}
 		
+		
 		InitStats.Hits        = (int)(hpfactor);
 		InitStats.Attack      = (int)(atkfactor);
 
@@ -108,6 +107,43 @@ public class Grunt : Enemy {
 			AddEffect("Sleep", 1);
 			//sleep_part = EffectManager.instance.PlayEffect(this.transform, Effect.Sleep);
 		}
+	}
+
+	int [] RankUpHealth = new int [] {5,10,20,5};
+	int [] RankUpAttack = new int [] {5,5,5,5};
+
+	public void UpgradeToRank()
+	{
+		switch(Rank)
+		{
+			case 1:
+			Name        = "Grunt";
+			InitStats.Value *= 1;
+			InitStats.Hits    += RankUpHealth[0];
+			InitStats.Attack   += RankUpAttack[0];
+			break;
+			case 2:
+			Name        = "Captain";
+			InitStats.Value *=2;
+			InitStats.Hits    += RankUpHealth[1];
+			InitStats.Attack   += RankUpAttack[1];
+			break;
+			case 3:
+			Name        = "Chief";
+			InitStats.Value *=3;
+			InitStats.Hits    += RankUpHealth[2];
+			InitStats.Attack   += RankUpAttack[2];
+			break;
+			case 4:
+			Name        = "Terror";
+			//InitStats.Value += RankUpHealth[0];
+			InitStats.Hits   += RankUpHealth[3];
+			InitStats.Attack  += RankUpAttack[3];
+			break;
+		}
+
+		CheckStats();
+		SetSprite();
 	}
 
 	public override void SetSprite()
@@ -123,5 +159,34 @@ public class Grunt : Enemy {
 		//transform.position = Point.targetPos;
 		Params.transform.position = transform.position;
 		Params._render.transform.localPosition = Vector3.zero;
+	}
+
+	public int RankCounter = 0;
+	public int [] RankMarkers = new int []
+	{
+		2,
+		4,
+		8,
+		15
+	};
+
+	public override IEnumerator AfterTurnRoutine()
+	{
+		if(Rank-1 < RankMarkers.Length) 
+		{
+			RankCounter ++;
+
+			if(RankCounter > RankMarkers[Rank-1])
+			{
+				Rank++;
+				UpgradeToRank();
+				MiniAlertUI m = UIManager.instance.MiniAlert(Point.targetPos, "MUTATE!", 85, GameData.Colour(Genus), 1.2F, 0.1F);
+			}
+				
+
+			
+		}
+		
+		yield return StartCoroutine(base.AfterTurnRoutine());
 	}
 }
