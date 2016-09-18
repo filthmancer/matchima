@@ -21,6 +21,8 @@ public class AudioManager : MonoBehaviour {
 	public AudioGroup Class_Default;
 	public AudioGroup [] Classes;
 
+	public AudioGroup UI;
+
 	public AudioSource Music;
 
 	public static bool PlaySFX = true, PlayMusic = true;
@@ -107,6 +109,7 @@ public class AudioManager : MonoBehaviour {
 	{
 		//if(name == Enemy.Name) return Enemy;
 		if(name == Player.Name) return Player;
+		else if(name == UI.Name) return UI;
 		else return null;
 	}
 

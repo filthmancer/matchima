@@ -182,10 +182,17 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 		if(Img.Length > 0) Img[0].color = init;
 	}
 
+	public bool PlayClickDown = true, PlayClickUp = true;
 	public void OnPointerDown(PointerEventData eventData)
 	{
 		//if(Application.isMobilePlatform) return;
 		if(UIManager.instance.LogUIObjs) print(Actions_MouseDown.Count + ":" +  this);
+
+		if((Actions_MouseUp.Count > 0 || TypeActions_MouseUp.Count > 0) || PlayClickDown)
+		{
+			AudioManager.instance.PlayClipOn(this.transform, "UI", "ClickDown");
+		}
+
 		foreach(Action child in Actions_MouseDown)
 		{
 			child();
@@ -208,6 +215,10 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 		foreach(UIAction_Method child in TypeActions_MouseUp)
 		{
 			child.Act();
+		}
+		if((Actions_MouseUp.Count > 0 || TypeActions_MouseUp.Count > 0) || PlayClickUp)
+		{
+			AudioManager.instance.PlayClipOn(this.transform, "UI", "ClickUp");
 		}
 		//if(Application.isMobilePlatform) return;
 		foreach(Action child in Actions_MouseUp)

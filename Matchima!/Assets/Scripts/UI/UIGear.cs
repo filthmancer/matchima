@@ -161,11 +161,16 @@ public class UIGear : UIObjTweener {
 			child(i);
 		}
 	}
+
+	public void SetToState(int i)
+	{
+		
+	}
+
 	[HideInInspector]
 	public bool isFlashing;
 	public void FlashArrows()
 	{
-		
 		StartCoroutine(_FlashArrows());
 	}
 

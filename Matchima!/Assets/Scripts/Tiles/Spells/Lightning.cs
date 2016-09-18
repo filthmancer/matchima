@@ -64,6 +64,7 @@ public class Lightning : Tile {
 			}
 		}
 
+		if(onScreen_chances.Count == 0) yield break;
 		int collect = ChanceEngine.Index(onScreen_chances.ToArray());
 		GENUS col = onScreen[collect];
 		particles = new List<GameObject>();

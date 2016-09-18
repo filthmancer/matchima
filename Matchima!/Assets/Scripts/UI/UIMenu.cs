@@ -126,6 +126,7 @@ public class UIMenu : UIObj {
 		(UIManager.Objects.TopRightButton as UIObjTweener).SetTween(0,false);
 
 		yield return null;
+		
 		(UIManager.Objects.TopGear as UIObjTweener).SetTween(1,true);
 		(UIManager.Objects.BotGear as UIObjTweener).SetTween(1,true);
 		yield return new WaitForSeconds(Time.deltaTime * 2);
