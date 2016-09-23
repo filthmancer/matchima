@@ -162,9 +162,29 @@ public class UIGear : UIObjTweener {
 		}
 	}
 
+	int pstate = 0;
 	public void SetToState(int i)
 	{
-		
+	 	switch(i)
+	 	{
+	 		case 0:
+	 		SetTween(pstate,false);
+	 		break;
+	 		case 1:
+	 		AudioManager.instance.PlayClipOn(this.transform, "UI", "GearClose");
+	 		SetTween(1,true);
+	 		pstate = 1;
+	 		break;
+	 		case 2:
+	 		AudioManager.instance.PlayClipOn(this.transform, "UI", "GearClose");
+	 		SetTween(2,true);
+	 		pstate = 2;
+	 		break;
+	 		case 3:
+	 		SetTween(0,true);
+	 		pstate = 0;
+	 		break;
+	 	}
 	}
 
 	[HideInInspector]

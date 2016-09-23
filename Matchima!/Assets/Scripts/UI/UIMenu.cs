@@ -126,14 +126,16 @@ public class UIMenu : UIObj {
 		(UIManager.Objects.TopRightButton as UIObjTweener).SetTween(0,false);
 
 		yield return null;
-		
-		(UIManager.Objects.TopGear as UIObjTweener).SetTween(1,true);
-		(UIManager.Objects.BotGear as UIObjTweener).SetTween(1,true);
+		UIManager.Objects.TopGear.SetToState(1);
+		UIManager.Objects.BotGear.SetToState(1);
+		////(UIManager.Objects.TopGear as UIObjTweener).SetTween(1,true);
+		//(UIManager.Objects.BotGear as UIObjTweener).SetTween(1,true);
 		yield return new WaitForSeconds(Time.deltaTime * 2);
 		LogoAnimation.gameObject.SetActive(true);
 		LogoAnimation.SetFrame(0);
 		LogoAnimation.Play("Title Animation");
 		yield return new WaitForSeconds(Time.deltaTime * 30);
+		AudioManager.instance.SetMusic(AudioManager.instance.HomeScreenMusic);
 		UIManager.Objects.BotGear.Txt[0].text = "TOUCH TO START";
 
 		loaded = true;
@@ -218,13 +220,16 @@ public class UIMenu : UIObj {
 		UIManager.Objects.TopGear.Txt[0].text = "";
 		UIManager.Objects.MiddleGear.Txt[0].text = "";
 		UIManager.Objects.BotGear.Txt[0].text = "";	
-		(UIManager.Objects.BotGear as UIObjTweener).SetTween(2, false);
+		
 		UIManager.Objects.BotGear[3][0].SetActive(true);
 		UIManager.Objects.MiddleGear.SetActive(true);
 
-		(UIManager.Objects.TopGear as UIObjTweener).SetTween(1,false);
-		(UIManager.Objects.BotGear as UIObjTweener).SetTween(1,false);
-		(UIManager.Objects.BotGear as UIGear).SetTween(3, false);
+		UIManager.Objects.TopGear.SetToState(0);
+		UIManager.Objects.BotGear.SetToState(0);
+		//(UIManager.Objects.TopGear as UIObjTweener).SetTween(1,false);
+		//(UIManager.Objects.BotGear as UIObjTweener).SetTween(2, false);
+		//(UIManager.Objects.BotGear as UIObjTweener).SetTween(1,false);
+		//(UIManager.Objects.BotGear as UIGear).SetTween(3, false);
 		
 		(UIManager.Objects.TopGear as UIGear).SetRotate(false);
 		(UIManager.Objects.BotGear as UIGear).SetRotate(false);
@@ -331,9 +336,10 @@ public class UIMenu : UIObj {
 
 		//UIManager.Objects.BotGear.AddAction(UIAction.MouseUp,
 		//	() => {HeroMenu(0);});
-
-		(UIManager.Objects.TopGear as UIObjTweener).SetTween(1, false);
-		(UIManager.Objects.BotGear as UIObjTweener).SetTween(1, false);
+		UIManager.Objects.TopGear.SetToState(0);
+		//(UIManager.Objects.TopGear as UIObjTweener).SetTween(1, false);
+		UIManager.Objects.BotGear.SetToState(0);
+		//(UIManager.Objects.BotGear as UIObjTweener).SetTween(1, false);
 		UIManager.ShowClassButtons(true);
 
 		UIManager.Objects.MiddleGear.SetActive(true);
@@ -379,7 +385,8 @@ public class UIMenu : UIObj {
 			State = MenuState.Character;
 			UIManager.Objects.MiddleGear.SetActive(false);
 			
-			(UIManager.Objects.BotGear as UIObjTweener).SetTween(2, true);
+			UIManager.Objects.BotGear.SetToState(2);
+			//(UIManager.Objects.BotGear as UIObjTweener).SetTween(2, true);
 			UIManager.Objects.BotGear[3][0].SetActive(true);
 			UIManager.Objects.BotGear[3][0].Img[1].gameObject.SetActive(false);
 			UIManager.Objects.BotGear.isFlashing = false;

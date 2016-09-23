@@ -470,7 +470,8 @@ public class Player : MonoBehaviour {
 
 		if (Stats._Health < Stats._HealthMax / 5 && Stats._Health > 0)
 		{
-			UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "LOW HEALTH", 160, GameData.instance.BadColour, 1.2F, 0.2F);
+			MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.instance.Health.transform.position, "LOW HEALTH", 120, GameData.instance.BadColour, 1.7F, 0.2F, true);
+			m.transform.localScale *= 0.6F;
 		}
 
 		if (Stats._Health <= 0)
@@ -697,6 +698,7 @@ public class Player : MonoBehaviour {
 		Stats.MapSize.x = Mathf.Clamp(Stats.MapSize.x, 0, 4);
 		Stats.MapSize.y = Mathf.Clamp(Stats.MapSize.y, 0, 4);
 
+		Stats._Attack = Mathf.Clamp(Stats._Attack, 0, 9999999);
 		Stats._HealthMax = (int) Mathf.Clamp(Stats._HealthMax, 1, 999999);
 		Stats._Health = (int) Mathf.Clamp(Stats._HealthMax * ratio, 0, Stats._HealthMax);
 

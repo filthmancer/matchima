@@ -40,7 +40,11 @@ public class Powerup : MonoBehaviour {
 		return obj;
 	}
 
-
+	protected Transform ParentOverride;
+	public void SetParentOverride(Transform t)
+	{
+		ParentOverride = t;
+	}
 
 
 	public virtual void Setup(Class c)

@@ -158,20 +158,21 @@ public class ThrowKnives : Powerup {
 	public List<UIObj> knifelist = new List<UIObj>();
 	public IEnumerator ThrowKnife(Tile target, int power)
 	{
-		Vector3 classpos = UIManager.instance.Health.transform.position;
+		Transform par;
 		Color classcol = Color.white;
-		if(Parent != null) 
+		if(Parent) 
 		{
-			classpos = UIManager.ClassButtons.GetClass(Parent.Index).transform.position;
+			par = UIManager.ClassButtons[Parent.Index].transform;
 			classcol = GameData.Colour(Parent.Genus);
 		}
-
+		else if(ParentOverride) par = ParentOverride;
+		else par = UIManager.instance.Health.transform;
 
 		target.SetState(TileState.Selected, true);
 		UIObj part = CreateMinigameObj(0);
-		part.transform.position = classpos;
+		part.transform.position = par.position;
 		part.transform.localScale *= 0.7F;
-		//part.transform.SetParent(parent.transform);
+		
 		part.GetComponent<Velocitizer>().enabled = false;
 		MoveToPoint mp = part.GetComponent<MoveToPoint>();
 
@@ -182,13 +183,12 @@ public class ThrowKnives : Powerup {
 		mp.SetPath(30.0F, 0.0F);
 		mp.SetThreshold(0.1F);
 
-		float dist = Vector3.Distance(target.transform.position, classpos);
-		//mp.Speed = 0.1F + 0.05F * dist;
-		float part_time = 0.2F;// + (0.03F * dist);
+		float part_time = 0.2F;
 		int final_damage = power;
 		bool add = true;
 		mp.SetTileMethod(target, (Tile child) =>
 		{
+			child.PlayAudio("attack");
 			child.SetState(TileState.Selected, true);
 			child.InitStats.Hits -= final_damage;
 			foreach(Tile alreadycollected in to_collect)

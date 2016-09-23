@@ -48,6 +48,7 @@ public class Grunt : Enemy {
 		factor *= Random.Range(0.8F, 1.4F);
 		factor = factor * (InitStats.Value);
 		Rank = 1;
+		RankCounter = 0;
 		if(InitStats.Value > 10) Rank = 4;
 		else 
 		{

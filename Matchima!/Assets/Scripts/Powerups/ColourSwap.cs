@@ -44,6 +44,7 @@ public class ColourSwap : Powerup {
 			tpoints[i] += Vector3.Lerp(Vector3.left * (CardChoices.Count), Vector3.right*CardChoices.Count, (float)i/(float)choicetotal) * CameraUtility.OrthoFactor;
 
 			ColCards[i] = (UIObjtk) CreateMinigameObj(0);
+			EffectManager.instance.PlayEffect(ColCards[i].transform, "Replace", GameData.Colour(CardChoices[i]));
 			ColCards[i].GetComponent<RectTransform>().sizeDelta = new Vector2(300,300);
 
 			string spec = (i == CardChoices.Count - bad ? "grunt" : "resource");
@@ -53,7 +54,7 @@ public class ColourSwap : Powerup {
 			ColCards[i].transform.position = tpoints[i];
 			yield return StartCoroutine(GameData.DeltaWait(0.25F));
 		}
-		yield return StartCoroutine(GameData.DeltaWait(0.1F));
+		yield return StartCoroutine(GameData.DeltaWait(0.2F));
 
 		bool isRotating = true;
 		bool spritechanged = false;
@@ -156,9 +157,9 @@ public class ColourSwap : Powerup {
 		bool fail = choice_selected == CardChoices.Count - bad;
 	//FINAL GENUS
 		GENUS final = CardChoices[choice_selected];
-		string title = fail ? "FAIL" : GameData.ResourceLong(final);
+		string title = fail ? "FAIL!" : GameData.ResourceLong(final) + "!";
 
-		UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, title, 140, GameData.Colour(final), 0.8F, 0.25F);
+		UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, title, 180, GameData.Colour(final), 0.8F, 0.35F);
 		isRevealing  = true;
 		curr_rot = 0;
 		spritechanged = false;

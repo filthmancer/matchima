@@ -76,8 +76,16 @@ public class Tile : MonoBehaviour {
 	public GENUS Genus{
 		get{return Info._GenusEnum;}
 	}
+	public string GenusName
+	{
+		get{return GameData.ResourceLong(Genus);}
+	}
 	public SPECIES Type{
 		get{return Info._Type;}
+	}
+	public string TypeName
+	{
+		get{return Info._TypeName;}
 	}
 	[HideInInspector]
 	public TileInfo Info;

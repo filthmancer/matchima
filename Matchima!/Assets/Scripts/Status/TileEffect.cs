@@ -3,7 +3,7 @@ using System.Collections;
 
 public class TileEffect : Status {
 	public Tile _Tile;
-
+	public bool DontInherit = false;
 	private GameObject particle;
 	public virtual void Setup(Tile t)
 	{

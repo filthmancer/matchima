@@ -112,6 +112,7 @@ public class Blob : Enemy {
 					foreach(TileEffect child in old_eff)
 					{
 						if(child == this) continue;
+						if(child.DontInherit) continue;
 						TileEffect neweff = (TileEffect) Instantiate(child);
 						TileMaster.Tiles[basex+xx, basey].AddEffect(neweff);
 					}

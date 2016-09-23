@@ -25,6 +25,8 @@ public class AudioManager : MonoBehaviour {
 
 	public AudioSource Music;
 
+	public AudioClip LoadingMusic, HomeScreenMusic;
+
 	public static bool PlaySFX = true, PlayMusic = true;
 	public bool PrintLogs = false;
 
@@ -177,6 +179,13 @@ public class AudioManager : MonoBehaviour {
 		}
 		groupfinal.Minimize();
 		return groupfinal;
+	}
+
+	public void SetMusic(AudioClip clip)
+	{
+		Music.clip = clip;
+		Music.Play();
+
 	}
 }
 

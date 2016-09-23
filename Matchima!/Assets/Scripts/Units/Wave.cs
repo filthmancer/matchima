@@ -328,10 +328,11 @@ public class Wave : Unit {
 
 	protected virtual IEnumerator WaveActivateRoutine()
 	{
+
 		UIManager.Objects.BotGear.SetTween(3, true);
 		UIManager.Objects.TopGear[2].SetActive(false);
-		UIManager.Objects.BotGear.SetTween(0, false);
-		UIManager.Objects.TopGear.SetTween(0, true);
+		UIManager.Objects.BotGear.SetToState(0);
+		UIManager.Objects.TopGear.SetToState(0);
 		UIManager.Objects.TopGear.FreeWheelDrag = true;
 		UIManager.instance.ShowGearTooltip(false);
 		GameManager.instance.paused = true;
@@ -388,8 +389,8 @@ public class Wave : Unit {
 		}
 
 		GameManager.instance.paused = false;
-		UIManager.Objects.BotGear.SetTween(0, true);
-		UIManager.Objects.TopGear.SetTween(0, false);
+		UIManager.Objects.BotGear.SetToState(0);
+		UIManager.Objects.TopGear.SetToState(0);
 		UIManager.instance.ScreenAlert.SetTween(0,false);
 		UIManager.Objects.BotGear.SetTween(3, false);
 	}

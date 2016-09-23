@@ -174,25 +174,29 @@ public class UIClassButton : UIObj {
 
 	public void ShowClass(bool? active = null)
 	{
-		//UIManager.WaveButtons[0].Txt[1].text = "Back";
-		bool actual = active ?? !_class.activated;
-		_class.activated = actual;
-
-		for(int i = 0; i < _class._Slots.Length; i++)
+		TweenClass(active);		
+		if(_class)
 		{
-			if(SlotUI.Length < i - 1) continue;
-			if(_class._Slots[i] == null)
+			bool actual = active ?? !_class.activated;
+			_class.activated = actual;
+
+			for(int i = 0; i < _class._Slots.Length; i++)
 			{
-				SlotUI[i].SetActive(false);
-			}
-			else 
-			{
-				SlotUI[i].SetActive(true);
-				SlotUI[i].Setup(_class._Slots[i]);
-				SlotUI[i].Txt[0].text = (_class._Slots[i] as Item).ScaleString;
+				if(SlotUI.Length < i - 1) continue;
+				if(_class._Slots[i] == null)
+				{
+					SlotUI[i].SetActive(false);
+				}
+				else 
+				{
+					SlotUI[i].SetActive(true);
+					SlotUI[i].Setup(_class._Slots[i]);
+					SlotUI[i].Txt[0].text = (_class._Slots[i] as Item).ScaleString;
+				}
 			}
 		}
-		TweenClass(active);		
+		
+		
 	}
 
 	public void ActivatePower()

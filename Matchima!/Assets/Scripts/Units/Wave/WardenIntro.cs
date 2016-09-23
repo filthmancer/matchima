@@ -25,8 +25,9 @@ public class WardenIntro : Wave {
 	{
 		UIManager.Objects.BotGear.SetTween(3, true);
 		UIManager.Objects.TopGear[2].SetActive(false);
-		UIManager.Objects.BotGear.SetTween(0, false);
-		UIManager.Objects.TopGear.SetTween(0, true);
+
+		UIManager.Objects.BotGear.SetToState(3);
+		UIManager.Objects.TopGear.SetToState(0);
 		UIManager.Objects.TopGear.FreeWheelDrag = true;
 		UIManager.instance.ShowGearTooltip(false);
 		GameManager.instance.paused = true;

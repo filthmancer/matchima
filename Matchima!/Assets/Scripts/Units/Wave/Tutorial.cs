@@ -23,7 +23,7 @@ public class Tutorial : Wave {
 													TileMaster.Genus.Frames, "Red"));
 
 		yield return new WaitForSeconds(Time.deltaTime * 10);
-		Alert("Drag through\ntiles to match");
+		Alert("Drag through\n3 or more tiles");
 		current++;
 		
 		
@@ -49,7 +49,7 @@ public class Tutorial : Wave {
 	public override IEnumerator BeginTurn()
 	{
 		yield return StartCoroutine(base.BeginTurn());
-		UIManager.Objects.BotGear.SetTween(0, true);
+		UIManager.Objects.BotGear.SetToState(0);
 		QuoteGroup tute;
 		switch(current)
 		{
@@ -67,7 +67,7 @@ public class Tutorial : Wave {
 			TileMaster.Tiles[0,0].ChangeGenus(GENUS.STR);
 			TileMaster.Tiles[1,0].ChangeGenus(GENUS.DEX);
 
-			TuteAlert = Alert("Matches must have\n3 or more tiles");
+			//TuteAlert = Alert("Matches must have\n3 or more tiles");
 			
 			current++;
 			break;
@@ -137,18 +137,22 @@ public class Tutorial : Wave {
 			break;
 
 			case 4:
+			TuteAlert.PoolDestroy();
 			CameraUtility.instance.ScreenShake(0.6F, 1.4F);
-			yield return new WaitForSeconds(Time.deltaTime * 30);
-
+			yield return new WaitForSeconds(Time.deltaTime * 25);
 			TileMaster.instance.ReplaceTile(1,2, TileMaster.Types["grunt"], GENUS.STR);
-			yield return new WaitForSeconds(Time.deltaTime * 10);
-			TuteAlert = Alert("Match enemy tiles\nto destroy");
+			yield return new WaitForSeconds(Time.deltaTime * 25);
+			
+			UIManager.instance.SetTileAlert(TileMaster.Types["grunt"], "Red");
+			yield return StartCoroutine(UIManager.instance.Alert(0.3F, "", "Enemy tiles attack your\nhealth after every turn", "", true, 60));
+			
+			
 			current++;
 			break;
-
+			
 			case 5:
 			if(alerter != null) Destroy(alerter.gameObject);
-			yield return StartCoroutine(UIManager.instance.Alert(0.3F, "", "Enemy tiles attack your\nhealth after every turn", "", true, 60));
+			TuteAlert = Alert("Match enemy tiles\nto destroy");
 			current++;
 			break;
 			case 6:
@@ -165,12 +169,12 @@ public class Tutorial : Wave {
 
 			yield return StartCoroutine(AddRogue());
 			
-			current++;
+			current+=2;
 			break;
 			case 8:
 			if(dex_alert)
 			{
-				TuteAlert = Alert("10 Dexterity increases\n+1 attack damage", 2.4F);
+				//TuteAlert = Alert("10 Dexterity increases\n+1 attack damage", 2.4F);
 				current++;
 			}
 			break;
@@ -183,15 +187,15 @@ public class Tutorial : Wave {
 															TileMaster.Types["health"].Atlas, "Red",
 															TileMaster.Genus.Frames, "Red"));
 
-					TileMaster.instance.ReplaceTile(0,2, TileMaster.Types["health"], GENUS.STR,1,2);
-					TuteAlert = Alert("Collect health tiles\nto regain health",2.4F);
+					TileMaster.instance.ReplaceTile(1,0, TileMaster.Types["health"], GENUS.STR,1,2);
+					//TuteAlert = Alert("Collect health tiles\nto regain health",2.4F);
+					yield return new WaitForSeconds(Time.deltaTime * 25);
+					UIManager.instance.SetTileAlert(TileMaster.Types["health"], "Red");
+					yield return StartCoroutine(UIManager.instance.Alert(0.3F, "", "Collect Health Tiles\nto regain health", "", true, 60));
 					current++;
 				}
 			break;
 			case 10:
-			
-			TileMaster.instance.ReplaceTile(1,0, TileMaster.Types["health"], GENUS.STR, 1,2);
-			TileMaster.instance.ReplaceTile(2,0, TileMaster.Types["health"], GENUS.DEX, 1,2);
 			TileMaster.instance.ReplaceTile(1,1, TileMaster.Types["health"], GENUS.STR, 1,2);
 			TileMaster.instance.ReplaceTile(2,1, TileMaster.Types["health"], GENUS.DEX, 1,2);
 			
@@ -221,6 +225,7 @@ public class Tutorial : Wave {
 				Player.Classes[0].CanCollectMana = true;
 				Player.Classes[0].Meter = Player.Classes[0].MeterTop - 3;
 				Player.Classes[1].Meter = Player.Classes[1].MeterTop - 3;
+				UIManager.instance.SetTileAlert(TileMaster.Types["resource"], "Blue");
 				yield return StartCoroutine(UIManager.instance.Alert(0.3F, "", "Collect mana to\ncast hero spells", "", true, 60));
 				
 				current++;
@@ -233,31 +238,13 @@ public class Tutorial : Wave {
 			}
 			break;
 			case 14:
-			if(wis_alert)
-			{
-				TuteAlert = Alert("5 Wisdom gives\n+1 spell damage", 4.4F);
-				current++;
-			}
-			break;
-			case 15:
 			current++;
 			break;
-			case 16:
-				TuteAlert = Alert("1 Strength gives\n+5 health points",4.4F);
-				current ++;
-			break;
-			case 17:
+			case 15:
 				yield return StartCoroutine(AddBard());
 				current++;
 			break;
-			case 18:
-			if(cha_alert)
-			{
-				TuteAlert = Alert("30 Charisma increases\n+1 tile value", 4.4F);
-				current++;
-			}
-			break;
-			case 19:
+			case 16:
 			current++;
 			TileMaster.instance.MapSize_Default = new Vector2(5,6);
 			Current = RequiredFinal;
@@ -286,6 +273,10 @@ public class Tutorial : Wave {
 		yield return null;
 	}
 
+	//TuteAlert = Alert("30 Charisma increases\n+1 tile value", 4.4F);
+	//TuteAlert = Alert("1 Strength gives\n+5 health points",4.4F);
+	//TuteAlert = Alert("5 Wisdom gives\n+1 spell damage", 4.4F);
+
 	public WaveUnit Warden;
 
 	private bool shownpowerupalert = false;
@@ -303,11 +294,18 @@ public class Tutorial : Wave {
 		yield return StartCoroutine(UIManager.instance.ImageQuote(0.9F, Player.Classes[0], 
 														UIManager.Objects.QuoteAtlas, "death"));
 		ThrowKnives p = GameData.instance.GetPowerup("Throw Knives", null) as ThrowKnives;
-		StartCoroutine(UIManager.instance.ImageQuote(0.7F, Player.Classes[0], 
-														UIManager.Objects.QuoteAtlas, "confused"));
+		p.SetParentOverride(UIManager.ClassButtons.GetClass(1).transform);
+		UIManager.ClassButtons.GetClass(1).ShowClass(true);
+		
+		GameObject powerup = EffectManager.instance.PlayEffect(UIManager.ClassButtons.GetClass(1).transform, Effect.ManaPowerUp, GameData.Colour((GENUS) 1));
+		powerup.transform.localScale = Vector3.one;
+
+		//StartCoroutine(UIManager.instance.ImageQuote(0.7F, Player.Classes[0], 
+		//												UIManager.Objects.QuoteAtlas, "confused"));
+
 		for(int i = 0; i < TileMaster.Enemies.Length; i++)
 		{
-			yield return StartCoroutine(p.ThrowKnife(TileMaster.Enemies[i], 10));
+			yield return StartCoroutine(p.ThrowKnife(TileMaster.Enemies[i], 16));
 			yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 		}
 		yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
@@ -325,7 +323,10 @@ public class Tutorial : Wave {
 		{if(p.knifelist[i] != null) Destroy(p.knifelist[i].gameObject);}
 
 		Destroy(p.gameObject);
+		UIManager.ClassButtons.GetClass(1).ShowClass(false);
+		Destroy(powerup);
 
+		yield return new WaitForSeconds(Time.deltaTime * 25);
 		yield return StartCoroutine(Player.instance.AddClassToSlot(1, GameData.instance.GetClass("Rogue")));
 		Player.Classes[1].CanCollectMana = false;
 		Player.Classes[1].CanMutate = false;
@@ -347,6 +348,10 @@ public class Tutorial : Wave {
 
 	IEnumerator AddWizard()
 	{
+		UIManager.ClassButtons.GetClass(2).ShowClass(true);
+		GameObject powerup = EffectManager.instance.PlayEffect(UIManager.ClassButtons.GetClass(2).transform, Effect.ManaPowerUp, GameData.Colour((GENUS) 2));
+		powerup.transform.localScale = Vector3.one;
+
 		Firestorm p = GameData.instance.GetPowerup("Firestorm", null) as Firestorm;
 		yield return StartCoroutine(p.Cast(TileMaster.Tiles[2,0]));
 		yield return StartCoroutine(p.Cast(TileMaster.Tiles[0,0]));
@@ -363,7 +368,10 @@ public class Tutorial : Wave {
 		TileMaster.instance.SetFillGrid(true);
 
 		Destroy(p.gameObject);
-
+		UIManager.ClassButtons.GetClass(2).ShowClass(false);
+		Destroy(powerup);
+	
+		yield return new WaitForSeconds(Time.deltaTime * 25);
 		yield return StartCoroutine(Player.instance.AddClassToSlot(2, GameData.instance.GetClass("Wizard")));
 
 		TileMaster.Types["resource"]["Green"].ChanceInitial = 1.0F;
@@ -385,14 +393,18 @@ public class Tutorial : Wave {
 
 	IEnumerator AddBard()
 	{
+		UIManager.ClassButtons.GetClass(3).ShowClass(true);
+		GameObject powerup = EffectManager.instance.PlayEffect(UIManager.ClassButtons.GetClass(3).transform, Effect.ManaPowerUp, GameData.Colour((GENUS) 3));
+		powerup.transform.localScale = Vector3.one;
+
 		Lullaby p = GameData.instance.GetPowerup("Lullaby", null) as Lullaby;
+		p.SetParentOverride(UIManager.ClassButtons.GetClass(3).transform);
 		for(int i = 0; i < TileMaster.Enemies.Length; i++)
 		{
 			p.Sleep(TileMaster.Enemies[i], 2);
 			yield return new WaitForSeconds(0.1F);
 		}
 		
-
 		TileMaster.instance.SetFillGrid(false);
 		yield return StartCoroutine(GameManager.instance.BeforeMatchRoutine());
 		yield return null;
@@ -403,8 +415,10 @@ public class Tutorial : Wave {
 		TileMaster.instance.SetFillGrid(true);
 
 		Destroy(p.gameObject);
+		UIManager.ClassButtons.GetClass(3).ShowClass(false);
+		Destroy(powerup);
 
-		yield return new WaitForSeconds(Time.deltaTime * 15);
+		yield return new WaitForSeconds(Time.deltaTime * 25);
 		yield return StartCoroutine(Player.instance.AddClassToSlot(3, GameData.instance.GetClass("Bard")));
 
 		TileMaster.Types["resource"]["Yellow"].ChanceInitial = 1.0F;

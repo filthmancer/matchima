@@ -336,13 +336,14 @@ public class GameManager : MonoBehaviour {
 			if(c == null) yield break;
 		}
 		inStartMenu = false;
+
 		UIManager.instance.SetLoadScreen(true);
 		
 		if(show_starter) StartCoroutine(ShowStarterAd());
 		TileMaster.instance.MapSize = new Vector2(1,1);
 		Player.instance.Load(c);
-
-
+		yield return new WaitForSeconds(0.1F);
+		AudioManager.instance.SetMusic(AudioManager.instance.LoadingMusic);
 		yield return StartCoroutine(UIManager.instance.LoadUI());
 		yield return StartCoroutine(GameData.instance.LoadAssets_Routine());
 
@@ -782,6 +783,7 @@ public class GameManager : MonoBehaviour {
 	
 			if(target == null) yield break;
 			CurrentZone = (Zone) Instantiate(target);
+			CurrentZone.gameObject.name = target.gameObject.name;
 			CurrentZone.transform.parent = this.transform;
 			if(CurrentWave != null) 
 			{
@@ -801,6 +803,7 @@ public class GameManager : MonoBehaviour {
 			if(CurrentZone != null) Destroy(CurrentZone.gameObject);
 
 			CurrentZone = (Zone) Instantiate(z);
+			CurrentZone.gameObject.name = z.gameObject.name;
 			CurrentZone.transform.parent = this.transform;
 			
 			if(CurrentWave != null) 
@@ -923,9 +926,8 @@ public class GameManager : MonoBehaviour {
 		UIManager.instance.SetClassButtons(false);
 		UIManager.instance.ShowGearTooltip(false);
 		
-		UIManager.Objects.BotGear.SetTween(0, false);
-		UIManager.Objects.TopGear.SetTween(0, false);
-		//UIManager.Objects.BotGear.SetTween(3, true);
+		UIManager.Objects.BotGear.SetToState(0);
+		UIManager.Objects.TopGear.SetToState(0);
 		UIManager.instance.MoveTopGear(0);
 
 		yield return StartCoroutine(BeforeMatchRoutine());
@@ -966,7 +968,7 @@ public class GameManager : MonoBehaviour {
 			yield return StartCoroutine(_GetWave());
 		}
 		
-		UIManager.Objects.BotGear.SetTween(0, true);
+		UIManager.Objects.BotGear.SetToState(0);
 		yield return StartCoroutine(Player.instance.BeginTurn());
 
 		foreach(Class child in Player.Classes)
@@ -998,8 +1000,8 @@ public class GameManager : MonoBehaviour {
 		List<Tile> allied_attackers = new List<Tile>();
 	
 		yield return new WaitForSeconds(GameData.GameSpeed(0.08F));
-		UIManager.Objects.BotGear.SetTween(0, false);
-		UIManager.Objects.TopGear.SetTween(0, true);
+		UIManager.Objects.BotGear.SetToState(3);
+		UIManager.Objects.TopGear.SetToState(0);
 
 		//ENEMY ATTACKERS
 		for(int x = 0; x < TileMaster.instance.MapSize.x; x++)
@@ -1157,8 +1159,8 @@ public class GameManager : MonoBehaviour {
 	public IEnumerator CompleteTurnRoutine()
 	{
 		UIManager.instance.SetClassButtons(false);
-		UIManager.Objects.BotGear.SetTween(0, true);
-		UIManager.Objects.TopGear.SetTween(0, false);
+		UIManager.Objects.BotGear.SetToState(0);
+		UIManager.Objects.TopGear.SetToState(0);
 
 		/*UIManager.instance.SetBonuses(GetBonuses(ComboSize));
 		UIManager.instance.StartTimer();

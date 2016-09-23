@@ -129,8 +129,10 @@ public class Lullaby : Powerup {
 
 	public void Sleep(Tile target, int duration)
 	{
-		Transform par = UIManager.instance.Health.transform;
-		if(Parent != null) par = UIManager.ClassButtons[Parent.Index].transform;
+		Transform par;
+		if(Parent) par = UIManager.ClassButtons[Parent.Index].transform;
+		else if(ParentOverride) par = ParentOverride;
+		else par = UIManager.instance.Health.transform;
 
 		target.SetState(TileState.Selected, true);
 		GameObject initpart = EffectManager.instance.PlayEffect(par, "spell");

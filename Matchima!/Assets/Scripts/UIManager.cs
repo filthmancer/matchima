@@ -355,10 +355,12 @@ public class UIManager : MonoBehaviour {
 
 	public void SetLoadScreen(bool active)
 	{
-		(UIManager.Objects.TopGear as UIObjTweener).SetTween(1,active);
+		UIManager.Objects.TopGear.SetToState(active ? 1 : 0);
+		//(UIManager.Objects.TopGear as UIObjTweener).SetTween(1,active);
 		(UIManager.Objects.TopGear as UIGear).SetRotate(active, Vector3.forward * 0.7F);
 		
-		(UIManager.Objects.BotGear as UIObjTweener).SetTween(1,active);
+		UIManager.Objects.BotGear.SetToState(active ? 1 : 0);
+		//(UIManager.Objects.BotGear as UIObjTweener).SetTween(1,active);
 		(UIManager.Objects.BotGear as UIGear).SetRotate(active, Vector3.forward * 0.7F);
 
 		UIManager.Objects.BotGear[4].SetActive(active);
@@ -866,7 +868,7 @@ public class UIManager : MonoBehaviour {
 			Destroy(borderactual);
 			Resources.UnloadAsset(borderprefab);
 		}
-		borderprefab = (GameObject)Resources.Load("zones/"+z._Name);
+		borderprefab = (GameObject)Resources.Load("zones/"+z.gameObject.name + "/border");
 		if(borderprefab == null) return;
 		borderactual = (GameObject)Instantiate(borderprefab);
 		borderactual.transform.SetParent(borderactual_parent.transform);
@@ -1016,6 +1018,39 @@ public class UIManager : MonoBehaviour {
 		ResUIOpen = false;
 	}
 
+	public UIObjtk TileUIObj;
+	public UIObj TileToucher(Tile t)
+	{
+		UIObjtk final = (UIObjtk) Instantiate(TileUIObj);
+		final.transform.SetParent(Objects.MainUI.transform);
+		final.transform.position = t.transform.position;
+		final.transform.localScale = Vector3.one;
+
+		RectTransform ft = final.GetComponent<RectTransform>();
+		ft.sizeDelta = Vector2.one;
+
+		final.Imgtk[0].SetSprite(TileMaster.Types[t.TypeName].Atlas, t.GenusName);
+		final.Imgtk[1].SetSprite(TileMaster.Genus.Frames, t.GenusName);
+
+		return final as UIObj;
+	}
+
+	public void SetTileAlert(Tile t)
+	{
+		UIObjtk tobj = ScreenAlert[5] as UIObjtk;
+		tobj.SetActive(true);
+		tobj.Imgtk[0].SetSprite(TileMaster.Types[t.TypeName].Atlas, t.GenusName);
+		tobj.Imgtk[1].SetSprite(TileMaster.Genus.Frames, t.GenusName);
+	}
+
+	public void SetTileAlert(SPECIES s, string genus)
+	{
+		UIObjtk tobj = ScreenAlert[5] as UIObjtk;
+		tobj.SetActive(true);
+		tobj.Imgtk[0].SetSprite(s.Atlas, genus);
+		tobj.Imgtk[1].SetSprite(TileMaster.Genus.Frames, genus);
+	}
+
 	
 
 	public bool AlertShowing = false;
@@ -1040,7 +1075,8 @@ public class UIManager : MonoBehaviour {
 		GameManager.instance.paused = true;
 		ScreenAlert.SetActive(true);
 		ScreenAlert.SetTween(0,true);
-		UIManager.Objects.BotGear.SetTween(3, true);
+		UIManager.Objects.BotGear.SetToState(0);
+		//UIManager.Objects.BotGear.SetTween(3, true);
 
 		
 		/*for(int i = 0; i < ScreenAlert.Child[2].Length; i++)
@@ -1121,7 +1157,9 @@ public class UIManager : MonoBehaviour {
 		(ScreenAlert[0] as UIObjTweener).SetTween(0, false);
 		(ScreenAlert[1] as UIObjTweener).SetTween(0, false);
 		(ScreenAlert[2] as UIObjTweener).SetTween(0, false);
-		UIManager.Objects.BotGear.SetTween(3, false);
+		UIManager.Objects.BotGear.SetToState(0);
+	//	UIManager.Objects.BotGear.SetTween(3, false);
+		ScreenAlert[5].SetActive(false);
 		PlayerControl.instance.ResetSelected();
 		GameManager.instance.paused = false;
 		AlertShowing = false;
@@ -1475,19 +1513,18 @@ public class UIManager : MonoBehaviour {
 	{
 		ClassButtons.GetClass(slot).Setup(c);
 	
-	  	UIManager.ClassButtons.GetClass(slot).ShowClass(true);
+	  	/*UIManager.ClassButtons.GetClass(slot).ShowClass(true);
 	  	GameObject powerup = EffectManager.instance.PlayEffect(UIManager.ClassButtons.GetClass(slot).transform, Effect.ManaPowerUp, GameData.Colour(c.Genus));
 	  	powerup.transform.localScale = Vector3.one;
 	  	
-	  	yield return new WaitForSeconds(Time.deltaTime * 55);
+	  	yield return new WaitForSeconds(Time.deltaTime * 55);*/
 	  	MiniAlert(Health.transform.position + Vector3.up * 2.5F,
 		c.Name + " joined\nthe party!", 80, GameData.Colour((GENUS)slot), 1.1F, 0.1F, true);
 
-	  	UIManager.ClassButtons.GetClass(slot).ShowClass(false);
-	  	Destroy(powerup);
+	  	//UIManager.ClassButtons.GetClass(slot).ShowClass(false);
+	  	//Destroy(powerup);
 	  	yield return new WaitForSeconds(Time.deltaTime * 55);
 	}
-
 
 	public void ShowPlayerLvl(int num = 0, bool? active = null)
 	{

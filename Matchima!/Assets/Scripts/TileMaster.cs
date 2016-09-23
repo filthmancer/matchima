@@ -966,11 +966,15 @@ public class TileMaster : MonoBehaviour {
 		{
 			Vector3 pos = Grid.GetPoint(t.Point.Point(0)) + Vector3.down * 0.3F;
 			MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + values[0], info_start_size, GameData.Colour(t.Genus), info_time, 0.04F, false);
-			m.transform.rotation = Quaternion.Euler(0, 0, init_rotation);
-			//mini = UIManager.instance.AttachMoverToAlert(ref m);
-			m.AddJuice(Juice.instance.BounceB, info_time);
+			if(m)
+			{
+				m.transform.rotation = Quaternion.Euler(0, 0, init_rotation);
+				m.AddJuice(Juice.instance.BounceB, info_time);
+				m.DestroyOnEnd = true;
+			}
+			
 			UIManager.instance.GetMeterPoints(g, values[0]);
-			m.DestroyOnEnd = true;
+			
 
 		}
 		if (values[1] > 0)
@@ -978,12 +982,16 @@ public class TileMaster : MonoBehaviour {
 			info_time *= 1.4F;
 			Vector3 pos = Grid.GetPoint(t.Point.Point(0)) + Vector3.down * 0.3F;
 			MiniAlertUI m = UIManager.instance.MiniAlert(pos, values[1] + "%\nHP" , info_start_size * 0.55F, GameData.instance.GoodColour, info_time, 0.04F, false);
-			m.Txt[0].outlineColor = GameData.instance.GoodColourFill;
-			m.transform.rotation = Quaternion.Euler(0, 0, init_rotation);
-			mini = m.GetComponent<MoveToPoint>();
-			m.AddJuice(Juice.instance.BounceB, info_time);
-			m.AddAction(() => {mini.enabled = true;});
-			m.DestroyOnEnd = true;
+			if(m)
+			{
+				m.Txt[0].outlineColor = GameData.instance.GoodColourFill;
+				m.transform.rotation = Quaternion.Euler(0, 0, init_rotation);
+				mini = m.GetComponent<MoveToPoint>();
+				m.AddJuice(Juice.instance.BounceB, info_time);
+				m.AddAction(() => {mini.enabled = true;});
+				m.DestroyOnEnd = true;
+			}
+			
 			Player.Stats.Heal(values[1]);
 		}
 		if (values[2] > 0)
@@ -991,19 +999,16 @@ public class TileMaster : MonoBehaviour {
 			info_time *= 1.4F;
 			Vector3 pos = Grid.GetPoint(t.Point.Point(0)) + Vector3.down * 0.3F;
 			MiniAlertUI m = UIManager.instance.MiniAlert(pos, values[2] + "%\nHP" , info_start_size * 0.55F, GameData.instance.GoodColour, info_time, 0.04F, false);
-			m.Txt[0].outlineColor = GameData.instance.GoodColourFill;
-			m.transform.rotation = Quaternion.Euler(0, 0, init_rotation);
-			mini = m.GetComponent<MoveToPoint>();
-			m.AddJuice(Juice.instance.BounceB, info_time);
-			m.AddAction(() => {mini.enabled = true;});
-			m.DestroyOnEnd = true;
-
+			if(m)
+			{
+				m.Txt[0].outlineColor = GameData.instance.GoodColourFill;
+				m.transform.rotation = Quaternion.Euler(0, 0, init_rotation);
+				mini = m.GetComponent<MoveToPoint>();
+				m.AddJuice(Juice.instance.BounceB, info_time);
+				m.AddAction(() => {mini.enabled = true;});
+				m.DestroyOnEnd = true;
+			}
 		}
-		if (t.Type.isEnemy)
-		{
-
-		}
-
 		if (destroy) DestroyTile(t);
 	}
 

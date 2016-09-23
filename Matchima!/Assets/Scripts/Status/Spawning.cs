@@ -64,8 +64,7 @@ public class Spawning : TileEffect {
 
 				foreach(TileEffect child in _Tile.Effects)
 				{
-					print(child.Name);
-					if(child == this || child.Name == "Spawning") continue;
+					if(child == this || child.DontInherit) continue;
 					
 					TileEffect neweff = (TileEffect) Instantiate(child);
 					t.AddEffect(neweff);
