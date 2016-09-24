@@ -13,6 +13,11 @@ public class ObjectPooler
 	public ArrayList All;
 	public Vector3 PoolPos = new Vector3(0, -50, 0);
 
+	public bool IsAvailable
+	{
+		get{return Available.Count > 0;}
+	}
+
 	public ObjectPooler(GameObject u, int num, Transform _parent)
 	{
 		_Obj = u;

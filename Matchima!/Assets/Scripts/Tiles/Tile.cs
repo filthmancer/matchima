@@ -462,9 +462,9 @@ public class Tile : MonoBehaviour {
 		}		
 	}
 
-	public virtual AudioSource PlayAudio(string clip)
+	public virtual AudioSource PlayAudio(string clip, float volume = 1.0F)
 	{
-		return AudioManager.instance.PlayTileAudio(this, clip);
+		return AudioManager.instance.PlayTileAudio(this, clip, volume);
 	}
 
 	void LateUpdate()
@@ -629,6 +629,7 @@ public class Tile : MonoBehaviour {
 
 	public void OnAlert()
 	{
+		AudioManager.instance.QueueAlert(this);
 		//PlayAudio("alert");
 		InitStats.isAlerted = true;
 		MiniAlertUI m = UIManager.instance.MiniAlert(transform.position, "!", 220, Color.black, 0.4F, 0.07F);

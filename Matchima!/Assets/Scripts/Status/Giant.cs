@@ -20,8 +20,8 @@ public class Giant : TileEffect {
 	public override void Setup(Tile t)
 	{
 		base.Setup(t);
+		AudioManager.instance.PlayClipOn(t.transform, "Status", "GiantRoar");
 		_Tile = TileMaster.instance.ReplaceTile(_Tile, TileMaster.Types[_Tile.Info._TypeName], _Tile.Genus, _Tile.Point.Scale + ScaleIncrease, 0);
-		print(_Tile.Point.Scale);
 		_Tile.InitStats.Hits *= HitsMultiplier;
 		//_Tile.InitStats.isAlerted = false;
 	}

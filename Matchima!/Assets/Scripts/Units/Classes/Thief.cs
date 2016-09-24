@@ -52,6 +52,7 @@ public class Thief : Class {
 				new Upgrade("Sharp", " Attack", 1.0F, ScaleType.GRADIENT, 1.0F, 
 					(Stat s, float val) => {s._Attack += 1 + (int)val;}, 1, 1),
 				new Upgrade("Wise", "%\n Attack Power", 0.4F, ScaleType.GRADIENT, 0.5F, (Stat s, float val) => {s.AttackPower += 0.2F * val;}, 20),
+				new Upgrade("Hearty", " Max HP", 1.0F, ScaleType.GRADIENT, 0.5F, (Stat s, float val) => {s._HealthMax += 20 + (int)val*5;}, 5, 20),
 
 				
 				new Upgrade("Soldier's", "% chance of\ngreen Sword", 0.3F, ScaleType.GRADIENT, 1.0F,

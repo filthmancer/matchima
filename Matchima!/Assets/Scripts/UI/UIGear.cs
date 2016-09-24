@@ -48,13 +48,25 @@ public class UIGear : UIObjTweener {
 	private bool drag_divisionlerp = true;
 
 	private Vector3 rotationVelocity;
-	public void Update()
+	private float rotate_audiotime = 0.0F;
+	private float rotate_audiocap = 0.1F;
+
+	public void FixedUpdate()
 	{
 		if(Rotate)
 		{
+			if(rotate_audiotime > rotate_audiocap)
+			{
+				rotate_audiotime = 0.0F;
+				AudioManager.instance.PlayClipOn(this.transform, "UI", "GearTick");
+			}
+			else rotate_audiotime += Time.deltaTime;
 			gearTrans.Rotate(rotationVelocity);
 		}
-		else
+	}
+	public void Update()
+	{
+		if(!Rotate)
 		{
 			if(isPressed && Drag)
 			{
@@ -85,7 +97,16 @@ public class UIGear : UIObjTweener {
 			if(!FreeWheelDrag)
 			{
 				if(Mathf.Abs(dragAcc.x) > DragLerpThreshold) 
+				{
+					if(rotate_audiotime > rotate_audiocap)
+					{
+						rotate_audiotime = 0.0F;
+						AudioManager.instance.PlayClipOn(this.transform, "UI", "GearTick");
+					}
+					else rotate_audiotime += Time.deltaTime;
 					gearTrans.Rotate(new Vector3(0,0,FlipDrag ? -dragAcc.x : dragAcc.x));
+				}
+					
 				else if(DragLerpDivisions > 0)
 				{
 					if(!drag_divisionlerp && !isDragging)
@@ -115,7 +136,20 @@ public class UIGear : UIObjTweener {
 						Time.deltaTime*DragLerpSpeed);
 				}
 			}
-			else gearTrans.Rotate(new Vector3(0,0,FlipDrag ? -dragAcc.x : dragAcc.x));	
+			else 
+			{
+				if(Mathf.Abs(dragAcc.x) > DragLerpThreshold)
+				{
+					if(rotate_audiotime > rotate_audiocap)
+					{
+						rotate_audiotime = 0.0F;
+						AudioManager.instance.PlayClipOn(this.transform, "UI", "GearTick");
+					}
+					else rotate_audiotime += Time.deltaTime;
+				}
+				
+				gearTrans.Rotate(new Vector3(0,0,FlipDrag ? -dragAcc.x : dragAcc.x));	
+			}
 		}
 	}
 

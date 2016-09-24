@@ -401,9 +401,12 @@ public class Stat
 
 		if(healperc != 0)
 		{	
+			AudioManager.instance.PlayClipOn(Player.instance.transform, "Player", "Health Up");
 			Vector3 pos = UIManager.instance.Health.transform.position + Vector3.up * 1.5F;
 			MiniAlertUI hit = UIManager.instance.HealAlert(pos, healperc);
 		}
+
+
 		
 
 		/*if(overheal)

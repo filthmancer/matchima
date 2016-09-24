@@ -343,7 +343,7 @@ public class GameManager : MonoBehaviour {
 		TileMaster.instance.MapSize = new Vector2(1,1);
 		Player.instance.Load(c);
 		yield return new WaitForSeconds(0.1F);
-		AudioManager.instance.SetMusic(AudioManager.instance.LoadingMusic);
+		AudioManager.instance.GetZoneMusic();
 		yield return StartCoroutine(UIManager.instance.LoadUI());
 		yield return StartCoroutine(GameData.instance.LoadAssets_Routine());
 
@@ -1177,6 +1177,7 @@ public class GameManager : MonoBehaviour {
 		PlayerControl.instance.selectedTiles.Clear();
 		PlayerControl.instance.finalTiles.Clear();
 		PlayerControl.matchingTile = null;
+		AudioManager.instance.ClearAlerts();
 
 		////CameraUtility.SetTurnOffset(false);
 

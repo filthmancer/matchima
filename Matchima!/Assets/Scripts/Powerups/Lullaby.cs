@@ -15,6 +15,10 @@ public class Lullaby : Powerup {
 	public int [] SleepRatio = new int[]{
 		3,3,2
 	};
+	public float [] Speed = new float []
+	{
+		7, 9, 12
+	};
 
 	protected override IEnumerator Minigame(int level)
 	{
@@ -26,11 +30,11 @@ public class Lullaby : Powerup {
 		Harp = (UIObj) Instantiate(HarpObj);
 		RectTransform rect = Harp.GetComponent<RectTransform>();
 		Harp.transform.SetParent(UIManager.Objects.MainUI.transform);
-		Harp.transform.localScale = Vector3.one;
+		Harp.transform.localScale = Vector3.one * 2.1F;
 		rect.sizeDelta = Vector2.one;
 		rect.anchoredPosition = Vector2.zero;
 
-		UIObj n = CreateNote();
+		UIObj n = CreateNote(0);
 		n.transform.position = UIManager.Objects.MiddleGear.transform.position + Vector3.down;
 		n.transform.localScale *= 2.0F;
 		n.GetComponent<MoveToPoint>().enabled = false;
@@ -48,9 +52,7 @@ public class Lullaby : Powerup {
 		for(int i = 0; i < notes_played; i++)
 		{
 			float time = Random.Range(0.1F, 0.6F);
-			notes.Add(CreateNote());
-			//alert.transform.position = UIManager.Objects.TopGear.transform.position + Vector3.down * 3;
-			//alert.text = notes_hit/sleep_ratio + " TURN SLEEP";
+			notes.Add(CreateNote(level));
 			yield return new WaitForSeconds(GameData.GameSpeed(time));
 		}
 
@@ -101,7 +103,7 @@ public class Lullaby : Powerup {
 		TileMaster.instance.ResetTiles(true);
 	}
 
-	UIObj CreateNote()
+	UIObj CreateNote(int Lvl)
 	{
 		int line = Random.Range(0, 4);
 		UIObj note = CreateMinigameObj(0);
@@ -110,6 +112,8 @@ public class Lullaby : Powerup {
 		note.Img[0].color = GameData.Colour((GENUS)line);
 		note.AddAction(UIAction.MouseDown, () =>
 		{
+			AudioSource c = AudioManager.instance.PlayClipOn(this.transform, "Powerup", "HarpNote");
+			c.pitch += (float)line*0.5F;
 			notes_hit ++;
 			MiniAlertUI alert  = UIManager.instance.MiniAlert(note.transform.position,
 			"Good!", 100, GameData.Colour(Parent.Genus), 0.3F, 0.2F);
@@ -121,8 +125,8 @@ public class Lullaby : Powerup {
 		MoveToPoint mp = note.GetComponent<MoveToPoint>();
 		mp.enabled = true;
 		mp.SetTarget(Harp.Img[line].transform.position);
-		mp.SetPath(10 * CameraUtility.OrthoFactor, 0.0F, 0.0F);
-		mp.SetScale(0.3F, 0.6F);
+		mp.SetPath(Speed[Lvl] * CameraUtility.OrthoFactor, 0.0F, 0.0F);
+		mp.SetScale(0.3F, 0.2F);
 
 		return note;
 	}
@@ -151,7 +155,6 @@ public class Lullaby : Powerup {
 
 	void CharmAndValue(Tile target, int duration, int hpinc = 1, int atkinc = 3)
 	{
-		print("CHARMING " + target);
 		Transform par = UIManager.instance.Health.transform;
 		if(Parent != null) par = UIManager.ClassButtons[Parent.Index].transform;
 

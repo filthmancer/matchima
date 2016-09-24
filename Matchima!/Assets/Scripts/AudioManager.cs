@@ -11,6 +11,8 @@ public class AudioManager : MonoBehaviour {
 	{
 		instance = this;
 	}
+
+	public ObjectPooler AudioPool;
 	public AudioSource AudioObj;
 
 	public AudioGroup Player;
@@ -22,13 +24,20 @@ public class AudioManager : MonoBehaviour {
 	public AudioGroup [] Classes;
 
 	public AudioGroup UI;
+	public AudioGroup Status;
+	public AudioGroup Powerup;
 
 	public AudioSource Music;
 
-	public AudioClip LoadingMusic, HomeScreenMusic;
+	public AudioClip HomeScreenMusic;
+	public AudioClip [] ZoneMusic;
+	public AudioClip Ambient;
 
 	public static bool PlaySFX = true, PlayMusic = true;
 	public bool PrintLogs = false;
+
+	public float AudioTimer = 0.0F;
+	private float AudioTimer_cap = 240.0F;
 
 	void Start()
 	{
@@ -39,19 +48,38 @@ public class AudioManager : MonoBehaviour {
 	{
 		if(!PlayMusic && Music.enabled) Music.enabled = false;
 		else if(PlayMusic && !Music.enabled) Music.enabled = true;
+
+		if(PlayMusic && GameManager.instance.gameStart)
+		{
+			AudioTimer += Time.deltaTime;
+			if(AudioTimer > AudioTimer_cap)
+			{
+				if(Music.isPlaying)
+				{
+					Music.loop = false;
+				}
+				else
+				{
+					AudioTimer = 0.0F;
+					GetZoneMusic();
+				}
+				
+				
+			}
+		}
 	}
 
-	public void PlayClipOn(Transform t, string group, string clip)
+	public AudioSource PlayClipOn(Transform t, string group, string clip)
 	{
-		if(!PlaySFX) return;
+		if(!PlaySFX) return null;
 		AudioClipProperties prop = GetGroup(group).GetClip(clip);
-		if(prop == null) return;
-		AudioSource aud = (AudioSource) Instantiate(AudioObj);
-		aud.clip = prop.GetClip();
-		aud.volume = prop.Volume;
-		aud.Play();
+		if(prop == null) return null;
+		AudioSource aud = CreateAudioObj(prop);
+		if(!aud) return null;
+
 		aud.transform.position = t.position;
 		aud.transform.parent = this.transform;
+		return aud;
 	}
 
 
@@ -60,27 +88,25 @@ public class AudioManager : MonoBehaviour {
 		if(!PlaySFX) return null;
 		AudioClipProperties prop = group.GetClip(clip);
 		if(prop == null) return null;
-		AudioSource aud = (AudioSource) Instantiate(AudioObj);
-		aud.clip = prop.GetClip();
-		aud.volume = prop.Volume;
-		aud.Play();
+		AudioSource aud = CreateAudioObj(prop);
+		if(!aud) return null;
+
 		aud.transform.position = t.position;
 		aud.transform.parent = this.transform;
 		return aud;
 	}
 
-	public AudioSource PlayTileAudio(Tile t, string clip)
+	public AudioSource PlayTileAudio(Tile t, string clip, float vol = 1.0F)
 	{
 		if(!PlaySFX) return null;
 		AudioGroup grop = GetTile(t.Info._TypeName);
 		if(grop == null) grop = Tiles_Default;
 		AudioClipProperties prop = grop.GetClip(clip);
 		if(prop == null) return null;
-		
-		AudioSource aud = (AudioSource) Instantiate(AudioObj);
-		aud.clip = prop.GetClip();
-		aud.volume = prop.Volume;
-		aud.Play();
+		AudioSource aud = CreateAudioObj(prop);
+		if(!aud) return null;
+
+		aud.volume = prop.Volume * vol;
 		aud.transform.position = t.transform.position;
 		aud.transform.parent = this.transform;
 
@@ -95,15 +121,28 @@ public class AudioManager : MonoBehaviour {
 		if(group == null) group = Class_Default;
 		AudioClipProperties prop = group.GetClip(clip);
 		if(prop == null) return null;
+		AudioSource aud = CreateAudioObj(prop);
+		if(!aud) return null;
 
-		AudioSource aud = (AudioSource) Instantiate(AudioObj);
-		aud.clip = prop.GetClip();
-		aud.volume = prop.Volume;
-		aud.Play();
 		aud.transform.position = UIManager.ClassButtons.GetClass(cl.Index).transform.position;
 		aud.transform.parent = this.transform;
 
 		if(PrintLogs) print("played " + prop.Name + " at " + cl);
+		return aud;
+	}
+
+	public AudioSource CreateAudioObj(AudioClipProperties prop)
+	{
+		if(AudioPool == null)
+		{
+			AudioPool = new ObjectPooler(AudioObj.gameObject, 10, this.transform);
+		}
+		if(!AudioPool.IsAvailable) return null;
+
+		AudioSource aud = AudioPool.Spawn().GetComponent<AudioSource>();
+		aud.clip = prop.GetClip();
+		aud.volume = prop.Volume;
+		aud.Play();
 		return aud;
 	}
 
@@ -112,6 +151,8 @@ public class AudioManager : MonoBehaviour {
 		//if(name == Enemy.Name) return Enemy;
 		if(name == Player.Name) return Player;
 		else if(name == UI.Name) return UI;
+		else if(name == Powerup.Name) return Powerup;
+		else if(name == Status.Name) return Status;
 		else return null;
 	}
 
@@ -185,7 +226,30 @@ public class AudioManager : MonoBehaviour {
 	{
 		Music.clip = clip;
 		Music.Play();
+	}
 
+	public void GetZoneMusic()
+	{
+		int r = Random.Range(0, ZoneMusic.Length);
+		Music.clip = ZoneMusic[r];
+		Music.loop = true;
+		Music.Play();
+	}
+
+	private List<Tile> alerts = new List<Tile>();
+	public void QueueAlert(Tile t)
+	{
+		foreach(Tile child in alerts)
+		{
+			if(string.Equals(child.TypeName, t.TypeName)) return;
+		}
+		t.PlayAudio("alert", 0.7F);
+		alerts.Add(t);
+	}
+
+	public void ClearAlerts()
+	{
+		alerts.Clear();
 	}
 }
 

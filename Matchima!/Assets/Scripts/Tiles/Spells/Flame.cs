@@ -176,7 +176,7 @@ public class Flame : Tile {
 
 	void FlameTile(Tile t)
 	{
-
+		PlayAudio("cast", 0.3F);
 		t.SetState(TileState.Selected, true);
 		GameObject p = (GameObject)Instantiate(Particle);
 		p.transform.position = t.transform.position;

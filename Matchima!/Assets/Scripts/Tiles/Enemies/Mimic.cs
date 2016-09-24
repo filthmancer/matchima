@@ -180,6 +180,7 @@ public class Mimic : Enemy {
 
 	public void Reveal()
 	{
+		PlayAudio("open");
 		revealed = true;
 		InitStats.isAlerted = true;
 		InitStats._Team = Team.Enemy;

@@ -78,7 +78,7 @@ public class Cross : Tile {
 			Particles[i].enableEmission = true;
 		}
 		
-		PlayAudio("cast");
+		PlayAudio("cast", 0.4F);
 		List<Tile> to_collect = new List<Tile>();
 		Tile [,] _tiles = TileMaster.Tiles;
 		for(int x = 0; x < _tiles.GetLength(0); x++)

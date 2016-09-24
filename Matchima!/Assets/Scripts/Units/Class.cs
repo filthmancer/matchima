@@ -388,7 +388,6 @@ public class Class : Unit {
 		powerup.transform.position = UIManager.ClassButtons.GetClass(Index).transform.	position;
 		powerup.transform.localScale = Vector3.one;
 
-		
 		yield return new WaitForSeconds(GameData.GameSpeed(0.5F));
 		Destroy(powerup);
 		if(Manapower_audio != null) Destroy(Manapower_audio.gameObject);
@@ -402,12 +401,12 @@ public class Class : Unit {
 		MeterDecay_soft = MeterDecayInit[MeterLvl];
 		MeterDecay = (int) MeterDecay_soft;
 		
-		Manapower_audio = AudioManager.instance.PlayClip(this.transform, AudioManager.instance.Player, "Mana Powerup Loop");
-		if(Manapower_audio != null)
-		{
-			Manapower_audio.GetComponent<DestroyTimer>().enabled = false;
-		Manapower_audio.loop = true;
-		}
+		//Manapower_audio = AudioManager.instance.PlayClip(this.transform, AudioManager.instance.Player, "Mana Powerup Loop");
+		//if(Manapower_audio != null)
+		//{
+		//	Manapower_audio.GetComponent<DestroyTimer>().enabled = false;
+		//Manapower_audio.loop = true;
+		//}
 		
 
 		Effect e = MeterLvl == 1 ? Effect.ManaPowerLvl1 : (MeterLvl == 2 ? Effect.ManaPowerLvl2 : Effect.ManaPowerLvl3);
@@ -543,6 +542,7 @@ public class Class : Unit {
 	public void AddToMeterDirect(int res)
 	{
 		Meter = (int)Mathf.Clamp(Meter + res, 0, Mathf.Infinity);
+		//AudioManager.instance.PlayClipOn(this.transform, "Player", "Mana Up");
 	}
 
 	public void AddToMeter(int res)
@@ -561,6 +561,7 @@ public class Class : Unit {
 			if(!adding_to_meter) StartCoroutine(MeterLoop());
 			if(time_from_last_pulse > 1.3F)
 			{
+				AudioManager.instance.PlayClipOn(this.transform, "Player", "Mana Up");
 				UIManager.ClassButtons.GetClass(Index).GetComponent<Animator>().SetTrigger("Pulse");
 				time_from_last_pulse = 0.0F;			
 			}
@@ -949,6 +950,7 @@ public class Class : Unit {
 
 	public virtual void OnDeath()
 	{
+		AudioManager.instance.PlayClipOn(this.transform, "Player", "Death");
 		isKilled = true;
 		killtimer = 4;
 		StartCoroutine(PowerDown());

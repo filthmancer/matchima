@@ -73,7 +73,7 @@ public class Arcane : Tile {
 		foreach(Tile child in to_collect)
 		{
 			PlayerControl.instance.RemoveTileToMatch(child);
-
+			PlayAudio("cast");
 			GameObject part = Instantiate(ArcaneParticle);
 			part.transform.position = this.transform.position;
 
@@ -120,7 +120,7 @@ public class Arcane : Tile {
 				
 				to_collect.Add(c);	
 				//PlayerControl.instance.RemoveTileToMatch(c);
-
+				PlayAudio("cast");
 				GameObject part = Instantiate(ArcaneParticle);
 				part.transform.position = this.transform.position;
 				MoveToPoint mp = part.GetComponent<MoveToPoint>();
@@ -137,6 +137,7 @@ public class Arcane : Tile {
 				{
 					child.SetState(TileState.Selected, true);
 					child.InitStats.Hits -= final_damage;
+					child.PlayAudio("hit");
 					//child.InitStats.TurnDamage += final_damage;
 					PlayerControl.instance.AddTilesToSelected(child);
 

@@ -881,6 +881,7 @@ public class UIManager : MonoBehaviour {
 	private UIObjTweener HornsLeft, HornsRight;
 	public IEnumerator PlayHorns(float time = 0.8F)
 	{
+		AudioManager.instance.PlayClipOn(this.transform, "UI", "Horn");
 		HornsLeft.SetTween(0, true);
 		HornsRight.SetTween(0,true);
 		yield return new WaitForSeconds(time);

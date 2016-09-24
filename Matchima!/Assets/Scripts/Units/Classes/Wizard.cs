@@ -32,6 +32,9 @@ public class Wizard : Class {
 				new Upgrade("Sharp", " Spell", 0.7F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._Spell += 1 + (int)val;}, 1, 1),
 				new Upgrade("Wise", "% Spell Power", 1.0F, ScaleType.GRADIENT, 0.5F, (Stat s, float val) => {s.SpellPower += 0.2F * val;}, 20),
 				new Upgrade("Healing", " MP Regen", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.MeterRegen += 1 + (int) val;}),
+				new Upgrade("Sharp", " Attack", 1.0F, ScaleType.GRADIENT, 0.3F, 
+					(Stat s, float val) => {s._Attack += 1 + (int)val;}, 1, 1),
+				new Upgrade("Hearty", " Max HP", 1.0F, ScaleType.GRADIENT, 0.5F, (Stat s, float val) => {s._HealthMax += 20 + (int)val*5;}, 5, 20),
 
 				new Upgrade("Soldier's", "% chance\n of Health", 0.1F, ScaleType.GRADIENT, 1.0F,
 					(Stat s, float value) => {
