@@ -601,6 +601,7 @@ public class TileMaster : MonoBehaviour {
 		newtile = CreateTile(x, y, Vector2.zero, sp, g, false, newscale, addvalue);
 		EffectManager.instance.PlayEffect(newtile.transform, Effect.Replace, GameData.instance.GetGENUSColour(newtile.Genus));
 		newtile.InitStats.Value += tempval;
+		newtile.PlayAudio("replace",0.6F);
 		return newtile;
 	}
 

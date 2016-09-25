@@ -33,7 +33,7 @@ public class Lightning : Tile {
 
 		GameObject part = EffectManager.instance.PlayEffect(transform, Effect.Lightning);
 		CameraUtility.instance.ScreenShake((float)Stats.Value/10, Time.deltaTime* 15);
-		AudioSource aud = PlayAudio("cast", 0.5F);
+		AudioSource aud = PlayAudio("cast", 0.75F);
 		aud.GetComponent<DestroyTimer>().Timer = 1.0F;
 		yield return new WaitForSeconds(GameData.GameSpeed(0.35F));
 
@@ -88,7 +88,7 @@ public class Lightning : Tile {
 			yield return null;
 		}
 
-		yield return new WaitForSeconds(GameData.GameSpeed(0.35F));
+		yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 
 		for(int i = 0; i < particles.Count; i++)
 		{
@@ -120,7 +120,7 @@ public class Lightning : Tile {
 		//yield return StartCoroutine(Player.instance.BeforeMatch(to_collect));
 		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
 			
-		yield break;
+		yield return new WaitForSeconds( GameData.GameSpeed(0.2F));
 	}
 
 }

@@ -548,7 +548,6 @@ public class GameData : MonoBehaviour {
 
 	public void Save()
 	{
-		print(true);
 		//bool finished_save = false;
 		XmlDocument file = new XmlDocument();
 		
@@ -566,7 +565,7 @@ public class GameData : MonoBehaviour {
 			
 		// Create a new file stream to write the serialized object to a file
 
-		string filepos = Application.persistentDataPath + "\\PlayerData.xml";
+		string filepos = Application.persistentDataPath + "/PlayerData.xml";
 		/*if(Application.platform == RuntimePlatform.IPhonePlayer)
 		{
 			filepos = GetIOSPath();
@@ -592,7 +591,7 @@ public class GameData : MonoBehaviour {
 		#if !UNITY_WEBPLAYER
 		
 		XmlDocument xmldoc = new XmlDocument (); 
-		string datapath = Application.persistentDataPath + "\\PlayerData.xml";
+		string datapath = Application.persistentDataPath + "/PlayerData.xml";
 		
 		if(System.IO.File.Exists(datapath))
 		{
@@ -648,7 +647,8 @@ public class GameData : MonoBehaviour {
 		LoadUnlocks();
 		LoadClasses();
 		LoadPowerups();
-				
+		
+		StartCoroutine(AudioManager.instance.LoadAudioInit());
 		yield return null;
 		yield return StartCoroutine(UIManager.instance.UnloadUI());
 		yield return null;

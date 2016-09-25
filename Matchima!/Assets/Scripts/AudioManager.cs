@@ -102,6 +102,7 @@ public class AudioManager : MonoBehaviour {
 		AudioGroup grop = GetTile(t.Info._TypeName);
 		if(grop == null) grop = Tiles_Default;
 		AudioClipProperties prop = grop.GetClip(clip);
+		if(prop == null) prop = Tiles_Default.GetClip(clip);
 		if(prop == null) return null;
 		AudioSource aud = CreateAudioObj(prop);
 		if(!aud) return null;
@@ -135,11 +136,12 @@ public class AudioManager : MonoBehaviour {
 	{
 		if(AudioPool == null)
 		{
-			AudioPool = new ObjectPooler(AudioObj.gameObject, 10, this.transform);
+			AudioPool = new ObjectPooler(AudioObj.gameObject, 20, this.transform);
 		}
 		if(!AudioPool.IsAvailable) return null;
 
 		AudioSource aud = AudioPool.Spawn().GetComponent<AudioSource>();
+		aud.GetComponent<DestroyTimer>().Timer = 2.0F;
 		aud.clip = prop.GetClip();
 		aud.volume = prop.Volume;
 		aud.Play();
@@ -174,6 +176,30 @@ public class AudioManager : MonoBehaviour {
 		return null;
 	}
 
+	string [] zonemusicnames = new string [] 
+	{
+		"carla_intro",
+		"greg_gothicjam",
+		"greg_onwards",
+		"unknown_matchima1",
+		"lalks_ferambe"
+		//,"greg_spookyjam"
+	};
+
+	public IEnumerator LoadAudioInit()
+	{
+		string path = "audio/music/zone";
+		ZoneMusic = new AudioClip[zonemusicnames.Length];
+		for(int i = 0; i < zonemusicnames.Length; i++)
+		{
+			string final = path + "/" + zonemusicnames[i];
+			ResourceRequest r = Resources.LoadAsync(final);
+			while(!r.isDone) yield return null;
+			ZoneMusic[i] = r.asset as AudioClip;
+		}
+		yield return null;
+	}
+
 	public IEnumerator LoadAudio(string path)
 	{
 		Tiles_Default = GenerateGroup(path, "default");
@@ -201,6 +227,9 @@ public class AudioManager : MonoBehaviour {
 
 			yield return new WaitForSeconds(Time.deltaTime * 3);
 		}
+
+		
+
 		yield return null;
 	}
 
@@ -243,7 +272,7 @@ public class AudioManager : MonoBehaviour {
 		{
 			if(string.Equals(child.TypeName, t.TypeName)) return;
 		}
-		t.PlayAudio("alert", 0.7F);
+		if(Random.value > 0.7F) t.PlayAudio("alert", 0.4F);
 		alerts.Add(t);
 	}
 

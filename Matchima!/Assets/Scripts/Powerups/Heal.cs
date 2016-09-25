@@ -24,6 +24,7 @@ public class Heal : Powerup {
 		MGame.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
 		MGame.AddAction(UIAction.MouseDown, () => 
 		{
+			AudioManager.instance.PlayClipOn(this.transform, "Powerup", "HealHeartbeat");
 			final_ratio += 0.07F;
 			MiniAlertUI alert  = UIManager.instance.MiniAlert(PlayerControl.InputPos+Vector3.up,
 			(int)(final_ratio * HealTotal) + "%", 140, GameData.Colour(Parent.Genus), 0.3F, 0.4F);

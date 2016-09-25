@@ -121,6 +121,7 @@ public class Firestorm : Powerup {
 
 		if(target == null) yield break;
 
+		AudioManager.instance.PlayClipOn(this.transform, "Powerup", "Firestorm");
 		Tile [,] _tiles = TileMaster.Tiles;
 		List<Tile> to_collect = new List<Tile>();
 

@@ -55,12 +55,12 @@ public class UIGear : UIObjTweener {
 	{
 		if(Rotate)
 		{
-			if(rotate_audiotime > rotate_audiocap)
+			/*if(rotate_audiotime > rotate_audiocap)
 			{
 				rotate_audiotime = 0.0F;
 				AudioManager.instance.PlayClipOn(this.transform, "UI", "GearTick");
 			}
-			else rotate_audiotime += Time.deltaTime;
+			else rotate_audiotime += Time.deltaTime;*/
 			gearTrans.Rotate(rotationVelocity);
 		}
 	}
@@ -98,12 +98,12 @@ public class UIGear : UIObjTweener {
 			{
 				if(Mathf.Abs(dragAcc.x) > DragLerpThreshold) 
 				{
-					if(rotate_audiotime > rotate_audiocap)
+					/*if(rotate_audiotime > rotate_audiocap)
 					{
 						rotate_audiotime = 0.0F;
 						AudioManager.instance.PlayClipOn(this.transform, "UI", "GearTick");
 					}
-					else rotate_audiotime += Time.deltaTime;
+					else rotate_audiotime += Time.deltaTime;*/
 					gearTrans.Rotate(new Vector3(0,0,FlipDrag ? -dragAcc.x : dragAcc.x));
 				}
 					
@@ -140,12 +140,13 @@ public class UIGear : UIObjTweener {
 			{
 				if(Mathf.Abs(dragAcc.x) > DragLerpThreshold)
 				{
-					if(rotate_audiotime > rotate_audiocap)
+
+					/*if(rotate_audiotime > rotate_audiocap)
 					{
 						rotate_audiotime = 0.0F;
 						AudioManager.instance.PlayClipOn(this.transform, "UI", "GearTick");
 					}
-					else rotate_audiotime += Time.deltaTime;
+					else rotate_audiotime += Time.deltaTime;*/
 				}
 				
 				gearTrans.Rotate(new Vector3(0,0,FlipDrag ? -dragAcc.x : dragAcc.x));	
@@ -190,6 +191,7 @@ public class UIGear : UIObjTweener {
 	public List<Action<int>> DivisionActions = new List<Action<int>>();
 	public void OnDivisionLerp(int i)
 	{
+		AudioManager.instance.PlayClipOn(this.transform, "UI", "GearOpen");
 		foreach(Action<int> child in DivisionActions)
 		{
 			child(i);
@@ -202,15 +204,17 @@ public class UIGear : UIObjTweener {
 	 	switch(i)
 	 	{
 	 		case 0:
+	 		if(GetTween(pstate)) AudioManager.instance.PlayClipOn(this.transform, "UI", "GearOpen");
 	 		SetTween(pstate,false);
+	 		
 	 		break;
 	 		case 1:
-	 		AudioManager.instance.PlayClipOn(this.transform, "UI", "GearClose");
+	 		if(!GetTween(1)) AudioManager.instance.PlayClipOn(this.transform, "UI", "GearClose");
 	 		SetTween(1,true);
 	 		pstate = 1;
 	 		break;
 	 		case 2:
-	 		AudioManager.instance.PlayClipOn(this.transform, "UI", "GearClose");
+	 		if(!GetTween(2)) AudioManager.instance.PlayClipOn(this.transform, "UI", "GearClose");
 	 		SetTween(2,true);
 	 		pstate = 2;
 	 		break;

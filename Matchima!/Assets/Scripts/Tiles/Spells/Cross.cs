@@ -78,7 +78,7 @@ public class Cross : Tile {
 			Particles[i].enableEmission = true;
 		}
 		
-		PlayAudio("cast", 0.4F);
+		PlayAudio("cast", 0.8F);
 		List<Tile> to_collect = new List<Tile>();
 		Tile [,] _tiles = TileMaster.Tiles;
 		for(int x = 0; x < _tiles.GetLength(0); x++)
@@ -115,7 +115,7 @@ public class Cross : Tile {
 		//CameraUtility.instance.ScreenShake((float)Stats.Value/25, Time.deltaTime*15);
 		TileMaster.instance.Ripple(this, to_collect, 2.1F*Stats.Value, GameData.GameSpeed(0.4F), 0.5F);
 		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
-		yield return new WaitForSeconds(GameData.GameSpeed(0.4F));
+		yield return new WaitForSeconds(GameData.GameSpeed(0.3F));
 
 		for(int i = 0; i < Particles.Length; i++)
 		{
@@ -123,8 +123,6 @@ public class Cross : Tile {
 			Particles[i].enableEmission = false;
 		}
 
-		
-		
-		yield return null;
+		yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 	}
 }

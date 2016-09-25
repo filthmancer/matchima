@@ -33,7 +33,7 @@ public class Lens : Tile {
 				part.GetComponent<DestroyTimer>().Timer = 0.5F;
 			yield return new WaitForSeconds(Time.deltaTime * 5);
 		}
-
+		yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 		yield return null;
 	}
 

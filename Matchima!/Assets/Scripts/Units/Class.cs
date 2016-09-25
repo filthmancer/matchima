@@ -561,7 +561,7 @@ public class Class : Unit {
 			if(!adding_to_meter) StartCoroutine(MeterLoop());
 			if(time_from_last_pulse > 1.3F)
 			{
-				AudioManager.instance.PlayClipOn(this.transform, "Player", "Mana Up");
+				AudioManager.instance.PlayClipOn(this.transform, "Player", "Mana Up", 0.5F);
 				UIManager.ClassButtons.GetClass(Index).GetComponent<Animator>().SetTrigger("Pulse");
 				time_from_last_pulse = 0.0F;			
 			}
@@ -725,6 +725,7 @@ public class Class : Unit {
 		GameObject powerup = EffectManager.instance.PlayEffect(UIManager.ClassButtons.GetClass(Index).transform, Effect.ManaPowerUp, GameData.Colour(Genus));
 		powerup.transform.localScale = Vector3.one;
 
+		AudioManager.instance.PlayClipOn(this.transform, "Player", "Mutate");
 		StCon [] title = new StCon[]{
 			new StCon(_Name),
 			new StCon("is Mutating!", Color.white, true, 110)};

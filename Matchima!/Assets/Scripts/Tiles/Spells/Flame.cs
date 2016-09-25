@@ -170,8 +170,7 @@ public class Flame : Tile {
 		}
 
 		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
-
-		yield return null;
+		yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 	}
 
 	void FlameTile(Tile t)

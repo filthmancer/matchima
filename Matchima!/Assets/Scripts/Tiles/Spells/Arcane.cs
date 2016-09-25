@@ -159,8 +159,8 @@ public class Arcane : Tile {
 			if(check > check_maxsize) break;
 			
 		}
-		
-		yield return null;
+
+		yield return new WaitForSeconds(GameData.GameSpeed(0.3F));
 	}
 
 }

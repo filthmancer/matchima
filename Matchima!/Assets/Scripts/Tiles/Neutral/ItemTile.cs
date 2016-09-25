@@ -61,6 +61,7 @@ public class ItemTile : Tile {
 		
 		RollCon type = Rolls[Random.Range(0, Rolls.Length)];
 		TileMaster.instance.ReplaceTile(this, TileMaster.Types[type.species], type.genus, Point.Scale, Stats.Value);
+		PlayAudio("cast");
 		return false;
 	//CHANGE ITEM STATS BASED ON VALUE
 

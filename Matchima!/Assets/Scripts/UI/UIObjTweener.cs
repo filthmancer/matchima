@@ -14,4 +14,9 @@ public class UIObjTweener : UIObj {
 		bool actual = active ?? !Tweens[i].IsObjectOpened();
 		if(Tweens[i].IsObjectOpened() != actual) Tweens[i].OpenCloseObjectAnimation();
 	}
+
+	public bool GetTween(int i)
+	{
+		return Tweens[i].IsObjectOpened();
+	}
 }

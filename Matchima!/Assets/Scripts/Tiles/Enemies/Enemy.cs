@@ -184,7 +184,8 @@ public class Enemy : Tile {
 
 		if(InitStats.TurnDamage == 0) yield break;
 
-		AudioManager.instance.PlayTileAudio(this, "hit");
+		PlayAudio("hit", 1.5F);
+		AudioManager.instance.PlayClipOn(this.transform, "Player", "Attack");
 		GameObject part = EffectManager.instance.PlayEffect(_Transform, Effect.Attack);
 		yield return new WaitForSeconds(GameData.GameSpeed(0.03F));
 

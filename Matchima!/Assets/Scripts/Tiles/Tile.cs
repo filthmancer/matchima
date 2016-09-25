@@ -1323,6 +1323,7 @@ public class Tile : MonoBehaviour {
 	public void ChangeGenus(GENUS g)
 	{
 		EffectManager.instance.PlayEffect(transform, Effect.Replace, GameData.instance.GetGENUSColour(g));
+		PlayAudio("replace", 0.6F);
 		Info.ChangeGenus(g);
 		SetSprite();
 	}

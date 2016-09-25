@@ -72,7 +72,7 @@ public class Bomb : Tile {
 		}
 
 		CameraUtility.instance.ScreenShake((float)Stats.Value/5,  GameData.GameSpeed(0.4F));
-		yield return new WaitForSeconds( GameData.GameSpeed(0.4F));
+		yield return new WaitForSeconds( GameData.GameSpeed(0.2F));
 
 		for(int i = 0; i < to_collect.Count; i++)
 		{
@@ -93,5 +93,6 @@ public class Bomb : Tile {
 			}
 		}
 		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
+		yield return new WaitForSeconds( GameData.GameSpeed(0.2F));
 	}
 }

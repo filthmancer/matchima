@@ -162,6 +162,7 @@ int[] fireballs = new int[]
 		//COLLECT TILES AROUND HIT TILE
 		mp.SetMethod(() =>
 		{
+			AudioManager.instance.PlayClipOn(this.transform, "Powerup", "Explosion");
 			CameraUtility.instance.ScreenShake(0.5F, 0.5F);
 			for(int x = 0; x < TileMaster.Tiles.GetLength(0); x++)
 			{

@@ -133,7 +133,7 @@ public class ThrowKnives : Powerup {
 		UIObj knife = CreateMinigameObj(0);
 		knife.transform.position = UIManager.Objects.BotGear.transform.position;
 		knife.transform.position += Vector3.right * (Random.value - Random.value);
-
+		AudioManager.instance.PlayClipOn(this.transform, "Powerup", "KnifeThrow");
 		float velx = Random.Range(0.0F, 0.09F);
 		if(Random.value < 0.5F) velx = -velx;
 		Vector3 vel = new Vector3(velx, 1.0F, 0.0F);
@@ -148,6 +148,7 @@ public class ThrowKnives : Powerup {
 				CatchNum ++;
 				UIManager.instance.MiniAlert(knife.transform.position, 
 				"Caught!", 100, GameData.Colour(Parent.Genus), 0.4F, 0.1F);
+				AudioManager.instance.PlayClipOn(this.transform, "Powerup", "KnifeCatch");
 				Destroy(knife.gameObject);
 			} 
 		}, TimerType.PostTimer, 0.2F);
@@ -172,6 +173,7 @@ public class ThrowKnives : Powerup {
 		UIObj part = CreateMinigameObj(0);
 		part.transform.position = par.position;
 		part.transform.localScale *= 0.7F;
+		AudioManager.instance.PlayClipOn(this.transform, "Powerup", "KnifeThrow");
 		
 		part.GetComponent<Velocitizer>().enabled = false;
 		MoveToPoint mp = part.GetComponent<MoveToPoint>();
