@@ -405,7 +405,7 @@ public class GameManager : MonoBehaviour {
 
 	  	yield return new WaitForSeconds(1.65F);
 
-	  	//alerter.Txt[0].text = "Watch an ad\nfor 3 Bonus\nTiles?";
+	  	alerter.Txt[0].text = "Watch an ad for 3 Bonus Tiles?";
 	  //	alerter.SetActive(true);
 	 	 alerter.SetTween(0, true);
 		
@@ -417,7 +417,6 @@ public class GameManager : MonoBehaviour {
 			(UIManager.instance.AdAlertMini as UIObjTweener).SetTween(0, false);
 			(UIManager.instance.AdAlertMini[0] as UIObjTweener).SetTween(0, false);
 			});
-
 		yield return StartCoroutine(GameData.DeltaWait(0.95F));
 		adflash.SetTween(0, true);
 		yield return null;
@@ -618,25 +617,34 @@ public class GameManager : MonoBehaviour {
 	}
 
 	public bool ShownEndAd = false;
+	private int XP_total = 0;
 	IEnumerator EndGame(End_Type e, bool enderad)
 	{
-		if(enderad && !ShownEndAd)
-		{
-			ShownEndAd = true;
-			yield return StartCoroutine(ShowEnderAd());
-			}
 		if(enderad && !Player.Stats.isKilled) yield break;
-		if(Wave) Wave.OnWaveDestroy();
 		UIManager.instance.CloseZoneUI();
-
+		
 		int [] xp = CalculateXP(e);
-		int total = xp[1] + xp[2] + xp[3];
-		yield return new WaitForSeconds(0.1F);
-		TileMaster.instance.ClearGrid(true);
+		XP_total = xp[2];
 
 		yield return new WaitForSeconds(0.3F);
 		yield return StartCoroutine(UIManager.instance.ShowKillUI(e, xp));
-		yield return StartCoroutine(Player.instance.AddXP(total));
+		if(enderad && !ShownEndAd)
+		{
+			ShownEndAd = true;
+			yield return StartCoroutine(ShowEnderAd2());
+		}
+	}
+
+
+
+	public IEnumerator ExitGame()
+	{
+		TileMaster.instance.ClearGrid(true);
+		if(Wave) Wave.OnWaveDestroy();
+
+		yield return StartCoroutine(Player.instance.AddXP(XP_total));
+		XP_total = 0;
+		yield return StartCoroutine(Reset());
 	}
 
 	int [] CalculateXP(End_Type e)
@@ -647,32 +655,35 @@ public class GameManager : MonoBehaviour {
 
 		int avg_turns_per_floor = 10;
 
-		int difficulty = (int) (GameManager.Difficulty * (int) DifficultyMode);
+		int difficulty = (int) (Difficulty * (int) DifficultyMode);
 
 		int depth = GameManager.Floor;
 		int turns = Player.instance.Turns;
 		if(turns == 0) turns = 1;
 		
-		int [] final = new int[4];
-	//The base XP amount, taken from difficulty
-		final[0] = difficulty * xp_diff_rate;
+		//XP multiplier from ending type
+		float multi = 1.0F;
+			switch(e)
+			{
+				case End_Type.Victory:
+				multi = 2.0F;
+				break;
+				case End_Type.Defeat:
+				multi = 1.7F;
+				break;
+				case End_Type.Retire:
+				multi = 1.0F;
+				break;
+			}
 
-	//XP multiplier from ending type
-		switch(e)
-		{
-			case End_Type.Victory:
-			final[1] = (int) ((float)final[0] * 2.0F);
-			break;
-			case End_Type.Defeat:
-			final[1] = (int) ((float)final[0] * 1.7F);
-			break;
-			case End_Type.Retire:
-			final[1] = (int) ((float)final[0] * 1.0F);
-			break;
-		}
+		int [] final = new int[3];
+	//The base XP amount, taken from difficulty
+		final[0] = (int) (difficulty * xp_diff_rate * multi);
+
 
 	//XP from depth
-		final[2] = GameManager.Floor * xp_depth_rate;
+		float floorxp = GameManager.Floor * xp_depth_rate * multi;
+		final[1] = final[0] + (int)floorxp;
 
 	//XP gained from position on average turns scale
 		int avg_turns_xp = GameManager.Floor * avg_turns_per_floor;
@@ -680,10 +691,39 @@ public class GameManager : MonoBehaviour {
 
 	//Caluculate turn xp by subtracting the actual turn number from the average turn number at that depth
 		int final_turns_xp = Mathf.Clamp(avg_turns_xp-actual_turns_xp, 0, 100);
-
-		final[3] = final_turns_xp * xp_turns_rate;
+		float turnxp = final_turns_xp * xp_turns_rate * multi;
+		final[2] = final[1] + (int)turnxp;
 
 		return final;
+	}
+
+	IEnumerator ShowEnderAd2()
+	{
+		EnderAd_showing = false;
+		UIObjTweener alerter = UIManager.instance.AdAlertMini as UIObjTweener;
+		alerter.SetTween(0, false);
+
+		UIObjTweener adflash = alerter[0] as UIObjTweener;
+		adflash.SetTween(0,false);
+		while(!Advertisement.IsReady())
+		{
+			yield return null;
+		}
+
+		alerter.Txt[0].text = "Watch an ad\nto cheat death?";
+		alerter.SetTween(0, true);
+		
+		yield return StartCoroutine(GameData.DeltaWait(0.85F));
+		
+		adflash.ClearActions();
+		adflash.AddAction(UIAction.MouseUp, () => {
+			Scum.ShowEnderAd();
+			EnderAd_showing = true;
+			(UIManager.instance.AdAlertMini as UIObjTweener).SetTween(0, false);
+			(UIManager.instance.AdAlertMini[0] as UIObjTweener).SetTween(0, false);
+			});
+		adflash.SetTween(0, true);
+		yield return null;
 	}
 
 	
@@ -716,10 +756,25 @@ public class GameManager : MonoBehaviour {
 
 		yield return StartCoroutine(GameData.DeltaWait(0.85F));
 		adflash.SetTween(0, true);
+		adflash.Txt[0].text = "OK";
+		int EndTimer_curr = (int) EndTimer;
 
+		yield break;
+
+		MiniAlertUI time = UIManager.instance.MiniAlert(adflash.Txt[0].transform.position, "" + EndTimer_curr,
+														170, Color.white, EndTimer, 0.0F);
+		time.AddJuice(Juice.instance.BounceB, 0.3F);
+
+		
 		while((EndTimer -= Time.deltaTime) > 0.0F || EnderAd_showing)
 		{
-			adflash.Txt[0].text = (int) EndTimer + "";
+			
+			if((int) EndTimer != EndTimer_curr)
+			{
+				time.AddJuice(Juice.instance.BounceB, 0.3F);
+				EndTimer_curr = (int)EndTimer;
+			}
+			time.text = "" + (int) EndTimer_curr;
 			yield return null;
 		}
 
@@ -735,19 +790,21 @@ public class GameManager : MonoBehaviour {
 
 		int num = active ? 4 : 2;
 		string title = active ? "MASS REVIVE!" : "PARTIAL REVIVE!";
-			UIManager.instance.AdAlert.SetActive(false);
-			EnderAd_showing = false;
-			UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, title, 180, Color.white, 0.6F, 0.1F, true);
-			for(int i = 0; i < num; i++)
-			{
-				Player.Classes[i].isKilled = false;
-			}
-			Player.instance.ResetStats();
-			Player.Stats.isKilled = false;
-			Player.Stats._Health = Player.Stats._HealthMax;
-			//EndType = End_Type.Defeat;
-			paused = false;
-			gameStart = true;
+		UIManager.instance.ScreenAlert.SetTween(0, false);
+		UIManager.instance.KillUI.Hide();
+		UIManager.instance.AdAlert.SetActive(false);
+		EnderAd_showing = false;
+		UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, title, 180, Color.white, 0.6F, 0.1F, true);
+		for(int i = 0; i < num; i++)
+		{
+			Player.Classes[i].isKilled = false;
+		}
+		Player.instance.ResetStats();
+		Player.Stats.isKilled = false;
+		Player.Stats._Health = Player.Stats._HealthMax;
+		//EndType = End_Type.Defeat;
+		paused = false;
+		gameStart = true;
 	}
 #endregion
 

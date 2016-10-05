@@ -192,7 +192,7 @@ public class Flame : Tile {
 		//transform.position = new Vector3(Point.targetPos.x, Point.targetPos.y, transform.position.z);
 		Params.transform.position = transform.position;
 		Params._render.transform.localPosition = Vector3.zero;
-		switch(Genus)
+		/*switch(Genus)
 		{
 			case GENUS.STR:
 			Params._render.transform.rotation = Quaternion.Euler(0,0,180);
@@ -206,7 +206,7 @@ public class Flame : Tile {
 			case GENUS.CHA:
 			Params._render.transform.rotation = Quaternion.Euler(0,0,0);
 			break;
-		}		
+		}	*/	
 	}
 
 }

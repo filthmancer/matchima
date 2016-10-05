@@ -73,10 +73,12 @@ public class UIMenu : UIObj {
 
 		for(int n = 0; n < UIManager.ClassButtons.Length; n++)
 		{
-			UIManager.ClassButtons.GetClass(n)._Sprite.enabled = true;
-			UIManager.ClassButtons.GetClass(n)._Sprite.color = Color.white;
-			UIManager.ClassButtons.GetClass(n)._SpriteMask.enabled = false;
-			UIManager.ClassButtons.GetClass(n).Death.enabled = false;
+			UIClassButton b = UIManager.ClassButtons.GetClass(n);
+			b._Sprite.enabled = true;
+			b._Sprite.color = Color.white;
+			b._SpriteMask.enabled = false;
+			b.Death.enabled = false;
+			b.Txt[0].text = "";
 		}
 		
 		UIManager.Objects.BotGear[3].GetChild(1).transform.SetAsLastSibling();
@@ -135,7 +137,7 @@ public class UIMenu : UIObj {
 		LogoAnimation.SetFrame(0);
 		LogoAnimation.Play("Title Animation");
 		yield return new WaitForSeconds(Time.deltaTime * 30);
-		AudioManager.instance.SetMusic(AudioManager.instance.HomeScreenMusic);
+		AudioManager.instance.SetMusicClip(AudioManager.instance.HomeScreenMusic);
 		UIManager.Objects.BotGear.Txt[0].text = "TOUCH TO START";
 
 		loaded = true;
@@ -144,7 +146,7 @@ public class UIMenu : UIObj {
 
 		if(PlayerPrefs.GetInt("Resume") == 1) 
 		{	
-			//PlayerPrefs.SetInt("PrevMode", 1);
+			//(UIManager.Objects.MiddleGear["resume"] as UIObjTweener).SetTween(0, true);
 		}
 
 		bool activated = false;
@@ -275,45 +277,30 @@ public class UIMenu : UIObj {
 		});
 
 		UIManager.Objects.MiddleGear[3].ClearChildActions();
-		UIManager.Objects.MiddleGear[3][0].AddAction(UIAction.MouseUp, ()=>
-		{
-			GameManager.instance.SaveAndQuit();
-		});
 
-		UIManager.Objects.MiddleGear[3][1].AddAction(UIAction.MouseUp, ()=>
+
+		UIManager.Objects.MiddleGear[3][0].AddAction(UIAction.MouseUp, ()=>
 		{
 			GameManager.instance.Retire();
 		});
 
+		UIManager.Objects.MiddleGear[3][1].AddAction(UIAction.MouseUp, ()=>
+		{
+			AudioManager.instance.SetSFX();
+			UIManager.instance.RefreshOptions();
+		});
+
 		UIManager.Objects.MiddleGear[3][2].AddAction(UIAction.MouseUp, ()=>
 		{
-			AudioManager.PlaySFX = !AudioManager.PlaySFX;
+
+			AudioManager.instance.SetMusic();
 			UIManager.instance.RefreshOptions();
-		});
-
-		UIManager.Objects.MiddleGear[3][3].AddAction(UIAction.MouseUp, ()=>
-		{
-
-			AudioManager.PlayMusic = !AudioManager.PlayMusic;
-			UIManager.instance.RefreshOptions();
-		});
-
-
-		UIManager.Objects.MiddleGear[3][4].AddAction(UIAction.MouseUp, ()=>
-		{
-			Player.Options.CycleGameSpeed();
-			UIManager.instance.RefreshOptions();
-		});
-
-		UIManager.Objects.MiddleGear[3][5].AddAction(UIAction.MouseUp, ()=>
-		{
-			StartCoroutine(Player.instance.AddXP(1000));
 		});
 
 		UIManager.Objects.MiddleGear["advancedops"].ClearActions();
 		UIManager.Objects.MiddleGear["advancedops"].AddAction(UIAction.MouseUp, () =>
 		{
-			if(!GameData.FullVersion) UIManager.instance.ShowFullVersionAlert();
+			UIManager.instance.ShowAdvancedOptions();
 		});
 
 		UIManager.Objects.TopRightButton.ClearActions();
@@ -355,7 +342,7 @@ public class UIMenu : UIObj {
 
 		UIManager.Objects.TopGear[1][0].Txt[0].text = "STORY";
 		UIManager.Objects.TopGear[1][1].Txt[0].text = "QUICK CRAWL";
-		UIManager.Objects.TopGear[1][2].Txt[0].text = "FULL VERSION";
+		UIManager.Objects.TopGear[1][2].Txt[0].text = "SHOP";
 		UIManager.Objects.TopGear[1][3].Txt[0].text = "ENDLESS";
 
 		UIManager.Objects.TopGear.DoDivisionLerpActions = true;
@@ -580,6 +567,9 @@ public class UIMenu : UIObj {
 			UIManager.instance.ShowFullVersionAlert(true);
 			(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, false);
 			(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, false);
+
+			UIManager.Objects.MiddleGear[0].Txt[0].text = "";
+			(UIManager.Objects.BotGear as UIGear).SetTween(3, true);
 			
 			/*UIManager.Objects.MiddleGear[0].GetChild(0).ClearActions(UIAction.MouseUp);
 			UIManager.Objects.MiddleGear[0].GetChild(0).AddAction(UIAction.MouseUp,

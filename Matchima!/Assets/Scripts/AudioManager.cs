@@ -69,14 +69,14 @@ public class AudioManager : MonoBehaviour {
 		}
 	}
 
-	public AudioSource PlayClipOn(Transform t, string group, string clip)
+	public AudioSource PlayClipOn(Transform t, string group, string clip, float vol = 1.0F)
 	{
 		if(!PlaySFX) return null;
 		AudioClipProperties prop = GetGroup(group).GetClip(clip);
 		if(prop == null) return null;
 		AudioSource aud = CreateAudioObj(prop);
 		if(!aud) return null;
-
+		aud.volume *= vol;
 		aud.transform.position = t.position;
 		aud.transform.parent = this.transform;
 		return aud;
@@ -197,6 +197,9 @@ public class AudioManager : MonoBehaviour {
 			while(!r.isDone) yield return null;
 			ZoneMusic[i] = r.asset as AudioClip;
 		}
+
+		PlayMusic = ZPlayerPrefs.GetInt("Music") == 0;
+		PlaySFX = ZPlayerPrefs.GetInt("SFX") == 0;
 		yield return null;
 	}
 
@@ -227,9 +230,6 @@ public class AudioManager : MonoBehaviour {
 
 			yield return new WaitForSeconds(Time.deltaTime * 3);
 		}
-
-		
-
 		yield return null;
 	}
 
@@ -251,10 +251,22 @@ public class AudioManager : MonoBehaviour {
 		return groupfinal;
 	}
 
-	public void SetMusic(AudioClip clip)
+	public void SetMusicClip(AudioClip clip)
 	{
 		Music.clip = clip;
 		Music.Play();
+	}
+
+	public void SetMusic(bool? active = null)
+	{
+		PlayMusic = active ?? !PlayMusic;
+		ZPlayerPrefs.SetInt("Music", PlayMusic ? 0 : 1);
+	}
+
+	public void SetSFX(bool? active = null)
+	{
+		PlaySFX = active ?? !PlaySFX;
+		ZPlayerPrefs.SetInt("SFX", PlaySFX ? 0 : 1);
 	}
 
 	public void GetZoneMusic()
@@ -280,6 +292,10 @@ public class AudioManager : MonoBehaviour {
 	{
 		alerts.Clear();
 	}
+
+
+
+
 }
 
 [System.Serializable]
@@ -331,7 +347,6 @@ public class AudioGroup
 		{
 			addto.Clip.Add(clip);
 		}
-		
 	}
 
 	public void Minimize()
@@ -353,6 +368,8 @@ public class AudioGroup
 		}
 		Clips = final.ToArray();
 	}
+
+
 }
 
 [System.Serializable]

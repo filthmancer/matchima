@@ -25,16 +25,27 @@ public class UIClassSelect : UIObj {
 			Img[1].color = Color.white;
 			Txt[0].text = _class._Name.Value;
 			Txt[1].text = _class.Description;
+			Txt[2].text = "";//_class.PowerupSpell.Name;
+			Txt[3].text = "";//_class.PowerupSpell.Instruction;
 			AddAction(UIAction.MouseUp, (string [] f) => {
 				UIManager.Menu.SetTargetClass(this);
 				(ParentObj as UIGear).Drag = true;
 			});
+
+			Child[0].SetActive(true);
+			for(int i = 0; i < Child[0].Img.Length; i++)
+			{
+				Child[0].Img[i].transform.localScale = Vector3.one * _class.GetStatScale(i);
+			}
 		}
 		else
 		{
 			Img[0].color = Color.Lerp(GameData.Colour(_class.Genus), Color.black, 0.6F);
 			Txt[0].text = "???";
 			Img[1].color = Color.black;
+			Child[0].SetActive(false);
+			Txt[2].text = "";
+			Txt[3].text = "";
 		}
 		
 	

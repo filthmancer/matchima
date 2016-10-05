@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"kpro",
+				"kProductNameSkin"
+			],
+			[
 				"rotat",
 				"rotate_audiotime"
 			],
@@ -444,98 +448,10 @@
 	"buffers":
 	[
 		{
-			"file": "Scripts/Tiles/Spells/Cross.cs",
-			"settings":
-			{
-				"buffer_size": 3627,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Scripts/Tiles/Neutral/ItemTile.cs",
-			"settings":
-			{
-				"buffer_size": 1812,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Scripts/TileMaster.cs",
-			"settings":
-			{
-				"buffer_size": 46309,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Scripts/Tiles/Tile.cs",
-			"settings":
-			{
-				"buffer_size": 42931,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Scripts/Tiles/Enemies/Enemy.cs",
-			"settings":
-			{
-				"buffer_size": 8539,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Scripts/Tiles/Spells/Arcane.cs",
-			"settings":
-			{
-				"buffer_size": 4731,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Scripts/Tiles/Spells/Flame.cs",
-			"settings":
-			{
-				"buffer_size": 5382,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Scripts/Tiles/Spells/Lens.cs",
-			"settings":
-			{
-				"buffer_size": 1397,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Scripts/Tiles/Spells/Harp.cs",
-			"settings":
-			{
-				"buffer_size": 2552,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Scripts/Tiles/Spells/Bomb.cs",
-			"settings":
-			{
-				"buffer_size": 2724,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Scripts/Tiles/Spells/Lightning.cs",
-			"settings":
-			{
-				"buffer_size": 3685,
-				"line_ending": "Windows"
-			}
-		},
-		{
 			"file": "Scripts/AudioManager.cs",
 			"settings":
 			{
-				"buffer_size": 8449,
+				"buffer_size": 8848,
 				"line_ending": "Windows"
 			}
 		},
@@ -543,7 +459,79 @@
 			"file": "Scripts/Units/Class.cs",
 			"settings":
 			{
-				"buffer_size": 35718,
+				"buffer_size": 35890,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Scripts/UIManager.cs",
+			"settings":
+			{
+				"buffer_size": 61778,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Scripts/UI/UIKillScreen.cs",
+			"settings":
+			{
+				"buffer_size": 6375,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Scripts/GameManager.cs",
+			"settings":
+			{
+				"buffer_size": 44074,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Scripts/GameData.cs",
+			"settings":
+			{
+				"buffer_size": 30885,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Scripts/Player.cs",
+			"settings":
+			{
+				"buffer_size": 23805,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Scripts/UI/UIMenu.cs",
+			"settings":
+			{
+				"buffer_size": 30129,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Scripts/Scumworks.cs",
+			"settings":
+			{
+				"buffer_size": 15212,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Scripts/Tiles/Spells/Flame.cs",
+			"settings":
+			{
+				"buffer_size": 5386,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Scripts/UI/UIClassSelect.cs",
+			"settings":
+			{
+				"buffer_size": 1676,
 				"line_ending": "Windows"
 			}
 		}
@@ -588,6 +576,19 @@
 	},
 	"file_history":
 	[
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Lightning.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Bomb.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Harp.cs",
+		"/A/Projects/matchima/Matchima!/Assets/ZFrame/Readme/readme_ZPlayerPrefs.txt",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Lens.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Flame.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/MiniAlertUI.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Arcane.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Enemy.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Tile.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/TileMaster.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Neutral/ItemTile.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Cross.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/Powerup.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIGear.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/Firestorm.cs",
@@ -597,24 +598,16 @@
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/AudioManager.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Class.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/GameManager.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Enemy.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Lightning.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/GameData.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/DestroyTimer.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Stat.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIObjTweener.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Player.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Cross.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/ObjectPooler.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Flame.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Tile.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UIManager.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Harp.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/Lullaby.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Arcane.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Sleep.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/TileMaster.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Giant.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/MoveToPoint.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Thief.cs",
@@ -647,7 +640,6 @@
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Guard.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIKillScreen.cs",
 		"/C/Users/MaxerJ/AppData/LocalLow/DefaultCompany/Matchima!/PlayerData.xml",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/MiniAlertUI.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Warden.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Scumworks.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/WaveTile.cs",
@@ -655,12 +647,10 @@
 		"/A/Projects/matchima/Matchima!/Assets/Editor/ObjectPoolerReferenceEditor.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Editor/StatEditor.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/GiantTerrorsWave.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Bomb.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/WardenBattle.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Force.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/StoryModeZone_A.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Items/ModContainer.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Neutral/ItemTile.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/Velocitizer.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/Slash.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Actives/SlashOld.cs",
@@ -713,9 +703,7 @@
 		"/A/Projects/diablolike/diablolike/Assets/ISOMETRIUM/Data/Private/Scripts/IsometriumManager.cs",
 		"/A/Projects/diablolike/diablolike/Assets/ISOMETRIUM/IsometriumSelectableObject.cs",
 		"/D/Projects/Pending/The Compound/Assets/Scripts/GameManager.cs",
-		"/A/Projects/diablolike/diablolike/Assets/ISOMETRIUM/Data/Private/Scripts/TargetPoint.cs",
-		"/A/Projects/matchima/.gitignore",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Slot.cs"
+		"/A/Projects/diablolike/diablolike/Assets/ISOMETRIUM/Data/Private/Scripts/TargetPoint.cs"
 	],
 	"find":
 	{
@@ -723,7 +711,7 @@
 	},
 	"find_in_files":
 	{
-		"height": 0.0,
+		"height": 104.0,
 		"where_history":
 		[
 			"A:\\Projects\\matchima\\Matchima!\\Assets\\Scripts\\",
@@ -754,6 +742,67 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"SetMusic",
+			"Music",
+			"PlayMusic",
+			"HeroMenu",
+			"BotGear",
+			"ShowWaveInfo",
+			"UIManager.Objects.MiddleGear[3][0]",
+			"Objects.MiddleGear[3]",
+			"advanced",
+			"Advancedo",
+			"InitStats",
+			"Stats",
+			"StatCurrent_soft",
+			"StatContainer",
+			"FullVersion",
+			"Load",
+			"Subscrip",
+			"FullVersion",
+			"PlayerPrefs",
+			"kProductNameAppleSubscription",
+			"BotGear.SetTween",
+			"BounceB, 0.3F",
+			"ShowEnderAd2",
+			"ShowStarter",
+			"ShowEnderAd2",
+			"EnderAd",
+			"for",
+			"Starter",
+			"ShowEnder",
+			"ShowStarterAd",
+			"Ad",
+			"Show",
+			"AdAlert",
+			"UIManager.ClassButtons.GetClass(n)",
+			"SetVelocity(Vector3.zero);",
+			"ZoneUI",
+			"MiniAlertUI",
+			"mult",
+			"m",
+			"MiddleGear",
+			"ShowEnderAd",
+			"Killed",
+			"SetLoadScree",
+			"ShowEnderAd",
+			"ShownEndAd",
+			"Ad",
+			"StarterAd",
+			"AdAlert",
+			"totalxp",
+			"final[0] *",
+			"(int) ",
+			"final[1]",
+			"Save",
+			"xp_ratios",
+			"curr",
+			"KillBox",
+			"turns",
+			"depth",
+			"diff",
+			"totalxp_alert",
+			"ZoneUI",
 			"AddToMe",
 			"PlayAudio",
 			"PowerupSpell",
@@ -820,68 +869,7 @@
 			"spec",
 			"isRotating",
 			"speed",
-			"UIObj",
-			"i",
-			"curr",
-			"3",
-			"SetSprite",
-			"]\n",
-			"Choices",
-			"sprite",
-			"Imgtk",
-			"Atlas",
-			"GENUS []",
-			"3",
-			"4",
-			"Level",
-			"Down",
-			"obj",
-			"AddXP(",
-			"Save()",
-			"Load()",
-			"Load",
-			"Save",
-			"/",
-			"Save",
-			"\\\\",
-			"AddXP",
-			"MiddleGear[3]",
-			"MiniAlert(",
-			"Load(",
-			"Load",
-			"Enemies",
-			"1",
-			"0",
-			"0]",
-			"RankUpAttack",
-			"RankUpHealth",
-			"*=",
-			"Attack",
-			"Health",
-			"+=",
-			" *= ",
-			"*=",
-			"atkfactor",
-			"hpfactor",
-			"= 4",
-			"Rank",
-			"AfterTurnCheck",
-			"velocity",
-			"y",
-			"knifeobj",
-			"GetIOSPath",
-			"XmlNode",
-			"build",
-			"PlayerData",
-			"PlayerPrefs.",
-			"PlayerPrefs.GetInt",
-			"2.4F",
-			"SetToDamage",
-			"Routine",
-			"IsInitialized",
-			"Initialize",
-			"MidGear[0][0]",
-			"StartGame"
+			"UIObj"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -949,23 +937,23 @@
 	"groups":
 	[
 		{
-			"selected": 12,
+			"selected": 0,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "Scripts/Tiles/Spells/Cross.cs",
+					"file": "Scripts/AudioManager.cs",
 					"settings":
 					{
-						"buffer_size": 3627,
+						"buffer_size": 8848,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3618,
-								3618
+								6535,
+								6535
 							]
 						],
 						"settings":
@@ -1022,25 +1010,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1615.0,
+						"translation.y": 4555.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "Scripts/Tiles/Neutral/ItemTile.cs",
+					"file": "Scripts/Units/Class.cs",
 					"settings":
 					{
-						"buffer_size": 1812,
+						"buffer_size": 35890,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								891,
-								891
+								21063,
+								21063
 							]
 						],
 						"settings":
@@ -1097,25 +1085,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 798.0,
+						"translation.y": 15735.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 2,
-					"file": "Scripts/TileMaster.cs",
+					"file": "Scripts/UIManager.cs",
 					"settings":
 					{
-						"buffer_size": 46309,
+						"buffer_size": 61778,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								15528,
-								15528
+								26408,
+								26408
 							]
 						],
 						"settings":
@@ -1172,25 +1160,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 10756.0,
+						"translation.y": 17132.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 3,
-					"file": "Scripts/Tiles/Tile.cs",
+					"file": "Scripts/UI/UIKillScreen.cs",
 					"settings":
 					{
-						"buffer_size": 42931,
+						"buffer_size": 6375,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								12328,
-								12328
+								3593,
+								3593
 							]
 						],
 						"settings":
@@ -1247,25 +1235,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 7355.0,
+						"translation.y": 155.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 4,
-					"file": "Scripts/Tiles/Enemies/Enemy.cs",
+					"file": "Scripts/GameManager.cs",
 					"settings":
 					{
-						"buffer_size": 8539,
+						"buffer_size": 44074,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5292,
-								5292
+								17529,
+								17529
 							]
 						],
 						"settings":
@@ -1322,25 +1310,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 3137.0,
+						"translation.y": 3129.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 5,
-					"file": "Scripts/Tiles/Spells/Arcane.cs",
+					"file": "Scripts/GameData.cs",
 					"settings":
 					{
-						"buffer_size": 4731,
+						"buffer_size": 30885,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4477,
-								4477
+								13075,
+								13075
 							]
 						],
 						"settings":
@@ -1397,25 +1385,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 2223.0,
+						"translation.y": 11451.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 6,
-					"file": "Scripts/Tiles/Spells/Flame.cs",
+					"file": "Scripts/Player.cs",
 					"settings":
 					{
-						"buffer_size": 5382,
+						"buffer_size": 23805,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								4298,
-								4298
+								20032,
+								20032
 							]
 						],
 						"settings":
@@ -1472,25 +1460,175 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 2850.0,
+						"translation.y": 17071.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 7,
-					"file": "Scripts/Tiles/Spells/Lens.cs",
+					"file": "Scripts/UI/UIMenu.cs",
 					"settings":
 					{
-						"buffer_size": 1397,
+						"buffer_size": 30129,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								943,
-								943
+								9600,
+								9600
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close"
+							],
+							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 4992.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "Scripts/Scumworks.cs",
+					"settings":
+					{
+						"buffer_size": 15212,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2400,
+								2400
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close"
+							],
+							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 228.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "Scripts/Tiles/Spells/Flame.cs",
+					"settings":
+					{
+						"buffer_size": 5386,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								600,
+								600
 							]
 						],
 						"settings":
@@ -1553,169 +1691,19 @@
 					"type": "text"
 				},
 				{
-					"buffer": 8,
-					"file": "Scripts/Tiles/Spells/Harp.cs",
-					"settings":
-					{
-						"buffer_size": 2552,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1446,
-								1446
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close"
-							],
-							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 741.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 9,
-					"file": "Scripts/Tiles/Spells/Bomb.cs",
-					"settings":
-					{
-						"buffer_size": 2724,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1688,
-								1688
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close"
-							],
-							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 969.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
 					"buffer": 10,
-					"file": "Scripts/Tiles/Spells/Lightning.cs",
+					"file": "Scripts/UI/UIClassSelect.cs",
 					"settings":
 					{
-						"buffer_size": 3685,
+						"buffer_size": 1676,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2677,
-								2677
+								1183,
+								1183
 							]
 						],
 						"settings":
@@ -1772,157 +1760,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1311.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 11,
-					"file": "Scripts/AudioManager.cs",
-					"settings":
-					{
-						"buffer_size": 8449,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								3449,
-								3449
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close"
-							],
-							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 2337.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 12,
-					"file": "Scripts/Units/Class.cs",
-					"settings":
-					{
-						"buffer_size": 35718,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								13655,
-								13655
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close"
-							],
-							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 10110.0,
+						"translation.y": 228.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"

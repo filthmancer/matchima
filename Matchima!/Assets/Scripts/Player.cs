@@ -795,15 +795,15 @@ public class Player : MonoBehaviour {
 			yield return null;
 		}
 		GameData.instance.Save();
+		GameData.instance.LoadUnlocks();
+		yield return StartCoroutine(GameData.DeltaWait(0.6F));
 
 		//PlayerPrefs.SetInt("PlayerLevel", _Level.Level);
 		//PlayerPrefs.SetInt("PlayerXP", _Level.XP_Current);
 		//PlayerPrefs.Save();
 
-		MiniAlertUI al = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.up, Player.Level.Level + "", 100);
-
 		UIManager.instance.ShowPlayerLvl(1, false);
-		GameData.instance.LoadUnlocks();
+		
 
 		yield return null;
 	}

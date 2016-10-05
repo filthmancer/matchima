@@ -357,7 +357,7 @@ public class UIManager : MonoBehaviour {
 	{
 		UIManager.Objects.TopGear.SetToState(active ? 1 : 0);
 		//(UIManager.Objects.TopGear as UIObjTweener).SetTween(1,active);
-		(UIManager.Objects.TopGear as UIGear).SetRotate(active, Vector3.forward * 0.7F);
+		(UIManager.Objects.TopGear as UIGear).SetRotate(active, Vector3.forward * -0.7F);
 		
 		UIManager.Objects.BotGear.SetToState(active ? 1 : 0);
 		//(UIManager.Objects.BotGear as UIObjTweener).SetTween(1,active);
@@ -930,16 +930,81 @@ public class UIManager : MonoBehaviour {
 			GameManager.instance.paused = false;
 			(UIManager.Objects.MiddleGear[3] as UIObjTweener).SetTween(num, false);		
 			(UIManager.Objects.MiddleGear["advancedops"] as UIObjTweener).SetTween(0, false);	
+			//(UIManager.Objects.MiddleGear["advancedops"] as UIObjTweener).SetTween(1, false);	
 		}
 	}
 
 	public void RefreshOptions()
 	{
-		Objects.MiddleGear[3][4].Txt[1].text =  Player.Options.GameSpeed + "x";
+		UIObj ops = Objects.MiddleGear[3];
+		ops[1].BooleanObjColor(AudioManager.PlaySFX);
+		ops[2].BooleanObjColor(AudioManager.PlayMusic);
 
-		Objects.MiddleGear[3][2].BooleanObjColor(AudioManager.PlaySFX);
+		UIObjTweener adops = Objects.MiddleGear["advancedops"] as UIObjTweener;
+		adops[0].Txt[1].text =  Player.Options.GameSpeed + "x";
+		adops[1].BooleanObjColor(Player.Options.ShowNumbers);
+		adops[2].BooleanObjColor(Player.Options.RealHP);
+		switch(Player.Options.ShowStory)
+		{
+			case Ops_Story.Default:
+			adops[3].Img[0].color = GameData.Colour(GENUS.DEX);
+			break;
+			case Ops_Story.NeverShow:
+			adops[3].Img[0].color = GameData.Colour(GENUS.STR);
+			break;
+			case Ops_Story.AlwaysShow:
+			adops[3].Img[0].color = GameData.Colour(GENUS.WIS);
+			break;
+		}
+		
+	}
 
-		Objects.MiddleGear[3][3].BooleanObjColor(AudioManager.PlayMusic);
+	public void ShowAdvancedOptions()
+	{
+		if(!GameData.FullVersion) 
+		{
+			UIManager.instance.ShowFullVersionAlert();
+			return;
+		}
+
+		UIObjTweener adops = Objects.MiddleGear["advancedops"] as UIObjTweener;
+		adops.SetTween(1);
+
+		RefreshOptions();
+
+		//SAVE
+		adops.ClearChildActions();
+		adops["gamespeed"].AddAction(UIAction.MouseUp, ()=>
+		{
+			Player.Options.CycleGameSpeed();
+			UIManager.instance.RefreshOptions();
+		});
+
+		adops["numbers"].AddAction(UIAction.MouseUp, ()=>
+		{
+			Player.Options.ShowNumbers = !Player.Options.ShowNumbers;
+			RefreshOptions();
+		});
+
+		adops["story"].AddAction(UIAction.MouseUp, ()=>
+		{
+			Player.Options.ShowStory++;
+			RefreshOptions();
+		});
+
+		adops["hp"].AddAction(UIAction.MouseUp, ()=>
+		{
+			Player.Options.RealHP = !Player.Options.RealHP;
+			RefreshOptions();
+		});
+
+		//Set save button to false if game hasnt started
+		adops["save"].SetActive(GameManager.instance.gameStart);
+		adops["save"].AddAction(UIAction.MouseUp, ()=>
+		{
+			GameManager.instance.SaveAndQuit();
+		});
+
 	}
 
 
@@ -1534,7 +1599,7 @@ public class UIManager : MonoBehaviour {
 
 		(Objects.MiddleGear[1] as UIObjTweener).SetTween(num, open);
 		GameManager.instance.paused = open;
-		ScreenAlert.SetTween(0, open);
+		if(open) ScreenAlert.SetTween(0, true);
 		if(!open) UIManager.instance.SetClassButtons(false);
 			UpdatePlayerLvl();
 
@@ -1637,6 +1702,7 @@ public class UIManager : MonoBehaviour {
 
 	public void ShowZoneUI(bool ended)
 	{
+		print(true);
 		(Objects.MiddleGear[1] as UIObjTweener).SetTween(0);
 		bool open = (Objects.MiddleGear[1] as UIObjTweener).Tween.IsObjectOpened();
 		GameManager.instance.paused = open;
@@ -1699,8 +1765,8 @@ public class UIManager : MonoBehaviour {
 		else
 		{
 			Objects.MiddleGear[1].Txt[0].text = GameManager.Zone.Name;
-			Objects.MiddleGear[1][2].Txt[1].text = GameManager.Wave.Name;
-			Objects.MiddleGear[1][2].Txt[2].text = "Waves";
+			Objects.MiddleGear[1][2].Txt[2].text = GameManager.Wave.Name;
+			Objects.MiddleGear[1][2].Txt[1].text = "WAVE";
 			Objects.MiddleGear[1][2].Txt[0].text = GameManager.Zone.CurrentDepthInZone + "/" + GameManager.Zone.GetZoneDepth();
 
 			Objects.MiddleGear[1].Txt[3].enabled = false;
@@ -1763,16 +1829,34 @@ public class UIManager : MonoBehaviour {
 		return ParentObj;
 	}
 
+	private float FullVersionPrice = 2.99F;
+	private float SkinPrice = 0.99F;
 	public void ShowFullVersionAlert(bool? active = null)
 	{
 		FullVersionAlert.ClearChildActions();
-		FullVersionAlert[0].AddAction(UIAction.MouseUp, () =>
+		
+		if(!GameData.FullVersion)
 		{
-			GameManager.instance.Scum.BuySubscription();
-			});
+			FullVersionAlert[0].Txt[0].text = "$" + FullVersionPrice.ToString("0.00");
+			FullVersionAlert[0].AddAction(UIAction.MouseUp, () =>
+			{
+				GameManager.instance.Scum.BuySubscription();
+				});
+		}
+		else
+		{
+			FullVersionAlert[0].Txt[0].text = "UNLOCKED!";
+		}
+		
+
+		FullVersionAlert[1].Txt[0].text = "$" + SkinPrice.ToString("0.00");
 		FullVersionAlert[1].AddAction(UIAction.MouseUp, () =>
 		{
-			FullVersionAlert.SetActive(false);
+			GameManager.instance.Scum.BuySkin();
+			});
+		FullVersionAlert[2].AddAction(UIAction.MouseUp, () =>
+		{
+			GameManager.instance.Scum.BuyCounter();
 			});
 		FullVersionAlert.SetActive(active);
 	}

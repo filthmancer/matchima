@@ -6,9 +6,12 @@ using TMPro;
 public class UIKillScreen : UIObj {
 
 	public GameObject KillBox;
-	public TextMeshProUGUI Turns;
-	public TextMeshProUGUI EndType;
-	public TextMeshProUGUI Blurb;
+	public TextMeshProUGUI Blurb, EndType;
+
+	public MiniAlertUI Mode, Depth, Turns;
+	public MiniAlertUI xp;
+
+	public MiniAlertUI endtype_alert, endtype_mult;
 
 	public IEnumerator Activate(End_Type e, int [] xp_steps)
 	{
@@ -25,110 +28,159 @@ public class UIKillScreen : UIObj {
 	{
 
 		string endtext = "";
-		int totalxp = 0;
+		int currtotal = 0;
+		float multi = 1.0F;
+
 		Color endcol = Color.white;
 		switch(e)
 		{
 			case End_Type.Victory:
 			endtext = "Victory";
 			endcol = Color.green;
+			multi = 2.0F;
 			break;
 			case End_Type.Defeat:
 			endtext = "Defeated";
 			endcol = Color.red;
+			multi = 1.7F;
 			break;
 			case End_Type.Retire:
 			endtext = "Retired";
 			endcol = Color.yellow;
+			multi = 1.0F;
 			break;
 		}
 
-		Txt[0].text = GameManager.Floor + " Depth";
-		Txt[1].text = "In " + Player.instance.Turns + " Turns";
-		Txt[2].text = "0";
+		
+		xp.SetVelocity(Vector3.zero);
+		Turns.SetVelocity(Vector3.zero);
+		Depth.SetVelocity(Vector3.zero);
+		Mode.SetVelocity(Vector3.zero);
 
-		Txt[0].enabled = false;
-		Txt[1].enabled = false;
-		Txt[2].enabled = false;
-		Txt[3].enabled = false;
-
-		EndType.enabled = false;
 		Child[0].SetActive(false);
+		Child[1].SetActive(false);
 		UIManager.instance.ScreenAlert.SetActive(true);
 		UIManager.instance.ScreenAlert.SetTween(0,true);
+		UIManager.Objects.BotGear.SetTween(3, true);
+		UIManager.Objects.BotGear[0].Txt[0].text = "";
+		UIManager.Objects.BotGear[0].Txt[1].text = "";
 		KillBox.SetActive(true);
 
-		yield return new WaitForSeconds(Time.deltaTime * 5);
-		//EndType.enabled = true;
-		MiniAlertUI xp = UIManager.instance.MiniAlert(EndType.transform.position, endtext, 170);
-		xp.AddJuice(Juice.instance.BounceB, 0.1F);
-		xp.DestroyOnEnd = false;
-		xp.Txt[0].color = endcol;
+		yield return new WaitForSeconds(Time.deltaTime * 15);
 
-		yield return new WaitForSeconds(Time.deltaTime * 10);
-		totalxp = xp_steps[0];
-		MiniAlertUI totalxp_alert = UIManager.instance.MiniAlert(Txt[2].transform.position, "" + totalxp + " xp", 170);
-		totalxp_alert.AddJuice(Juice.instance.BounceB, 0.1F);
-		totalxp_alert.DestroyOnEnd = false;
-		totalxp_alert.Txt[0].color = Color.white;
+		endtype_alert = UIManager.instance.MiniAlert(EndType.transform.position, endtext, 145, endcol, 1.4F, 0.0F);
+		endtype_alert.DestroyOnEnd = false;
+		endtype_alert.AddJuice(Juice.instance.BounceB, 0.7F);
 
-		
-		//Txt[2].text = "" + totalxp + " xp";
-
+		endtype_mult = UIManager.instance.MiniAlert(EndType.transform.position +Vector3.down, "("+multi.ToString("0.0") + "x xp)", 70, endcol, 1.4F, 0.0F);
+		endtype_mult.DestroyOnEnd = false;
+		endtype_mult.AddJuice(Juice.instance.BounceB, 0.7F);
 		yield return new WaitForSeconds(Time.deltaTime * 25);
 
-		MiniAlertUI diff = UIManager.instance.MiniAlert(Txt[3].transform.position, GameManager.instance.DifficultyMode + " Mode", 100);
-		diff.AddJuice(Juice.instance.BounceB, 0.1F);
-		diff.DestroyOnEnd = false;
-		diff.Txt[0].color = endcol;
+		xp.text = "0 xp";
+		xp.AddJuice(Juice.instance.BounceB, 0.7F);
+		xp.DestroyOnEnd = false;
+		xp.Txt[0].color = Color.white;
 
-		yield return new WaitForSeconds(Time.deltaTime * 10);
-		totalxp = xp_steps[1];
-		totalxp_alert.text = "" + totalxp + " xp";
-		totalxp_alert.AddJuice(Juice.instance.BounceB, 0.1F);
+		float ratio = 0.0F;
+		float xptotal = xp_steps[0] + xp_steps[1] + xp_steps[2];
+		float [] xpratios = new float [] {xp_steps[0]/xptotal, (xp_steps[0] + xp_steps[1])/xptotal, (xp_steps[0] + xp_steps[1] + xp_steps[2])/xptotal};
 
-		yield return new WaitForSeconds(Time.deltaTime * 45);
+		
+		yield return new WaitForSeconds(Time.deltaTime * 25);
+
+		//MiniAlertUI diff = UIManager.instance.MiniAlert(Txt[3].transform.position, GameManager.instance.DifficultyMode + " Mode", 100);
+		Mode.text = GameManager.instance.DifficultyMode + " Mode";
+		Mode.AddJuice(Juice.instance.BounceB, 0.7F);
+		Mode.DestroyOnEnd = false;
+		Mode.Txt[0].color = GameData.Colour(GENUS.STR);
+
+		currtotal = xp_steps[0];
+		xp.text = "" + currtotal + " xp";
+		xp.AddJuice(Juice.instance.BounceB, 0.7F);
+
+
+		while(ratio < xpratios[0])
+		{
+			ratio+= Time.deltaTime;
+			Img[0].fillAmount = ratio;
+			yield return null;
+		}
+		
+		
+
+		yield return new WaitForSeconds(Time.deltaTime * 25);
 		//Txt[0].enabled = true;
-		MiniAlertUI depth = UIManager.instance.MiniAlert(Txt[0].transform.position, GameManager.Floor + " Depth", 130);
-		depth.AddJuice(Juice.instance.BounceB, 0.1F);
-		depth.DestroyOnEnd = false;
+		//MiniAlertUI depth = UIManager.instance.MiniAlert(Txt[0].transform.position, GameManager.Floor + " Depth", 130);
+		Depth.text = "On Depth " + GameManager.Floor;
+		Depth.AddJuice(Juice.instance.BounceB, 0.7F);
+		Depth.DestroyOnEnd = false;
+		Depth.Txt[0].color = GameData.Colour(GENUS.DEX);
 
-		yield return new WaitForSeconds(Time.deltaTime * 10);
-		totalxp += xp_steps[2];
-		totalxp_alert.text = "" + totalxp + " xp";
-		totalxp_alert.AddJuice(Juice.instance.BounceB, 0.1F);
+		currtotal = xp_steps[1];
+		xp.text = "" + currtotal + " xp";
+		xp.AddJuice(Juice.instance.BounceB, 0.7F);
 
-		yield return new WaitForSeconds(Time.deltaTime * 45);
+		while(ratio < xpratios[1])
+		{
+			ratio+= Time.deltaTime;
+			Img[1].fillAmount = ratio;
+			yield return null;
+		}
+		
+		yield return new WaitForSeconds(Time.deltaTime * 25);
 		//Txt[1].enabled = true;
-		MiniAlertUI turns = UIManager.instance.MiniAlert(Txt[1].transform.position, "In " + Player.instance.Turns + " Turns", 130);
-		turns.AddJuice(Juice.instance.BounceB, 0.1F);
-		turns.DestroyOnEnd = false;
+		//MiniAlertUI turns = UIManager.instance.MiniAlert(Txt[1].transform.position, "In " + Player.instance.Turns + " Turns", 130);
+		Turns.text = "In " + Player.instance.Turns + " Turns";
+		Turns.AddJuice(Juice.instance.BounceB, 0.7F);
+		Turns.DestroyOnEnd = false;
+		Turns.Txt[0].color = GameData.Colour(GENUS.WIS);
 
-		yield return new WaitForSeconds(Time.deltaTime * 10);
-		totalxp += xp_steps[3];
-		totalxp_alert.text = "" + totalxp + " xp";
-		totalxp_alert.AddJuice(Juice.instance.BounceB, 0.1F);
+		currtotal += xp_steps[2];
+		xp.text = "" + currtotal + " xp";
+		xp.AddJuice(Juice.instance.BounceB, 0.7F);
 
+		while(ratio < xpratios[2])
+		{
+			ratio+= Time.deltaTime;
+			Img[2].fillAmount = ratio;
+			yield return null;
+		}
+
+	
 		//UIManager.instance.ShowPlayerLvl(1);
 		yield return new WaitForSeconds(Time.deltaTime * 15);
 
 		Child[0].ClearActions();
 		Child[0].AddAction(UIAction.MouseDown, () => {
-			StartCoroutine(GameManager.instance.Reset());
-			diff.PoolDestroy();
-			totalxp_alert.PoolDestroy();
-			depth.PoolDestroy();
-			xp.PoolDestroy();
-			turns.PoolDestroy();
+			Hide();
+			StartCoroutine(GameManager.instance.ExitGame());
+			//diff.PoolDestroy();
+			//xp.PoolDestroy();
+			//depth.PoolDestroy();
+			//xp.PoolDestroy();
+			//turns.PoolDestroy();
 		});
 		Child[0].SetActive(true);
-		//KillerInfo.text = "YOU WERE KILLED BY A GRUNT";
-		//Turns.text = "YOU SURVIVED " + Player.instance.Turns + " TURNS";
-		//BestCombo.text = "BEST COMBO : " + Player.instance.BestCombo + " PTS";
-		//Class.text = Player.instance.Class.Name + " : " + Player.instance.Class.Level;
-		//StartCoroutine(CycleInfo());
+
+		//Child[1].SetActive(true);
 
 		yield return null;
+	}
+
+	public void Hide()
+	{
+		Depth.text = "";
+		Turns.text = "";
+		xp.text = "";
+		Mode.text = "";
+		for(int i = 0; i < Img.Length; i++) Img[i].fillAmount = 0.0F;
+		KillBox.SetActive(false);
+		endtype_alert.PoolDestroy();
+		endtype_mult.PoolDestroy();
+		UIManager.Objects.BotGear.SetTween(3, false);
+		(UIManager.instance.AdAlertMini as UIObjTweener).SetTween(0, false);
+		(UIManager.instance.AdAlertMini[0] as UIObjTweener).SetTween(0, false);
 	}
 
 	IEnumerator CycleInfo()

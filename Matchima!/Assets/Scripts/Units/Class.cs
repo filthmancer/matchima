@@ -848,6 +848,12 @@ public class Class : Unit {
 		return m;
 	}
 
+	public float GetStatScale(int g)
+	{
+		float ratio = ((float)InitStats[g].StatCurrent + (InitStats[g].StatGain * 10)) / 30.0F;
+		return Mathf.Clamp(ratio, 0.0F, 1.0F);
+	}
+
 
 	public IEnumerator WaitForSlotDeleteRoutine(Slot a)
 	{

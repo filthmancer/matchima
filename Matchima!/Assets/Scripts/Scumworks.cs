@@ -23,12 +23,14 @@ public class Scumworks : MonoBehaviour,IStoreListener {
 	      public static string kProductIDConsumable =    "consumable";   
 	      public static string kProductIDNonConsumable = "nonconsumable";
 	      public static string kProductIDSubscription =  "subscription"; 
+	      public static string kProductIDDeathCounter =  "counter"; 
+	      public static string kProductIDSkin =  "skin"; 
 	       
 	      // Apple App Store-specific product identifier for the subscription product.
-	      private static string kProductNameAppleSubscription =  "com.unity3d.fullversion.new";
-	      
+	      private static string kProductNameSkin =  "com.lambertblinn.skin.all";
+	      private static string kProductNameAppleSubscription =  "com.lambertblinn.fullversion.apple";
 	      // Google Play Store-specific product identifier subscription product.
-	      private static string kProductNameGooglePlaySubscription =  "com.unity3d.fullversion.original"; 
+	      private static string kProductNameGooglePlaySubscription =  "com.lambertblinn.fullversion.google"; 
 	      
 	      void Start()
 	      {
@@ -54,14 +56,15 @@ public class Scumworks : MonoBehaviour,IStoreListener {
 	          
 	          // Add a product to sell / restore by way of its identifier, associating the general identifier
 	          // with its store-specific identifiers.
-	          builder.AddProduct(kProductIDConsumable, ProductType.Consumable);
+	          builder.AddProduct(kProductIDDeathCounter, ProductType.Consumable);
 	          // Continue adding the non-consumable product.
-	          builder.AddProduct(kProductIDNonConsumable, ProductType.NonConsumable);
+	          builder.AddProduct(kProductIDSkin, ProductType.NonConsumable, new IDs() {{kProductNameSkin, GooglePlay.Name},
+	          																			{kProductNameSkin, AppleAppStore.Name}});
 	          // And finish adding the subscription product. Notice this uses store-specific IDs, illustrating
 	          // if the Product ID was configured differently between Apple and Google stores. Also note that
 	          // one uses the general kProductIDSubscription handle inside the game - the store-specific IDs 
 	          // must only be referenced here. 
-	          builder.AddProduct(kProductIDSubscription, ProductType.Subscription, new IDs(){
+	          builder.AddProduct(kProductIDSubscription, ProductType.NonConsumable, new IDs(){
 	              { kProductNameAppleSubscription, AppleAppStore.Name },
 	              { kProductNameGooglePlaySubscription, GooglePlay.Name },
 	          });
@@ -92,6 +95,16 @@ public class Scumworks : MonoBehaviour,IStoreListener {
 	          // Buy the non-consumable product using its general identifier. Expect a response either 
 	          // through ProcessPurchase or OnPurchaseFailed asynchronously.
 	          BuyProductID(kProductIDNonConsumable);
+	      }
+
+	      public void BuySkin()
+	      {
+	      		BuyProductID(kProductIDSkin);
+	      }
+
+	      public void BuyCounter()
+	      {
+	      	BuyProductID(kProductIDDeathCounter);
 	      }
 	      
 	      
@@ -219,7 +232,17 @@ public class Scumworks : MonoBehaviour,IStoreListener {
 	          else if (String.Equals(args.purchasedProduct.definition.id, kProductIDSubscription, StringComparison.Ordinal))
 	          {
 	              Debug.Log(string.Format("ProcessPurchase: PASS. Product: '{0}'", args.purchasedProduct.definition.id));
-	              GameData.FullVersion = true;
+	              GameData.instance.SetFullVersion(true);
+	          }
+	          else if (String.Equals(args.purchasedProduct.definition.id, kProductIDDeathCounter, StringComparison.Ordinal))
+	          {
+	              Debug.Log(string.Format("ProcessPurchase: PASS. Product: '{0}'", args.purchasedProduct.definition.id));
+	              GameData.instance.AddDeathCounter();
+	          }
+	          else if (String.Equals(args.purchasedProduct.definition.id, kProductIDSkin, StringComparison.Ordinal))
+	          {
+	              Debug.Log(string.Format("ProcessPurchase: PASS. Product: '{0}'", args.purchasedProduct.definition.id));
+	              GameData.instance.RollSkin();
 	          }
 	          // Or ... an unknown product has been purchased by this user. Fill in additional products here....
 	          else 

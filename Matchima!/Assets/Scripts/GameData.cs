@@ -580,10 +580,9 @@ public class GameData : MonoBehaviour {
 
 		//finished_save = true;
 		Debug.Log("Generated data at " + filepos);	
-		UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.down * 5, "SAVED", 150, Color.white, 2.4F);
-		UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.down * 3, "L" + Player.Level.Level, 150, Color.white, 2.4F);	
-
-		UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.down,  filepos, 35, Color.white, 2.4F);
+		//UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.down * 5, "SAVED", 150, Color.white, 2.4F);
+		//UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.down * 3, "L" + Player.Level.Level, 150, Color.white, 2.4F);	
+		//UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.down,  filepos, 35, Color.white, 2.4F);
 	}
 
 	public void Load()
@@ -595,7 +594,6 @@ public class GameData : MonoBehaviour {
 		
 		if(System.IO.File.Exists(datapath))
 		{
-			//UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.down * 5, "FOUND", 250, Color.white, 2.4F);
 			xmldoc.LoadXml (System.IO.File.ReadAllText(datapath));
 			XmlNode root = xmldoc.ChildNodes[1];
 
@@ -612,27 +610,11 @@ public class GameData : MonoBehaviour {
 			//}
 
 			Debug.Log("Loaded data at " + datapath);
-
-			//UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.down * 3, datapath, 250, Color.white, 2.4F);	
-			
-		//Class Data
-		//XmlNode classroot = root.ChildNodes[1];
-		//for(int i = 0; i < classroot.SelectNodes("//Class").Count; i++)
-		//{
-		//	XmlNode c = classroot.SelectNodes("//Class")[i];
-		//	string name = c.SelectNodes("Name")[0].InnerText;
-		//	bool unlocked = c.SelectNodes("Unlocked")[0].InnerText == "T";
-		//	int level = StringToInt(c.SelectNodes("Level")[0].InnerText);
-		//	LoadClass(i, name, unlocked, level);
-		//	
-		//}
-			//UIManager.Menu.CheckClassButtons();
 			
 		}
 		else 
 		{
-			//Save();
-			//UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "LOST", 250, Color.white, 2.4F);
+			Save();
 		}
 		#elif UNITY_WEBPLAYER
 		LoadAbilities();
@@ -657,11 +639,11 @@ public class GameData : MonoBehaviour {
 
 	public void LoadUnlocks()
 	{
-		//MiniAlertUI al = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, Player.Level.Level + "L", 250);
-
 		//MODES
 		ModeUnlocked_Quick = Player.instance.GetUnlock("quickmode");
 		ModeUnlocked_Endless = Player.instance.GetUnlock("endlessmode");
+
+		FullVersion = ZPlayerPrefs.GetInt("FullVersion") == 1;
 	}
 
 	public void LoadModes()
@@ -997,6 +979,29 @@ public class GameData : MonoBehaviour {
 		return final;
 	}
 
+#region Shop
+
+	public void SetFullVersion(bool active)
+	{
+		ZPlayerPrefs.SetInt("FullVersion", active ? 1 : 0);
+		FullVersion = active;
+		Debug.Log("Bought Full Version");
+	}
+	public void RollSkin()
+	{
+		Debug.Log("Bought Skin");
+	}
+
+	public void AddDeathCounter()
+	{
+		Debug.Log("Bought Death Counter");
+	}
+
+	public void RemoveDeathCounter()
+	{
+
+	}
+#endregion
 #region Other/Discard
 	//Get Class by Name
 		public ClassContainer GetClassContainer(string name)
