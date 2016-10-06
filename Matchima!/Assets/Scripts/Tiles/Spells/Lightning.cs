@@ -109,11 +109,11 @@ public class Lightning : Tile {
 			} 
 			if(child.IsType("","Altar"))
 			{
-				TileMaster.instance.ReplaceTile(child.Point.Base[0], child.Point.Base[1], TileMaster.Types["Scarecrow"]);
+				TileMaster.instance.ReplaceTile(child.Point.Base[0], child.Point.Base[1], TileMaster.Types["blob"], GENUS.RAND, child.Point.Scale);
 			}
 			if(child.IsType("", "chicken"))
 			{
-				TileMaster.instance.ReplaceTile(child.Point.Base[0], child.Point.Base[1], TileMaster.Types["health"]);
+				TileMaster.instance.ReplaceTile(child.Point.Base[0], child.Point.Base[1], TileMaster.Types["health"], GENUS.RAND, child.Point.Scale);
 			}			
 		}
 

@@ -44,7 +44,7 @@ public class Lullaby : Powerup {
 		while(!Input.GetMouseButton(0)) yield return null;
 
 		m.PoolDestroy();
-		Destroy(n.gameObject);
+		if(n) Destroy(n.gameObject);
 
 		int sleep_duration = 0; //Duration of mass sleep
 

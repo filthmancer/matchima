@@ -159,7 +159,7 @@ public class Flame : Tile {
 		{
 			if(to_collect[i].IsType("Chicken"))
 			{
-				TileMaster.instance.ReplaceTile(to_collect[i].Point.Base[0], to_collect[i].Point.Base[1], TileMaster.Types["Health"]);
+				TileMaster.instance.ReplaceTile(to_collect[i].Point.Base[0], to_collect[i].Point.Base[1], TileMaster.Types["Health"], GENUS.RAND, to_collect[i].Point.Scale);
 				TileMaster.Tiles[to_collect[i].Point.Base[0], to_collect[i].Point.Base[1]].AddValue(to_collect[i].Stats.Value * 10);
 				to_collect.RemoveAt(i);
 			}

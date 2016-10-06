@@ -83,7 +83,7 @@ public class Blob : Enemy {
 						GENUS g = Genus;
 						float randg = Random.value;
 						if(Random.value < 0.4F) g = (GENUS) Random.Range(0,4);
-						if(Random.value < 0.95F) TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["chest"], g,  Point.Scale);
+						if(Random.value < 0.8F) TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["chest"], g,  Point.Scale);
 						else TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["mimic"], g, Point.Scale);
 					}
 					else TileMaster.Tiles[Point.Base[0], Point.Base[1]] = null;
@@ -105,14 +105,15 @@ public class Blob : Enemy {
 
 				List<Tile> new_blobs = new List<Tile>();
 
+				
 				for(int xx = 0; xx < scale; xx++)
 				{
 					new_blobs.Add(TileMaster.instance.ReplaceTile(basex+xx, basey, TileMaster.Types["blob"], Genus, 1, Stats.Value/2, true));
 
 					foreach(TileEffect child in old_eff)
 					{
-						if(child == this) continue;
 						if(child.DontInherit) continue;
+						print(child.Name);
 						TileEffect neweff = (TileEffect) Instantiate(child);
 						TileMaster.Tiles[basex+xx, basey].AddEffect(neweff);
 					}

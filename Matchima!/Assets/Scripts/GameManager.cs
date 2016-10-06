@@ -39,8 +39,8 @@ public class GameManager : MonoBehaviour {
 	public static float GlobalManaMult = 1.0F,
 						GlobalHealthMult = 1.0F,
 						GlobalArmourMult = 1.0F;
-	public static float GrowthRate_Easy = 0.1F,
-						GrowthRate_Normal = 0.16F,
+	public static float GrowthRate_Easy = 0.13F,
+						GrowthRate_Normal = 0.2F,
 						GrowthRate_Hard = 0.26F;
 
 	public static float [] MeterDecay
@@ -179,7 +179,7 @@ public class GameManager : MonoBehaviour {
 		// Use this for initialization
 		void Start () {
 			QualitySettings.vSyncCount = 0;
-			Application.targetFrameRate = 50;
+			Application.targetFrameRate = 30;
 			if(!Application.isMobilePlatform)
 			{
 				Screen.SetResolution(525,830, false);
@@ -505,7 +505,7 @@ public class GameManager : MonoBehaviour {
 			length = 4;
 			break;
 			case DiffMode.Hard:
-			length = 6;
+			length = 4;
 			break;
 		}
 		Vector2 [] brackets = new Vector2[length];
@@ -1052,7 +1052,7 @@ public class GameManager : MonoBehaviour {
 		float per_column = 0.06F;
 		List<Tile> total_attackers = new List<Tile>();
 		int total_damage = 0;
-		List<Tile> column_attackers;
+		List<Tile> column;
 
 		List<Tile> allied_attackers = new List<Tile>();
 	
@@ -1063,7 +1063,7 @@ public class GameManager : MonoBehaviour {
 		//ENEMY ATTACKERS
 		for(int x = 0; x < TileMaster.instance.MapSize.x; x++)
 		{
-			column_attackers = new List<Tile>();
+			column = new List<Tile>();
 			for(int y = 0; y < TileMaster.instance.MapSize.y;y++)
 			{
 				Tile tile = TileMaster.Tiles[x,y];
@@ -1077,32 +1077,32 @@ public class GameManager : MonoBehaviour {
 					}
 					else
 					{
-						column_attackers.Add(tile);
+						column.Add(tile);
 					}
 					
 				}
 			}
 
-			foreach(Tile child in column_attackers)
+			for(int i = 0; i < column.Count; i++)
 			{
-				if(child == null || !child.gameObject.activeSelf || child.Destroyed) continue;
+				if(column[i] == null || !column[i].gameObject.activeSelf || column[i].Destroyed) continue;
 
-				child.SetState(TileState.Selected);
-				child.OnAttack();
-				total_damage += child.GetAttack();
+				column[i].SetState(TileState.Selected);
+				column[i].OnAttack();
+				total_damage += column[i].GetAttack();
 
-				child.AttackPlayer();
-				yield return StartCoroutine(child.Animate("Attack", 0.03F));
+				column[i].AttackPlayer();
+				yield return StartCoroutine(column[i].Animate("Attack", 0.04F));
 			}
 
-			total_attackers.AddRange(column_attackers);
-			if(column_attackers.Count > 0) yield return new WaitForSeconds(GameData.GameSpeed(per_column));
+			//total_attackers.AddRange(column);
+			if(column.Count > 0) yield return new WaitForSeconds(GameData.GameSpeed(per_column));
 		}
-		if(total_attackers.Count > 0)
+		/*if(total_attackers.Count > 0)
 		{
 			GameData.Log("Took " + total_damage + " damage from " + total_attackers.Count + " attackers");
 			yield return new WaitForSeconds(GameData.GameSpeed(0.08F));
-		} 
+		} */
 
 
 		//ALLIED ATTACKERS
@@ -1127,6 +1127,7 @@ public class GameManager : MonoBehaviour {
 			{
 				child.AttackTile(target);
 				yield return StartCoroutine(child.Animate("Attack", 0.05F));
+				
 			}
 		}
 

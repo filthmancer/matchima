@@ -77,7 +77,8 @@ public class TileMaster : MonoBehaviour {
 				for (int y = 0; y < Tiles.GetLength(1); y++)
 				{
 					if (Tiles[x, y] == null) continue;
-					if (Tiles[x, y].Stats.isEnemy && !Tiles[x,y].Stats.isAlly) 
+					if(Tiles[x,y].CanAttack() && !Tiles[x,y].Stats.isAlly)
+					//if (Tiles[x, y].Stats.isEnemy && !Tiles[x,y].Stats.isAlly) 
 					{
 						if(!final.Contains(Tiles[x,y])) final.Add(Tiles[x,y]);
 					}
@@ -117,9 +118,9 @@ public class TileMaster : MonoBehaviour {
 				if (Tiles[x, y] == null) continue;
 				if (Tiles[x, y].Stats.isEnemy || Tiles[x,y].Stats.isAlly) 
 				{
-					if((Tiles[x,y] as Enemy).isAttacking) 
+					if(Tiles[x,y].isAttacking) 
 					{
-						Debug.LogWarning("ENEMIES ATTACKING");
+						Debug.LogWarning("ENEMIES ATTACKING: " + x + "-" + y);
 						return true;
 					}
 				}
@@ -302,6 +303,22 @@ public class TileMaster : MonoBehaviour {
 			}
 		}
 		return null;
+	}
+
+	public Tile [] GetTiles(string species, GENUS g = GENUS.NONE)
+	{
+		List<Tile> final = new List<Tile>();
+		for(int x = 0; x < Grid.Size[0]; x++)
+		{
+			for(int y = 0; y < Grid.Size[1]; y++)
+			{
+				Tile t = Tiles[x,y];
+				bool is_spec = (species == string.Empty) || t.IsType(species);
+				bool is_gen = (g == GENUS.NONE) || t.Genus == g;
+				if(is_spec && is_gen && !final.Contains(t)) final.Add(t);
+			}
+		}
+		return final.ToArray();
 	}
 
 	public void LevelToLoad(GridInfo level)
@@ -598,6 +615,7 @@ public class TileMaster : MonoBehaviour {
 
 			}
 		}
+
 		newtile = CreateTile(x, y, Vector2.zero, sp, g, false, newscale, addvalue);
 		EffectManager.instance.PlayEffect(newtile.transform, Effect.Replace, GameData.instance.GetGENUSColour(newtile.Genus));
 		newtile.InitStats.Value += tempval;
@@ -746,18 +764,11 @@ public class TileMaster : MonoBehaviour {
 					if (Tiles[x, y].Type.isEnemy) 
 					{
 						EnemiesOnScreen ++;
-						if(!EnemyTute)
-						{
-							show_enemy_tute = true;
-							EnemyTute = true;
-						} 
+						
 					}
 				}
 			}
 		}
-		if(show_enemy_tute)
-		//yield return StartCoroutine(UIManager.instance.Alert(0.3F, "Monster tiles attack you", "Match them to attack back!", "", true));
-
 		yield break;
 	}
 
@@ -821,7 +832,11 @@ public class TileMaster : MonoBehaviour {
 					}
 					if (Tiles[xx, yy].AfterTurnCheck) continue;
 					Tiles[xx, yy].AfterTurnCheck = true;
-					if (Tiles[xx, yy].Type.isEnemy) EnemiesOnScreen ++;
+					if (Tiles[xx, yy].Type.isEnemy) 
+					{
+						EnemiesOnScreen ++;
+						Tiles[xx,yy].isAttacking = false;
+					}
 
 					Tiles[xx, yy].AfterTurn();
 					if (Tiles[xx, yy].HasAfterTurnEffect())
@@ -845,7 +860,18 @@ public class TileMaster : MonoBehaviour {
 
 		if (!TileMaster.instance.CheckForMatches())
 		{
-			yield return new WaitForSeconds(0.2F);
+			MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "NO MATCHES!", 140, GameData.Colour(GENUS.OMG),
+														GameData.GameSpeed(0.75F), 0.1F, true);
+			yield return new WaitForSeconds(GameData.GameSpeed(0.75F));
+
+			Tile [] omegas = GetTiles("", GENUS.OMG);
+			for(int i = 0; i < omegas.Length; i++)
+			{
+				omegas[i].InitStats.Attack += omegas[i].Stats.Value / 2;
+				omegas[i].CheckStats();
+				omegas[i].Animate("Attack", 0.05F);
+				omegas[i].AttackPlayer();
+			}
 			NewGrid();
 		}
 
@@ -963,6 +989,13 @@ public class TileMaster : MonoBehaviour {
 
 		int [] values = t.Stats.GetValues();
 		int g = (int) t.Genus;
+		if(t.Stats.Hits > 1) 
+		{
+			if(t.Stats.isEnemy) values[0] /= (int)((float)t.Stats.Hits/(float)Player.Stats._Attack);
+			else values[0] /= t.Stats.Hits;
+			
+			//t.AddValue(-values[0]);
+		}
 		if (values[0] > 0)
 		{
 			Vector3 pos = Grid.GetPoint(t.Point.Point(0)) + Vector3.down * 0.3F;

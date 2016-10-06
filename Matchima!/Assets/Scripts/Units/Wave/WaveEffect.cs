@@ -22,7 +22,7 @@ public class TileEffectInfo
 	public string Name;
 	public int Duration;
 	public string [] Args;
-	public bool ApplyToSpecies;
+	public bool ApplyToTileType, ApplyToSpecies;
 	public TileEffectInfo(string n, int d, params string [] arg)
 	{
 		Name = n;

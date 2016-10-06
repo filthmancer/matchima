@@ -88,6 +88,7 @@ public class WaveTile : WaveUnit
 
 		for(int i = 0; i < effects.Count; i++)
 		{
+			if(!effects[i].ApplyToTileType) continue;
 			if(effects[i].ApplyToSpecies)
 			{
 				s.Effects.Add(effects[i]);

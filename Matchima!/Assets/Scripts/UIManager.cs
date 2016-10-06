@@ -137,8 +137,14 @@ public class UIManager : MonoBehaviour {
 		Objects.Walls.color = Color.Lerp(
 			Objects.Walls.color, WallTint, Time.deltaTime * 5);
 
+		if(Objects.ArmourParent.isActive != (Player.Stats._Armour > 0))
+		{
+			
+			Objects.ArmourParent.SetActive((Player.Stats._Armour > 0));
+		}
+
 		Objects.ArmourParent.Txt[0].text = Player.Stats._Armour > 0 ? Player.Stats.Armour : "";
-		Objects.ArmourParent.SetActive(Player.Stats._Armour > 0);
+		
 
 		if(GameManager.Wave != null)
 		{
@@ -152,7 +158,7 @@ public class UIManager : MonoBehaviour {
 				}
 				else 
 				{
-					WaveButtons[i].SetActive(false);
+					if(WaveButtons[i].isActive) WaveButtons[i].SetActive(false);
 				}
 			}
 						

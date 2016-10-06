@@ -140,6 +140,11 @@ public class Tile : MonoBehaviour {
 
 	public bool NewVisuals = false;
 
+	protected bool attacking;
+	public bool isAttacking{
+		get{return attacking;}
+		set{attacking = value;}}
+
 
 	Vector3 rotation = Vector3.zero;
 	//[HideInInspector]
@@ -312,8 +317,13 @@ public class Tile : MonoBehaviour {
 		if(GameManager.instance.EnemyTurn && !IsState(TileState.Selected)) SetState(TileState.Locked);
 		if(Params._render != null) Params._render.color = Color.Lerp(Params._render.color, targetColor, 0.6F);
 		if(Params._border != null) Params._border.color = Color.Lerp(Params._border.color, targetColor, 0.6F);
-		if(Params.HitCounter != null) Params.HitCounter.SetActive(Stats.Hits > 1);
-		if(Params.HitCounterText != null) Params.HitCounterText.text = "" + Stats.Hits;
+		
+		if(Stats.Hits > 1)
+		{
+			if(Params.HitCounter != null && !Params.HitCounter.activeSelf) Params.HitCounter.SetActive(true);
+			if(Params.HitCounterText != null) Params.HitCounterText.text = "" + Stats.Hits;
+		}
+		else if(Params.HitCounter != null && Params.HitCounter.activeSelf) Params.HitCounter.SetActive(false);
 			
 		if(!isMatching) transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one * targetScale, Time.deltaTime * 5);
 		Params._shiny.enabled = IsState(TileState.Selected);
@@ -945,10 +955,10 @@ public class Tile : MonoBehaviour {
 			Params.otherWarning.text = "";
 		}
 		if(Info != null && Point != null) transform.name = Info.Name + " | " + Point.Base[0] + ":" + Point.Base[1];
-		//if(!IsState(TileState.Locked) && 
 		state_override = false;
 		originalMatch = false;
 		AttackedThisTurn = false;
+		attacking = false;
 		if(idle) SetState(TileState.Idle);
 	}
 
@@ -1010,18 +1020,18 @@ public class Tile : MonoBehaviour {
 	public void AttackPlayer()
 	{
 		PlayAudio("attack");
-		//UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), "" + GetAttack(), 95, Color.red, 0.8F,0.08F);
+		int final_attack = GetAttack();
 
 		float init_size = UnityEngine.Random.Range(160, 200);
 		float init_rotation = UnityEngine.Random.Range(-7,7);
 
 		float info_time = 0.43F;
-		float info_size = init_size + (GetAttack() * 2);
+		float info_size = init_size + (final_attack * 2);
 		float info_movespeed = 25;
 		float info_finalscale = 0.75F;
 
 		Vector3 pos = TileMaster.Grid.GetPoint(Point.Point(0));
-		MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + GetAttack(), info_size, Color.black, info_time, 0.03F, false);
+		MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + final_attack, info_size, Color.black, info_time, 0.03F, false);
 		m.Txt[0].outlineColor = GameData.Colour(Genus);
 		m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
 		MoveToPoint mini = m.GetComponent<MoveToPoint>();
@@ -1035,7 +1045,7 @@ public class Tile : MonoBehaviour {
 		mini.SetMethod(() =>{
 				Player.instance.OnHit(this);
 				//PlayAudio("hit");
-				GameData.Log("Took " + this.GetAttack() + "damage from " + this);
+				GameData.Log("Took " + final_attack + "damage from " + this);
 			}
 		);
 	}
@@ -1121,9 +1131,15 @@ public class Tile : MonoBehaviour {
 		InitStats.value_soft = Mathf.Clamp(InitStats.value_soft += amt, 0, 999);
 
 		int diff = (int) InitStats.value_soft - InitStats.Value;
-		if(diff != 0)
+		if(diff > 0)
 		{
 			StartCoroutine(ValueAlert(diff));
+		}
+		else
+		{
+			InitStats.Value = (int) InitStats.value_soft;
+			CheckStats();
+			SetSprite();
 		}
 	}
 
@@ -1150,6 +1166,7 @@ public class Tile : MonoBehaviour {
 			if(Effects[i] == null) Effects.RemoveAt(i);
 			else Stats.Add(Effects[i].CheckStats(), false);
 		}
+
 	}
 
 	public virtual void BeforeTurn()
@@ -1177,6 +1194,8 @@ public class Tile : MonoBehaviour {
 		{
 			InitStats.isNew = false;
 		}
+
+
 		/*for(int i = 0; i < Effects.Count; i++)
 		{
 			if(Effects[i] == null) Effects.RemoveAt(i);

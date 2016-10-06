@@ -102,7 +102,7 @@ public class Mimic : Enemy {
 					}
 				);*/
 				StartCoroutine(Animate("Attack", 0.05F));
-				HasAttackedThisTurn = true;
+				AttackedThisTurn = true;
 				Player.Stats.CompleteHealth();
 			}
 			
@@ -133,7 +133,7 @@ public class Mimic : Enemy {
 				{
 					float item_chance = (float)Stats.Value/32.0F;
 					if(Stats.Value > 10) item_chance += 0.4F;
-					if(Random.value < 0.98F)//item_chance) 
+					if(Random.value < 0.9F)//item_chance) 
 					{
 						for(int reward = 0; reward < Point.Scale; reward++)
 						{
@@ -163,7 +163,13 @@ public class Mimic : Enemy {
 
 	public override bool CanAttack()
 	{
-		return revealed && !Stats.isFrozen && !Stats.isAlly && !HasAttackedThisTurn;
+		CheckStats();
+		bool effects = true;
+		foreach(TileEffect child in Effects)
+		{
+			if(!child.CanAttack()) effects = false;
+		}
+		return effects && !Stats.isNew && !Stats.isFrozen && Stats.isAlerted && !AttackedThisTurn;
 	}
 
 

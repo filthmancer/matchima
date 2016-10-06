@@ -36,8 +36,8 @@ public class Altar : Tile {
 		yield return StartCoroutine(base.AfterTurnRoutine());
 		if(Stats.Lifetime >= Stats.Deathtime) 
 		{
-			DestroyThyself(true);
-			//StartCoroutine(GoAway());
+			//DestroyThyself(true);
+			yield return StartCoroutine(GoAway());
 		}
 		yield break;
 	}

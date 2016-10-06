@@ -144,6 +144,7 @@ public class AudioManager : MonoBehaviour {
 		aud.GetComponent<DestroyTimer>().Timer = 2.0F;
 		aud.clip = prop.GetClip();
 		aud.volume = prop.Volume;
+		aud.pitch = 1.0F;
 		aud.Play();
 		return aud;
 	}

@@ -21,11 +21,10 @@ public class Enemy : Tile {
 	public EnemyType _EnemyType = EnemyType.Demon;
 	private float threat_time = 0.0F;
 
-	protected bool HasAttackedThisTurn;
+	//protected bool AttackedThisTurn;
 
 	private float threat_anim, threat_anim_init = 0.4F;
-	private bool attacking;
-	public bool isAttacking{get{return attacking;}}
+	
 
 	public override StCon _Name {
 		get{
@@ -125,14 +124,17 @@ public class Enemy : Tile {
 		base.Update();
 
 		float hp = Mathf.Ceil(Player.Options.RealHP ? ((float)Stats.Hits/(float)Player.Stats._Attack) : (Stats.Hits));
-		
-		if(Params.HitCounter != null) Params.HitCounter.SetActive(hp > 1);
-		if(Params.HitCounterText != null)
+		if(hp > 1)
 		{
-			if(hp < 1) Params.HitCounterText.text = "" + 1;
-			else if(hp > 99) Params.HitCounterText.text = "???";
-			else Params.HitCounterText.text = "" + (int)(hp);	
+			if(Params.HitCounter != null && !Params.HitCounter.activeSelf) Params.HitCounter.SetActive(true);
+			if(Params.HitCounterText != null) 
+			{
+				if(hp < 1) Params.HitCounterText.text = "" + 1;
+				else if(hp > 99) Params.HitCounterText.text = "???";
+				else Params.HitCounterText.text = "" + (int)(hp);	
+			}
 		}
+		else if(Params.HitCounter != null && Params.HitCounter.activeSelf) Params.HitCounter.SetActive(false);
 
 		if(!Stats.isAlerted) return;
 		if(Stats.isFrozen) return;
@@ -172,7 +174,7 @@ public class Enemy : Tile {
 		{
 			if(!child.CanAttack()) effects = false;
 		}
-		return effects && !Stats.isNew && !Stats.isFrozen && Stats.isAlerted && !HasAttackedThisTurn;
+		return effects && !Stats.isNew && !Stats.isFrozen && Stats.isAlerted && !AttackedThisTurn;
 	}
 
 	public override IEnumerator BeforeMatch(bool original, int Damage = 0)
@@ -201,7 +203,8 @@ public class Enemy : Tile {
 	public override void AfterTurn()
 	{
 		base.AfterTurn();
-		HasAttackedThisTurn = false;
+		AttackedThisTurn = false;
+
 		if(Stats.isAlerted)
 		{
 			SetState(TileState.Idle, true);
@@ -242,7 +245,7 @@ public class Enemy : Tile {
 					GENUS g = Genus;
 					float randg = Random.value;
 					if(Random.value < 0.4F) g = (GENUS) Random.Range(0,4);
-					if(Random.value < 0.95F) TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["chest"], g,  Point.Scale);
+					if(Random.value < 0.8F) TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["chest"], g,  Point.Scale);
 					else TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["mimic"], g, Point.Scale);
 				}
 				else TileMaster.Tiles[Point.Base[0], Point.Base[1]] = null;
@@ -253,6 +256,7 @@ public class Enemy : Tile {
 		}
 		else 
 		{
+			CollectThyself(false);
 			isMatching = false;
 		}
 		return false;
@@ -260,7 +264,7 @@ public class Enemy : Tile {
 
 	public override void OnAttack()
 	{
-		HasAttackedThisTurn = true;
+		AttackedThisTurn = true;
 	}
 
 

@@ -250,6 +250,7 @@ public class Player : MonoBehaviour {
 		{
 			hit = child.OnHit(hit, attackers);
 		}
+		
 		foreach(Class child in Classes)
 		{
 			if(child == null) continue;

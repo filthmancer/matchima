@@ -31,7 +31,7 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 	protected ObjectPoolerReference poolref;
 	public ObjectPoolerReference GetPoolRef(){return poolref;}
 
-	public bool isActive{get{return this.gameObject.activeSelf;}}
+	//public bool isActive{get{return this.gameObject.activeSelf;}}
 
 	public virtual void Start()
 	{
@@ -49,14 +49,18 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 		if(Img.Length > 0) init = Img[0].color;
 
 		if(SetInactiveAfterLoading) SetActive(false);
+		else isActive = this.gameObject.activeSelf;
 	}
 
 
 	public virtual void SetActive(bool? active = null)
 	{
 		bool actual = active ?? !this.gameObject.activeSelf;
+		isActive = actual;
 		this.gameObject.SetActive(actual);
 	}
+
+	public bool isActive;
 
 	public UIObj this[int i]
 	{

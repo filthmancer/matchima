@@ -500,7 +500,9 @@ public class GameData : MonoBehaviour {
 			List<Zone> choices = GetRandomZones(i);
 			for(int z = 0; z < targ; z++)
 			{
-				br[i].Choices[z] = choices[UnityEngine.Random.Range(0,choices.Count)];
+				int rand = UnityEngine.Random.Range(0,choices.Count);
+				br[i].Choices[z] = choices[rand];
+				choices.RemoveAt(rand);
 			}
 		}
 		final.Brackets = br;
