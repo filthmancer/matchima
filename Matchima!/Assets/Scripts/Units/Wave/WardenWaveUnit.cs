@@ -17,7 +17,6 @@ public class WardenWaveUnit : WaveUnit {
 		bool [,] replacedtile = new bool [(int)TileMaster.instance.MapSize.x, (int)TileMaster.instance.MapSize.y];
 		for(int i = 0; i < controller_count; i++)
 		{
-			print(i);
 			int randx = (int)Random.Range(0, TileMaster.instance.MapSize.x);
 			int randy = (int)Random.Range(0, TileMaster.instance.MapSize.y);
 			while(replacedtile[randx, randy] || 

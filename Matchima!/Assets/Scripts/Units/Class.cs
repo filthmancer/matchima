@@ -62,7 +62,39 @@ public class Class : Unit {
 			return final.ToArray();
 		}
 	}
+
 	public Sprite Icon;
+	public Sprite IconGold;
+	public IType IconType;
+	public enum IType{
+		Default, Gold
+	}
+	public Sprite GetIcon()
+	{
+		switch(IconType)
+		{
+			case IType.Default:
+			return Icon;
+			case IType.Gold:
+			return IconGold;
+		}
+		return Icon;
+	}
+	public bool IconIsGold(){return IconType == IType.Gold;}
+
+	public void CycleIcon()
+	{
+		switch(IconType)
+		{
+			case IType.Default:
+			if(GameData.FullVersion) IconType = IType.Gold;
+			break;
+			case IType.Gold:
+			IconType = IType.Default;
+			break;
+		}
+	}
+
 	public string Description;
 	public bool Unlocked = true;
 

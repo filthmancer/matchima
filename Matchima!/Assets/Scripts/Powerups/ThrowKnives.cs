@@ -102,7 +102,7 @@ public class ThrowKnives : Powerup {
 		CatcherObjActual = (UIObj) Instantiate(CatcherObj);
 		RectTransform rect = CatcherObjActual.GetComponent<RectTransform>();
 		CatcherObjActual.transform.SetParent(UIManager.Objects.MiddleGear.transform);
-		CatcherObjActual.transform.localScale = Vector3.one * 1.8F;
+		CatcherObjActual.transform.localScale = Vector3.one * 2.1F;
 		rect.sizeDelta = Vector2.one;
 		rect.anchoredPosition = Vector2.zero;
 		
@@ -133,6 +133,7 @@ public class ThrowKnives : Powerup {
 		UIObj knife = CreateMinigameObj(0);
 		knife.transform.position = UIManager.Objects.BotGear.transform.position;
 		knife.transform.position += Vector3.right * (Random.value - Random.value);
+		knife.transform.localScale = Vector3.one * 0.6F;
 		AudioManager.instance.PlayClipOn(this.transform, "Powerup", "KnifeThrow");
 		float velx = Random.Range(0.0F, 0.09F);
 		if(Random.value < 0.5F) velx = -velx;
@@ -172,7 +173,7 @@ public class ThrowKnives : Powerup {
 		target.SetState(TileState.Selected, true);
 		UIObj part = CreateMinigameObj(0);
 		part.transform.position = par.position;
-		part.transform.localScale *= 0.7F;
+		part.transform.localScale = Vector3.one * 0.6F;
 		AudioManager.instance.PlayClipOn(this.transform, "Powerup", "KnifeThrow");
 		
 		part.GetComponent<Velocitizer>().enabled = false;

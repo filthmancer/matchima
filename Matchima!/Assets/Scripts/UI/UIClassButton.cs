@@ -35,6 +35,8 @@ public class UIClassButton : UIObj {
 
 	public Sprite HeroMaskSprite;
 
+	public GameObject GoldParticle;
+
 	public override void Start()
 	{
 		base.Start();
@@ -112,7 +114,8 @@ public class UIClassButton : UIObj {
 
 		LevelUp.color = color_default;
 		
-		_Sprite.sprite = ab.Icon;
+		_Sprite.sprite = ab.GetIcon();
+		GoldParticle.SetActive(ab.IconIsGold());
 		_Sprite.color = color_default;
 		_Sprite.enabled = true;
 		_SpriteMask.sprite = HeroMaskSprite;

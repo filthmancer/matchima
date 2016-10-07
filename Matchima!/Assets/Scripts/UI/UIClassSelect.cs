@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI.Extensions;
 
 public class UIClassSelect : UIObj {
 
@@ -7,6 +8,7 @@ public class UIClassSelect : UIObj {
 	float drag_threshold = 0.2F;
 
 	public bool CenterWheel;
+	public RadarPolygon Chart;
 	public void Setup(Class c)
 	{
 		_class = c;
@@ -21,7 +23,7 @@ public class UIClassSelect : UIObj {
 		if(c.Unlocked)
 		{
 			Img[0].color = GameData.Colour(_class.Genus);
-			Img[1].sprite = _class.Icon;
+			Img[1].sprite = _class.GetIcon();
 			Img[1].color = Color.white;
 			Txt[0].text = _class._Name.Value;
 			Txt[1].text = _class.Description;
@@ -33,10 +35,23 @@ public class UIClassSelect : UIObj {
 			});
 
 			Child[0].SetActive(true);
-			for(int i = 0; i < Child[0].Img.Length; i++)
-			{
-				Child[0].Img[i].transform.localScale = Vector3.one * _class.GetStatScale(i);
-			}
+			Child[1].SetActive(GameData.FullVersion);
+			Child[1].ClearActions();
+			Child[1].AddAction(UIAction.MouseUp, ()=>{ToggleClassIcon();});
+
+			float str = _class.GetStatScale(0);
+			float dex = _class.GetStatScale(1);
+			float wis = _class.GetStatScale(2);
+			float cha = _class.GetStatScale(3);
+
+			Chart.Elements[0].value = str;
+			Chart.Elements[1].value = Mathf.Min(str, cha);
+			Chart.Elements[2].value = cha;
+			Chart.Elements[3].value = Mathf.Min(cha, wis);
+			Chart.Elements[4].value = wis;
+			Chart.Elements[5].value = Mathf.Min(wis,dex);
+			Chart.Elements[6].value = dex;
+			Chart.Elements[7].value = Mathf.Min(dex,str);
 		}
 		else
 		{
@@ -69,6 +84,10 @@ public class UIClassSelect : UIObj {
 		}
 	}
 
-
-
+	public void ToggleClassIcon()
+	{
+		if(!_class) return;
+		_class.CycleIcon();
+		Img[1].sprite = _class.GetIcon();
+	}
 }
