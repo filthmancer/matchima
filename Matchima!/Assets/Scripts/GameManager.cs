@@ -280,8 +280,8 @@ public class GameManager : MonoBehaviour {
 				Wave.AddPoints(150);
 				break;
 				case 3: //c
-				//TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["guard"], GENUS.DEX,1, 1);
-				Player.instance.ResetLevel();
+				TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["mimic"], GENUS.DEX,1, 1);
+				//Player.instance.ResetLevel();
 				
 				/*UIManager.Objects.DeathIcon.transform.position = UIManager.ClassButtons[1].transform.position + Vector3.up * 5;
 				UIManager.Objects.DeathIcon.gameObject.SetActive(true);

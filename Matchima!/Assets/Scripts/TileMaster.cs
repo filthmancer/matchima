@@ -989,10 +989,10 @@ public class TileMaster : MonoBehaviour {
 
 		int [] values = t.Stats.GetValues();
 		int g = (int) t.Genus;
-		if(t.Stats.Hits > 1) 
+		int hp = (t.Stats.isEnemy ? (int)((float)t.Stats.Hits/(float)Player.Stats._Attack) : t.Stats.Hits);
+		if(hp > 1) 
 		{
-			if(t.Stats.isEnemy) values[0] /= (int)((float)t.Stats.Hits/(float)Player.Stats._Attack);
-			else values[0] /= t.Stats.Hits;
+			values[0] /= hp;
 			
 			//t.AddValue(-values[0]);
 		}

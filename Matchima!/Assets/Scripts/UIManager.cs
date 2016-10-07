@@ -1165,7 +1165,7 @@ public class UIManager : MonoBehaviour {
 			else (ScreenAlert[2] as UIObjTweener).Txt[1].text = "";
 
 			(ScreenAlert[2] as UIObjTweener).SetTween(0, true);
-			yield return new WaitForSeconds(GameData.GameSpeed(0.55F));
+			yield return new WaitForSeconds(GameData.GameSpeed(0.5F));
 		}
 
 		if(title != null)
@@ -1180,7 +1180,7 @@ public class UIManager : MonoBehaviour {
 			for(int i = 0; i < ScreenAlert[0][0].Length; i++)
 			{
 				ScreenAlert[0][0].GetChild(i).SetActive(true);
-				yield return new WaitForSeconds(GameData.GameSpeed(0.35F));
+				yield return new WaitForSeconds(GameData.GameSpeed(0.28F));
 			}
 		}
 

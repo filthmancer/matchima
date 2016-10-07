@@ -76,6 +76,7 @@ public class Mimic : Enemy {
 		Stats = new TileStat(InitStats);
 		SetSprite();
 		revealed = false;
+		isMatching = false;
 
 		if(!revealed)
 		{
@@ -101,11 +102,13 @@ public class Mimic : Enemy {
 						Player.Stats.Hit(GetAttack()*2);
 					}
 				);*/
+				AttackPlayer();
 				StartCoroutine(Animate("Attack", 0.05F));
 				AttackedThisTurn = true;
 				Player.Stats.CompleteHealth();
+				
 			}
-			
+			isMatching = false;
 			return true;
 		}
 		else
@@ -155,6 +158,7 @@ public class Mimic : Enemy {
 			else 
 			{
 				isMatching = false;
+				CollectThyself(false);
 				EffectManager.instance.PlayEffect(this.transform,Effect.Attack);
 			}
 			return false;
@@ -163,13 +167,7 @@ public class Mimic : Enemy {
 
 	public override bool CanAttack()
 	{
-		CheckStats();
-		bool effects = true;
-		foreach(TileEffect child in Effects)
-		{
-			if(!child.CanAttack()) effects = false;
-		}
-		return effects && !Stats.isNew && !Stats.isFrozen && Stats.isAlerted && !AttackedThisTurn;
+		return base.CanAttack() && revealed;
 	}
 
 
@@ -225,7 +223,7 @@ public class Mimic : Enemy {
 		return e;
 	}
 
-	public override IEnumerator AfterTurnRoutine(){
+	/*public override IEnumerator AfterTurnRoutine(){
 
 
 		yield return StartCoroutine(base.AfterTurnRoutine());
@@ -265,7 +263,7 @@ public class Mimic : Enemy {
 				//StartCoroutine(AllyAttack(target));
 			}
 		}
-	}
+	}*/
 
 	protected override IEnumerator ValueAlert(int diff)
 	{

@@ -65,7 +65,7 @@ public class Powerup : MonoBehaviour {
 		powerup.transform.localScale = Vector3.one;
 
 		AudioSource s = AudioManager.instance.PlayClipOn(this.transform, "Player", "Mana Powerup");
-		s.GetComponent<DestroyTimer>().Timer = 5.0F;
+		if(s) s.GetComponent<DestroyTimer>().Timer = 5.0F;
 		float step_time = Time.deltaTime * 45;
 		float total_time = step_time * 3;
 		MiniAlertUI a = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.up*4.5F, 
@@ -81,6 +81,6 @@ public class Powerup : MonoBehaviour {
 		//yield return new WaitForSeconds(step_time);
 		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(false);
 		Destroy(powerup);
-		s.GetComponent<ObjectPoolerReference>().Unspawn();
+		if(s) s.GetComponent<ObjectPoolerReference>().Unspawn();
 	}
 }

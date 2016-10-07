@@ -34,7 +34,7 @@ public class Lightning : Tile {
 		GameObject part = EffectManager.instance.PlayEffect(transform, Effect.Lightning);
 		CameraUtility.instance.ScreenShake((float)Stats.Value/10, Time.deltaTime* 15);
 		AudioSource aud = PlayAudio("cast", 0.75F);
-		aud.GetComponent<DestroyTimer>().Timer = 1.0F;
+		if(aud) aud.GetComponent<DestroyTimer>().Timer = 1.0F;
 		yield return new WaitForSeconds(GameData.GameSpeed(0.35F));
 
 		List<GENUS> onScreen = new List<GENUS>();
