@@ -119,9 +119,9 @@ public class Player : MonoBehaviour {
 		new Unlock("charselect", 2, "Character Selection"),
 		new Unlock("farmer", 3, "The Farmer", false),
 		new Unlock("endlessmode", 5, "Endless Mode"),
-		new Unlock("squire", 6, "The Squire", false),
-		new Unlock("warden", 7, "The Warden", false),
-		new Unlock("merchant", 8, "The Merchant", false)
+		//new Unlock("squire", 6, "The Squire", false),
+		new Unlock("warden", 6, "The Warden", false),
+		//new Unlock("merchant", 8, "The Merchant", false)
 	};
 	public Unlock [] Unlocks{get{return _Unlocks;}}
 	
@@ -1026,6 +1026,7 @@ public class EquipmentContainer {
 public class LevelContainer
 {
 	public int Level = 1;
+	public int Level_Max = 6;
 	public int XP_Current;
 	public int XP_Required;
 
@@ -1074,8 +1075,13 @@ public class LevelContainer
 		XP_Current = Mathf.Clamp(XP_Current + num, 0, XP_Required);
 		if(XP_Current == XP_Required)
 		{
-			Level++;
-			XP_RequiredArray_num++;
+			if(Level < Level_Max)
+			{
+				Level++;
+				XP_RequiredArray_num++;
+			}
+			else return false;
+			
 			if(XP_RequiredArray_num > XP_RequiredArray.Length)
 			{
 				return false;

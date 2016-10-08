@@ -35,6 +35,7 @@ public class Spawning : TileEffect {
 	{
 		if(Duration != 0 && !setupturn)
 		{
+			
 			Tile [] nbours = _Tile.Point.GetNeighbours();
 			List<Tile> final = new List<Tile>();
 

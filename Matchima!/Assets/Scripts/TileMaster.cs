@@ -84,6 +84,10 @@ public class TileMaster : MonoBehaviour {
 					}
 				}
 			}
+			if(Tiles[0,0] != null && Tiles[0,0].CanAttack() && !Tiles[0,0].Stats.isAlly)
+			{
+				final.Add(Tiles[0,0]);
+			}
 			return final.ToArray();
 		}
 	}
@@ -103,6 +107,10 @@ public class TileMaster : MonoBehaviour {
 						if(!final.Contains(Tiles[x,y])) final.Add(Tiles[x,y]);
 					}
 				}
+			}
+			if(Tiles[0,0] != null && Tiles[0,0].Stats.isAlly)
+			{
+				final.Add(Tiles[0,0]);
 			}
 			return final.ToArray();
 		}
@@ -162,6 +170,7 @@ public class TileMaster : MonoBehaviour {
 	public float AllChanceCurrent;
 	public static float ChanceRatio = 1.0F;
 
+	public bool JustAddEverything = false;
 
 	public static bool AllLanded
 	{
@@ -1741,14 +1750,15 @@ public static class Spawner2
 		for (int g = 0; g < t.Species.Count; g++)
 		{
 			SPECIES s = t.Species[g];
-			if (s.Chance > 0.0F)
+			if (s.Chance > 0.0F ||  TileMaster.instance.JustAddEverything)
 			{
 				for (int i = 0; i < s.AllGenus.Length; i++)
 				{
 					//Skip if genus tile chance is 0
-					if (s.AllGenus[i].Chance == 0.0F) continue;
+					if (s.AllGenus[i].Chance == 0.0F && !TileMaster.instance.JustAddEverything) continue;
 					TileInfo Info = new TileInfo(s, (GENUS)i);
 
+					if(TileMaster.instance.JustAddEverything) Info.FinalChance = 1.0F;
 					Tiles.Add(Info);
 					AllChanceFactors += Info.FinalChance;
 

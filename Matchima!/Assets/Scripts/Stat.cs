@@ -576,41 +576,52 @@ public class Stat
 
 	public StCon [] LevelUp(int power, int slot)
 	{
+		int line = 1;
 		List<StCon> final = new List<StCon>();
-		final.Add(new StCon("Stats Up!", Color.white, true, 100));
+		//final.Add(new StCon("Stats Up!", Color.white, true, 100));
 		StCon [] STR = _Strength.LevelUp(power, slot == 0);
 		if(STR != null)
 		{
-			final.Add(new StCon("STR:", GameData.Colour(GENUS.STR), false));
+			
 			final.AddRange(STR);
+			final.Add(new StCon(" STR", GameData.Colour(GENUS.STR), line%2 == 0));
+			line++;
 		}
 
 		StCon [] DEX = _Dexterity.LevelUp(power, slot == 1);
 		if(DEX != null)
 		{
-			final.Add(new StCon("DEX:", GameData.Colour(GENUS.DEX), false));
+			
 			final.AddRange(DEX);
+			final.Add(new StCon(" DEX", GameData.Colour(GENUS.DEX), line%2==0));
+			line ++;
 		}
 
 		StCon [] WIS = _Wisdom.LevelUp(power, slot == 2);
 		if(WIS != null)
 		{
-			final.Add(new StCon("WIS:", GameData.Colour(GENUS.WIS), false));
+			
 			final.AddRange(WIS);
+			final.Add(new StCon(" WIS", GameData.Colour(GENUS.WIS), line%2==0));
+			line++;
 		}
 
 		StCon [] CHA = _Charisma.LevelUp(power, slot == 3);
 		if(CHA != null)
 		{
-			final.Add(new StCon("CHA:", GameData.Colour(GENUS.CHA), false));
+			
 			final.AddRange(CHA);
+			final.Add(new StCon(" CHA", GameData.Colour(GENUS.CHA), line%2==0));
+			line++;
 		}
 
 		StCon [] PRP = _Luck.LevelUp(power);
 		if(PRP != null)
 		{
-			final.Add(new StCon("LUK:", GameData.Colour(GENUS.PRP), false));
+			
 			final.AddRange(PRP);
+			final.Add(new StCon(" LUK", GameData.Colour(GENUS.PRP), line%2==0));
+			line++;
 		}
 
 		return final.ToArray();
@@ -625,9 +636,9 @@ public class Stat
 			case GENUS.DEX:
 			return "+" + (int)Stat_AtkInc + " ATK";
 			case GENUS.WIS:
-			return "+" + (Stat_MeterInc*100).ToString("0") + "% CD";
+			return "+" + (Stat_MeterInc*100).ToString("0") + " SPL";
 			case GENUS.CHA:
-			return "+" + Stat_MeterInc.ToString("0.0") + " COMBO";
+			return "+" + Stat_MeterInc.ToString("0.0") + " VAL";
 		}
 		return "ERROR";
 	}
@@ -724,9 +735,9 @@ public class StatContainer
 
 		Color col = slotmult ? GameData.instance.GoodColour : Color.white;
 		return new StCon [] {
-			new StCon(StatOld + "", col, false),
-			new StCon("->", col, false),
-			new StCon(StatCurrent + "", GameData.instance.GoodColour)};
+			//new StCon(StatOld + "", col, false, 50),
+			//new StCon("->", col, false, 50),
+			new StCon(StatCurrent + "", GameData.instance.GoodColour, false)};
 	}
 
 	public void Setup()

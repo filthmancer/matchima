@@ -61,6 +61,7 @@ public class UIClassSelect : UIObj {
 			Child[0].SetActive(false);
 			Txt[2].text = "";
 			Txt[3].text = "";
+			Child[1].SetActive(false);
 		}
 		
 	

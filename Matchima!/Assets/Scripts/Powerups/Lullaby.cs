@@ -113,7 +113,7 @@ public class Lullaby : Powerup {
 		note.AddAction(UIAction.MouseDown, () =>
 		{
 			AudioSource c = AudioManager.instance.PlayClipOn(this.transform, "Powerup", "HarpNote");
-			c.pitch += (float)line*0.5F;
+			if(c) c.pitch += (float)line*0.5F;
 			notes_hit ++;
 			MiniAlertUI alert  = UIManager.instance.MiniAlert(note.transform.position,
 			"Good!", 100, GameData.Colour(Parent.Genus), 0.3F, 0.2F);

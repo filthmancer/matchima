@@ -1796,7 +1796,7 @@ public class SlicedSprite : MonoBehaviour
 
         Material material = unitySprite.sharedMaterial;
         MaterialPropertyBlock block = new MaterialPropertyBlock();
-        block.AddTexture("_MainTex", spriteTexture);
+        block.SetTexture("_MainTex", spriteTexture);
         m_MeshRenderer.SetPropertyBlock(block);
 
         Rect textureRect = sprite.textureRect;		

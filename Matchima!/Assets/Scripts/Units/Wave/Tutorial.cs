@@ -305,7 +305,7 @@ public class Tutorial : Wave {
 
 		for(int i = 0; i < TileMaster.Enemies.Length; i++)
 		{
-			yield return StartCoroutine(p.ThrowKnife(TileMaster.Enemies[i], 16));
+			yield return StartCoroutine(p.ThrowKnife(TileMaster.Enemies[i], 50));
 			yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 		}
 		yield return new WaitForSeconds(GameData.GameSpeed(0.2F));

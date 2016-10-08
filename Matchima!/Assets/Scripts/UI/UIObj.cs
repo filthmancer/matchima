@@ -147,11 +147,27 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 
 	public virtual void LateUpdate()
 	{
+		if(doFlash && Img[0]) 
+		{
+			float ratio = (Time.time - flash_last) / flash_duration;
+			ratio = Mathf.Clamp01(ratio);
+
+			Img[0].color = Color.Lerp(flash_col_a, flash_col_b, ratio);
+
+			if(ratio == 1.0F)
+			{
+				flash_last = Time.time;
+				Color t = flash_col_a;
+				flash_col_a = flash_col_b;
+				flash_col_b = t;
+			}
+		}
 		if(isPressed)
 		{
 			time_over += Time.deltaTime;
 		}
 	}
+
 
 	public void OnPointerClick(PointerEventData eventData)
 	{
@@ -334,6 +350,17 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 			break;
 		}
 	}
+
+	public void Flash(bool? active = null)
+	{
+		doFlash = active ?? !doFlash;
+		flash_col_a = Img[0].color;
+		flash_col_b = Color.white;
+		flash_last = Time.time; 
+	}
+	bool doFlash;
+	Color flash_col_a, flash_col_b;
+	float flash_last, flash_duration = 1.0F;
 }
 
 public enum UIAction

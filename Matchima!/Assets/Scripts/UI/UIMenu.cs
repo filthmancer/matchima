@@ -97,24 +97,16 @@ public class UIMenu : UIObj {
 		UIManager.Objects.BotGear[4].SetActive(false);
 		UIManager.Objects.BotGear[3].GetChild(0).SetActive(false);
 
-		UIManager.Objects.BotGear[3][2].transform.SetAsLastSibling();
+		//UIManager.Objects.BotGear[3][2].transform.SetAsLastSibling();
 		UIManager.Objects.BotGear[3][2].ClearActions();
 		UIManager.Objects.BotGear[3][2].AddAction(UIAction.MouseUp,
 			() => {
 				
-				bool filled = true;
-				for(int i = 0; i < Player.instance._Classes.Length; i++)
-				{
-					if(Player.instance._Classes[i] == null)
-					{
-						PlayerPrefs.SetString("PrevClass_" + i, string.Empty);
-						filled = false;
-					}
-					else PlayerPrefs.SetString("PrevClass_" + i, Player.instance._Classes[i].Name);
-				}
-				PlayerPrefs.SetInt("PrevClass", filled ? 1 : 0);
+				SetPrevClasses();
+
 				MainMenu(false);
 		});
+		UIManager.Objects.BotGear[3][2].SetActive(false);
 
 		UIManager.instance.Health.Txt[0].text = "";
 		UIManager.instance.Health.Txt[1].text = "";
@@ -146,7 +138,7 @@ public class UIMenu : UIObj {
 
 		if(PlayerPrefs.GetInt("Resume") == 1) 
 		{	
-			//(UIManager.Objects.MiddleGear["resume"] as UIObjTweener).SetTween(0, true);
+			if(GameData.FullVersion) (UIManager.Objects.MiddleGear["resume"] as UIObjTweener).SetTween(0, true);
 		}
 
 		bool activated = false;
@@ -256,7 +248,7 @@ public class UIMenu : UIObj {
 		UIManager.Objects.TopGear[1][2].Txt[0].enabled = false;
 		UIManager.Objects.TopGear[1][3].Txt[0].enabled = false;
 
-		
+		UIManager.Objects.BotGear[3][2].SetActive(false);		
 	}
 	
 	public void MainMenu(bool resume)
@@ -292,7 +284,6 @@ public class UIMenu : UIObj {
 
 		UIManager.Objects.MiddleGear[3][2].AddAction(UIAction.MouseUp, ()=>
 		{
-
 			AudioManager.instance.SetMusic();
 			UIManager.instance.RefreshOptions();
 		});
@@ -349,6 +340,7 @@ public class UIMenu : UIObj {
 		UIManager.Objects.TopGear.DivisionActions.Clear();
 		UIManager.Objects.TopGear.DivisionActions.Add((int i) =>
 		{
+			PlayerPrefs.SetInt("FlashTop", 1);
 			GetMiddleGearInfo(i);
 		});
 
@@ -359,7 +351,7 @@ public class UIMenu : UIObj {
 		UIManager.Objects.TopGear.Txt[0].text = "";
 		UIManager.Objects.BotGear.Txt[0].text = "";	
 
-		UIManager.Objects.TopGear.FlashArrows();
+		if(PlayerPrefs.GetInt("FlashTop") != 1) UIManager.Objects.TopGear.FlashArrows();
 		UIManager.Objects.BotGear.FlashArrows();
 	}
 
@@ -375,6 +367,7 @@ public class UIMenu : UIObj {
 			UIManager.Objects.BotGear.SetToState(2);
 			//(UIManager.Objects.BotGear as UIObjTweener).SetTween(2, true);
 			UIManager.Objects.BotGear[3][0].SetActive(true);
+			
 			UIManager.Objects.BotGear[3][0].Img[1].gameObject.SetActive(false);
 			UIManager.Objects.BotGear.isFlashing = false;
 
@@ -398,7 +391,7 @@ public class UIMenu : UIObj {
 			}
 			else UIManager.Objects.TopGear.MoveToDivision(0);
 
-			(UIManager.Objects.BotGear[3][0] as UIGear).FlashArrows();	
+			if(PlayerPrefs.GetInt("FlashBot") != 1) (UIManager.Objects.BotGear[3][0] as UIGear).FlashArrows();	
 
 			UIManager.Objects.BotGear[1].Img[0].enabled = false;
 			
@@ -416,7 +409,9 @@ public class UIMenu : UIObj {
 			{
 				GetHeroMenu_Info(i);
 			});
-			//StartCoroutine(ClearBot());
+
+			UIManager.Objects.BotGear[3][2].SetActive(true);
+
 		}
 		else
 		{
@@ -424,31 +419,60 @@ public class UIMenu : UIObj {
 			SetTargetSlot(x);
 		}
 	}
-
-	IEnumerator ClearBot()
-	{
-		yield return null;
-		UIManager.Objects.BotGear.ClearActions();
-		yield return null;
-	}
-
+	
 	private void GetHeroMenu_Info(int i)
 	{
+		PlayerPrefs.SetInt("FlashTop", 1);
 		switch(i)
 		{
 			case 0:
 			print("Custom Team");
 			break;
 			case 1:
-			print("Saved");
+			//print("Saved");
+			SetClasses(PlayerPrefs.GetString("SavedClass_0"), 
+						PlayerPrefs.GetString("SavedClass_1"),
+						PlayerPrefs.GetString("SavedClass_2"),
+						PlayerPrefs.GetString("SavedClass_3"));
 			break;
 			case 2:
-			print("Challenge");
+			//print("Team of the Week");
+			SetClasses("Wizard", "Rogue", "Wizard", "Rogue");
+			
 			break;
 			case 3:
-			print("Team of the Week");
+			//print("Previous");
+			
+			SetClasses(PlayerPrefs.GetString("PrevClass_0"), 
+						PlayerPrefs.GetString("PrevClass_1"),
+						PlayerPrefs.GetString("PrevClass_2"),
+						PlayerPrefs.GetString("PrevClass_3"));
 			break;
 		}
+	}
+
+	public void SetPrevClasses()
+	{
+		bool filled = true;
+		for(int i = 0; i < Player.instance._Classes.Length; i++)
+		{
+			if(Player.instance._Classes[i] == null)
+			{
+				PlayerPrefs.SetString("PrevClass_" + i, string.Empty);
+				filled = false;
+			}
+			else PlayerPrefs.SetString("PrevClass_" + i, Player.instance._Classes[i].Name);
+		}
+		PlayerPrefs.SetInt("PrevClass", filled ? 1 : 0);
+	}
+
+	public void SetClasses(params string [] names)
+	{
+		for(int i = 0; i < Player.instance._Classes.Length; i++)
+		{
+			Player.instance._Classes[i] = GameData.instance.GetClass(names[i]);
+		}
+		SetClassUI();
 	}
 
 
@@ -523,8 +547,7 @@ public class UIMenu : UIObj {
 		if(i == 4) i = 0;
 		UIManager.Objects.MiddleGear.AddSpin(6);
 		bool unlocked = false;
-		//top_division_last = UIManager.Objects.TopGear.LastDivision;
-		//Reset();
+		
 		if(i!= 1) PlayerPrefs.SetInt("PrevMode", i);
 		UIGear MidGear = UIManager.Objects.MiddleGear as UIGear;
 		UIManager.instance.ShowFullVersionAlert(false);
@@ -674,7 +697,6 @@ public class UIMenu : UIObj {
 	{
 		for(int n = 0; n < UIManager.ClassButtons.Length; n++)
 		{
-			
 			if(Player.instance._Classes[n] != null)
 			{
 				UIManager.ClassButtons.GetClass(n)._Sprite.sprite = Player.instance._Classes[n].Icon;
@@ -693,6 +715,7 @@ public class UIMenu : UIObj {
 	public void SetTargetSlot(int i)
 	{
 		(UIManager.Objects.BotGear[3][0] as UIGear).isFlashing = false;	
+		PlayerPrefs.SetInt("FlashBot", 1);
 		if(TargetSlot == i)
 		{
 			UIManager.ClassButtons.GetClass(TargetSlot.Value).TweenClass(false);
@@ -732,6 +755,9 @@ public class UIMenu : UIObj {
 		UIManager.ClassButtons.GetClass(TargetSlot.Value).Setup(c._class);
 		UIManager.ClassButtons.GetClass(TargetSlot.Value).QuickPopup(0.1F);
 		(UIManager.Objects.BotGear[3][0] as UIGear).isFlashing = false;	
+		PlayerPrefs.SetInt("FlashBot", 1);
+		GetHeroMenu_Info(0);
+		UIManager.Objects.TopGear.MoveToDivision(0);
 		UIManager.ClassButtons.GetClass(TargetSlot.Value).TweenClass(false);
 		//If targetslot was initally null, set back to null
 		if(set_from_null) TargetSlot = null;
@@ -846,18 +872,11 @@ public class UIMenu : UIObj {
 
 	public void ResetOptions()
 	{
-		//OptionsMenu["RealNumbers"].BooleanObjColor(Player.Options.ShowNumbers);
-		//OptionsMenu["RealHP"].BooleanObjColor(Player.Options.RealHP);
-		//OptionsMenu["Intros"].BooleanObjColor(Player.Options.ShowIntroWaves);
-		//OptionsMenu["Story"].BooleanObjColor(!Player.Options.SkipAllStory);
+
 	}
 
 	public void TutorialActivate()
 	{
-		//Player.instance._Classes[0] = GameData.instance.GetClass("Barbarian");
-		//Player.instance._Classes[1] = GameData.instance.GetClass("Rogue");
-		//Player.instance._Classes[2] = GameData.instance.GetClass("Wizard");
-		//Player.instance._Classes[3] = GameData.instance.GetClass("Bard");
 		GameManager.TuteActive = true;
 		GameManager.instance.LoadGame(false);
 	}
@@ -871,41 +890,7 @@ public class UIMenu : UIObj {
 
 	public void GetPips(ClassInfo Info)
 	{
-		/*for(int i = 0 ; i < HealthPipParent.transform.childCount; i++)
-		{
-			Destroy(HealthPipParent.transform.GetChild(i).gameObject);
-		}
-		for(int i = 0 ; i < AttackPipParent.transform.childCount; i++)
-		{
-			Destroy(AttackPipParent.transform.GetChild(i).gameObject);
-		}
-		for(int i = 0 ; i < MagicPipParent.transform.childCount; i++)
-		{
-			Destroy(MagicPipParent.transform.GetChild(i).gameObject);
-		}
 
-		for(int i = 0 ; i < Info.HealthRating; i++)
-		{
-			UIObj newpip = (UIObj) Instantiate(PipObj);
-			newpip.transform.parent = HealthPipParent.transform;
-			newpip.transform.localScale = Vector3.one;
-			newpip._Image.color = GameData.Colour(GENUS.STR);
-		}
-
-		for(int i = 0 ; i < Info.AttackRating; i++)
-		{
-			UIObj newpip = (UIObj) Instantiate(PipObj);
-			newpip.transform.parent = AttackPipParent.transform;
-			newpip.transform.localScale = Vector3.one;
-			newpip._Image.color = GameData.Colour(GENUS.DEX);
-		}
-		for(int i = 0 ; i < Info.MagicRating; i++)
-		{
-			UIObj newpip = (UIObj) Instantiate(PipObj);
-			newpip.transform.parent = MagicPipParent.transform;
-			newpip.transform.localScale = Vector3.one;
-			newpip._Image.color = GameData.Colour(GENUS.WIS);
-		}*/
 	}
 
 	public void SetOption(string s)
@@ -924,17 +909,6 @@ public class UIMenu : UIObj {
 
 	public void ShowHelp(int i)
 	{
-		/*switch(i)
-		{
-			case 0:
-				HelpBasic.SetActive(null);
-			break;
-			case 1:
-				HelpMana.SetActive(null);
-			break;
-			case 2:
-				HelpItems.SetActive(null);
-			break;
-		}*/
+
 	}
 }

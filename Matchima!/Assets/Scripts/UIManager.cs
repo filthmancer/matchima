@@ -1708,7 +1708,6 @@ public class UIManager : MonoBehaviour {
 
 	public void ShowZoneUI(bool ended)
 	{
-		print(true);
 		(Objects.MiddleGear[1] as UIObjTweener).SetTween(0);
 		bool open = (Objects.MiddleGear[1] as UIObjTweener).Tween.IsObjectOpened();
 		GameManager.instance.paused = open;
@@ -1743,22 +1742,26 @@ public class UIManager : MonoBehaviour {
 					{
 						bracket.Child[c].Txt[0].text = GameManager.ZoneMap[i][c]._Name;
 						bracket.Child[c].Img[0].color = GameManager.ZoneMap[i][c].Tint;
+						bracket.Child[c].Flash(true);
 						bracket.Child[c].ClearActions();
-
 						bracket.Child[c].AddAction(UIAction.MouseUp, (string []	 val)=>
 						{
 							int v = GameData.StringToInt(val[0]);
 							GameManager.instance.AdvanceZoneMap(v);
 						}, c +"");
+
+
 					}
 					else if(i > GameManager.ZoneMap.Current)
 					{
+						bracket.Child[c].Flash(false);
 						bracket.Child[c].ClearActions();
 						bracket.Child[c].Txt[0].text = "?";
 						bracket.Child[c].Img[0].color = Color.grey * 0.6F;
 					}
 					else 
 					{
+						bracket.Child[c].Flash(false);
 						bracket.Child[c].Txt[0].text = "";
 						//bracket.Child[c].Txt[0].color = Color.grey;
 						bracket.Child[c].Img[0].color = GameManager.ZoneMap[i][c].Tint * 0.6F;
@@ -1786,6 +1789,7 @@ public class UIManager : MonoBehaviour {
 				UIObj bracket = Objects.MiddleGear[1][0].Child[i];
 				for(int c = 0; c < bracket.Length; c++)
 				{
+					bracket.Child[c].Flash(false);
 					bracket.Child[c].ClearActions();
 					if(i > GameManager.ZoneMap.Current)
 					{
@@ -1843,6 +1847,7 @@ public class UIManager : MonoBehaviour {
 		
 		if(!GameData.FullVersion)
 		{
+			FullVersionAlert[0].Child[0].SetActive(false);
 			FullVersionAlert[0].Txt[0].text = "$" + FullVersionPrice.ToString("0.00");
 			FullVersionAlert[0].AddAction(UIAction.MouseUp, () =>
 			{
@@ -1851,7 +1856,7 @@ public class UIManager : MonoBehaviour {
 		}
 		else
 		{
-			FullVersionAlert[0].Txt[0].text = "UNLOCKED!";
+			FullVersionAlert[0].Child[0].SetActive(true);
 		}
 		
 

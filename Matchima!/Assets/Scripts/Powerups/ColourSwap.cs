@@ -86,7 +86,9 @@ public class ColourSwap : Powerup {
 		bool isShuffling = true;
 		int shuffle_loops = 3;
 		List<Vector3> oldtargs = new List<Vector3>();
+		List<Vector3> prevtargs = new List<Vector3>();
 		oldtargs.AddRange(tpoints);
+		prevtargs.AddRange(tpoints);
 		for(int i = 0; i < shuffle_loops; i++)
 		{
 		//Set new points for the cards
@@ -100,7 +102,7 @@ public class ColourSwap : Powerup {
 			}
 
 			oldtargs.Clear();
-			oldtargs.AddRange(tpoints);
+			oldtargs.AddRange(prevtargs);
 
 		//Shuffle the cards to new points
 			isShuffling = true;
@@ -116,8 +118,8 @@ public class ColourSwap : Powerup {
 				if(curr_shuff >= 1.0F) isShuffling = false;
 				yield return null;
 			}
-			oldtargs.Clear();
-			oldtargs.AddRange(newtargs);
+			prevtargs.Clear();
+			prevtargs.AddRange(newtargs);
 			yield return StartCoroutine(GameData.DeltaWait(0.15F));
 		}
 		

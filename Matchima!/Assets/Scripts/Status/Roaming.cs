@@ -39,6 +39,8 @@ public class Roaming : TileEffect {
 				if(_Tile.isMatching || _Tile.Destroyed) yield break;
 				yield return null;
 			}
+			while(_Tile.isAttacking) yield return null;
+			yield return new WaitForSeconds(Time.deltaTime * 10);
 			Tile [] nbours = _Tile.Point.GetNeighbours();
 			List<Tile> final = new List<Tile>();
 			foreach(Tile child in nbours)

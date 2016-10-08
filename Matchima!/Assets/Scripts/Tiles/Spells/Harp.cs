@@ -59,7 +59,7 @@ public class Harp : Tile {
 		new_part.transform.position = transform.position;
 		new_part.transform.parent = transform;
 		AudioSource s = PlayAudio("cast");
-		s.GetComponent<DestroyTimer>().Timer = 1.4F;
+		if(s) s.GetComponent<DestroyTimer>().Timer = 1.4F;
 		TileMaster.instance.Ripple(this, to_collect, 2.1F*Stats.Value, GameData.GameSpeed(0.35F), 0.2F);
 		yield return new WaitForSeconds(GameData.GameSpeed(0.3F));
 		if(to_collect.Count > 0)

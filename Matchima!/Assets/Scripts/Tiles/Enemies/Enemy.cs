@@ -273,16 +273,17 @@ public class Enemy : Tile {
 	{
 		if(type == "Attack")
 		{
-			StartCoroutine(AttackJuice());
+			StartCoroutine(AttackJuice(time));
 		} 
-		if(time != 0.0F) yield return new WaitForSeconds(time);
+		else if(time != 0.0F) yield return new WaitForSeconds(time);
 		else yield return null;
 	}
 
-	IEnumerator AttackJuice()
+	IEnumerator AttackJuice(float time)
 	{
 		attacking = true;
 		yield return StartCoroutine(Juice.instance.JuiceRoutine(Juice._Attack, Params._render.transform, 0.7F, 1.0F));
+		if(time != 0.0F) yield return new WaitForSeconds(time);
 		attacking = false;
 		yield return null;
 	}

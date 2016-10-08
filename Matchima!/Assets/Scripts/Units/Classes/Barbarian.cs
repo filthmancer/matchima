@@ -28,10 +28,9 @@ public class Barbarian : Class {
 		get{
 			return new Upgrade []
 			{
-				new Upgrade("Hearty", " Max HP", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._HealthMax += 20 + (int)val*5;}, 5, 20),
-				new Upgrade("Healing", " HP Regen", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s.HealthRegen += 1 + (int) val;}, 1, 1),
-				new Upgrade("Sharp", " Attack", 0.5F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._Attack += 1 + (int)val;}, 1, 1),
-
+				new Upgrade("Hearty", " Max HP", 1.0F,
+									 ScaleType.GRADIENT, 1.0F,
+									 (Stat s, float val) => {s._HealthMax += 20 + (int)val*5;}, 5, 20),
 
 				new Upgrade("Soldier's", "% chance\n of Health", 0.7F, ScaleType.GRADIENT, 1.0F,
 					(Stat s, float value) => {
@@ -42,16 +41,7 @@ public class Barbarian : Class {
 					(Stat s, float value) =>
 					{
 						s.MatchNumberModifier -= 1;
-						}, -1, -1),
-
-				new Upgrade("Cook's", " Map X", 0.3F, ScaleType.RANK, 0.4F,
-							(Stat s, float value) => {
-								s.MapSize.x += 1 + (int) (1 * value);},1,1
-							),
-				new Upgrade("Magellan's", " Map Y", 0.3F, ScaleType.RANK, 0.4F,
-					(Stat s, float value) => {
-						s.MapSize.y += 1 + (int) (1 * value);},1,1
-						)
+						}, -1, -1)
 			};
 		}
 	}

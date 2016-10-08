@@ -147,7 +147,7 @@ public class WaveTile : WaveUnit
 			
 			if(Style.Value > 1) yield return new WaitForSeconds(Time.deltaTime * 10);
 		}
-		yield return new WaitForSeconds(Time.deltaTime * 55);
+		yield return new WaitForSeconds(Time.deltaTime * 15);
 	}
 
 

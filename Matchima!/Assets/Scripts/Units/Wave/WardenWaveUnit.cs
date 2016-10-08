@@ -20,7 +20,6 @@ public class WardenWaveUnit : WaveUnit {
 			int randx = (int)Random.Range(0, TileMaster.instance.MapSize.x);
 			int randy = (int)Random.Range(0, TileMaster.instance.MapSize.y);
 			while(replacedtile[randx, randy] || 
-				!TileMaster.Tiles[randx,randy].IsType("resource") || 
 				TileMaster.Tiles[randx,randy].Point.Scale > 1)
 			{
 				randx = (int)Random.Range(0, TileMaster.instance.MapSize.x);

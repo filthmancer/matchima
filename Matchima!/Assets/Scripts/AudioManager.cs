@@ -46,8 +46,7 @@ public class AudioManager : MonoBehaviour {
 
 	void Update()
 	{
-		if(!PlayMusic && Music.enabled) Music.enabled = false;
-		else if(PlayMusic && !Music.enabled) Music.enabled = true;
+		
 
 		if(PlayMusic && GameManager.instance.gameStart)
 		{
@@ -254,14 +253,20 @@ public class AudioManager : MonoBehaviour {
 
 	public void SetMusicClip(AudioClip clip)
 	{
+		print("home");
 		Music.clip = clip;
 		Music.Play();
 	}
 
 	public void SetMusic(bool? active = null)
 	{
-		PlayMusic = active ?? !PlayMusic;
+		bool actual =  active ?? !PlayMusic;
+		PlayMusic = actual;
+		Music.enabled = actual;
 		ZPlayerPrefs.SetInt("Music", PlayMusic ? 0 : 1);
+		
+		if(actual && GameManager.instance.gameStart) GetZoneMusic();
+		else if(actual) SetMusicClip(HomeScreenMusic);
 	}
 
 	public void SetSFX(bool? active = null)
@@ -272,6 +277,7 @@ public class AudioManager : MonoBehaviour {
 
 	public void GetZoneMusic()
 	{
+		print("zone");
 		int r = Random.Range(0, ZoneMusic.Length);
 		Music.clip = ZoneMusic[r];
 		Music.loop = true;

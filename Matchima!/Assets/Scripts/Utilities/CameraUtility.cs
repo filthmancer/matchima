@@ -26,7 +26,8 @@ public class CameraUtility : MonoBehaviour {
 	public static float OrthoFactor
 	{
 		get{
-			return 1.0F + (TargetOrtho-6.6F)*0.03F;
+			if(!instance.IgnoreTargetOrtho)	return 1.0F + (TargetOrtho-6.6F)*0.03F;
+			else return 1.0F + (instance.Cam.CameraSettings.orthographicSize - 6.6F) * 0.03F;
 		}
 	}
 
@@ -56,8 +57,10 @@ public class CameraUtility : MonoBehaviour {
 		{
 			Cam.CameraSettings.orthographicSize = Mathf.Lerp(Cam.CameraSettings.orthographicSize, TargetOrtho, Time.deltaTime * 8);
 			UICam.HostCamera.orthographicSize = Mathf.Lerp(UICam.HostCamera.orthographicSize, TargetOrtho, Time.deltaTime * 8);
-			Background.localScale = (Vector3.one * background_factor_a) + Vector3.one * (OrthoFactor * background_factor_b);
+			
+
 		}
+		Background.localScale = (Vector3.one * background_factor_a) + Vector3.one * (OrthoFactor * background_factor_b);
 		Vector3 final_pos = TargetPos + (TurnOffset_enabled ? TurnOffsetA:TurnOffsetB);
 		if(!isShaking && TileMaster.Grid != null) Cam.transform.position = Vector3.Lerp(Cam.transform.position, final_pos, Time.deltaTime * 8);
 	}

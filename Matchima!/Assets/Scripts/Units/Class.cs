@@ -242,6 +242,11 @@ public class Class : Unit {
 			//InitMod.Parent = this;
 			//InitMod.Init(i++);
 		}
+
+		for(int b = 0; b < BoonsAll.Length; b++)
+		{
+			BoonsAll[b].Index = new int[]{0, b};
+		}
 		
 		for(int m = 0; m < AllMods.Count; m++)
 		{
@@ -726,11 +731,14 @@ public class Class : Unit {
 		Level ++;
 		
 
-		StCon [] title = InitStats.LevelUp(power, Index);
-		StCon [] floor = new StCon [] {new StCon(Name + " Level "), new StCon(Level+"")};
-		Reset();
+		
+		//StCon [] floor = new StCon [] {new StCon(Name + " Level "), new StCon(Level+"")};
+		//InitStats.LevelUp(power, Index);
 
-		yield return StartCoroutine(UIManager.instance.Alert(0.3F, floor, title, null, true));
+
+		yield return StartCoroutine(Mutate(power));
+		Reset();
+		/*yield return StartCoroutine(UIManager.instance.Alert(0.3F, floor, title, null, true));
 
 		float mutation_chance = Stats.MutationChance - (0.1F * power);
 
@@ -745,7 +753,7 @@ public class Class : Unit {
 		else
 		{
 			mutation_psuedochance = Mathf.Clamp(mutation_psuedochance + 0.04F, mutation_psuedochance_min, mutation_psuedochance_max);	
-		}
+		}*/
 		UIManager.ClassButtons.GetClass(Index).ShowClass(false);
 		Player.instance.ResetStats();
 		yield return null;
@@ -758,11 +766,12 @@ public class Class : Unit {
 		powerup.transform.localScale = Vector3.one;
 
 		AudioManager.instance.PlayClipOn(this.transform, "Player", "Mutate");
-		StCon [] title = new StCon[]{
-			new StCon(_Name),
-			new StCon("is Mutating!", Color.white, true, 110)};
+		List<StCon> title = new List<StCon>();
+			title.Add(new StCon(_Name));
+			title.Add(new StCon("is Mutating!", Color.white, true, 110));
+
 		StCon [] floor = new StCon [] {new StCon("What?!")};
-		yield return StartCoroutine(UIManager.instance.Alert(0.75F, floor, title, null));
+		yield return StartCoroutine(UIManager.instance.Alert(0.75F, floor, title.ToArray(), null));
 
 		Destroy(powerup);
 
@@ -776,14 +785,14 @@ public class Class : Unit {
 		{	
 			float chance = UnityEngine.Random.value * BoonChances;
 			float current = 0.0F;
-			for(int i = 0; i < Boons.Length; i++)
+			for(int i = 0; i < BoonsAll.Length; i++)
 			{
-				if(chance >= current && chance < current + Boons[i].chance)
+				if(chance >= current && chance < current + BoonsAll[i].chance)
 				{
-					u = new Upgrade(Boons[i]);
+					u = new Upgrade(BoonsAll[i]);
 					break;
 				}
-				current += Boons[i].chance;
+				current += BoonsAll[i].chance;
 			}
 			
 		}
@@ -816,7 +825,6 @@ public class Class : Unit {
 		finaltitle = u.Title;
 		if(prev == null) 
 		{
-			
 			Mutations.Add(u);
 		}
 		else 
@@ -828,17 +836,69 @@ public class Class : Unit {
 		boon += (Boon ? " gifted!" : " cursed!");
 		Color innercol = (Boon ? GameData.Colour(Genus) : GameData.instance.BadColour);
 		Color outercol = (Boon ? GameData.instance.BadColour : GameData.Colour(Genus));
-		title = new StCon[]{
-			new StCon(boon, innercol, true, 80),
-			new StCon(finaltitle, Color.white, true, 80)};
-		yield return StartCoroutine(UIManager.instance.Alert(1.4F, null, title));
 
+		title.Clear();
+
+		title.Add(new StCon(boon, innercol, true, 80));
+		title.Add(new StCon(finaltitle, Color.white, true, 80));
+		List<StCon> desc= new List<StCon>();
+		desc.AddRange(InitStats.LevelUp(power, Index));
+
+		yield return StartCoroutine(UIManager.instance.Alert(2.1F, null, title.ToArray(), desc.ToArray()));
+		
 		yield return null;
 	}
 
 	public virtual Upgrade [] Boons
 	{
 		get{return null;}
+	}
+
+	public Upgrade [] BoonsAll
+	{
+		get{
+			List<Upgrade> final = new List<Upgrade>();
+			final.AddRange(Boons);
+			final.Add(new Upgrade("Hearty", " Max HP", (Genus == GENUS.STR ? 1.0F : 0.4F),
+								 ScaleType.GRADIENT, 1.0F,
+								 (Stat s, float val) => {s._HealthMax += 5 + (int)val*5;}, 5, 5));
+			final.Add(new Upgrade("Healing", " HP Regen", (Genus == GENUS.STR ? 1.0F : 0.4F),
+								 ScaleType.GRADIENT, 1.0F,
+								 (Stat s, float val) => {s.HealthRegen += 1 + (int) val;}, 1, 1));
+
+			final.Add(new Upgrade("Sharp", " Attack", (Genus == GENUS.DEX ? 1.0F : 0.4F),
+								 ScaleType.GRADIENT, 1.0F,
+								 (Stat s, float val) => {s._Attack += 1 + (int)val;}, 1, 1));
+			final.Add(new Upgrade("Wise", "%\n Attack Power", 0.4F, 
+								 ScaleType.GRADIENT, (Genus == GENUS.DEX ? 1.0F : 0.4F),
+								 (Stat s, float val) => {s.AttackPower += 0.2F * val;}, 20));
+
+			final.Add(new Upgrade("Sharp", " Spell", (Genus == GENUS.WIS ? 1.0F : 0.4F),
+								 ScaleType.GRADIENT, 1.0F,
+								 (Stat s, float val) => {s._Spell += 1 + (int)val;}, 1, 1));
+			final.Add(new Upgrade("Wise", "% Spell Power", 0.1F,
+								 ScaleType.GRADIENT, (Genus == GENUS.WIS ? 1.0F : 0.4F),
+								 (Stat s, float val) => {s.SpellPower += 0.2F * val;}, 20));
+
+			final.Add(new Upgrade("Spiked", " Spikes", (Genus == GENUS.CHA ? 1.0F : 0.4F),
+								 ScaleType.GRADIENT,1.0F,
+								 (Stat s, float val) => {s.Spikes += 1 + (int)val;}, 1, 1));
+
+			final.Add(new Upgrade("Healing", " MP Regen", (Genus == GENUS.CHA ? 1.0F : 0.4F),
+								 ScaleType.GRADIENT, 1.0F,
+								 (Stat s, float val) => {s.MeterRegen += 1 + (int) val;}));
+
+			final.Add(new Upgrade("Cook's", " Map X", 0.3F, ScaleType.RANK, 0.4F,
+								 (Stat s, float value) => {
+								 	s.MapSize.x += 1 + (int) (1 * value);},1,1
+								 ));
+			final.Add(new Upgrade("Magellan's", " Map Y", 0.3F, ScaleType.RANK, 0.4F,
+								 (Stat s, float value) => {
+								 	s.MapSize.y += 1 + (int) (1 * value);},1,1
+								 	));
+
+			return final.ToArray();
+		}
 	}
 	public virtual Upgrade [] Curses
 	{
@@ -847,9 +907,9 @@ public class Class : Unit {
 	public float BoonChances{
 		get{
 			float c = 0.0F;
-			for(int i = 0; i < Boons.Length; i++)
+			for(int i = 0; i < BoonsAll.Length; i++)
 			{
-				c += Boons[i].chance;
+				c += BoonsAll[i].chance;
 			}
 			return c;
 		}

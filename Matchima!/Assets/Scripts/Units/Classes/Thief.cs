@@ -48,13 +48,7 @@ public class Thief : Class {
 	{
 		get{
 			return new Upgrade []
-			{
-				new Upgrade("Sharp", " Attack", 1.0F, ScaleType.GRADIENT, 1.0F, 
-					(Stat s, float val) => {s._Attack += 1 + (int)val;}, 1, 1),
-				new Upgrade("Wise", "%\n Attack Power", 0.4F, ScaleType.GRADIENT, 0.5F, (Stat s, float val) => {s.AttackPower += 0.2F * val;}, 20),
-				new Upgrade("Hearty", " Max HP", 1.0F, ScaleType.GRADIENT, 0.5F, (Stat s, float val) => {s._HealthMax += 20 + (int)val*5;}, 5, 20),
-
-				
+			{			
 				new Upgrade("Soldier's", "% chance of\ngreen Sword", 0.3F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("green", "sword", 0.04F + 0.03F * value));}, 3, 4
@@ -81,17 +75,7 @@ public class Thief : Class {
 					(Stat s, float value) =>
 					{
 						s.DeathSaveChance += 0.05F + (value * 0.03F);
-					}, 3, 5),
-
-
-				new Upgrade("Cook's", " Map X", 0.3F, ScaleType.RANK, 0.4F,
-					(Stat s, float value) => {
-						s.MapSize.x += 1 + (int) (1 * value);},1,1
-					),
-				new Upgrade("Magellan's", " Map Y", 0.3F, ScaleType.RANK, 0.4F,
-					(Stat s, float value) => {
-						s.MapSize.y += 1 + (int) (1 * value);},1,1
-					)
+					}, 3, 5)
 			};
 		}
 	}

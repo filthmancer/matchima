@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour {
 						GlobalHealthMult = 1.0F,
 						GlobalArmourMult = 1.0F;
 	public static float GrowthRate_Easy = 0.13F,
-						GrowthRate_Normal = 0.2F,
+						GrowthRate_Normal = 0.19F,
 						GrowthRate_Hard = 0.26F;
 
 	public static float [] MeterDecay
@@ -179,10 +179,15 @@ public class GameManager : MonoBehaviour {
 		// Use this for initialization
 		void Start () {
 			QualitySettings.vSyncCount = 0;
-			Application.targetFrameRate = 30;
+			
 			if(!Application.isMobilePlatform)
 			{
 				Screen.SetResolution(525,830, false);
+				Application.targetFrameRate = 60;
+			}
+			else 
+			{
+				Application.targetFrameRate = 45;
 			}
 	
 			paused = false;
@@ -1013,7 +1018,7 @@ public class GameManager : MonoBehaviour {
 		TileMaster.instance.ResetTiles(true);
 		while(TileMaster.EnemiesAttacking()) yield return null;
 
-		yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
+		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 		
 		yield return StartCoroutine(TileMaster.instance.AfterTurn());
 		yield return StartCoroutine(CompleteTurnRoutine());
@@ -1092,7 +1097,7 @@ public class GameManager : MonoBehaviour {
 				total_damage += column[i].GetAttack();
 
 				column[i].AttackPlayer();
-				yield return StartCoroutine(column[i].Animate("Attack", 0.04F));
+				yield return StartCoroutine(column[i].Animate("Attack", 0.05F));
 			}
 
 			//total_attackers.AddRange(column);
@@ -1101,9 +1106,9 @@ public class GameManager : MonoBehaviour {
 		/*if(total_attackers.Count > 0)
 		{
 			GameData.Log("Took " + total_damage + " damage from " + total_attackers.Count + " attackers");
-			yield return new WaitForSeconds(GameData.GameSpeed(0.08F));
+			
 		} */
-
+		if(total_damage > 0) yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 
 		//ALLIED ATTACKERS
 		if(allied_attackers.Count > 0) 
