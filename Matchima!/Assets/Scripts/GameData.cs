@@ -629,7 +629,7 @@ public class GameData : MonoBehaviour {
 	{
 		Load();
 		LoadUnlocks();
-		LoadClasses();
+		
 		LoadPowerups();
 		
 		StartCoroutine(AudioManager.instance.LoadAudioInit());
@@ -646,6 +646,7 @@ public class GameData : MonoBehaviour {
 		ModeUnlocked_Endless = Player.instance.GetUnlock("endlessmode");
 
 		FullVersion = ZPlayerPrefs.GetInt("FullVersion") == 1;
+		LoadClasses();
 	}
 
 	public void LoadModes()
@@ -842,10 +843,8 @@ public class GameData : MonoBehaviour {
 
 			Class cfin = (cobj as GameObject).GetComponent<Class>();
 			bool thisclassunlocked = Player.instance.GetUnlock(classes_list[i]);
-			if(thisclassunlocked) 
-			{
-				cfin.Unlocked = true;
-			}
+			cfin.Unlocked = thisclassunlocked;
+
 			final.Add(cfin);
 		
 			AudioGroup audiogroup = AudioManager.GenerateGroup(path_init, classes_list[i]);

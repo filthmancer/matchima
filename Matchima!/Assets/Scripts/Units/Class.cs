@@ -859,32 +859,32 @@ public class Class : Unit {
 		get{
 			List<Upgrade> final = new List<Upgrade>();
 			final.AddRange(Boons);
-			final.Add(new Upgrade("Hearty", " Max HP", (Genus == GENUS.STR ? 1.0F : 0.4F),
+			final.Add(new Upgrade("Hearty", " Max HP", (Genus == GENUS.STR ? 1.0F : 0.25F),
 								 ScaleType.GRADIENT, 1.0F,
 								 (Stat s, float val) => {s._HealthMax += 5 + (int)val*5;}, 5, 5));
-			final.Add(new Upgrade("Healing", " HP Regen", (Genus == GENUS.STR ? 1.0F : 0.4F),
+			final.Add(new Upgrade("Healing", " HP Regen", (Genus == GENUS.STR ? 1.0F : 0.25F),
 								 ScaleType.GRADIENT, 1.0F,
 								 (Stat s, float val) => {s.HealthRegen += 1 + (int) val;}, 1, 1));
 
-			final.Add(new Upgrade("Sharp", " Attack", (Genus == GENUS.DEX ? 1.0F : 0.4F),
+			final.Add(new Upgrade("Sharp", " Attack", (Genus == GENUS.DEX ? 1.0F : 0.25F),
 								 ScaleType.GRADIENT, 1.0F,
 								 (Stat s, float val) => {s._Attack += 1 + (int)val;}, 1, 1));
 			final.Add(new Upgrade("Wise", "%\n Attack Power", 0.4F, 
-								 ScaleType.GRADIENT, (Genus == GENUS.DEX ? 1.0F : 0.4F),
+								 ScaleType.GRADIENT, (Genus == GENUS.DEX ? 1.0F : 0.25F),
 								 (Stat s, float val) => {s.AttackPower += 0.2F * val;}, 20));
 
-			final.Add(new Upgrade("Sharp", " Spell", (Genus == GENUS.WIS ? 1.0F : 0.4F),
+			final.Add(new Upgrade("Sharp", " Spell", (Genus == GENUS.WIS ? 1.0F : 0.25F),
 								 ScaleType.GRADIENT, 1.0F,
 								 (Stat s, float val) => {s._Spell += 1 + (int)val;}, 1, 1));
 			final.Add(new Upgrade("Wise", "% Spell Power", 0.1F,
-								 ScaleType.GRADIENT, (Genus == GENUS.WIS ? 1.0F : 0.4F),
+								 ScaleType.GRADIENT, (Genus == GENUS.WIS ? 1.0F : 0.25F),
 								 (Stat s, float val) => {s.SpellPower += 0.2F * val;}, 20));
 
-			final.Add(new Upgrade("Spiked", " Spikes", (Genus == GENUS.CHA ? 1.0F : 0.4F),
+			final.Add(new Upgrade("Spiked", " Spikes", (Genus == GENUS.CHA ? 1.0F : 0.25F),
 								 ScaleType.GRADIENT,1.0F,
 								 (Stat s, float val) => {s.Spikes += 1 + (int)val;}, 1, 1));
 
-			final.Add(new Upgrade("Healing", " MP Regen", (Genus == GENUS.CHA ? 1.0F : 0.4F),
+			final.Add(new Upgrade("Healing", " MP Regen", (Genus == GENUS.CHA ? 1.0F : 0.25F),
 								 ScaleType.GRADIENT, 1.0F,
 								 (Stat s, float val) => {s.MeterRegen += 1 + (int) val;}));
 

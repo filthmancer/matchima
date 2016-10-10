@@ -426,7 +426,7 @@ public class UIMenu : UIObj {
 		switch(i)
 		{
 			case 0:
-			print("Custom Team");
+			//print("Custom Team");
 			break;
 			case 1:
 			//print("Saved");

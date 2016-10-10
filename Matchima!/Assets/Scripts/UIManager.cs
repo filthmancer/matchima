@@ -867,16 +867,18 @@ public class UIManager : MonoBehaviour {
 	private GameObject borderprefab, borderactual;
 	[SerializeField]
 	private GameObject borderactual_parent;
+	private Object borderpref_obj;
 	public void AddBorderPrefab(Zone z)
 	{
 		if(borderactual != null)
 		{
 			Destroy(borderactual);
-			Resources.UnloadAsset(borderprefab);
+			Resources.UnloadAsset(borderpref_obj);
 		}
-		borderprefab = (GameObject)Resources.Load("zones/"+z.gameObject.name + "/border");
-		if(borderprefab == null) return;
-		borderactual = (GameObject)Instantiate(borderprefab);
+		borderpref_obj = Resources.Load("zones/"+z.gameObject.name + "/border");
+		if(borderpref_obj == null) return;
+
+		borderactual = (GameObject)Instantiate(borderpref_obj);
 		borderactual.transform.SetParent(borderactual_parent.transform);
 		borderactual.transform.localScale = Vector3.one;
 		borderactual.GetComponent<RectTransform>().sizeDelta = Vector2.one;
@@ -1605,7 +1607,8 @@ public class UIManager : MonoBehaviour {
 
 		(Objects.MiddleGear[1] as UIObjTweener).SetTween(num, open);
 		GameManager.instance.paused = open;
-		if(open) ScreenAlert.SetTween(0, true);
+
+		ScreenAlert.SetTween(0, open);
 		if(!open) UIManager.instance.SetClassButtons(false);
 			UpdatePlayerLvl();
 
@@ -1620,6 +1623,13 @@ public class UIManager : MonoBehaviour {
 
 		Objects.MiddleGear[1][2].Txt[0].text = Player.Level.XP_Current + "/" + Player.Level.XP_Required;
 		Objects.MiddleGear[1][2].Txt[1].text = "" + Player.Level.Level;
+
+		if(!GameManager.instance.gameStart)
+		{
+			Objects.TopRightButton.Txt[0].text = "Level";
+			Objects.TopRightButton.Txt[1].text = ""+Player.Level.Level;
+		}
+		
 		
 		Objects.MiddleGear[1][2].Txt[2].text = "Player Level";
 		Objects.MiddleGear[1][2].Img[1].fillAmount = Player.Level.XP_Ratio;
@@ -1629,6 +1639,7 @@ public class UIManager : MonoBehaviour {
 		List<UIObj> unlocks = new List<UIObj>();
 		for(int i = 0; i < Player.instance.Unlocks.Length; i++)
 		{
+			if(!Player.instance.Unlocks[i].showInList) continue;
 			UIObj b = GenerateUnlock(Objects.MiddleGear[1][0].transform, Player.instance.Unlocks[i]);
 			unlocks.Add(b);
 		}
@@ -1704,14 +1715,27 @@ public class UIManager : MonoBehaviour {
 	public void CloseZoneUI()
 	{
 		(Objects.MiddleGear[1] as UIObjTweener).SetTween(0, false);
+
+		Objects.TopRightButton.ClearActions();
+		Objects.TopRightButton.AddAction(UIAction.MouseUp, () =>
+		{
+			ShowZoneUI(false);
+			(Objects.MiddleGear[2] as UIObjTweener).SetTween(0, false);
+			UIManager.Objects.MiddleGear[1].Txt[0].text = GameManager.Zone.Name;
+		});
+
+
 	}
 
 	public void ShowZoneUI(bool ended)
 	{
+		print(true);
 		(Objects.MiddleGear[1] as UIObjTweener).SetTween(0);
 		bool open = (Objects.MiddleGear[1] as UIObjTweener).Tween.IsObjectOpened();
 		GameManager.instance.paused = open;
 		ScreenAlert.SetTween(0,open);
+
+		Objects.TopRightButton.ClearActions();
 
 		Objects.MiddleGear[1].Txt[3].enabled = false;
 		Objects.MiddleGear[1].Img[2].enabled = false;
@@ -1771,8 +1795,15 @@ public class UIManager : MonoBehaviour {
 				}
 			}
 		}
-		else
+		else 
 		{
+			Objects.TopRightButton.AddAction(UIAction.MouseUp, () =>
+			{
+				ShowZoneUI(false);
+				(Objects.MiddleGear[2] as UIObjTweener).SetTween(0, false);
+				UIManager.Objects.MiddleGear[1].Txt[0].text = GameManager.Zone.Name;
+			});
+
 			Objects.MiddleGear[1].Txt[0].text = GameManager.Zone.Name;
 			Objects.MiddleGear[1][2].Txt[2].text = GameManager.Wave.Name;
 			Objects.MiddleGear[1][2].Txt[1].text = "WAVE";

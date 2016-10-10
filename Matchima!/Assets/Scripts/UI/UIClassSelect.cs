@@ -57,6 +57,7 @@ public class UIClassSelect : UIObj {
 		{
 			Img[0].color = Color.Lerp(GameData.Colour(_class.Genus), Color.black, 0.6F);
 			Txt[0].text = "???";
+			Txt[1].text = "???";
 			Img[1].color = Color.black;
 			Child[0].SetActive(false);
 			Txt[2].text = "";

@@ -60,7 +60,7 @@ public class Healing : ClassEffect {
 
 	public override void GetArgs(int _duration, params string [] args)
 	{
-		Duration = _duration;
+		base.GetArgs(_duration, args);
 		Heal = (int)GameData.StringToFloat(args[0]);
 	}
 }

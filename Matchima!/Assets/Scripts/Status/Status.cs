@@ -50,10 +50,11 @@ public class Status : MonoBehaviour {
 		return true;
 	}
 
-
-
+	[HideInInspector]
+	public string [] Args;
 	public virtual void GetArgs(int _duration, params string [] args)
 	{
+		Args = args;
 		Duration = _duration;
 	}
 

@@ -56,7 +56,7 @@ public class Roaming : TileEffect {
 			_Tile.SetState(TileState.Selected,true);
 			TileMaster.instance.SwapTiles(target, _Tile);
 
-			yield return new WaitForSeconds(Time.deltaTime * 10);
+			yield return new WaitForSeconds(Time.deltaTime * 30);
 		}
 		yield break;
 	}

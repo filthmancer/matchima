@@ -115,6 +115,10 @@ public class Player : MonoBehaviour {
 
 	private Unlock [] _Unlocks = new Unlock[]
 	{
+		new Unlock("barbarian", 0, ""),
+		new Unlock("rogue", 0, ""),
+		new Unlock("wizard", 0, ""),
+		new Unlock("bard", 0, ""),
 		new Unlock("quickmode", 2, "Quick Crawl Mode"),
 		new Unlock("charselect", 2, "Character Selection"),
 		new Unlock("farmer", 3, "The Farmer", false),
@@ -1131,12 +1135,14 @@ public class Unlock
 
 	private string _Title;
 	private bool showtitle = true;
+	public bool showInList = true;
 	public Unlock(string n, int lvl, string title, bool showt = true)
 	{
 		Name = n;
 		Level_Required = lvl;
 		_Title = title;
 		showtitle = showt;
+		showInList = (title != string.Empty);
 	}
 	public bool Value
 	{

@@ -24,7 +24,7 @@ public class Stoneform : TileEffect {
 
 	public override void GetArgs(int _duration, params string [] args)
 	{
-		Duration = _duration;
+		base.GetArgs(_duration, args);
 		StoneformTime = GameData.StringToInt(args[0]);
 		StoneformDelay = GameData.StringToInt(args[1]);
 	}

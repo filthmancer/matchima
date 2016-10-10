@@ -69,12 +69,16 @@ public class WardenWaveUnit : WaveUnit {
 			
 			yield return StartCoroutine(UIManager.instance.Quote(tute.ToArray()));
 
-			Tile targ = TileMaster.Enemies[Random.Range(0, TileMaster.Enemies.Length)];
-			CastAction(targ, (Tile t) =>
-				{
-					MiniAlertUI m = UIManager.instance.MiniAlert(t.Point.targetPos, "Frenzy!", 120, GameData.Colour(t.Genus), 0.3F, 0.1F);
-					t.AddEffect("Frenzy", 1, "2");	
-				});
+			if(TileMaster.Enemies.Length > 0)
+			{
+				Tile targ = TileMaster.Enemies[Random.Range(0, TileMaster.Enemies.Length)];
+				CastAction(targ, (Tile t) =>
+					{
+						MiniAlertUI m = UIManager.instance.MiniAlert(t.Point.targetPos, "Frenzy!", 120, GameData.Colour(t.Genus), 0.3F, 0.1F);
+						t.AddEffect("Frenzy", 1, "2");	
+					});
+			}
+			
 		}
 	}
 

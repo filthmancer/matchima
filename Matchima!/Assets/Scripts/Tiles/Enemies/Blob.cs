@@ -261,6 +261,7 @@ public class Blob : Enemy {
 		int attack = 0;
 
 		GENUS gen = group[0].Genus;
+		List<TileEffect> MergeEffects = new List<TileEffect>();
 
 		int x = group[0].Point.Base[0];
 		int y = group[0].Point.Base[1];
@@ -271,7 +272,8 @@ public class Blob : Enemy {
 			value += group[i].Stats.Value;
 			hits += group[i].Stats.Hits;
 			attack += group[i].Stats.Attack;
-			EffectManager.instance.PlayEffect(group[i].transform, Effect.Shiny, GameData.Colour(Genus));
+			EffectManager.instance.PlayEffect(group[i].transform, Effect.Collect, GameData.Colour(Genus));
+			MergeEffects.AddRange(group[i].Effects);
 		}
 
 		yield return new WaitForSeconds(Time.deltaTime * 20);
@@ -281,6 +283,10 @@ public class Blob : Enemy {
 										group[0].Point.Scale+1, 0);
 
 		TileMaster.Tiles[x,y].RemoveEffect("Sleep");
+		for(int i = 0; i < MergeEffects.Count; i++)
+		{
+			TileMaster.Tiles[x,y].AddEffect(MergeEffects[i].Name, MergeEffects[i].Duration, MergeEffects[i].Args);
+		}
 
 		
 		TileMaster.Tiles[x,y].InitStats.Value = (int)Mathf.Clamp((float)TileMaster.Tiles[x,y].InitStats.Value, 1, ((float)value));

@@ -17,7 +17,7 @@ public class Spawning : TileEffect {
 	public float AddedValueRatio = 0.2F;
 	public override void GetArgs(int _duration, params string [] args)
 	{
-		Duration = _duration;
+		base.GetArgs(_duration, args);
 		Genus = args[0];
 		Species = args[1];
 		AddedValueRatio = GameData.StringToFloat(args[2]);

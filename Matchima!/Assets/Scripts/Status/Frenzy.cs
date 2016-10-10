@@ -23,7 +23,7 @@ public class Frenzy : TileEffect {
 
 	public override void GetArgs(int _duration, params string [] args)
 	{
-		Duration = _duration;
+		base.GetArgs(_duration, args);
 		Damage = (int)GameData.StringToFloat(args[0]);
 	}
 

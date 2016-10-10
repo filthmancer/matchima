@@ -253,7 +253,6 @@ public class AudioManager : MonoBehaviour {
 
 	public void SetMusicClip(AudioClip clip)
 	{
-		print("home");
 		Music.clip = clip;
 		Music.Play();
 	}
@@ -277,7 +276,6 @@ public class AudioManager : MonoBehaviour {
 
 	public void GetZoneMusic()
 	{
-		print("zone");
 		int r = Random.Range(0, ZoneMusic.Length);
 		Music.clip = ZoneMusic[r];
 		Music.loop = true;

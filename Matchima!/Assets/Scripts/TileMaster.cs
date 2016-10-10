@@ -76,7 +76,7 @@ public class TileMaster : MonoBehaviour {
 			{
 				for (int y = 0; y < Tiles.GetLength(1); y++)
 				{
-					if (Tiles[x, y] == null) continue;
+					if (Tiles[x, y] == null || Tiles[x,y].Destroyed) continue;
 					if(Tiles[x,y].CanAttack() && !Tiles[x,y].Stats.isAlly)
 					//if (Tiles[x, y].Stats.isEnemy && !Tiles[x,y].Stats.isAlly) 
 					{
@@ -101,7 +101,7 @@ public class TileMaster : MonoBehaviour {
 			{
 				for (int y = 0; y < Tiles.GetLength(1); y++)
 				{
-					if (Tiles[x, y] == null) continue;
+					if (Tiles[x, y] == null || Tiles[x,y].Destroyed) continue;
 					if (Tiles[x, y].Stats.isAlly && !Tiles[x,y].Stats.isEnemy) 
 					{
 						if(!final.Contains(Tiles[x,y])) final.Add(Tiles[x,y]);
@@ -123,7 +123,7 @@ public class TileMaster : MonoBehaviour {
 		{
 			for (int y = 0; y < Tiles.GetLength(1); y++)
 			{
-				if (Tiles[x, y] == null) continue;
+				if (Tiles[x, y] == null || Tiles[x,y].Destroyed) continue;
 				if (Tiles[x, y].Stats.isEnemy || Tiles[x,y].Stats.isAlly) 
 				{
 					if(Tiles[x,y].isAttacking) 

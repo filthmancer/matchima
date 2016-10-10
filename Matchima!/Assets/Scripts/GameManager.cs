@@ -285,8 +285,8 @@ public class GameManager : MonoBehaviour {
 				Wave.AddPoints(150);
 				break;
 				case 3: //c
-				TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["mimic"], GENUS.DEX,1, 1);
-				//Player.instance.ResetLevel();
+				//TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["mimic"], GENUS.DEX,1, 1);
+				Player.instance.ResetLevel();
 				
 				/*UIManager.Objects.DeathIcon.transform.position = UIManager.ClassButtons[1].transform.position + Vector3.up * 5;
 				UIManager.Objects.DeathIcon.gameObject.SetActive(true);
@@ -294,7 +294,7 @@ public class GameManager : MonoBehaviour {
 				UIManager.Objects.DeathIcon.Play("PlayDeath");*/
 				break;
 				case 4: //V
-				//StartCoroutine(Player.instance.AddXP(500));
+				
 				//GetTurn();
 				//PlayerControl.instance.focusTile.AddEffect("Charm", 5, "2", "1");
 				Player.Stats.Hit(50);
@@ -316,10 +316,9 @@ public class GameManager : MonoBehaviour {
 				Player.instance.ResetStats();
 				break;
 				case 8: //A
-				//PlayerPrefs.SetInt("PlayerLevel", 0);
-				//Player.Level.Level = 0;
+				StartCoroutine(Player.instance.AddXP(500));
 				//UIManager.instance.UpdatePlayerLvl();
-				StartCoroutine(Player.instance.AddXP(5000));
+				//StartCoroutine(Player.instance.AddXP(5000));
 				//CameraUtility.instance.ScreenShake(0.6F, 1.1F);
 				break;
 				case 9: //S
@@ -1015,9 +1014,9 @@ public class GameManager : MonoBehaviour {
 			yield return StartCoroutine(EnemyTurnRoutine());
 		}
 
-		TileMaster.instance.ResetTiles(true);
+	
 		while(TileMaster.EnemiesAttacking()) yield return null;
-
+		TileMaster.instance.ResetTiles(true);
 		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 		
 		yield return StartCoroutine(TileMaster.instance.AfterTurn());
@@ -1066,10 +1065,10 @@ public class GameManager : MonoBehaviour {
 		UIManager.Objects.TopGear.SetToState(0);
 
 		//ENEMY ATTACKERS
-		for(int x = 0; x < TileMaster.instance.MapSize.x; x++)
+		for(int x = 0; x < TileMaster.Grid.Size[0]; x++)
 		{
 			column = new List<Tile>();
-			for(int y = 0; y < TileMaster.instance.MapSize.y;y++)
+			for(int y = 0; y < TileMaster.Grid.Size[1];y++)
 			{
 				Tile tile = TileMaster.Tiles[x,y];
 				if(tile == null) continue;

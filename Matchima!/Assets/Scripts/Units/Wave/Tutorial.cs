@@ -164,8 +164,8 @@ public class Tutorial : Wave {
 			break;
 			case 7:
 			TuteAlert = Alert("Enemies have different\nattacks and health");
-			TileMaster.instance.ReplaceTile(1,3, TileMaster.Types["grunt"], GENUS.CHA);
-			TileMaster.instance.ReplaceTile(2,3, TileMaster.Types["grunt"], GENUS.WIS);
+			TileMaster.instance.ReplaceTile(1,3, TileMaster.Types["grunt"], GENUS.DEX);
+			TileMaster.instance.ReplaceTile(2,3, TileMaster.Types["grunt"], GENUS.STR);
 
 			yield return StartCoroutine(AddRogue());
 			
