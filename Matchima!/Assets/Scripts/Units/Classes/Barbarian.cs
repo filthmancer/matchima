@@ -28,16 +28,16 @@ public class Barbarian : Class {
 		get{
 			return new Upgrade []
 			{
-				new Upgrade("Hearty", " Max HP", 1.0F,
+				new Upgrade(1,0, " Max HP", 1.0F,
 									 ScaleType.GRADIENT, 1.0F,
 									 (Stat s, float val) => {s._HealthMax += 20 + (int)val*5;}, 5, 20),
 
-				new Upgrade("Soldier's", "% chance\n of Health", 0.7F, ScaleType.GRADIENT, 1.0F,
+				new Upgrade(1,1, "% chance\n of Health", 0.7F, ScaleType.GRADIENT, 1.0F,
 					(Stat s, float value) => {
 						s.TileChances.Add(new TileChance(GameData.ResourceLong(Genus), "health", 0.1F + 0.03F * value));}, 3, 10
 					),
 
-				new Upgrade("Strengthening", " Tile Per Match", 0.2F, ScaleType.RANK, 0.0F,
+				new Upgrade(1,2, " Tile Per Match", 0.2F, ScaleType.RANK, 0.0F,
 					(Stat s, float value) =>
 					{
 						s.MatchNumberModifier -= 1;
@@ -52,10 +52,10 @@ public class Barbarian : Class {
 		{
  			return new Upgrade [] 
  			{
- 				new Upgrade("Hearty", " Max HP", 0.2F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._HealthMax -= 10 + (int)val*5;}, -5, -10),
- 				new Upgrade("Sharp", " Attack", 1.0F, ScaleType.GRADIENT, 0.12F, (Stat s, float val) => {s._Attack -= 1 + (int)val;}, -1, -1),
+ 				new Upgrade(-2, 0, " Max HP", 0.2F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._HealthMax -= 10 + (int)val*5;}, -5, -10),
+ 				new Upgrade(-2, 1, " Attack", 1.0F, ScaleType.GRADIENT, 0.12F, (Stat s, float val) => {s._Attack -= 1 + (int)val;}, -1, -1),
 
- 				new Upgrade("Demon's", "% chance\n of Grunts", 0.4F, ScaleType.GRADIENT, 0.06F,
+ 				new Upgrade(-2, 2, "% chance\n of Grunts", 0.4F, ScaleType.GRADIENT, 0.06F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance(GameData.ResourceLong(Genus), "grunt", 0.1F + 0.03F * value));}, 3, 10
 				),

@@ -21,6 +21,26 @@ public class WardenIntro : Wave {
 		yield return null;
 	}
 
+	public override StCon [] IntroText
+	{
+		get{
+			return new StCon []{new StCon("The Warden")};
+		}
+	} 
+	public override StCon [] EnterText 
+	{
+		get {
+			return new StCon []{new StCon("The Warden")};
+		}
+	}
+
+	public override StCon [] ExitText 
+	{
+		get {
+			return new StCon []{new StCon("Warden Defeated!")};
+		}
+	}
+
 	protected override IEnumerator WaveActivateRoutine()
 	{
 		UIManager.Objects.BotGear.SetTween(3, true);
@@ -57,14 +77,19 @@ public class WardenIntro : Wave {
 																			   UIManager.Objects.QuoteAtlas, "cross", Color.white, Color.red));
 		yield return StartCoroutine(UIManager.instance.ImageQuote(1.3F, Slot1, TileMaster.Types["grunt"].Atlas, "Red", 
 																				TileMaster.Genus.Frames, "Red"));
-		for(int i = 0; i < AllSlots.Length; i++)
+		
+		if(!HasEntered)
 		{
-			if(AllSlots[i] == null) continue;
-			if(AllSlots[i].Active)
+			for(int i = 0; i < AllSlots.Length; i++)
 			{
-				 yield return StartCoroutine(AllSlots[i].OnStart());
+				if(AllSlots[i] == null) continue;
+				if(AllSlots[i].Active)
+				{
+					 yield return StartCoroutine(AllSlots[i].OnStart());
+				}
 			}
 		}
+		HasEntered = true;
 
 		for(int i = 1; i < UIManager.Objects.TopGear[1].Length; i++)
 		{

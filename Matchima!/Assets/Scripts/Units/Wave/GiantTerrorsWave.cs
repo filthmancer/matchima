@@ -28,30 +28,36 @@ public class GiantTerrorsWave : Wave {
 
 		UIManager.Objects.TopGear[2].SetActive(true);
 
-		int xpos = 0, ypos = TileMaster.Grid.Size[1]-2;
-		for(int i = 0; i < AllSlots.Length; i++)
+		if(!HasEntered)
 		{
-			if(AllSlots[i] == null || !AllSlots[i] is WaveTile) continue;
-			WaveTile slot = AllSlots[i] as WaveTile;
-
-			GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Spell);
-			MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
-			mp.SetTarget(TileMaster.Tiles[xpos,ypos].transform.position);
-			mp.SetPath(30, 0.2F);
-			mp.SetTileMethod(TileMaster.Tiles[xpos,ypos], (Tile t) => 
-				{
-					Tile newtile = TileMaster.instance.ReplaceTile(t, TileMaster.Types[slot.SpeciesFinal], slot.Genus, slot.Scale, slot.FinalValue);
-				});
-
-			xpos += 2;
-			if(xpos > TileMaster.Grid.Size[0]-2)
+			int xpos = 0, ypos = TileMaster.Grid.Size[1]-2;
+			for(int i = 0; i < AllSlots.Length; i++)
 			{
-				ypos -= 2;
-				xpos = 0;
-				}
-			
-			yield return new WaitForSeconds(Time.deltaTime * 20);
+				if(AllSlots[i] == null || !AllSlots[i] is WaveTile) continue;
+				WaveTile slot = AllSlots[i] as WaveTile;
+
+				GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Spell);
+				MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
+				mp.SetTarget(TileMaster.Tiles[xpos,ypos].transform.position);
+				mp.SetPath(30, 0.2F);
+				mp.SetTileMethod(TileMaster.Tiles[xpos,ypos], (Tile t) => 
+					{
+						Tile newtile = TileMaster.instance.ReplaceTile(t, TileMaster.Types[slot.SpeciesFinal], slot.Genus, slot.Scale, slot.FinalValue);
+					});
+
+				xpos += 2;
+				if(xpos > TileMaster.Grid.Size[0]-2)
+				{
+					ypos -= 2;
+					xpos = 0;
+					}
+				
+				yield return new WaitForSeconds(Time.deltaTime * 20);
+			}
+
 		}
+		
+		HasEntered = true;
 
 		for(int i = 1; i < UIManager.Objects.TopGear[1].Length; i++)
 		{

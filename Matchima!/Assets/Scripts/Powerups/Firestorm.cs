@@ -45,7 +45,7 @@ public class Firestorm : Powerup {
 		for(int i = 0; i < MGame.Length; i++)
 		{
 			MGame[i] = CreateTarget(TileMaster.Grid.Size[0]/2);
-			MGame[i].transform.localScale *= 1.3F;
+			MGame[i].transform.localScale *= 0.9F;
 			MGame_vel[i] = Random.Range(0.03F, 0.09F * lines);
 			if(Random.value > 0.5F) MGame_vel[i] = -MGame_vel[i];
 			yield return null;

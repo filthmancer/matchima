@@ -35,6 +35,26 @@ public class TileMaster : MonoBehaviour {
 		}
 	}
 
+	public static Tile RandomResTile
+	{
+		get{
+			int x = Random.Range(0, Grid.Size[0]);
+			int y = Random.Range(0, Grid.Size[1]);
+
+			int check = 0;
+			int max_check = Grid.Size[0] * Grid.Size[1];
+
+			while(!Tiles[x,y].IsType("resource"))
+			{
+				x = Random.Range(0, Grid.Size[0]);
+				y = Random.Range(0, Grid.Size[1]);
+				check++;
+				if(check > max_check) break;
+			}
+			return Tiles[x,y];
+		}
+	}
+
 	private static float YScale
 	{
 		get {
@@ -155,9 +175,6 @@ public class TileMaster : MonoBehaviour {
 	public MiniTile2 MiniTileObj;
 
 	public bool generated = false;
-	public List<SPECIES> QueuedTiles = new List<SPECIES>();
-	public List<GENUS> QueuedGenus = new List<GENUS>();
-	public List<int> QueuedValue = new List<int>();
 
 	private float [] spawn_stack;
 	private bool first_enemy = false;
@@ -361,8 +378,6 @@ public class TileMaster : MonoBehaviour {
 			bool evenY = MapSize[1] % 2 == 0;
 			float tileBufferX_offset = (float)(evenX ? (1.0F + tileBufferX) / 2 : 0);
 			float tileBufferY_offset = (float)(evenY ? (1.0F + tileBufferY) / 2 : 0);
-
-			print(level.Points[0, 0].Info._TypeName);
 			Grid = new GridInfo();
 			Grid.SetUp(MapSize);
 			Grid.SetInfo(level);
@@ -626,6 +641,7 @@ public class TileMaster : MonoBehaviour {
 		}
 
 		newtile = CreateTile(x, y, Vector2.zero, sp, g, false, newscale, addvalue);
+		Juice.instance.JuiceIt(Juice.instance.LandFromAbove, newtile.transform, 0.6F, 0.4F);
 		EffectManager.instance.PlayEffect(newtile.transform, Effect.Replace, GameData.instance.GetGENUSColour(newtile.Genus));
 		newtile.InitStats.Value += tempval;
 		newtile.PlayAudio("replace",0.6F);
@@ -681,7 +697,7 @@ public class TileMaster : MonoBehaviour {
 			{
 				if (Tiles.GetLength(0) > x && Tiles.GetLength(1) > y && Tiles[x, y] != null)
 				{
-					Tiles[x, y].DestroyThyself(destroy);
+					Tiles[x, y].DestroyThyself(true);
 					Grid[x, y]._Tile = null;
 				}
 			}
@@ -1074,23 +1090,34 @@ public class TileMaster : MonoBehaviour {
 		return mover;
 	}
 
+	public MoveToPoint CreateMiniTile(Vector3 pos, Transform target, Tile t)
+	{
+		MiniTile2 new_mini = Instantiate(MiniTileObj);
+		new_mini.transform.position = pos;
+		new_mini.transform.localScale = Vector3.one * 0.08F;
+		new_mini.Setup(t);
+
+		MoveToPoint mover = new_mini.GetComponent<MoveToPoint>();
+		mover.SetTarget(target.position);
+		mover.SetScale(0.04F, 5);
+		//mover.SetPath(speed, arc, lerp);
+		return mover;
+	}
+
 	public void QueueTilesSpawnOnStart(SPECIES spec, GENUS g, int num)
 	{
 		
 	}
 
+	private List<TileQuickInfo> QueuedTiles = new List<TileQuickInfo>();
 	public void QueueTile(SPECIES spec, GENUS g = GENUS.NONE, int value = 0)
 	{
-		QueuedTiles.Add(spec);
-		QueuedGenus.Add(g);
-		QueuedValue.Add(value);
+		QueuedTiles.Add(new TileQuickInfo(g, spec, 1, value));
 	}
 
 	public void ClearQueuedTiles()
 	{
 		QueuedTiles.Clear();
-		QueuedGenus.Clear();
-		QueuedValue.Clear();
 	}
 
 	private void CreateQueuedTiles(ref int tile_num, ref int? [] tile_start, Vector2 velocity)
@@ -1120,8 +1147,7 @@ public class TileMaster : MonoBehaviour {
 
 			GameData.Log("Queued tile " + i + " generated at " + x + ":" + y);
 
-			CreateTile(x, y, velocity, QueuedTiles[i], QueuedGenus[i]);
-			Tiles[x, y].InitStats.Value += QueuedValue[i];
+			CreateTile(x, y, velocity, QueuedTiles[i].Species, QueuedTiles[i].Genus, false, QueuedTiles[i].Scale, QueuedTiles[i].Value);
 
 			if (tile_start[x] < Grid.Size[1] - 1)
 			{
@@ -1137,8 +1163,56 @@ public class TileMaster : MonoBehaviour {
 			remove++;
 		}
 		QueuedTiles.RemoveRange(0, remove);
-		QueuedGenus.RemoveRange(0, remove);
-		QueuedValue.RemoveRange(0, remove);
+	}
+
+	private List<TileQuickInfo> TravelTiles = new List<TileQuickInfo>();
+	public void AddTravelTiles(params Tile [] t)
+	{
+		for(int i = 0; i < t.Length; i++)
+		{
+			TravelTiles.Add(new TileQuickInfo(t[i].Genus, t[i].Type, t[i].Info.Scale, t[i].Stats.Value-1));
+		}
+		
+	}
+	public IEnumerator CreateTravelTiles()
+	{
+		if(TravelTiles.Count == 0) yield break;
+
+		GameObject powerup = EffectManager.instance.PlayEffect(UIManager.Objects.MiddleGear.transform, "stairstravel", Color.white);
+		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+		for(int i = 0; i < TravelTiles.Count; i++)
+		{
+			Tile target = RandomTile;
+			//TileMaster.instance.ReplaceTile(target, TravelTiles[i].Species, TravelTiles[i].Genus,TravelTiles[i].Scale, TravelTiles[i].Value);
+			CastQuickTile(powerup.transform, target, TravelTiles[i]);
+			
+			yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+		}
+		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+		TravelTiles.Clear();
+		Destroy(powerup);
+	}
+
+	private void CastQuickTile(Transform trans, Tile target, TileQuickInfo t)
+	{
+		GameData.instance.ActionCaster(trans, target, () => {
+					TileMaster.instance.ReplaceTile(target, t.Species, t.Genus,t.Scale, t.Value);
+				});
+	}
+
+	private class TileQuickInfo
+	{
+		public GENUS Genus;
+		public SPECIES Species;
+		public int Scale;
+		public int Value;
+		public TileQuickInfo(GENUS g, SPECIES s, int sc, int v)
+		{
+			Genus = g;
+			Species = s;
+			Scale = sc;
+			Value = v;
+		}
 	}
 
 	private void ShiftTiles2(ShiftType type)

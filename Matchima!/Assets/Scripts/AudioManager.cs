@@ -279,7 +279,7 @@ public class AudioManager : MonoBehaviour {
 		int r = Random.Range(0, ZoneMusic.Length);
 		Music.clip = ZoneMusic[r];
 		Music.loop = true;
-		Music.Play();
+		if(PlayMusic) Music.Play();
 	}
 
 	private List<Tile> alerts = new List<Tile>();

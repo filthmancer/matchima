@@ -13,6 +13,7 @@ public class Juice : MonoBehaviour {
 	public JuiceIt Twitch;
 	public JuiceIt Attack;
 	public JuiceIt Spooky;
+	public JuiceIt LandFromAbove;
 
 	public static JuiceIt _Squish
 	{

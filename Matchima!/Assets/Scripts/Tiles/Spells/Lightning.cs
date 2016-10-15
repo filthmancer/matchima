@@ -74,7 +74,7 @@ public class Lightning : Tile {
 			target = TileMaster.Tiles[Random.Range(0,TileMaster.Grid.Size[0]), Random.Range(0,TileMaster.Grid.Size[1])];
 		}
 		target.SetState(TileState.Selected, true);
-		
+		if(part) Destroy(part);
 		part = EffectManager.instance.PlayEffect(target.transform, Effect.Lightning);
 		particles.Add(part);
 		CameraUtility.instance.ScreenShake((float)Stats.Value/5, Time.deltaTime* 15);
@@ -119,8 +119,9 @@ public class Lightning : Tile {
 
 		//yield return StartCoroutine(Player.instance.BeforeMatch(to_collect));
 		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
-			
+		
 		yield return new WaitForSeconds( GameData.GameSpeed(0.2F));
+		if(part) Destroy(part);
 	}
 
 }

@@ -28,22 +28,22 @@ public class Bard : Class {
 		get{
 			return new Upgrade []
 			{
-				new Upgrade("Soldier's", "% chance\n of Health", 0.6F, ScaleType.GRADIENT, 1.0F,
+				new Upgrade(1,0, "% chance\n of Health", 0.6F, ScaleType.GRADIENT, 1.0F,
 					(Stat s, float value) => {
 						s.TileChances.Add(new TileChance(GameData.ResourceLong(Genus), "health", 0.1F + 0.03F * value));}, 3, 10
 					),
-				new Upgrade("Bombers's", "% chance\n of harp", 0.6F, ScaleType.GRADIENT, 1.0F,
+				new Upgrade(1,1, "% chance\n of harp", 0.6F, ScaleType.GRADIENT, 1.0F,
 					(Stat s, float value) => {
 						s.TileChances.Add(new TileChance(GameData.ResourceLong(Genus), "harp", 0.1F + 0.03F * value));}, 3, 10
 					),
 
-				new OnMatchUpgrade("Charming", "% Chance to\nCharm Enemy",
+				new OnMatchUpgrade(1,2, "% Chance to\nCharm Enemy",
 								0.4F, ScaleType.GRADIENT, 4.5F,
 				(Stat s, float value) => {
 					ModContainer.CastTileEffect(value, "enemy", "Charm");
 				}),
 
-				new OnMatchUpgrade("Sleepy", "% Chance to\nSleep Enemy",
+				new OnMatchUpgrade(1,3, "% Chance to\nSleep Enemy",
 								0.4F, ScaleType.GRADIENT, 4.5F,
 				(Stat s, float value) => {
 					ModContainer.CastTileEffect(value, "enemy", "Sleep");
@@ -58,7 +58,7 @@ public class Bard : Class {
 		{
  			return new Upgrade [] 
  			{
- 				new Upgrade("Hearty", " Max HP", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._HealthMax -= 10 + (int)val*5;}, -5, -10)
+ 				new Upgrade(-2,0, " Max HP", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._HealthMax -= 10 + (int)val*5;}, -5, -10)
  			};
 		}
 	}

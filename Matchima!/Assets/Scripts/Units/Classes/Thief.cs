@@ -49,29 +49,29 @@ public class Thief : Class {
 		get{
 			return new Upgrade []
 			{			
-				new Upgrade("Soldier's", "% chance of\ngreen Sword", 0.3F, ScaleType.GRADIENT, 1.0F,
+				new Upgrade(1,0, "% chance of\ngreen Sword", 0.3F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("green", "sword", 0.04F + 0.03F * value));}, 3, 4
 				),
-				new Upgrade("Soldier's", "% chance of\nred Sword", 0.3F, ScaleType.GRADIENT, 1.0F,
+				new Upgrade(1,1, "% chance of\nred Sword", 0.3F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("red", "sword", 0.04F + 0.03F * value));}, 3, 4
 				),
-				new Upgrade("Soldier's", "% chance of\nblue Sword", 0.3F, ScaleType.GRADIENT, 1.0F,
+				new Upgrade(1,2, "% chance of\nblue Sword", 0.3F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("blue", "sword", 0.04F + 0.03F * value));}, 3, 4
 				),
-				new Upgrade("Soldier's", "% chance of\nyellow Sword", 0.3F, ScaleType.GRADIENT, 1.0F,
+				new Upgrade(1,3, "% chance of\nyellow Sword", 0.3F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("yellow", "sword", 0.04F + 0.03F * value));}, 3, 4
 				),
-				new Upgrade("Soldier's", "% chance of\nalpha Sword", 0.15F, ScaleType.GRADIENT, 1.0F,
+				new Upgrade(1,4, "% chance of\nalpha Sword", 0.15F, ScaleType.GRADIENT, 1.0F,
 				(Stat s, float value) => {
 					s.TileChances.Add(new TileChance("alpha", "sword", 0.04F + 0.03F * value));}, 3, 4
 				),
 
 
-				new Upgrade("Lucky", "% Death Save Chance", 0.6F, ScaleType.GRADIENT, 1.0F,
+				new Upgrade(1,5, "% Death Save Chance", 0.6F, ScaleType.GRADIENT, 1.0F,
 					(Stat s, float value) =>
 					{
 						s.DeathSaveChance += 0.05F + (value * 0.03F);
@@ -86,7 +86,7 @@ public class Thief : Class {
 		{
  			return new Upgrade [] 
  			{
- 				new Upgrade("Hearty", " Max HP", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._HealthMax -= 10 + (int)val*5;}, -5, -10)
+ 				new Upgrade(-2,0, " Max HP", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._HealthMax -= 10 + (int)val*5;}, -5, -10)
  			};
 		}
 	}

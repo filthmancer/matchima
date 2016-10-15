@@ -9,8 +9,12 @@ public class MiniTile2 : MonoBehaviour {
 	{
 		transform.position = t.transform.position;
 		transform.position -= Vector3.forward * 2;
-		_Border = t.Params._render;
-		_Render = t.Params._border;
+		_Border.SetSprite(TileMaster.Genus.Frames, t.Info.Outer);
+
+		string render = t.Info._GenusName;
+		tk2dSpriteDefinition id = t.Info.Inner.GetSpriteDefinition(render);
+		if(id == null) render = "Alpha";
+		_Render.SetSprite(t.Info.Inner, render);
 	}
 
 	public void Explode()

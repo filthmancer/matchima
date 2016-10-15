@@ -12,7 +12,7 @@ public class Chicken : Tile {
 	public override StCon [] Description
 	{
 		get{
-			return new StCon[]{new StCon("Disappears when hitting the bottom row", Color.white,true, 40)};
+			return new StCon[]{new StCon("Destroyed at bottom row", Color.white, true, 30)};
 		}
 	}
 
@@ -48,22 +48,34 @@ public class Chicken : Tile {
 			scared_count ++;
 			if(scared_count < 3)
 			{
-				CheckStats();
-				Tile [] nbours = Point.GetNeighbours();
-				List<Tile> final = new List<Tile>();
-				foreach(Tile child in nbours)
+				if(Point.Scale == 1)
 				{
-					if(!child.isMatching && child.Point.Scale == Point.Scale) final.Add(child);
-				}
+					CheckStats();
+					Tile [] nbours = Point.GetNeighbours();
+					List<Tile> final = new List<Tile>();
+					foreach(Tile child in nbours)
+					{
+						if(!child.isMatching && child.Point.Scale == Point.Scale) final.Add(child);
+					}
 
-				Tile target = final[Random.Range(0, final.Count)];
-				TileMaster.instance.SwapTiles(target, this);
+					Tile target = final[Random.Range(0, final.Count)];
+					TileMaster.instance.SwapTiles(target, this);
+				}
+				else
+				{
+					CheckStats();
+					Tile [] nbours = Point.GetNeighbours();
+					TileMaster.instance.ReplaceTile(nbours[Random.Range(0,nbours.Length)], TileMaster.Types["chicken"], GENUS.OMG, 1);
+				}
+				
 			}
 			else 
 			{
-				for(int i = 0; i < 5; i++)
+				int skip_col = Random.Range(0, TileMaster.Grid.Size[0]-1);
+				for(int i = 0; i < TileMaster.Grid.Size[0]; i++)
 				{
-					TileMaster.instance.QueueTile(TileMaster.Types["chicken"], GENUS.OMG, 5);
+					if(i == skip_col) continue;
+					TileMaster.instance.ReplaceTile(TileMaster.Tiles[i,TileMaster.Grid.Size[1]-1], TileMaster.Types["chicken"], GENUS.OMG, 5);
 				}
 				scared_count = 0;
 			}
@@ -85,7 +97,7 @@ public class Chicken : Tile {
 		Animate("Attack");
 		PlayAudio("death");
 		yield return new WaitForSeconds(0.2F);
-		DestroyThyself();
+		DestroyThyself(true);
 		TileMaster.instance.SetFillGrid(true);
 		yield return null;
 	}
@@ -95,6 +107,18 @@ public class Chicken : Tile {
 		if(this == null) return false;
 		scared = true;
 		return false;
+	}
+
+	public override void SetSprite()
+	{
+		string render = Info._GenusName;
+		if(Point.Scale > 1) render += "_2";
+		SetBorder(Info.Outer);
+		SetRender(render);
+		
+		//transform.position = new Vector3(Point.targetPos.x, Point.targetPos.y, transform.position.z);
+		Params.transform.position = transform.position;
+		Params._render.transform.localPosition = Vector3.zero;
 	}
 
 }

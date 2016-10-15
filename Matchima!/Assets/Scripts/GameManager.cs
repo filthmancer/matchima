@@ -124,9 +124,14 @@ public class GameManager : MonoBehaviour {
 
 
 	public bool _ResumeGame;
+	public int ResumeGameHealth;
+	public int [] ResumeGameMeter;
 	public int ResumeZoneIndex;
 	public int ResumeWaveIndex;
+	public int ResumeZoneCurrent;
 	public int ResumeWaveCurrent;
+	public string ResumeWaveName;
+	public bool ResumeWaveHasEntered;
 
 	[HideInInspector]
 	public int ComboFactor_RepeatedCombos;
@@ -285,7 +290,6 @@ public class GameManager : MonoBehaviour {
 				Wave.AddPoints(150);
 				break;
 				case 3: //c
-				//TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["mimic"], GENUS.DEX,1, 1);
 				Player.instance.ResetLevel();
 				
 				/*UIManager.Objects.DeathIcon.transform.position = UIManager.ClassButtons[1].transform.position + Vector3.up * 5;
@@ -316,13 +320,14 @@ public class GameManager : MonoBehaviour {
 				Player.instance.ResetStats();
 				break;
 				case 8: //A
-				StartCoroutine(Player.instance.AddXP(500));
+				Juice.instance.JuiceIt(Juice.instance.LandFromAbove, TileMaster.Tiles[0,1].transform, 0.6F, 1.0F);
+				//StartCoroutine(Player.instance.AddXP(500));
 				//UIManager.instance.UpdatePlayerLvl();
 				//StartCoroutine(Player.instance.AddXP(5000));
 				//CameraUtility.instance.ScreenShake(0.6F, 1.1F);
 				break;
 				case 9: //S
-				TileMaster.instance.Ripple(TileMaster.Grid.Tiles[3,3], 1.7F, 0.5F, 0.35F);
+				TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["stairs"], GENUS.DEX,1, 1);
 				//TileMaster.instance.Ripple(TileMaster.Grid.Tiles[3,3]);
 				break;
 			}
@@ -348,23 +353,14 @@ public class GameManager : MonoBehaviour {
 		Player.instance.Load(c);
 		yield return new WaitForSeconds(0.1F);
 		AudioManager.instance.GetZoneMusic();
-		yield return StartCoroutine(UIManager.instance.LoadUI());
+		yield return StartCoroutine(UIManager.instance.LoadGameUI());
 		yield return StartCoroutine(GameData.instance.LoadAssets_Routine());
 
-		while(!Advertisement.IsReady())
+		/*while(!Advertisement.IsReady())
 	  	{
 	  		yield return null;
-	  	}
+	  	}*/
 
-		if(Application.isMobilePlatform)
-		{
-			//Player.Options.GameSpeed = 0.5F;
-			//if (Time.frameCount % 60 == 0)
-			//{
-			//   System.GC.Collect();
-			//}
-		}
-		//yield return new WaitForSeconds(0.2F);
 		(UIManager.instance.AdAlertMini as UIObjTweener).SetTween(0, false);
 		(UIManager.instance.AdAlertMini[0] as UIObjTweener).SetTween(0, false);
 		//(UIManager.instance.AdAlert[0] as UIObjTweener).SetTween(0, false);
@@ -426,30 +422,35 @@ public class GameManager : MonoBehaviour {
 		yield return null;
 	}
 
-
-
-	public void LoadClass(ClassContainer targetClass)
-	{
-		StartCoroutine(UIManager.instance.LoadUI());
-	}
-
 	public IEnumerator ResumeGame()
 	{
 		StartCoroutine(Player.instance.BeginTurn());
 		RoundTokens = 0;
 
+		UIManager.instance.GenerateZoneMap();
 		UIManager.instance.SetLoadScreen(false);
 		Zone z = ZoneMap.CurrentBracket[ResumeZoneIndex];
-		yield return StartCoroutine(_EnterZone(z, ResumeWaveIndex));
+		yield return StartCoroutine(_EnterZone(z, ResumeWaveIndex, ResumeWaveName));
 
 		yield return null;
 		
-		Zone.SetCurrent(ResumeWaveIndex);
+		Zone.SetCurrent(ResumeZoneCurrent);
 		Wave.Current = ResumeWaveCurrent;
+		Wave.HasEntered = ResumeWaveHasEntered;
 
+		Player.Stats._Health = ResumeGameHealth;
+
+		for(int i = 0; i < Player.Classes.Length; i++)
+		{
+			Player.Classes[i].AddToMeter(ResumeGameMeter[i]);
+		}
+		ResumeGameMeter = new int [0];
+		ResumeGameHealth = 0;
 		ResumeWaveCurrent = 0;
 		ResumeWaveIndex = 0;
+		ResumeZoneCurrent = 0;
 		ResumeZoneIndex = 0;
+		ResumeWaveName = "";
 	}
 
 	public void ResetFactors()
@@ -813,161 +814,184 @@ public class GameManager : MonoBehaviour {
 #endregion
 
 #region Waves/Zones
+
 	public void AdvanceZoneMap(int choice)
+	{
+		UIManager.instance.CloseZoneUI();
+		bool end = ZoneMap.Progress();
+		if(end) EnterZone(ZoneMap.CurrentBracket[choice]);		
+		else Victory();
+	}
+	
+	public void EnterZone(Zone z = null, string name = null)
+	{
+		StartCoroutine(_EnterZone(z, name, null));
+	}
+	
+	IEnumerator _EnterZone(Zone z = null, string name = null, Wave w = null)
+	{
+		if(CurrentZone != null) Destroy(CurrentZone.gameObject);
+		Zone target = null;
+	
+		if(z != null)
 		{
-			EnterZone(ZoneMap.CurrentBracket[choice]);		
+			target = z;
 		}
-	
-		public void EnterZone(Zone z = null, string name = null)
+		else if(name != null) 
 		{
-			StartCoroutine(_EnterZone(z, name, null));
+			target = GameData.instance.GetZone(name);
 		}
-	
-		IEnumerator _EnterZone(Zone z = null, string name = null, Wave w = null)
+		else if(ZoneMap != null)
 		{
-			if(CurrentZone != null) Destroy(CurrentZone.gameObject);
-			Zone target = null;
+			target = ZoneMap[0][0];
+		}
+		else target = GameData.instance.GetZoneRandom();
 	
-			if(z != null)
-			{
-				target = z;
-			}
-			else if(name != null) 
-			{
-				target = GameData.instance.GetZone(name);
-			}
-			else if(ZoneMap != null)
-			{
-				target = ZoneMap[0][0];
-			}
-			else target = GameData.instance.GetZoneRandom();
-	
-			if(target == null) yield break;
-			CurrentZone = (Zone) Instantiate(target);
-			CurrentZone.gameObject.name = target.gameObject.name;
-			CurrentZone.transform.parent = this.transform;
-			if(CurrentWave != null) 
-			{
-				Destroy(CurrentWave.gameObject);
-				CurrentWave = null;
-			}
+		if(target == null) yield break;
+		CurrentZone = (Zone) Instantiate(target);
+		CurrentZone.gameObject.name = target.gameObject.name;
+		CurrentZone.transform.parent = this.transform;
+		if(CurrentWave != null) 
+		{
+			Destroy(CurrentWave.gameObject);
+			CurrentWave = null;
+		}
 
-			yield return StartCoroutine(CurrentZone.Enter());
-			yield return StartCoroutine(_GetWave(w));
+		yield return StartCoroutine(CurrentZone.Enter());
+		yield return StartCoroutine(TileMaster.instance.CreateTravelTiles());
 
-			yield return StartCoroutine(TileMaster.instance.BeforeTurn());
+		yield return StartCoroutine(_GetWave(w));
+
+		yield return StartCoroutine(TileMaster.instance.BeforeTurn());
+	}
+
+	IEnumerator _EnterZone(Zone z, int wavenum, string name = "")
+	{
+		if(CurrentZone != null) Destroy(CurrentZone.gameObject);
+
+		CurrentZone = (Zone) Instantiate(z);
+		CurrentZone.gameObject.name = z.gameObject.name;
+		CurrentZone.transform.parent = this.transform;
+		
+		if(CurrentWave != null) 
+		{
+			Destroy(CurrentWave.gameObject);
+			CurrentWave = null;
+		}
+		yield return StartCoroutine(CurrentZone.Enter());
+		CurrentZone.SetCurrent(wavenum);
+		if(name != string.Empty) yield return StartCoroutine(_GetWave(CurrentZone.GetWaveByName(name)));
+		else yield return StartCoroutine(_GetWave());
+	}
+
+	public void EscapeZone()
+	{	
+		/*bool end = ZoneMap.Progress();
+		if(end) UIManager.instance.ShowZoneUI(true);		
+		else Victory();*/
+		if(ZoneMap.NextBracket == ZoneMap.CurrentBracket)
+		{
+			AdvanceZoneMap(0);
+		}
+		else 
+		{
+			List<GENUS> prevstairs = new List<GENUS>();
+			for(int i = 0; i < ZoneMap.NextBracket.Length; i++)
+			{
+				GENUS g = (GENUS) Random.Range(0,3);
+				while(prevstairs.Contains(g)) g = (GENUS) Random.Range(0,3);
+				prevstairs.Add(g);
+				Tile t = TileMaster.instance.ReplaceTile(TileMaster.RandomResTile, TileMaster.Types["stairs"],g);
+				(t as Stairs).ZoneIndex = i;
+			}
 			
 		}
-
-		IEnumerator _EnterZone(Zone z, int wavenum)
+		
+	}
+	
+	public void GetWave(Wave w = null)
+	{
+		CurrentFloorNum ++;
+		if(w == null)
 		{
-			if(CurrentZone != null) Destroy(CurrentZone.gameObject);
-
-			CurrentZone = (Zone) Instantiate(z);
-			CurrentZone.gameObject.name = z.gameObject.name;
-			CurrentZone.transform.parent = this.transform;
-			
-			if(CurrentWave != null) 
+			w = Zone.CheckZone();
+			/*
+			if(Mode == GameMode.Story) w = Zone.CheckZone();
+			else if(Mode == GameMode.Endless) 
 			{
-				Destroy(CurrentWave.gameObject);
-				CurrentWave = null;
-			}
-			yield return StartCoroutine(CurrentZone.Enter());
-			CurrentZone.SetCurrent(wavenum);
-			yield return StartCoroutine(_GetWave());
+				if(Random.value > 0.5F) w = DefaultWaves.GetWaveRandom();
+				else w = CurrentZone.GetWaveRandom();
+			}*/
 		}
 	
-		public void EscapeZone()
-		{	
-
-			bool end = ZoneMap.Progress();
-			if(end) UIManager.instance.ShowZoneUI(true);		
-			else Victory();
-		}
+		if(CurrentWave != null && CurrentWave != w) Destroy(CurrentWave.gameObject);
+		CurrentWave = Instantiate(w);
+		CurrentWave.transform.parent = this.transform;
 	
-		public void GetWave(Wave w = null)
+		for(int i = 0; i < GameManager.Wave.Length; i++)
 		{
-			CurrentFloorNum ++;
-			if(w == null)
+			if(GameManager.Wave[i] != null && GameManager.Wave[i].Active && UIManager.Objects.TopGear[1].Length > i)
 			{
-				w = Zone.CheckZone();
-				/*
-				if(Mode == GameMode.Story) w = Zone.CheckZone();
-				else if(Mode == GameMode.Endless) 
-				{
-					if(Random.value > 0.5F) w = DefaultWaves.GetWaveRandom();
-					else w = CurrentZone.GetWaveRandom();
-				}*/
+				UIObj wavebutton = UIManager.WaveButtons[i];
+				wavebutton.SetActive(true);
+				wavebutton.Txt[0].text = "";	
+				wavebutton.Img[1].transform.gameObject.SetActive(true);
+				wavebutton.Img[1].enabled = true;	
+				wavebutton.Img[0].enabled = true;
+				//wavebutton.Img[0].sprite = GameManager.Wave[i].Inner;
+				wavebutton.Img[0].color = Color.white;
+				wavebutton.Img[2].enabled = true;
+				//wavebutton.Img[2].sprite = GameManager.Wave[i].Outer;
+				wavebutton.Img[2].color = Color.white;				
 			}
-	
-			if(CurrentWave != null && CurrentWave != w) Destroy(CurrentWave.gameObject);
-			CurrentWave = Instantiate(w);
-			CurrentWave.transform.parent = this.transform;
-	
-			for(int i = 0; i < GameManager.Wave.Length; i++)
+			else 
 			{
-				if(GameManager.Wave[i] != null && GameManager.Wave[i].Active && UIManager.Objects.TopGear[1].Length > i)
-				{
-					UIObj wavebutton = UIManager.WaveButtons[i];
-					wavebutton.SetActive(true);
-					wavebutton.Txt[0].text = "";	
-					wavebutton.Img[1].transform.gameObject.SetActive(true);
-					wavebutton.Img[1].enabled = true;	
-					wavebutton.Img[0].enabled = true;
-					//wavebutton.Img[0].sprite = GameManager.Wave[i].Inner;
-					wavebutton.Img[0].color = Color.white;
-					wavebutton.Img[2].enabled = true;
-					//wavebutton.Img[2].sprite = GameManager.Wave[i].Outer;
-					wavebutton.Img[2].color = Color.white;				
-				}
-				else 
-				{
-					UIManager.WaveButtons[i].SetActive(false);
-				}
+				UIManager.WaveButtons[i].SetActive(false);
 			}
-			StartCoroutine(CurrentWave.Setup());
-	
-			Difficulty += Mathf.Exp(Difficulty_Growth);
-			UIManager.Objects.TopRightButton.Txt[0].text = "" + GameManager.Floor;
-			UIManager.Objects.TopRightButton.Txt[1].text = "" + GameManager.ZoneNum;
-	
-			CameraUtility.instance.MainLight.color = Color.Lerp(
-				CameraUtility.instance.MainLight.color, UIManager.instance.BackingTint, Time.deltaTime * 5);
-			UIManager.Objects.Walls.color = Color.Lerp(
-				UIManager.Objects.Walls.color, UIManager.instance.WallTint, Time.deltaTime * 5);
 		}
+		StartCoroutine(CurrentWave.Setup());
 	
-		IEnumerator _GetWave(Wave w = null)
+		Difficulty += Mathf.Exp(Difficulty_Growth);
+		UIManager.Objects.TopRightButton.Txt[0].text = "" + GameManager.Floor;
+		UIManager.Objects.TopRightButton.Txt[1].text = "" + GameManager.ZoneNum;
+	
+		CameraUtility.instance.MainLight.color = Color.Lerp(
+			CameraUtility.instance.MainLight.color, UIManager.instance.BackingTint, Time.deltaTime * 5);
+		UIManager.Objects.Walls.color = Color.Lerp(
+			UIManager.Objects.Walls.color, UIManager.instance.WallTint, Time.deltaTime * 5);
+	}
+	
+	IEnumerator _GetWave(Wave w = null)
+	{
+		CurrentFloorNum ++;
+		if(w == null)
 		{
-			CurrentFloorNum ++;
-			if(w == null)
-			{
 
-				w = Zone.CheckZone();
-			}
+			w = Zone.CheckZone();
+		}
 	
-			if(CurrentWave != null && CurrentWave != w) Destroy(CurrentWave.gameObject);
-			if(w == null)
-			{
-				EscapeZone();
-				yield break;
-			}
-			CurrentWave = Instantiate(w);
-			CurrentWave.transform.parent = this.transform;
-			yield return StartCoroutine(CurrentWave.Setup());
-			Difficulty += Mathf.Exp(Difficulty_Growth);
-		}
-
-		bool shown_trial;
-		public IEnumerator CheckForTute()
+		if(CurrentWave != null && CurrentWave != w) Destroy(CurrentWave.gameObject);
+		if(w == null)
 		{
-			if(CurrentWave.Name == GameData.instance.StoryModeMap[0][0].Name && !shown_trial)
-			{
-				shown_trial = true;
-				yield return StartCoroutine(UIManager.instance.Alert(0.3F, "Mana Spells", "Complete the Mana Trial to cast a spell", "", true, 60));
-			}
-			yield return null;
+			EscapeZone();
+			yield break;
 		}
+		CurrentWave = Instantiate(w);
+		CurrentWave.transform.parent = this.transform;
+		yield return StartCoroutine(CurrentWave.Setup());
+		Difficulty += Mathf.Exp(Difficulty_Growth);
+	}
+
+	bool shown_trial;
+	public IEnumerator CheckForTute()
+	{
+		if(CurrentWave.Name == GameData.instance.StoryModeMap[0][0].Name && !shown_trial)
+		{
+			shown_trial = true;
+			yield return StartCoroutine(UIManager.instance.Alert(0.3F, "Mana Spells", "Complete the Mana Trial to cast a spell", "", true, 60));
+		}
+		yield return null;
+	}
 #endregion
 
 #region Turn Loop
@@ -980,8 +1004,8 @@ public class GameManager : MonoBehaviour {
 	{
 
 	/* PLAYER TURN *///////////////////////////////////////////////////
+		Player.instance.CompleteMatch = true;
 		EnemyTurn = true;
-		
 		TileMaster.instance.SetFillGrid(false);
 		UIManager.instance.current_class = null;
 		UIManager.instance.SetClassButtons(false);
@@ -994,59 +1018,60 @@ public class GameManager : MonoBehaviour {
 		yield return StartCoroutine(BeforeMatchRoutine());
 		bool all_of_resource = false;
 		
+		//Debug.Log("BEFORE MATCH");
 		if(Player.instance.CompleteMatch) 
 		{
 			yield return StartCoroutine(MatchRoutine(PlayerControl.instance.finalTiles.ToArray()));
 		}
-		else yield break;//EnemyTurn = false;
+		else 
+		{
+			EnemyTurn = false;
+			yield break;
+		}
 
+		
+		//Debug.Log("MATCH");
 
 		yield return StartCoroutine(Player.instance.AfterMatch());
 		yield return StartCoroutine(Player.instance.EndTurn());
-
+		//Debug.Log("AFTER MATCH");
 
 		//UIManager.Objects.BotGear.SetTween(3, false);
+		
 		yield return StartCoroutine(TileMaster.instance.BeforeTurn());
+		//Debug.Log("BEFORE TURN");
 	/* ENEMY TURN *////////////////////////////////////////////////////
-		yield return StartCoroutine(CurrentWave.BeginTurn());
+		if(CurrentWave) yield return StartCoroutine(CurrentWave.BeginTurn());
 		if(Player.instance.Turns % (int)Player.Stats.AttackRate == 0 && TileMaster.instance.EnemiesOnScreen > 0)
 		{
 			yield return StartCoroutine(EnemyTurnRoutine());
 		}
 
+		//Debug.Log("TURN");
 	
 		while(TileMaster.EnemiesAttacking()) yield return null;
 		TileMaster.instance.ResetTiles(true);
+		//UIManager.instance.CashMeterPoints();
 		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 		
 		yield return StartCoroutine(TileMaster.instance.AfterTurn());
+
+		//Debug.Log("AFTER TURN");
 		yield return StartCoroutine(CompleteTurnRoutine());
 		yield return StartCoroutine(Player.instance.CheckHealth());	
-		yield return StartCoroutine(CurrentWave.AfterTurn());
+		if(CurrentWave) yield return StartCoroutine(CurrentWave.AfterTurn());
 
-		if(CurrentWave.Ended && !Player.Stats.isKilled)
+		if(CurrentWave && CurrentWave.Ended && !Player.Stats.isKilled)
 		{
 			yield return StartCoroutine(_GetWave());
 		}
 		
 		UIManager.Objects.BotGear.SetToState(0);
 		yield return StartCoroutine(Player.instance.BeginTurn());
-
-		foreach(Class child in Player.Classes)
-		{
-			if(child == null) continue;
-			if(child.MeterLvl > 0 && !Player.Options.PowerupAlerted)
-			{
-				Player.Options.PowerupAlerted = true;
-
-				//UIManager.instance.ShowTuteAlert("A HERO HAS POWERED UP!\nTOUCH THE HERO'S ICON TO CAST A SPELL");
-				break;
-			}
-		}
 		
 		TileMaster.instance.ResetTiles(true);
-
 		UIManager.instance.ResetTopGear();
+		paused = false;
 		yield return null;
 	}
 
@@ -1113,7 +1138,7 @@ public class GameManager : MonoBehaviour {
 		if(allied_attackers.Count > 0) 
 		{
 			TileMaster.instance.ResetTiles();
-			yield return new WaitForSeconds(GameData.GameSpeed(0.17F));
+			yield return new WaitForSeconds(GameData.GameSpeed(0.21F));
 		}
 
 		foreach(Tile child in allied_attackers)
@@ -1135,7 +1160,7 @@ public class GameManager : MonoBehaviour {
 			}
 		}
 
-		if(allied_attackers.Count > 0) yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+		if(allied_attackers.Count > 0) yield return new WaitForSeconds(GameData.GameSpeed(0.14F));
 	}
 #endregion
 

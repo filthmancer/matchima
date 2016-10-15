@@ -1093,6 +1093,13 @@ public class Upgrade
 		Init(_prefix, _suffix, _chance, _type, _scalerate, _method, desc_mult, desc_add);
 	}
 
+	public Upgrade(int overindex, int underindex, string _suffix, float _chance, ScaleType _type, float _scalerate, Action<Stat, float> _method, 
+		float desc_mult = 1, int desc_add = 0)
+	{
+		Init("", _suffix, _chance, _type, _scalerate, _method, desc_mult, desc_add);
+		Index = new int[] {overindex, underindex};
+	}
+
 	public virtual void Init(string _prefix, string _suffix, float _chance, ScaleType _type, float _scalerate, Action<Stat, float> _method, 
 		float desc_mult = 1, int desc_add = 0)
 	{
@@ -1179,6 +1186,12 @@ public class OnMatchUpgrade : Upgrade
 
 	public OnMatchUpgrade(string _prefix, string _suffix, float _chance, ScaleType _type, float _scalerate, Action<Stat, float> _method, 
 		float desc_mult = 1, int desc_add = 0) : base(_prefix, _suffix, _chance, _type, _scalerate, _method, desc_mult, desc_add)
+	{
+		MethType = MethodType.OnMatch;
+	}
+
+	public OnMatchUpgrade(int overindex, int underindex, string _suffix, float _chance, ScaleType _type, float _scalerate, Action<Stat, float> _method, 
+		float desc_mult = 1, int desc_add = 0) : base(overindex, underindex, _suffix, _chance, _type, _scalerate, _method, desc_mult, desc_add)
 	{
 		MethType = MethodType.OnMatch;
 	}

@@ -31,26 +31,26 @@ public class Warden : Class {
 		get{
 			return new Upgrade []
 			{
-				new Upgrade("Soldier's", "% chance\n of Health", 0.4F, ScaleType.GRADIENT, 1.0F,
+				new Upgrade(1,0, "% chance\n of Health", 0.4F, ScaleType.GRADIENT, 1.0F,
 					(Stat s, float value) => {
 						s.TileChances.Add(new TileChance(GameData.ResourceLong(Genus), "health", 0.1F + 0.03F * value));}, 3, 10
 					),
-				new Upgrade("Bombers's", "% chance\n of Bomb", 0.4F, ScaleType.GRADIENT, 1.0F,
+				new Upgrade(1,1, "% chance\n of Bomb", 0.4F, ScaleType.GRADIENT, 1.0F,
 					(Stat s, float value) => {
 						s.TileChances.Add(new TileChance(GameData.ResourceLong(Genus), "bomb", 0.1F + 0.03F * value));}, 3, 10
 					),
-				new Upgrade("Bombers's", "% chance\n of flame", 0.4F, ScaleType.GRADIENT, 1.0F,
+				new Upgrade(1,2, "% chance\n of flame", 0.4F, ScaleType.GRADIENT, 1.0F,
 					(Stat s, float value) => {
 						s.TileChances.Add(new TileChance(GameData.ResourceLong(Genus), "flame", 0.1F + 0.03F * value));}, 3, 10
 					),
 
-				new Upgrade("Lucky", "% Death Save Chance",
+				new Upgrade(1,3, "% Death Save Chance",
 						1.0F, ScaleType.GRADIENT, 1.0F,
 						(Stat s, float value) =>
 						{
 							s.DeathSaveChance += 0.05F + (value * 0.03F);
 						}, 3, 5),
-				new Upgrade("Strengthening", " Tile Per Match", 1.0F, ScaleType.RANK, 0.0F,
+				new Upgrade(1,4, " Tile Per Match", 1.0F, ScaleType.RANK, 0.0F,
 					(Stat s, float value) =>
 					{
 						s.MatchNumberModifier -= 1;
@@ -65,7 +65,7 @@ public class Warden : Class {
 		{
  			return new Upgrade [] 
  			{
- 				new Upgrade("Hearty", " Max HP", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._HealthMax -= 10 + (int)val*5;}, -5, -10)
+ 				new Upgrade(-2,0, " Max HP", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._HealthMax -= 10 + (int)val*5;}, -5, -10)
  			};
 		}
 	}

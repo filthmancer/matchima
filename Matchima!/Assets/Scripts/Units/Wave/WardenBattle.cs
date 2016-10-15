@@ -86,14 +86,19 @@ public class WardenBattle : Wave {
 		yield return StartCoroutine(UIManager.instance.Alert(1.25F, namecon));
 
 		UIManager.Objects.TopGear[2].SetActive(true);
-		for(int i = 0; i < AllSlots.Length; i++)
+
+		if(!HasEntered)
 		{
-			if(AllSlots[i] == null) continue;
-			if(AllSlots[i].Active)
+			for(int i = 0; i < AllSlots.Length; i++)
 			{
-				 yield return StartCoroutine(AllSlots[i].OnStart());
+				if(AllSlots[i] == null) continue;
+				if(AllSlots[i].Active)
+				{
+					 yield return StartCoroutine(AllSlots[i].OnStart());
+				}
 			}
 		}
+		HasEntered = true;
 
 		for(int i = 1; i < UIManager.Objects.TopGear[1].Length; i++)
 		{
@@ -124,7 +129,7 @@ public class WardenBattle : Wave {
 
 		int tx = ((TileMaster.Grid.Size[0]-1) / 2) - 1;
 		int ty = ((TileMaster.Grid.Size[1]-1) / 2) - 1;
-		TileMaster.instance.ReplaceTile(tx, ty, TileMaster.Types["chest"], GENUS.ALL, 3, 10 + (int)GameManager.Difficulty);
+		//TileMaster.instance.ReplaceTile(tx, ty, TileMaster.Types["chest"], GENUS.ALL, 3, 10 + (int)GameManager.Difficulty);
 	}
 
 

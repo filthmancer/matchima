@@ -35,9 +35,6 @@ public class Harp : Tile {
 		if(isMatching) yield break;
 		isMatching = true;
 
-		GameObject p = Instantiate(Particles);
-		p.transform.position = this.transform.position;
-
 		List<Tile> to_collect = new List<Tile>();
 		int xx = Point.Base[0], yy = Point.Base[1];
 		for(int x = 0; x < TileMaster.Tiles.GetLength(0); x++)
@@ -61,34 +58,38 @@ public class Harp : Tile {
 		AudioSource s = PlayAudio("cast");
 		if(s) s.GetComponent<DestroyTimer>().Timer = 1.4F;
 		TileMaster.instance.Ripple(this, to_collect, 2.1F*Stats.Value, GameData.GameSpeed(0.35F), 0.2F);
-		yield return new WaitForSeconds(GameData.GameSpeed(0.3F));
+		yield return new WaitForSeconds(GameData.GameSpeed(0.26F));
+
+		List<Tile> charmed = new List<Tile>();
 		if(to_collect.Count > 0)
 		{
 			foreach(Tile child in to_collect)
 			{
 				if(child != null)
 				{
-					
-					//else
-					//{
-						child.ChangeGenus(Genus);
-						//child.SetState(TileState.Selected, true);
-						EffectManager.instance.PlayEffect(child.transform, Effect.Replace, GameData.instance.GetGENUSColour(child.Genus));	
-						//c.AddValue(EndValueAdded);
-					//}
+					child.ChangeGenus(Genus);
+					EffectManager.instance.PlayEffect(child.transform, Effect.Replace, GameData.instance.GetGENUSColour(child.Genus));	
 					if(child.Type.isEnemy) 
 					{					
-						//child.SetState(TileState.Selected, true);
-						MiniAlertUI m = UIManager.instance.MiniAlert(child.Point.targetPos, "Charmed!", 120, GameData.Colour(child.Genus), 0.3F, 0.1F);
-						child.AddEffect("Charm", StunDuration);
+						charmed.Add(child);
 					}
-					
 				}
 			}
 			yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
+			if(charmed.Count > 0)
+			{
+				foreach(Tile child in charmed)
+				{
+					MiniAlertUI m = UIManager.instance.MiniAlert(child.Point.targetPos, "Charmed!", 100, GameData.Colour(child.Genus), 0.3F, 0.1F);
+					child.AddEffect("Charm", StunDuration);
+				}
+				yield return new WaitForSeconds(GameData.GameSpeed(0.15F));
+			}
+			
+			yield return new WaitForSeconds(GameData.GameSpeed(0.06F));
 
 		}
-		
+		if(new_part) Destroy(new_part);
 		yield break;
 	}
 

@@ -24,7 +24,7 @@ public class Sleep : TileEffect {
 		{
 			_OnDestroy();
 
-			yield return new WaitForSeconds(GameData.GameSpeed(0.05F));
+			yield return new WaitForSeconds(GameData.GameSpeed(0.09F));
 		}
 	}
 

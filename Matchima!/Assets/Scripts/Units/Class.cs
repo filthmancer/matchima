@@ -243,11 +243,7 @@ public class Class : Unit {
 			//InitMod.Init(i++);
 		}
 
-		for(int b = 0; b < BoonsAll.Length; b++)
-		{
-			BoonsAll[b].Index = new int[]{0, b};
-		}
-		
+
 		for(int m = 0; m < AllMods.Count; m++)
 		{
 			if(AllMods[m] == null)
@@ -294,7 +290,7 @@ public class Class : Unit {
 
 		InitStats.CheckStatInc();
 		Stats = new Stat(InitStats);
-		foreach(Slot child in _Slots)
+		/*foreach(Slot child in _Slots)
 		{
 			if(child == null) continue;
 			if(child is Item) child.Drag = DragType.None;
@@ -304,7 +300,8 @@ public class Class : Unit {
 		{
 			if(child == null) continue;
 			if(child.GetStats() != null) Stats.AddStats(child.GetStats());
-		}
+		}*/
+
 		foreach(ClassEffect child in _Status)
 		{
 			if(child == null) continue;
@@ -368,8 +365,6 @@ public class Class : Unit {
 		if(Meter < MeterDecay) Meter = 0;
 		else AddToMeterDirect(-MeterDecay);
 		yield return StartCoroutine(CheckManaPower());
-		
-		
 		
 		Reset();
 		yield return null;
@@ -668,7 +663,7 @@ public class Class : Unit {
 
 
 		UIManager.instance.ScreenAlert.SetTween(0,true);
-		int lvl = MeterLvl;
+		int lvl = Mathf.Clamp(MeterLvl, 0, 2);
 		yield return StartCoroutine(PowerupSpell.Activate(lvl));
 		yield return StartCoroutine(PowerDown());
 		yield return StartCoroutine(LevelUp(lvl));
@@ -779,7 +774,7 @@ public class Class : Unit {
 		Upgrade u = null;
 
 		float cursechance = Stats.CurseChance - (0.09F * power);
-		bool Boon = UnityEngine.Random.value > cursechance;
+		bool Boon = UnityEngine.Random.value > (0.1F - (0.04F * power));//cursechance;
 
 		if(Boon)
 		{	
@@ -859,40 +854,42 @@ public class Class : Unit {
 		get{
 			List<Upgrade> final = new List<Upgrade>();
 			final.AddRange(Boons);
-			final.Add(new Upgrade("Hearty", " Max HP", (Genus == GENUS.STR ? 1.0F : 0.25F),
+
+			//INDEX IS 0, 0
+			final.Add(new Upgrade(0,0, " Max HP", (Genus == GENUS.STR ? 1.0F : 0.25F),
 								 ScaleType.GRADIENT, 1.0F,
 								 (Stat s, float val) => {s._HealthMax += 5 + (int)val*5;}, 5, 5));
-			final.Add(new Upgrade("Healing", " HP Regen", (Genus == GENUS.STR ? 1.0F : 0.25F),
+			final.Add(new Upgrade(0,1, " HP Regen", (Genus == GENUS.STR ? 1.0F : 0.25F),
 								 ScaleType.GRADIENT, 1.0F,
 								 (Stat s, float val) => {s.HealthRegen += 1 + (int) val;}, 1, 1));
 
-			final.Add(new Upgrade("Sharp", " Attack", (Genus == GENUS.DEX ? 1.0F : 0.25F),
+			final.Add(new Upgrade(0,2, " Attack", (Genus == GENUS.DEX ? 1.0F : 0.25F),
 								 ScaleType.GRADIENT, 1.0F,
 								 (Stat s, float val) => {s._Attack += 1 + (int)val;}, 1, 1));
-			final.Add(new Upgrade("Wise", "%\n Attack Power", 0.4F, 
+			final.Add(new Upgrade(0,3, "%\n Attack Power", 0.4F, 
 								 ScaleType.GRADIENT, (Genus == GENUS.DEX ? 1.0F : 0.25F),
 								 (Stat s, float val) => {s.AttackPower += 0.2F * val;}, 20));
 
-			final.Add(new Upgrade("Sharp", " Spell", (Genus == GENUS.WIS ? 1.0F : 0.25F),
+			final.Add(new Upgrade(0,4, " Spell", (Genus == GENUS.WIS ? 1.0F : 0.25F),
 								 ScaleType.GRADIENT, 1.0F,
 								 (Stat s, float val) => {s._Spell += 1 + (int)val;}, 1, 1));
-			final.Add(new Upgrade("Wise", "% Spell Power", 0.1F,
+			final.Add(new Upgrade(0,5, "% Spell Power", 0.1F,
 								 ScaleType.GRADIENT, (Genus == GENUS.WIS ? 1.0F : 0.25F),
 								 (Stat s, float val) => {s.SpellPower += 0.2F * val;}, 20));
 
-			final.Add(new Upgrade("Spiked", " Spikes", (Genus == GENUS.CHA ? 1.0F : 0.25F),
+			final.Add(new Upgrade(0,6, " Spikes", (Genus == GENUS.CHA ? 1.0F : 0.25F),
 								 ScaleType.GRADIENT,1.0F,
 								 (Stat s, float val) => {s.Spikes += 1 + (int)val;}, 1, 1));
 
-			final.Add(new Upgrade("Healing", " MP Regen", (Genus == GENUS.CHA ? 1.0F : 0.25F),
+			final.Add(new Upgrade(0,7, " MP Regen", (Genus == GENUS.CHA ? 1.0F : 0.25F),
 								 ScaleType.GRADIENT, 1.0F,
 								 (Stat s, float val) => {s.MeterRegen += 1 + (int) val;}));
 
-			final.Add(new Upgrade("Cook's", " Map X", 0.3F, ScaleType.RANK, 0.4F,
+			final.Add(new Upgrade(0,8, " Map X", 0.3F, ScaleType.RANK, 0.4F,
 								 (Stat s, float value) => {
 								 	s.MapSize.x += 1 + (int) (1 * value);},1,1
 								 ));
-			final.Add(new Upgrade("Magellan's", " Map Y", 0.3F, ScaleType.RANK, 0.4F,
+			final.Add(new Upgrade(0,9, " Map Y", 0.3F, ScaleType.RANK, 0.4F,
 								 (Stat s, float value) => {
 								 	s.MapSize.y += 1 + (int) (1 * value);},1,1
 								 	));
@@ -900,10 +897,23 @@ public class Class : Unit {
 			return final.ToArray();
 		}
 	}
+
 	public virtual Upgrade [] Curses
 	{
 		get{return null;}
 	}
+
+	public virtual Upgrade [] CursesAll
+	{
+		get{
+			List<Upgrade> final = new List<Upgrade>();
+			final.AddRange(Curses);
+
+			//INDEX IS -1, 0
+			return final.ToArray();
+		}
+	}
+
 	public float BoonChances{
 		get{
 			float c = 0.0F;
@@ -917,12 +927,26 @@ public class Class : Unit {
 	public float CurseChances{
 		get{
 			float c = 0.0F;
-			for(int i = 0; i < Curses.Length; i++)
+			for(int i = 0; i < CursesAll.Length; i++)
 			{
-				c += Curses[i].chance;
+				c += CursesAll[i].chance;
 			}
 			return c;
 		}
+	}
+
+	public Upgrade GetUpgradeByIndex(int [] index)
+	{
+		for(int i = 0; i < BoonsAll.Length; i++)
+		{
+			if(BoonsAll[i].Index[0] == index[0] && BoonsAll[i].Index[1] == index[1]) return BoonsAll[i];
+		}
+
+		for(int i = 0; i < CursesAll.Length; i++)
+		{
+			if(CursesAll[i].Index[0] == index[0] && CursesAll[i].Index[1] == index[1]) return CursesAll[i];
+		}
+		return null;
 	}
 
 	public Slot AddMod(string name, params string [] args)

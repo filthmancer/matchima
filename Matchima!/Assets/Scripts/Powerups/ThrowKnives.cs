@@ -34,7 +34,7 @@ public class ThrowKnives : Powerup {
 		for(int i = 0; i < knives; i++)
 		{
 			knifeobj.Add(CreateKnife());
-			yield return new WaitForSeconds(GameData.GameSpeed(0.5F));
+			yield return StartCoroutine(GameData.DeltaWait(0.5F));
 		}
 
 		bool knives_ended = false;
@@ -56,7 +56,7 @@ public class ThrowKnives : Powerup {
 
 		UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, 
 		"+" + CatchNum + " Knives!", 120, GameData.Colour(Parent.Genus), 0.6F, 0.25F);
-		yield return new WaitForSeconds(GameData.GameSpeed(0.6F));
+		yield return StartCoroutine(GameData.DeltaWait(0.6F));
 
 		
 		UIManager.instance.ScreenAlert.SetTween(0,false);
@@ -133,7 +133,7 @@ public class ThrowKnives : Powerup {
 		UIObj knife = CreateMinigameObj(0);
 		knife.transform.position = UIManager.Objects.BotGear.transform.position;
 		knife.transform.position += Vector3.right * (Random.value - Random.value);
-		knife.transform.localScale = Vector3.one * 0.6F;
+		knife.transform.localScale = Vector3.one * 0.5F;
 		AudioManager.instance.PlayClipOn(this.transform, "Powerup", "KnifeThrow");
 		float velx = Random.Range(0.0F, 0.09F);
 		if(Random.value < 0.5F) velx = -velx;
@@ -173,7 +173,7 @@ public class ThrowKnives : Powerup {
 		target.SetState(TileState.Selected, true);
 		UIObj part = CreateMinigameObj(0);
 		part.transform.position = par.position;
-		part.transform.localScale = Vector3.one * 0.6F;
+		part.transform.localScale = Vector3.one * 0.3F;
 		AudioManager.instance.PlayClipOn(this.transform, "Powerup", "KnifeThrow");
 		
 		part.GetComponent<Velocitizer>().enabled = false;

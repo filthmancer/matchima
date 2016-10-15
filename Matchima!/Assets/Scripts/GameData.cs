@@ -91,7 +91,7 @@ public class GameData : MonoBehaviour {
 
 	public static float GameSpeed(float f, float ratio = 1.0F)
 	{
-		return f / (Player.Options.GameSpeed/ratio) * Time.deltaTime * 60;
+		return f / (Player.Options.GameSpeed/ratio) * Time.deltaTime * 60 * 1.3F;
 	}
 
 	public static int StringToInt(string num)
@@ -498,6 +498,14 @@ public class GameData : MonoBehaviour {
 			int targ = (int)UnityEngine.Random.Range(zonenum[i].x, zonenum[i].y);
 			br[i] = new ZoneBracket(targ);
 			List<Zone> choices = GetRandomZones(i);
+			if(i > 0)
+			{
+				for(int x = 0; x < choices.Count; x++)
+				{
+					if(br[i-1].Choices.Contains(choices[x])) choices.RemoveAt(x);
+				}
+			}
+			
 			for(int z = 0; z < targ; z++)
 			{
 				int rand = UnityEngine.Random.Range(0,choices.Count);
@@ -634,8 +642,9 @@ public class GameData : MonoBehaviour {
 		
 		StartCoroutine(AudioManager.instance.LoadAudioInit());
 		yield return null;
-		yield return StartCoroutine(UIManager.instance.UnloadUI());
+		yield return StartCoroutine(UIManager.instance.UnloadGameUI());
 		yield return null;
+
 		yield return StartCoroutine(UIManager.Menu.LoadMenu());
 	}
 
@@ -1177,10 +1186,19 @@ public class ZoneMapContainer
 {
 	public ZoneBracket [] Brackets;
 	public int Current = 0;
+	public int Next{get{return Current +1;}}
 	public ZoneBracket CurrentBracket
 	{
 		get{return Brackets[Current];}
 	}
+	public ZoneBracket NextBracket{get{
+		int index = Mathf.Clamp(Current+1, 0, Brackets.Length-1);
+		return Brackets[index];
+		}}
+	public ZoneBracket LastBracket{get{
+		int index = Mathf.Clamp(Current-1, 0, Brackets.Length-1);
+		return Brackets[index];
+		}}
 	public int Length{get{return Brackets.Length;}}
 	public ZoneBracket this[int v]
 	{
@@ -1223,206 +1241,3 @@ public class ZoneBracket
 	}
 }
 
-// UserData is our custom class that holds our defined objects we want to store in XML format 
-public class UserData 
-{ 
-   // We have to define a default instance of the structure 
-  public Data _iUser; 
-   // Default constructor doesn't really do anything at the moment 
-  public UserData() { } 
-
-  // Anything we want to store in the XML file, we define it here 
-  public struct Data 
-  { 
-	//public string ClassName;
-	public float Difficulty;
-	public int Turns;
-	public int BestCombo;
-    public int Health;
-    public int GameMode;
-
-	public ClassData [] ClassData;
-	
-	public RowData [] Rows;
-	public bool HasZoneMap;
-    public ZoneMapData ZoneMap;
-	public WaveData Wave;
-    public LevelData Level;
-  } 
-}
-
-public struct LevelData
-{
-  public int Level;
-  public int XP_Current;
-  public int XP_RequiredArray_num;
-}
-
-public struct RowData
-{
-	public int [] GenusIndex;
-	public int [] SpeciesIndex;
-	public int [] ValueIndex;
-	public int [] ScaleIndex;
-}
-
-public struct ZoneMapData
-{
-	public int FloorCount;
-	public int WaveCount;
-  public int Current;
-  public int Current_BracketIndex;
-  public ZoneMapBracketData [] BracketData;
-}
-
-public struct ZoneMapBracketData
-{
-  public ZoneData [] Zone;
-}
-
-public struct ZoneData
-{
-  	public string Name;
-}
-
-public struct WaveData
-{
- 	public bool HasWave;
-	public bool Active;
-	public int Current;
- 	public int Index;
- 	public bool [] Slot;
-}
-
-public struct ClassData
-{
-	public string Name;
-	public StatData Init;
-	public ItemContainerData [] Item;
-	public ModContainerData [] Mods;
-}
-
-public struct StatData
-{
-   	public int Level;
-	public int Class_Type;
-	public int _Health, _HealthMax;
-	public int _MeterMax;
-	public float MeterDecay_Global;
-
-	public int _Armour;
-	public int _ArmourMax;
-	public float ArmourReductionRate;
-		
-	public float MapSizeX, MapSizeY;
-
-	public int ComboCounter;
-	public float ComboBonus;
-	public int MatchNumberMod;
-
-	public int _Attack;
-	public float AttackRate;
-	public float SpellPower;
-
-	public int HealthRegen, HealthLeech;
-	public int MeterRegen, MeterLeech;
-
-	public int Spikes;
-
-	public float CooldownDecrease;
-	public float CostDecrease;
-	public int ValueInc;
-
-	public int Presence;
-	
-	public bool isKilled;
-	
-	public int PrevTurnKills;
-	public int HealThisTurn, DmgThisTurn;
-
-	public int Shift;
-	public StatContainerData [] ContainerData;
-	//public TileChanceData [] TileChances;
-}
-
-public struct StatContainerData
-{
-    public float StatCurrent_soft;
-	public float StatGain;
-	
-	public float StatLeech;
-	public float StatRegen;
-	
-	//public int ResCurrent;
-	//public int ResMax;
-	public float ResMultiplier;
-	
-	//public float ResGain;
-	
-	public int ResLeech;
-	public int ResRegen;
-	
-	public int ThisTurn;
-	
-	//public float ResMax_soft;
-}
-
-public struct ItemContainerData
-{
-	public SlotContainerData SlotData;
-	public int Type;
-	public int ScaleGenus;
-	public float ScaleRate;
-	//public UpgradeData [] Upgrades;
-}
-
-public struct SlotContainerData
-{
-	public string Name;
-	public string IconString;
-	public int Index;
-	public int Cooldown;
-}
-
-public struct ModContainerData
-{
-	public SlotContainerData SlotData;
-}
-
-public struct UpgradeData
-{
-	public int [] index;
-	public string Prefix, Suffix;
-	public float chance;
-	public int ItemType;
-	public int ScaleType;
-	public float scalerate;
-	public int Points_total;
-}
-
-public struct AbilityContainerData
-{
-	public bool hasAbility;
-	public string Name;
-	public string ShortName;
-	public string Description;
-	public int Level;
-	
-	public string AbilityScript;
-	
-	public int Cooldown;
-	public int [] Cost;
-	//public int CostType;
-	
-	public int StatType;
-	public int StatMultiplier;
-	public string [] Input;
-	public string [] Output;
-}
-
-public struct TileChanceData
-{
-	public string Genus, Type;
-	public float Chance;
-	public int Value;
-}

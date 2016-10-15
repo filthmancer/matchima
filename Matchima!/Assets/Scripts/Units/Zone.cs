@@ -174,6 +174,25 @@ public class Zone : MonoBehaviour {
 		return w;
 	}
 
+	public Wave GetWaveByName(string s)
+	{
+		foreach(Wave child in Waves)
+		{
+			if(child.Name == s) return child;
+		}
+		if(IntroWave != null && IntroWave.Name == s) return IntroWave;
+		if(BossWave != null && BossWave.Name == s) return BossWave;
+		
+		if(TakeFromRandomWavePool)
+		{
+			foreach(Wave child in GameManager.instance.DefaultWaves.Waves)
+			{
+				if(child.Name == s) return child;
+			}
+		}
+		return GetWaveRandom();
+	}
+
 	public virtual Wave CheckZone()
 	{
 		if(Style == ZoneStyle.Progressive) return GetWaveProgressive();

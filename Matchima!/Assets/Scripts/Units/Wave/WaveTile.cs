@@ -109,22 +109,22 @@ public class WaveTile : WaveUnit
 	//Spawn at start
 		if(Style.Type != WaveTileSpawn.XAtStart) yield break;
 		GameManager.instance.paused = true;
-		bool [,] replacedtile = new bool [(int)TileMaster.instance.MapSize.x, (int)TileMaster.instance.MapSize.y];
+		bool [,] replacedtile = new bool [(int)TileMaster.Grid.Size[0], (int)TileMaster.Grid.Size[1]];
 		List<TileEffectInfo> Effects = Parent.GetEffects();
 
 		for(int x = 0; x < (int)Style.Value; x++)
 		{
 			
-			int randx = (int)Random.Range(0, TileMaster.instance.MapSize.x);
-			int randy = (int)Random.Range(0, TileMaster.instance.MapSize.y);
+			int randx = (int)Random.Range(0, TileMaster.Grid.Size[0]-1);
+			int randy = (int)Random.Range(0, TileMaster.Grid.Size[1]-1);
 			int checks = 0;
 			while(replacedtile[randx, randy]||
 					!TileMaster.Tiles[randx,randy].IsType("resource")||
 					TileMaster.Tiles[randx,randy].Point.Scale > 1 ||
 					randy < 2)
 			{
-				randx = (int)Random.Range(0, TileMaster.instance.MapSize.x);
-				randy = (int)Random.Range(0, TileMaster.instance.MapSize.y);
+				randx = (int)Random.Range(0, TileMaster.Grid.Size[0]-1);
+				randy = (int)Random.Range(0, TileMaster.Grid.Size[1]-1);
 				if(checks == 25) yield break;
 				checks ++;
 			}
@@ -167,18 +167,18 @@ public class WaveTile : WaveUnit
 
 		if(Style.Type != WaveTileSpawn.XPerTurn) yield break;
 		GameManager.instance.paused = true;
-		bool [,] replacedtile = new bool [(int)TileMaster.instance.MapSize.x, (int)TileMaster.instance.MapSize.y];
+		bool [,] replacedtile = new bool [(int)TileMaster.Grid.Size[0], (int)TileMaster.Grid.Size[1]];
 		for(int x = 0; x < (int)Style.Value; x++)
 		{
-			int randx = (int)Random.Range(0, TileMaster.instance.MapSize.x);
-			int randy = (int)Random.Range(0, TileMaster.instance.MapSize.y);
+			int randx = (int)Random.Range(0, TileMaster.Grid.Size[0]-1);
+			int randy = (int)Random.Range(0, TileMaster.Grid.Size[1]-1);
 			int checks = 0;
 			while(replacedtile[randx, randy] || 
 					!TileMaster.Tiles[randx,randy].IsType("resource") || 
 					TileMaster.Tiles[randx,randy].Point.Scale > 1)
 			{
-				randx = (int)Random.Range(0, TileMaster.instance.MapSize.x);
-				randy = (int)Random.Range(0, TileMaster.instance.MapSize.y);
+				randx = (int)Random.Range(0, TileMaster.Grid.Size[0]-1);
+				randy = (int)Random.Range(0, TileMaster.Grid.Size[1]-1);
 				if(checks == 25) yield break;
 				checks ++;
 				yield return null;

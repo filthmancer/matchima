@@ -39,10 +39,10 @@ public class UIClassSelect : UIObj {
 			Child[1].ClearActions();
 			Child[1].AddAction(UIAction.MouseUp, ()=>{ToggleClassIcon();});
 
-			float str = _class.GetStatScale(0);
-			float dex = _class.GetStatScale(1);
-			float wis = _class.GetStatScale(2);
-			float cha = _class.GetStatScale(3);
+			float str = Mathf.Clamp(_class.GetStatScale(0), 0.1F, 0.9F);
+			float dex = Mathf.Clamp(_class.GetStatScale(1), 0.1F, 0.9F);
+			float wis = Mathf.Clamp(_class.GetStatScale(2), 0.1F, 0.9F);
+			float cha = Mathf.Clamp(_class.GetStatScale(3), 0.1F, 0.9F);
 
 			Chart.Elements[0].value = str;
 			Chart.Elements[1].value = Mathf.Min(str, cha);

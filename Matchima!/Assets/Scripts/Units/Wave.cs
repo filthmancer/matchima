@@ -326,6 +326,7 @@ public class Wave : Unit {
 		Player.instance.ResetStats();
 	}
 
+	public bool HasEntered;
 	protected virtual IEnumerator WaveActivateRoutine()
 	{
 
@@ -374,20 +375,26 @@ public class Wave : Unit {
 
 		if(Current > -1) Current = 0;
 		UIManager.Objects.TopGear[2].SetActive(true);
-		for(int i = 0; i < AllSlots.Length; i++)
-		{
-			if(AllSlots[i] == null) continue;
-			if(AllSlots[i].Active)
-			{
-				 yield return StartCoroutine(AllSlots[i].OnStart());
-			}
-		}
 
+		if(!HasEntered)
+		{
+			for(int i = 0; i < AllSlots.Length; i++)
+			{
+				if(AllSlots[i] == null) continue;
+				if(AllSlots[i].Active)
+				{
+					 yield return StartCoroutine(AllSlots[i].OnStart());
+				}
+			}
+		}		
+		HasEntered = true;
+		
 		for(int i = 1; i < UIManager.Objects.TopGear[1].Length; i++)
 		{
 			UIManager.Objects.TopGear[1][i][0].SetActive(false);
 		}
 
+		
 		GameManager.instance.paused = false;
 		UIManager.Objects.BotGear.SetToState(0);
 		UIManager.Objects.TopGear.SetToState(0);
@@ -433,7 +440,7 @@ public class Wave : Unit {
 
 	public virtual void OnWaveDestroy()
 	{
-
+		HasEntered = false;
 	}
 
 	IEnumerator Cast(Tile target, int radius)

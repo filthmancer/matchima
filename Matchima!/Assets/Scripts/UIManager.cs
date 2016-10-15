@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using TMPro;
 
 public class UIManager : MonoBehaviour {
+#region Variables
 	public static UIManager instance;
 	public static Canvas Canvas;
 	public static bool loaded = false;
@@ -64,6 +65,9 @@ public class UIManager : MonoBehaviour {
 	public bool isQuoting;
 
 	public bool LogUIObjs;
+#endregion
+
+#region Generics
 	void Awake()
 	{
 		instance = this;
@@ -173,6 +177,7 @@ public class UIManager : MonoBehaviour {
 			StartCoroutine(HitLoop());
 		}
 	}
+#endregion
 
 	public void GetWaveButton(ref UIObjtk obj, 
 									 WaveUnit wunit)
@@ -252,7 +257,7 @@ public class UIManager : MonoBehaviour {
 	{
 		loaded = false;
 		GameManager.inStartMenu = true;
-		yield return StartCoroutine(UnloadUI());
+		yield return StartCoroutine(UnloadGameUI());
 		yield return StartCoroutine(Menu.LoadMenu());
 	}
 
@@ -262,7 +267,7 @@ public class UIManager : MonoBehaviour {
 		Reset();
 	}
 
-	public IEnumerator LoadUI()
+	public IEnumerator LoadGameUI()
 	{
 		while(!Player.loaded) yield return null;
 
@@ -284,8 +289,6 @@ public class UIManager : MonoBehaviour {
 		{
 			(Objects.MiddleGear[2] as UIObjTweener).SetTween(0, false);
 		});
-
-
 
 		Objects.MiddleGear[1].SetActive(false);
 		Objects.MiddleGear[2].SetActive(false);
@@ -310,7 +313,7 @@ public class UIManager : MonoBehaviour {
 		yield return null;
 	}
 
-	public IEnumerator UnloadUI()
+	public IEnumerator UnloadGameUI()
 	{
 		Objects.TopGear.DivisionActions.Clear();
 		Objects.ShowObj(Objects.MainUI, false);
@@ -357,6 +360,16 @@ public class UIManager : MonoBehaviour {
 		UIManager.ShowWaveButtons(false);
 		if(borderactual != null) Destroy(borderactual);
 		yield return null;
+	}
+
+	public void LoadMenuUI()
+	{
+
+	}
+
+	public void UnloadMenuUI()
+	{
+
 	}
 
 	public void SetLoadScreen(bool active)
@@ -555,7 +568,7 @@ public class UIManager : MonoBehaviour {
 	{
 		float bonus_time = 0.32F;
 
-
+		if(BonusGroups.Length == 0) yield break;
 		for(int i = 0; i < BonusGroups[0].Length; i++)
 		{
 			MiniAlertUI BonusObj = UIManager.instance.MiniAlert(
@@ -583,7 +596,7 @@ public class UIManager : MonoBehaviour {
 		}
 
 		yield return new WaitForSeconds(GameData.GameSpeed(0.08F));
-
+		BonusGroups = new BonusGroup[0];
 		float info_movespeed = 20.0F;
 		float info_finalscale = 0.3F;
 		
@@ -873,7 +886,7 @@ public class UIManager : MonoBehaviour {
 		if(borderactual != null)
 		{
 			Destroy(borderactual);
-			Resources.UnloadAsset(borderpref_obj);
+			//Resources.UnloadAsset(borderpref_obj);
 		}
 		borderpref_obj = Resources.Load("zones/"+z.gameObject.name + "/border");
 		if(borderpref_obj == null) return;
@@ -1729,7 +1742,6 @@ public class UIManager : MonoBehaviour {
 
 	public void ShowZoneUI(bool ended)
 	{
-		print(true);
 		(Objects.MiddleGear[1] as UIObjTweener).SetTween(0);
 		bool open = (Objects.MiddleGear[1] as UIObjTweener).Tween.IsObjectOpened();
 		GameManager.instance.paused = open;

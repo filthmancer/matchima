@@ -14,16 +14,16 @@ public class WardenWaveUnit : WaveUnit {
 		if(!Active || Ended) yield break;
 		GameManager.instance.paused = true;
 		controllers = new List<Tile>();
-		bool [,] replacedtile = new bool [(int)TileMaster.instance.MapSize.x, (int)TileMaster.instance.MapSize.y];
+		bool [,] replacedtile = new bool [(int)TileMaster.Grid.Size[0], (int)TileMaster.Grid.Size[1]];
 		for(int i = 0; i < controller_count; i++)
 		{
-			int randx = (int)Random.Range(0, TileMaster.instance.MapSize.x);
-			int randy = (int)Random.Range(0, TileMaster.instance.MapSize.y);
+			int randx = (int)Random.Range(0, TileMaster.Grid.Size[0]-1);
+			int randy = (int)Random.Range(0, TileMaster.Grid.Size[1]-1);
 			while(replacedtile[randx, randy] || 
 				TileMaster.Tiles[randx,randy].Point.Scale > 1)
 			{
-				randx = (int)Random.Range(0, TileMaster.instance.MapSize.x);
-				randy = (int)Random.Range(0, TileMaster.instance.MapSize.y);
+				randx = (int)Random.Range(0, TileMaster.Grid.Size[0]-1);
+				randy = (int)Random.Range(0, TileMaster.Grid.Size[1]-1);
 			}
 			replacedtile[randx,randy] = true;
 
@@ -119,10 +119,10 @@ public class WardenWaveUnit : WaveUnit {
 		int damage = 0;
 		bool took_damage = false;
 
-		for(int x = 0; x < TileMaster.instance.MapSize.x; x++)
+		for(int x = 0; x < TileMaster.Grid.Size[0]; x++)
 		{
 			column_attackers = new List<Tile>();
-			for(int y = 0; y < TileMaster.instance.MapSize.y;y++)
+			for(int y = 0; y < TileMaster.Grid.Size[1];y++)
 			{
 				Tile tile = TileMaster.Tiles[x,y];
 				if(tile == null) continue;

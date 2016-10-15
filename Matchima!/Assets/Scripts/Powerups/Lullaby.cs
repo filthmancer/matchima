@@ -52,7 +52,7 @@ public class Lullaby : Powerup {
 		for(int i = 0; i < notes_played; i++)
 		{
 			float time = Random.Range(0.1F, 0.6F);
-			notes.Add(CreateNote(level));
+			notes.Add(CreateNote(level-1));
 			yield return new WaitForSeconds(GameData.GameSpeed(time));
 		}
 

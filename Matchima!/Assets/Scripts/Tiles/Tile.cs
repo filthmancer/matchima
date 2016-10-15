@@ -642,10 +642,13 @@ public class Tile : MonoBehaviour {
 		AudioManager.instance.QueueAlert(this);
 		//PlayAudio("alert");
 		InitStats.isAlerted = true;
-		MiniAlertUI m = UIManager.instance.MiniAlert(transform.position, "!", 220, Color.black, 0.4F, 0.07F);
+		EffectManager.instance.PlayEffect(transform, "alert", Color.white);	
+		MiniAlertUI m = UIManager.instance.MiniAlert(transform.position + Vector3.down * 0.2F, "!", 230, Color.black, 0.4F, 0.07F);
 		m.Txt[0].outlineColor = GameData.Colour(Genus);
 	}
 
+	[HideInInspector]
+	public int BeforeMatchPriority = 0;
 	public virtual IEnumerator BeforeMatch(bool original, int Damage = 0)
 	{
 		InitStats.TurnDamage = Damage;
@@ -809,7 +812,7 @@ public class Tile : MonoBehaviour {
 			bool dest = true;
 			float gravity = 0.03F;
 			float vel = -0.2F;
-			float life = 0.5F;
+			float life = 0.3F;
 	
 			float sidevel = UnityEngine.Random.value > 0.5F ? UnityEngine.Random.value * 0.1F : -UnityEngine.Random.value * 0.1F;
 			
@@ -1084,7 +1087,7 @@ public class Tile : MonoBehaviour {
 		PlayAudio("attack");
 		//UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), "" + GetAttack(), 95, Color.red, 0.8F,0.08F);
 
-		float init_size = UnityEngine.Random.Range(160,200);
+		float init_size = UnityEngine.Random.Range(190,210);
 		float init_rotation = UnityEngine.Random.Range(-7,7);
 
 		float info_time = 0.43F;
@@ -1093,7 +1096,7 @@ public class Tile : MonoBehaviour {
 		float info_finalscale = 0.75F;
 
 		Vector3 pos = TileMaster.Grid.GetPoint(Point.Point(0));
-		MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + GetAttack(), info_size, GameData.instance.BadColour, info_time, 0.03F, false);
+		MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + GetAttack(), info_size, Color.white, info_time, 0.03F, false);
 		m.Txt[0].outlineColor = GameData.Colour(Genus);
 		m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
 		MoveToPoint mini = m.GetComponent<MoveToPoint>();
@@ -1105,7 +1108,6 @@ public class Tile : MonoBehaviour {
 		mini.SetTarget(t.transform.position);
 		mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
 		mini.SetMethod(() =>{
-
 				if(t == null) return;
 				if(t != null)
 				{
@@ -1113,7 +1115,7 @@ public class Tile : MonoBehaviour {
 					t.PlayAudio("hit");
 					EffectManager.instance.PlayEffect(t.transform,Effect.Attack);
 					t.Match(1);
-					UIManager.instance.CashMeterPoints();
+					//UIManager.instance.CashMeterPoints();
 					GameData.Log(this +  " dealt " + GetAttack() + "damage to " + t);
 				} 
 			}
@@ -1258,10 +1260,8 @@ public class Tile : MonoBehaviour {
 	}
 	public  void SetRender(string render)
 	{
-
 		if(Params._render != null && Info.Inner != null) 
 		{
-
 			tk2dSpriteDefinition id = Info.Inner.GetSpriteDefinition(render);
 			if(id == null) render = "Alpha";
 			Params._render.SetSprite(Info.Inner, render);

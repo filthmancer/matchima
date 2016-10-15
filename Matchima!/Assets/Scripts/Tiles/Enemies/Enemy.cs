@@ -189,7 +189,7 @@ public class Enemy : Tile {
 		PlayAudio("hit", 1.5F);
 		AudioManager.instance.PlayClipOn(this.transform, "Player", "Attack");
 		GameObject part = EffectManager.instance.PlayEffect(_Transform, Effect.Attack);
-		yield return new WaitForSeconds(GameData.GameSpeed(0.03F));
+		yield return new WaitForSeconds(GameData.GameSpeed(0.05F));
 
 
 
@@ -197,7 +197,9 @@ public class Enemy : Tile {
 		MiniAlertUI hit = UIManager.instance.DamageAlert(pos, InitStats.TurnDamage);
 
 		CameraUtility.instance.ScreenShake(0.26F + 0.02F * InitStats.TurnDamage,  GameData.GameSpeed(0.06F));
+
 		yield return new WaitForSeconds(GameData.GameSpeed(0.18F));
+		if(part) Destroy(part);
 	}
 
 	public override void AfterTurn()

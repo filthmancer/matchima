@@ -29,24 +29,24 @@ public class Wizard : Class {
 		get{
 			return new Upgrade []
 			{
-				new Upgrade("Soldier's", "% chance\n of Health", 0.1F, ScaleType.GRADIENT, 1.0F,
+				new Upgrade(1,0, "% chance\n of Health", 0.1F, ScaleType.GRADIENT, 1.0F,
 					(Stat s, float value) => {
 						s.TileChances.Add(new TileChance(GameData.ResourceLong(Genus), "health", 0.1F + 0.03F * value));}, 3, 10
 					),
 
-				new Upgrade("Bombers's", "% chance\n of Lightning", 0.8F, ScaleType.GRADIENT, 1.0F,
+				new Upgrade(1,1, "% chance\n of Lightning", 0.8F, ScaleType.GRADIENT, 1.0F,
 					(Stat s, float value) => {
 						s.TileChances.Add(new TileChance(GameData.ResourceLong(Genus), "lightning", 0.1F + 0.03F * value));}, 3, 10
 					),
-				new Upgrade("Bombers's", "% chance\n of Arcane", 0.8F, ScaleType.GRADIENT, 1.0F,
+				new Upgrade(1,2, "% chance\n of Arcane", 0.8F, ScaleType.GRADIENT, 1.0F,
 					(Stat s, float value) => {
 						s.TileChances.Add(new TileChance(GameData.ResourceLong(Genus), "arcane", 0.1F + 0.03F * value));}, 3, 10
 					),
-				new Upgrade("Bombers's", "% chance\n of flame", 0.8F, ScaleType.GRADIENT, 1.0F,
+				new Upgrade(1,3, "% chance\n of flame", 0.8F, ScaleType.GRADIENT, 1.0F,
 					(Stat s, float value) => {
 						s.TileChances.Add(new TileChance(GameData.ResourceLong(Genus), "flame", 0.1F + 0.03F * value));}, 3, 10
 					),
-				new Upgrade("Bombers's", "% chance\n of Beam", 0.8F, ScaleType.GRADIENT, 1.0F,
+				new Upgrade(1,4, "% chance\n of Beam", 0.8F, ScaleType.GRADIENT, 1.0F,
 					(Stat s, float value) => {
 						s.TileChances.Add(new TileChance(GameData.ResourceLong(Genus), "cross", 0.1F + 0.03F * value));}, 3, 10
 					)
@@ -60,8 +60,8 @@ public class Wizard : Class {
 		{
  			return new Upgrade [] 
  			{
- 				new Upgrade("Hearty", " Max HP", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._HealthMax -= 10 + (int)val*5;}, -5, -10),
- 				new Upgrade("Sharp", " Attack", 1.0F, ScaleType.GRADIENT, 0.12F, (Stat s, float val) => {s._Attack -= 1 + (int)val;}, -1, -1)
+ 				new Upgrade(-2,0, " Max HP", 1.0F, ScaleType.GRADIENT, 1.0F, (Stat s, float val) => {s._HealthMax -= 10 + (int)val*5;}, -5, -10),
+ 				new Upgrade(-2,1, " Attack", 1.0F, ScaleType.GRADIENT, 0.12F, (Stat s, float val) => {s._Attack -= 1 + (int)val;}, -1, -1)
  			};
 		}
 	}
