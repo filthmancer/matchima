@@ -42,7 +42,7 @@ public class TileMaster : MonoBehaviour {
 			int y = Random.Range(0, Grid.Size[1]);
 
 			int check = 0;
-			int max_check = Grid.Size[0] * Grid.Size[1];
+			int max_check = (int)((float)(Grid.Size[0] * Grid.Size[1]) * 0.8F);
 
 			while(!Tiles[x,y].IsType("resource"))
 			{
@@ -53,6 +53,32 @@ public class TileMaster : MonoBehaviour {
 			}
 			return Tiles[x,y];
 		}
+	}
+
+	public static Tile RandomTileOfType(params string [] types)
+	{
+		int max_check = (int)((float)(Grid.Size[0] * Grid.Size[1]) * 0.8F);
+		for(int i = 0; i < types.Length; i++)
+		{
+			int x = Random.Range(0, Grid.Size[0]);
+			int y = Random.Range(0, Grid.Size[1]);
+
+			int check = 0;
+			bool found = true;
+			while(!Tiles[x,y].IsType(types[i]))
+			{
+				x = Random.Range(0, Grid.Size[0]);
+				y = Random.Range(0, Grid.Size[1]);
+				check++;
+				if(check > max_check) 
+				{
+					found = false;
+					break;
+				}
+			}
+			if(found) return Tiles[x,y];
+		}
+		return Tiles[0,0];
 	}
 
 	private static float YScale
@@ -905,10 +931,14 @@ public class TileMaster : MonoBehaviour {
 
 	public void CheckForEmptys()
 	{
+		//if(fill_from_none == null || Tiles == null) return;
 		for (int xx = 0; xx < Grid.Size[0]; xx++)
 		{
 			for (int yy = 0; yy < Grid.Size[1]; yy++)
 			{
+
+				if(xx >= Tiles.GetLength(0) || yy >= Tiles.GetLength(1)) continue;
+				if(xx >= fill_from_none.GetLength(0) || yy >= fill_from_none.GetLength(1)) continue;
 				if (Tiles[xx, yy] == null && fill_from_none[xx, yy]) ReplaceTile(xx, yy);
 			}
 		}
@@ -1182,7 +1212,7 @@ public class TileMaster : MonoBehaviour {
 		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 		for(int i = 0; i < TravelTiles.Count; i++)
 		{
-			Tile target = RandomTile;
+			Tile target = RandomResTile;
 			//TileMaster.instance.ReplaceTile(target, TravelTiles[i].Species, TravelTiles[i].Genus,TravelTiles[i].Scale, TravelTiles[i].Value);
 			CastQuickTile(powerup.transform, target, TravelTiles[i]);
 			

@@ -96,6 +96,7 @@ public class Class : Unit {
 	}
 
 	public string Description;
+	public string TileDescription;
 	public bool Unlocked = true;
 
 	public ClassInfo Info;
@@ -427,8 +428,8 @@ public class Class : Unit {
 		Vector3 alertpos = UIManager.ClassButtons.GetClass(Index).transform.position;
 		float hp_x = UIManager.instance.Health.transform.position.x;
 		alertpos.x = Mathf.Clamp(alertpos.x, hp_x-1.0F, hp_x+1.0F);
-		MiniAlertUI m = UIManager.instance.MiniAlert(alertpos, "SPELL " + newlvl + "\nREADY!", 120, GameData.Colour(Genus), 1.2F, 0.2F, true);
-		m.transform.localScale *= 0.85F;
+		MiniAlertUI m = UIManager.instance.MiniAlert(alertpos, "SPELL READY!", 120, GameData.Colour(Genus), 1.2F, 0.2F, true);
+		m.transform.localScale *= 0.6F;
 		MeterLvl = newlvl;
 		MeterDecay_soft = MeterDecayInit[MeterLvl];
 		MeterDecay = (int) MeterDecay_soft;

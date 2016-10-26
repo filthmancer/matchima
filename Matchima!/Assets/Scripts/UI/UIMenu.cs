@@ -112,10 +112,8 @@ public class UIMenu : UIObj {
 		});
 		UIManager.Objects.BotGear[3][2].SetActive(false);
 
-		UIManager.instance.Health.Txt[0].text = "";
-		UIManager.instance.Health.Txt[1].text = "";
-		UIManager.instance.PlayerHealth[0].gameObject.SetActive(false);
-		UIManager.instance.PlayerHealth[1].gameObject.SetActive(false);
+		UIManager.instance.SetHealthNotifier(false);
+		
 		UIManager.Objects.BotGear[3].SetActive(false);
 
 		
@@ -565,6 +563,7 @@ public class UIMenu : UIObj {
 		if(i!= 1) PlayerPrefs.SetInt("PrevMode", i);
 		UIGear MidGear = UIManager.Objects.MiddleGear as UIGear;
 		UIManager.instance.ShowFullVersionAlert(false);
+		UIManager.instance.SetHealthNotifier(false);
 		switch(i)
 		{
 			case 0: // STORY

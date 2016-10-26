@@ -7,7 +7,14 @@ public class Lightning : Tile {
 	private int final_damage
 	{
 		get{
-			return (int) (10 * Stats.Value) + (int) Player.SpellValue;
+			return  8 + (int)(2.0F * Stats.Value) + (int) Player.SpellValue;
+		}
+	}
+
+	private int final_collected
+	{
+		get{
+			return 1 + (int) ((float)Stats.Value/5.0F);
 		}
 	}
 
@@ -30,12 +37,6 @@ public class Lightning : Tile {
 		isMatching = true;
 		Tile [,] _tiles = TileMaster.Tiles;
 		List<Tile> to_collect = new List<Tile>();
-
-		GameObject part = EffectManager.instance.PlayEffect(transform, Effect.Lightning);
-		CameraUtility.instance.ScreenShake((float)Stats.Value/10, Time.deltaTime* 15);
-		AudioSource aud = PlayAudio("cast", 0.75F);
-		if(aud) aud.GetComponent<DestroyTimer>().Timer = 1.0F;
-		yield return new WaitForSeconds(GameData.GameSpeed(0.35F));
 
 		List<GENUS> onScreen = new List<GENUS>();
 		List<float> onScreen_chances = new List<float>();
@@ -65,36 +66,77 @@ public class Lightning : Tile {
 		}
 
 		if(onScreen_chances.Count == 0) yield break;
-		int collect = ChanceEngine.Index(onScreen_chances.ToArray());
-		GENUS col = onScreen[collect];
-		particles = new List<GameObject>();
-		Tile target = TileMaster.Tiles[Random.Range(0,TileMaster.Grid.Size[0]), Random.Range(0,TileMaster.Grid.Size[1])];
-		while(target == null || target.Genus != col)
-		{
-			target = TileMaster.Tiles[Random.Range(0,TileMaster.Grid.Size[0]), Random.Range(0,TileMaster.Grid.Size[1])];
-		}
-		target.SetState(TileState.Selected, true);
-		if(part) Destroy(part);
-		part = EffectManager.instance.PlayEffect(target.transform, Effect.Lightning);
-		particles.Add(part);
-		CameraUtility.instance.ScreenShake((float)Stats.Value/5, Time.deltaTime* 15);
-		MatchContainer m = TileMaster.instance.FloodCheck(target, true);
-		yield return null;
 
-		foreach(Tile t in m.Tiles)
-		{
-			to_collect.Add(t);
-			t.SetState(TileState.Selected, true);
-			yield return null;
-		}
+		//GameObject part = EffectManager.instance.PlayEffect(transform, Effect.Lightning);
+		//CameraUtility.instance.ScreenShake((float)Stats.Value/10, Time.deltaTime* 15);
+		AudioSource aud = PlayAudio("cast", 0.75F);
+		if(aud) aud.GetComponent<DestroyTimer>().Timer = 1.0F;
+		//yield return new WaitForSeconds(GameData.GameSpeed(0.35F));
 
-		yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 
-		for(int i = 0; i < particles.Count; i++)
+
+		for(int i = 0; i < final_collected; i++)
 		{
-			Destroy(particles[i]);
+			int collect = ChanceEngine.Index(onScreen_chances.ToArray());
+			GENUS col = onScreen[collect];
+			particles = new List<GameObject>();
+			Tile target = TileMaster.Tiles[Random.Range(0,TileMaster.Grid.Size[0]), Random.Range(0,TileMaster.Grid.Size[1])];
+			while(target == null || target.Genus != col)
+			{
+				target = TileMaster.Tiles[Random.Range(0,TileMaster.Grid.Size[0]), Random.Range(0,TileMaster.Grid.Size[1])];
+			}
+			target.SetState(TileState.Selected, true);
+
+			float part_time = GameData.GameSpeed(0.23F);
+			float part_time_init = part_time;
+			LineRenderer [] bolt = new LineRenderer [] {
+				EffectManager.instance.PlayEffect(this.transform, Effect.Lightning).GetComponent<LineRenderer>(),
+				EffectManager.instance.PlayEffect(this.transform, Effect.Lightning).GetComponent<LineRenderer>(),
+				EffectManager.instance.PlayEffect(this.transform, Effect.Lightning).GetComponent<LineRenderer>(),
+				EffectManager.instance.PlayEffect(this.transform, Effect.Lightning).GetComponent<LineRenderer>(),
+				EffectManager.instance.PlayEffect(this.transform, Effect.Lightning).GetComponent<LineRenderer>()
+			};
+			
+			
+			Vector3 offset = new Vector3(0, 0, -0.3F);
+
+			MatchContainer m = TileMaster.instance.FloodCheck(target, true);
+			
+			int curr = 0;
+			float time_per_tile = GameData.GameSpeed(0.03F);
+			float tile_waittime = 0.0F;
+			while((part_time -= Time.deltaTime) > 0.0F)
+			{
+				for(int o = 0; o < bolt.Length; o++)
+				{
+					Vector3 [] points = PlayerControl.instance.LightningLine(this.transform.position + offset, target.transform.position + offset, 5, 0.4F);
+					bolt[o].SetVertexCount(points.Length);
+					Color c = Color.Lerp(Color.white, Color.blue, (float)o/bolt.Length);
+					bolt[o].SetColors(c,c);
+					for(int b = 0; b < points.Length; b++)
+					{
+						bolt[o].SetPosition(b, points[b]);
+					}
+				}
+
+				if(m.Tiles.Count > curr && tile_waittime <= 0.0F)
+				{
+					CameraUtility.instance.ScreenShake(0.15F + (float)Stats.Value/10,  0.2F);
+					to_collect.Add(m.Tiles[curr]);
+					m.Tiles[curr].SetState(TileState.Selected, true);
+					curr++;
+					part_time += time_per_tile;
+					tile_waittime = time_per_tile;
+					yield return new WaitForSeconds(Time.deltaTime * 2); 
+				}
+				else tile_waittime -= Time.deltaTime;
+				
+				yield return null;
+			}
+			
+			
+			for(int o =0; o < bolt.Length; o++) bolt[o].GetComponent<ObjectPoolerReference>().Unspawn();
 		}
-		particles.Clear();
 
 		foreach(Tile child in to_collect)
 		{
@@ -120,8 +162,8 @@ public class Lightning : Tile {
 		//yield return StartCoroutine(Player.instance.BeforeMatch(to_collect));
 		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
 		
-		yield return new WaitForSeconds( GameData.GameSpeed(0.2F));
-		if(part) Destroy(part);
+		yield return new WaitForSeconds( GameData.GameSpeed(0.08F));
+		//if(part) Destroy(part);
 	}
 
 }

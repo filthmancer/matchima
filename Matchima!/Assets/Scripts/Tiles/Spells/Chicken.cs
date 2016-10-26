@@ -60,6 +60,7 @@ public class Chicken : Tile {
 
 					Tile target = final[Random.Range(0, final.Count)];
 					TileMaster.instance.SwapTiles(target, this);
+					yield return StartCoroutine(GameData.DeltaWait(0.2F));
 				}
 				else
 				{

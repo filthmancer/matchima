@@ -100,6 +100,37 @@ public class WaveTile : WaveUnit
 		}
 	}
 
+	public Tile [] GetTilesToReplace(int num, params string [] types)
+	{
+		Tile [] final = new Tile[num];
+		bool [,] replacedtile = new bool [(int)TileMaster.Grid.Size[0], (int)TileMaster.Grid.Size[1]];
+
+		int checks_max = (TileMaster.Grid.Size[0] * TileMaster.Grid.Size[1])-1;
+		for(int i = 0; i < num; i++)
+		{
+			int checks = 0;
+			Tile t = TileMaster.RandomTileOfType(types);
+
+			int x = t.Point.Base[0];
+			int y = t.Point.Base[1];
+			while(replacedtile[x, y]||
+					TileMaster.Tiles[x,y].Point.Scale > 1 ||
+					y < 2)
+			{
+				t = TileMaster.RandomTileOfType(types);
+				x = t.Point.Base[0];
+				y = t.Point.Base[1];
+
+				if(checks >= checks_max) break;
+				checks ++;
+			}
+			replacedtile[x,y] = true;
+
+			final[i] = TileMaster.Tiles[x,y];
+		}
+		return final;
+	}
+
 
 
 	public override IEnumerator OnStart()
@@ -109,34 +140,21 @@ public class WaveTile : WaveUnit
 	//Spawn at start
 		if(Style.Type != WaveTileSpawn.XAtStart) yield break;
 		GameManager.instance.paused = true;
-		bool [,] replacedtile = new bool [(int)TileMaster.Grid.Size[0], (int)TileMaster.Grid.Size[1]];
+
+		Tile [] replaces = GetTilesToReplace((int)Style.Value, "resource", "enemy", "health");
 		List<TileEffectInfo> Effects = Parent.GetEffects();
 
 		for(int x = 0; x < (int)Style.Value; x++)
 		{
-			
-			int randx = (int)Random.Range(0, TileMaster.Grid.Size[0]-1);
-			int randy = (int)Random.Range(0, TileMaster.Grid.Size[1]-1);
-			int checks = 0;
-			while(replacedtile[randx, randy]||
-					!TileMaster.Tiles[randx,randy].IsType("resource")||
-					TileMaster.Tiles[randx,randy].Point.Scale > 1 ||
-					randy < 2)
-			{
-				randx = (int)Random.Range(0, TileMaster.Grid.Size[0]-1);
-				randy = (int)Random.Range(0, TileMaster.Grid.Size[1]-1);
-				if(checks == 25) yield break;
-				checks ++;
-			}
-			replacedtile[randx,randy] = true;
-
 			GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Spell);
 			MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
-			mp.SetTarget(TileMaster.Tiles[randx,randy].transform.position);
+			mp.SetTarget(replaces[x].transform.position);
 			mp.SetPath(30, 0.2F);
-			mp.SetTileMethod(TileMaster.Tiles[randx,randy], (Tile t) => 
+			mp.SetTileMethod(replaces[x], (Tile t) => 
 				{
+					print(t);
 					Tile newtile = TileMaster.instance.ReplaceTile(t, TileMaster.Types[SpeciesFinal], Genus, Scale, FinalValue);
+
 					for(int i = 0; i < Effects.Count; i++)
 					{
 						TileEffect effect = (TileEffect) Instantiate(GameData.instance.GetTileEffectByName(Effects[i].Name));
@@ -167,31 +185,16 @@ public class WaveTile : WaveUnit
 
 		if(Style.Type != WaveTileSpawn.XPerTurn) yield break;
 		GameManager.instance.paused = true;
-		bool [,] replacedtile = new bool [(int)TileMaster.Grid.Size[0], (int)TileMaster.Grid.Size[1]];
+		Tile [] replaces = GetTilesToReplace((int)Style.Value, "resource", "enemy", "health");
+
 		for(int x = 0; x < (int)Style.Value; x++)
 		{
-			int randx = (int)Random.Range(0, TileMaster.Grid.Size[0]-1);
-			int randy = (int)Random.Range(0, TileMaster.Grid.Size[1]-1);
-			int checks = 0;
-			while(replacedtile[randx, randy] || 
-					!TileMaster.Tiles[randx,randy].IsType("resource") || 
-					TileMaster.Tiles[randx,randy].Point.Scale > 1)
-			{
-				randx = (int)Random.Range(0, TileMaster.Grid.Size[0]-1);
-				randy = (int)Random.Range(0, TileMaster.Grid.Size[1]-1);
-				if(checks == 25) yield break;
-				checks ++;
-				yield return null;
-			}
-
-			replacedtile[randx,randy] = true;
-
 			List<TileEffectInfo> Effects = Parent.GetEffects();
 			GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Spell);
 			MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
-			mp.SetTarget(TileMaster.Tiles[randx,randy].transform.position);
+			mp.SetTarget(replaces[x].transform.position);
 			mp.SetPath(30, 0.2F);
-			mp.SetTileMethod(TileMaster.Tiles[randx,randy], (Tile t) => 
+			mp.SetTileMethod(replaces[x], (Tile t) => 
 				{
 					Tile newtile = TileMaster.instance.ReplaceTile(t, TileMaster.Types[SpeciesFinal], Genus, Scale, FinalValue);
 					for(int i = 0; i < Effects.Count; i++)

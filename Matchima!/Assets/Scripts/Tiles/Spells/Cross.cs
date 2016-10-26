@@ -103,11 +103,11 @@ public class Cross : Tile {
 							_tiles[x,y].PlayAudio("Hit");
 							EffectManager.instance.PlayEffect(_tiles[x,y].transform,Effect.Attack);
 						}
-						if(!_tiles[x,y].isMatching)
-						{
+						//if(!_tiles[x,y].isMatching)
+						//{
 							_tiles[x,y].SetState(TileState.Selected, true);
 							to_collect.Add(_tiles[x,y]);	
-						}			
+						//}			
 					}
 				} 
 			}

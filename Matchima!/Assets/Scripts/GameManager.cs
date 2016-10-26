@@ -290,7 +290,8 @@ public class GameManager : MonoBehaviour {
 				Wave.AddPoints(150);
 				break;
 				case 3: //c
-				Player.instance.ResetLevel();
+				TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["lightning"], GENUS.ALL,1, 1);
+				//Player.instance.ResetLevel();
 				
 				/*UIManager.Objects.DeathIcon.transform.position = UIManager.ClassButtons[1].transform.position + Vector3.up * 5;
 				UIManager.Objects.DeathIcon.gameObject.SetActive(true);
@@ -320,14 +321,14 @@ public class GameManager : MonoBehaviour {
 				Player.instance.ResetStats();
 				break;
 				case 8: //A
-				Juice.instance.JuiceIt(Juice.instance.LandFromAbove, TileMaster.Tiles[0,1].transform, 0.6F, 1.0F);
-				//StartCoroutine(Player.instance.AddXP(500));
+				//Juice.instance.JuiceIt(Juice.instance.LandFromAbove, TileMaster.Tiles[0,1].transform, 0.6F, 1.0F);
+				StartCoroutine(Player.instance.AddXP(500));
 				//UIManager.instance.UpdatePlayerLvl();
 				//StartCoroutine(Player.instance.AddXP(5000));
 				//CameraUtility.instance.ScreenShake(0.6F, 1.1F);
 				break;
 				case 9: //S
-				TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["stairs"], GENUS.DEX,1, 1);
+				TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["arcane"], GENUS.ALL,1, 1);
 				//TileMaster.instance.Ripple(TileMaster.Grid.Tiles[3,3]);
 				break;
 			}
@@ -469,8 +470,6 @@ public class GameManager : MonoBehaviour {
 
 		ZoneMap = GameData.instance.StoryModeMap;
 
-		UIManager.Objects.TopGear.Txt[0].text = "";
-		ResetFactors();
 
 		
 		UIManager.instance.GenerateZoneMap();
@@ -486,9 +485,7 @@ public class GameManager : MonoBehaviour {
 
 		ZoneMap = GameData.instance.EndlessModeMap;
 		
-		UIManager.Objects.TopGear.Txt[0].text = "";
-		ResetFactors();
-
+	
 		UIManager.instance.GenerateZoneMap();
 		StartCoroutine(StartGameEnterZone());
 	}
@@ -524,8 +521,7 @@ public class GameManager : MonoBehaviour {
 		ZoneMap = GameData.instance.GenerateZoneMap(brackets);
 		if(QuickCrawlOverride) ZoneMap[0][0] = QuickCrawlOverride;
 
-		UIManager.Objects.TopGear.Txt[0].text = "";
-		ResetFactors();
+	
 
 		UIManager.instance.GenerateZoneMap();
 		StartCoroutine(StartGameEnterZone());
@@ -540,9 +536,13 @@ public class GameManager : MonoBehaviour {
 	}
 	IEnumerator StartGameEnterZone()
 	{
+		UIManager.instance.SetHealthNotifier(true);
+		UIManager.Objects.TopGear.Txt[0].text = "";
+		ResetFactors();
+
 		while(GameManager.instance.paused) yield return null;
 		yield return StartCoroutine(_EnterZone(ZoneMap.CurrentBracket[0], 0));
-
+		
 		ShownEndAd = false;
 		if(QueueReward)
 		{
@@ -567,20 +567,32 @@ public class GameManager : MonoBehaviour {
 #endregion
 
 #region End Conditions/Reset
-	public IEnumerator Reset()
+	public IEnumerator Reset(bool finished_game)
 	{
 		yield return null;
 		CurrentZone = null;
 		CurrentWave = null;
 		CurrentFloorNum = 0;
 		gameStart = false;
-
-
 		Player.instance.Reset();
 		TileMaster.instance.Reset();
 		yield return StartCoroutine(UIManager.instance.Reset());
 		paused = false;
 		
+		if(GameData.FullVersion)
+		{
+			ChoiceComplete comp = new ChoiceComplete(2);
+			UIManager.Objects.MiddleGear.SetActive(false);
+			StartCoroutine(UIManager.instance.Alert(0.2F, "Like the game?", "Support us by\nbuying the full version!", "", true, 70, null, comp));
+			while(!comp.Result) yield return null;
+			UIManager.Objects.MiddleGear.SetActive(true);
+			if(comp.ChoicePicked == 0) 
+			{
+				UIManager.Objects.TopGear.MoveToDivision(1);
+				UIManager.Menu.GetMiddleGearInfo(1);
+			}
+			
+		}
 	}
 
 
@@ -590,7 +602,7 @@ public class GameManager : MonoBehaviour {
 		EndType = End_Type.Defeat;
 		paused = true;
 		gameStart = false;
-		StartCoroutine(EndGame(EndType,true));
+		StartCoroutine(EndGame(EndType));
 	}
 
 	public void Victory()
@@ -599,17 +611,34 @@ public class GameManager : MonoBehaviour {
 		paused = true;
 		gameStart = false;
 
-		StartCoroutine(EndGame(EndType, false));
+		StartCoroutine(EndGame(EndType));
 	}
 
 	public void Retire()
 	{
-		EndType = End_Type.Retire;
 		UIManager.instance.ShowOptions();
+		StartCoroutine(RetireRoutine());
+	}
+
+	IEnumerator RetireRoutine()
+	{
+		bool? retire_actual = null;
+		ChoiceComplete comp = new ChoiceComplete(2);
+		StartCoroutine(UIManager.instance.Alert(0.2F, null, new StCon[]{new StCon("Are you sure you\nwant to retire?")}, null,
+												true, null, comp));
+
+		while(!retire_actual.HasValue) 
+		{	
+			if(comp.Result) retire_actual = comp.ChoicePicked == 0 ? true : false;
+			yield return null;
+		}
+		if(!retire_actual.Value) yield break;
+		EndType = End_Type.Retire;
+		//UIManager.instance.ShowOptions();
 		//Player.Stats.isKilled = true;
 		Player.instance.retired = true;
 		paused = true;
-		StartCoroutine(EndGame(EndType, false));
+		yield return StartCoroutine(EndGame(EndType));
 	}
 
 	public void SaveAndQuit()
@@ -623,15 +652,16 @@ public class GameManager : MonoBehaviour {
 
 	public bool ShownEndAd = false;
 	private int XP_total = 0;
-	IEnumerator EndGame(End_Type e, bool enderad)
+	IEnumerator EndGame(End_Type e)
 	{
+		bool enderad = (e == End_Type.Defeat);
 		if(enderad && !Player.Stats.isKilled) yield break;
 		UIManager.instance.CloseZoneUI();
 		
 		int [] xp = CalculateXP(e);
 		XP_total = xp[2];
 
-		yield return new WaitForSeconds(0.3F);
+		yield return new WaitForSeconds(0.25F);
 		yield return StartCoroutine(UIManager.instance.ShowKillUI(e, xp));
 		if(enderad && !ShownEndAd)
 		{
@@ -649,7 +679,7 @@ public class GameManager : MonoBehaviour {
 
 		yield return StartCoroutine(Player.instance.AddXP(XP_total));
 		XP_total = 0;
-		yield return StartCoroutine(Reset());
+		yield return StartCoroutine(Reset(true));
 	}
 
 	int [] CalculateXP(End_Type e)
@@ -886,10 +916,10 @@ public class GameManager : MonoBehaviour {
 
 	public void EscapeZone()
 	{	
-		/*bool end = ZoneMap.Progress();
+		bool end = ZoneMap.Progress();
 		if(end) UIManager.instance.ShowZoneUI(true);		
-		else Victory();*/
-		if(ZoneMap.NextBracket == ZoneMap.CurrentBracket)
+		else Victory();
+		/*if(ZoneMap.NextBracket == ZoneMap.CurrentBracket)
 		{
 			AdvanceZoneMap(0);
 		}
@@ -905,7 +935,7 @@ public class GameManager : MonoBehaviour {
 				(t as Stairs).ZoneIndex = i;
 			}
 			
-		}
+		}*/
 		
 	}
 	
@@ -1175,16 +1205,25 @@ public class GameManager : MonoBehaviour {
 		while(newTiles.Count > 0)
 		{
 			PlayerControl.instance.AddTilesToFinal(newTiles.ToArray());
+			//List<Tile> beforematch = new List<Tile>();
 			for (int i = 0; i < newTiles.Count; i++)
 			{
 				if (newTiles[i] == null) continue;
 				if (newTiles[i].BeforeMatchEffect) yield return StartCoroutine(newTiles[i].BeforeMatch(false));
 			}
 
+			/*beforematch.Sort((a,b) => {return a.BeforeMatchPriority.CompareTo(b.BeforeMatchPriority);});
+			beforematch.OrderBy(b => b.BeforeMatchPriority);
+			for(int n = 0; n < beforematch.Count; n++)
+			{
+				yield return StartCoroutine(beforematch[n].BeforeMatch(false));
+			}*/
+
 			yield return StartCoroutine(Player.instance.BeforeMatch(newTiles));
 			yield return null;
 			newTiles.Clear();
 			newTiles.AddRange(PlayerControl.instance.selectedTiles);
+			yield return null;
 			PlayerControl.instance.selectedTiles.Clear();
 			ComboFactor_RepeatedCombos++;
 			//yield return new WaitForSeconds( GameData.GameSpeed(0.1F));

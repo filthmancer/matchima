@@ -114,6 +114,7 @@ public class UIManager : MonoBehaviour {
 		Objects.TopRightButton.Txt[0].text = "" + GameManager.Floor;
 		Objects.TopRightButton.Txt[1].text = "" + GameManager.ZoneNum;
 		Objects.TopRightButton.Txt[2].enabled = false;//Player.NewItems;
+
 		if(Player.Stats._HealthMax <= 0) Health.Txt[0].text = "";
 		else Health.Txt[0].text = Player.Stats.Health + "/" + Player.Stats.HealthMax;
 		Health.Txt[1].text = "HEALTH";
@@ -370,6 +371,14 @@ public class UIManager : MonoBehaviour {
 	public void UnloadMenuUI()
 	{
 
+	}
+
+	public void SetHealthNotifier(bool active)
+	{
+		Health.SetActive(active);
+
+		PlayerHealth[0].gameObject.SetActive(active);
+		PlayerHealth[1].gameObject.SetActive(active);
 	}
 
 	public void SetLoadScreen(bool active)
@@ -928,7 +937,6 @@ public class UIManager : MonoBehaviour {
 			int num = 0;
 			if(GameManager.instance.gameStart)
 			{
-				
 				num = 1;
 			}
 			else Objects.MiddleGear.SetActive(false);
@@ -1138,12 +1146,17 @@ public class UIManager : MonoBehaviour {
 		tobj.Imgtk[1].SetSprite(TileMaster.Genus.Frames, genus);
 	}
 
+	public void SetStatAlert()
+	{
+		ScreenAlert[6].SetActive(true);
+	}
+
 	
 
 	public bool AlertShowing = false;
 
 	public IEnumerator Alert(float time, string floor = "", string title = "", string desc = "",
-							 bool wait_for_touch = false, float size = 70, UIObj toucher = null)
+							 bool wait_for_touch = false, float size = 70, UIObj toucher = null, ChoiceComplete comp = null)
 	{
 		StCon [] fl = null;
 		if(floor != string.Empty) fl = new StCon[] {new StCon(floor, Color.white, true, size)};
@@ -1151,17 +1164,20 @@ public class UIManager : MonoBehaviour {
 		if(title != string.Empty) ti = new StCon[] {new StCon(title, Color.white, true, size)};
 		StCon [] de = null;
 		if(desc != string.Empty) de = new StCon[] {new StCon(desc, Color.white, true, size)};
-		yield return StartCoroutine(Alert(time, fl, ti, de, wait_for_touch, toucher));
+		yield return StartCoroutine(Alert(time, fl, ti, de, wait_for_touch, toucher, comp));
 	}
 	
 	public IEnumerator Alert(float time, StCon [] floor = null, StCon [] title = null, StCon [] desc = null,
-							 bool wait_for_touch = false, UIObj toucher = null)
+							 bool wait_for_touch = false, UIObj toucher = null, ChoiceComplete comp = null)
 	{
 		while(AlertShowing) yield return null;
 		AlertShowing = true;
 		GameManager.instance.paused = true;
 		ScreenAlert.SetActive(true);
 		ScreenAlert.SetTween(0,true);
+		Objects.BotGear.SetTween(3, true);
+		(UIManager.Objects.TopLeftButton as UIObjTweener).SetTween(0, false);
+		(UIManager.Objects.TopRightButton as UIObjTweener).SetTween(0,false);
 		UIManager.Objects.BotGear.SetToState(0);
 		//UIManager.Objects.BotGear.SetTween(3, true);
 
@@ -1215,8 +1231,24 @@ public class UIManager : MonoBehaviour {
 			UIObj targ = null;
 			if(toucher == null)
 			{
-				targ = ScreenAlert[4];
-				(ScreenAlert[4] as UIObjTweener).SetTween(0, true);
+				targ = ScreenAlert[4]["ok"];
+				(ScreenAlert[4]["ok"] as UIObjTweener).SetTween(0, true);
+				
+				ScreenAlert[4]["ok"].AddAction(UIAction.MouseUp, () =>
+				{
+					has_touched = true;
+					if(comp != null) comp.SetChoice(0);
+				});
+
+				if(comp != null)
+				{
+					(ScreenAlert[4]["no"] as UIObjTweener).SetTween(0, true);
+					ScreenAlert[4]["no"].AddAction(UIAction.MouseUp, () =>
+					{
+						has_touched = true;
+						if(comp != null) comp.SetChoice(1);
+					});
+				}
 			}
 			else
 			{
@@ -1224,9 +1256,10 @@ public class UIManager : MonoBehaviour {
 				targ.transform.position = toucher.transform.position;
 				targ.transform.localScale = toucher.transform.localScale;
 				targ.transform.SetParent(Objects.MainUI.transform);
+				targ.AddAction(UIAction.MouseUp, () =>{has_touched = true;});	
 			}
 
-			targ.AddAction(UIAction.MouseUp, () =>{has_touched = true;});	
+			
 			
 			while(!has_touched)
 			{
@@ -1235,8 +1268,9 @@ public class UIManager : MonoBehaviour {
 			if(toucher) Destroy(targ.gameObject);
 			else 
 			{
-				(ScreenAlert[4] as UIObjTweener).SetTween(0,false);
-				ScreenAlert[4].ClearActions();
+				(ScreenAlert[4][0] as UIObjTweener).SetTween(0,false);
+				(ScreenAlert[4]["no"] as UIObjTweener).SetTween(0,false);
+				ScreenAlert[4].ClearChildActions();
 			}
 		}
 
@@ -1245,8 +1279,12 @@ public class UIManager : MonoBehaviour {
 		(ScreenAlert[1] as UIObjTweener).SetTween(0, false);
 		(ScreenAlert[2] as UIObjTweener).SetTween(0, false);
 		UIManager.Objects.BotGear.SetToState(0);
+		Objects.BotGear.SetTween(3, false);
+		(UIManager.Objects.TopLeftButton as UIObjTweener).SetTween(0, true);
+		(UIManager.Objects.TopRightButton as UIObjTweener).SetTween(0,true);
 	//	UIManager.Objects.BotGear.SetTween(3, false);
 		ScreenAlert[5].SetActive(false);
+		ScreenAlert[6].SetActive(false);
 		PlayerControl.instance.ResetSelected();
 		GameManager.instance.paused = false;
 		AlertShowing = false;
@@ -1896,14 +1934,23 @@ public class UIManager : MonoBehaviour {
 			{
 				GameManager.instance.Scum.BuySubscription();
 				});
+			FullVersionAlert[0][1].AddAction(UIAction.MouseUp, () =>
+			{
+				GameManager.instance.Scum.BuySubscription();
+			});
 		}
 		else
 		{
 			FullVersionAlert[0].Child[0].SetActive(true);
 		}
 		
+		FullVersionAlert[1].AddAction(UIAction.MouseUp, () =>
+		{
+			GameManager.instance.Scum.RestorePurchases();
+			});
+		FullVersionAlert[1].SetActive(true);
 
-		FullVersionAlert[1].Txt[0].text = "$" + SkinPrice.ToString("0.00");
+		/*FullVersionAlert[1].Txt[0].text = "$" + SkinPrice.ToString("0.00");
 		FullVersionAlert[1].AddAction(UIAction.MouseUp, () =>
 		{
 			GameManager.instance.Scum.BuySkin();
@@ -1911,7 +1958,7 @@ public class UIManager : MonoBehaviour {
 		FullVersionAlert[2].AddAction(UIAction.MouseUp, () =>
 		{
 			GameManager.instance.Scum.BuyCounter();
-			});
+			});*/
 		FullVersionAlert.SetActive(active);
 	}
 

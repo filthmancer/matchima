@@ -14,32 +14,17 @@ public class WaveTileEndOnTileDestroy : WaveTile {
 	//Spawn at start
 		if(Style.Type != WaveTileSpawn.XAtStart) yield break;
 
-		bool [,] replacedtile = new bool [(int)TileMaster.Grid.Size[0], (int)TileMaster.Grid.Size[1]];
+		Tile [] replaces = GetTilesToReplace((int)Style.Value, "resource", "enemy", "health");
 
 		List<TileEffectInfo> Effects = Parent.GetEffects();
 		for(int x = 0; x < (int)Style.Value; x++)
 		{
-			int randx = (int)Random.Range(0, TileMaster.Grid.Size[0]-1);
-			int randy = (int)Random.Range(0, TileMaster.Grid.Size[1]-1);
-			int checks = 0;
-			while(replacedtile[randx, randy] || 
-				!TileMaster.Tiles[randx,randy].IsType("resource") || 
-				TileMaster.Tiles[randx,randy].Point.Scale > 1 ||
-				randy < 2)
-			{
-				randx = (int)Random.Range(0, TileMaster.Grid.Size[0]-1);
-				randy = (int)Random.Range(0, TileMaster.Grid.Size[1]-1);
-				if(checks == 10) yield break;
-				checks++;
-			}
-			replacedtile[randx,randy] = true;
-
 			GameObject initpart = EffectManager.instance.PlayEffect(UIManager.WaveButtons[Index].transform, Effect.Spell);
 			MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
-			mp.SetTarget(TileMaster.Tiles[randx,randy].transform.position);
+			mp.SetTarget(replaces[x].transform.position);
 			mp.SetPath(30, 0.2F);
-			//mp.Target_Tile = TileMaster.Tiles[randx,randy];
-			mp.SetTileMethod(TileMaster.Tiles[randx,randy], (Tile t) => 
+
+			mp.SetTileMethod(replaces[x], (Tile t) => 
 				{
 					Tile newtile = TileMaster.instance.ReplaceTile(t, TileMaster.Types[SpeciesFinal], Genus, Scale, FinalValue);
 					targets.Add(newtile);
@@ -50,9 +35,6 @@ public class WaveTileEndOnTileDestroy : WaveTile {
 						newtile.AddEffect(Effects[i]);
 					}
 				});
-			
-		
-			
 			yield return new WaitForSeconds(Time.deltaTime * 10);
 		}
 		yield return new WaitForSeconds(Time.deltaTime * 2);

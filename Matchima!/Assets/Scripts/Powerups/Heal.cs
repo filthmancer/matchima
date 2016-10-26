@@ -5,9 +5,9 @@ public class Heal : Powerup {
 
 	public int [] HealPower = new int []
 	{
-		20,
-		45,
-		75
+		40,
+		60,
+		85
 	};
 	protected override IEnumerator Minigame(int Level)
 	{
@@ -32,7 +32,7 @@ public class Heal : Powerup {
 		});
 
 
-		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "Keep tapping the\nheart to fill!", 100, GameData.Colour(Parent.Genus), 0.8F, 0.25F);
+		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position+ Vector3.up*1.8F, "Keep tapping the\nheart to fill it!", 100, GameData.Colour(Parent.Genus), 0.8F, 0.25F);
 		m.DestroyOnEnd = false;
 		while(!Input.GetMouseButton(0)) yield return null;
 		m.PoolDestroy();

@@ -812,10 +812,11 @@ public class Tile : MonoBehaviour {
 			bool dest = true;
 			float gravity = 0.03F;
 			float vel = -0.2F;
-			float life = 0.3F;
+			float life = 0.6F;
 	
 			float sidevel = UnityEngine.Random.value > 0.5F ? UnityEngine.Random.value * 0.1F : -UnityEngine.Random.value * 0.1F;
 			
+			TileMaster.Grid[Point.Base[0], Point.Base[1]]._Tile = null;
 			while(dest)
 			{
 				transform.position += (Vector3.left * sidevel) + Vector3.down * vel;
@@ -922,9 +923,14 @@ public class Tile : MonoBehaviour {
 		return Info._Type == s;
 	}
 
-	public bool IsType(string s)
+	public bool IsType(params string [] s)
 	{
-		return Type.IsType(s);
+		for(int i = 0; i < s.Length; i++)
+		{
+			if(Type.IsType(s[i])) return true;
+		}
+		return false;
+		//return Type.IsType(s);
 	}
 
 	public bool IsType(string g, string s)

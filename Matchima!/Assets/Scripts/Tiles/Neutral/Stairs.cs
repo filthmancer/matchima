@@ -41,9 +41,16 @@ public class Stairs : Tile {
 		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, "stairstravel", GameData.Colour(Genus));
 
 		TakeTiles = new List<Tile>();
+		bool tilesafter = false;
 		foreach(Tile child in PlayerControl.instance.finalTiles)
 		{
-			if(child!= this) 
+			child.isMatching = false;
+			if(child == this)
+			{
+				tilesafter = true;
+				continue;
+			} 
+			if(tilesafter)
 			{
 				TakeTiles.Add(child);
 				MoveToPoint p = TileMaster.instance.CreateMiniTile(child.transform.position, this.transform, child);

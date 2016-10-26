@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System;
 
 public class MoveToPoint : MonoBehaviour {
@@ -37,13 +38,15 @@ public class MoveToPoint : MonoBehaviour {
 	void Start()
 	{
 		poolref = GetComponent<ObjectPoolerReference>();
+		
 	}
 
-
+	bool wait_for_delay = false;
 	// Update is called once per frame
 	void Update () {
-		if(Point != Vector3.zero)
+		if(Steps_curr < Steps.Count)//Point != Vector3.zero)
 		{
+			Point = Steps[Steps_curr].point;
 			if(transform.localScale != Vector3.one * final_scale) 
 				transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one*final_scale, Time.deltaTime * final_scale_time);
 			if(LerpingMovement) transform.position = Vector3.Lerp(transform.position, Point, Speed * LerpingSpeed);
@@ -60,31 +63,37 @@ public class MoveToPoint : MonoBehaviour {
 				arc_power -= arc_decay;
 			} 
 
-			if(Vector3.Distance(transform.position,Point) < threshold + (Speed* Time.deltaTime)) 
+			if(Vector3.Distance(transform.position,Point) < threshold + (Speed * Time.deltaTime)) 
 			{
-				if(delay <= 0.0F)
+				if(!wait_for_delay)
 				{
-					if(method != null) method();
-					if(tilemethod != null) tilemethod(Target_Tile);
-					if(intmethod != null) intmethod(Target_Int);
-					if(!DontDestroy)
-					{
-						if(poolref) 
-						{
-							poolref.Unspawn();
-							method = null;
-							tilemethod = null;
-							intmethod = null;
-						}
-						else Destroy(this.gameObject);
-					}
-					else Destroy(this);//GetComponent<ObjectPoolerReference>().Unspawn();
+					delay = Steps[Steps_curr].time;
+					wait_for_delay = true;
 				}
-				else delay -= Time.deltaTime;
+				else
+				{	
+					if(delay <= 0.0F)
+					{
+						Steps_curr ++;
+						wait_for_delay = false;
+					}
+					else delay -= Time.deltaTime;
+				}
+				
 			}
 		}
-		else if(poolref) poolref.Unspawn();
-		else Destroy(this.gameObject);
+		else 
+		{
+			if(method != null) method();
+			if(tilemethod != null) tilemethod(Target_Tile);
+			if(intmethod != null) intmethod(Target_Int);
+			if(!DontDestroy)
+			{
+				ClearAndDestroy();
+			}
+			else Destroy(this);//GetComponent<ObjectPoolerReference>().Unspawn();
+			//ClearAndDestroy();
+		}
 	}
 
 	public void SetTarget(Vector3 pos)
@@ -93,6 +102,39 @@ public class MoveToPoint : MonoBehaviour {
 		velocity = Point - transform.position;
 		velocity.Normalize();
 
+		MoveStep s;
+		s.point = pos;
+		s.time = 0.0F;
+		Steps.Add(s);
+	}
+
+	List<MoveStep> Steps = new List<MoveStep>();
+	int Steps_curr = 0;
+	struct MoveStep{
+		public Vector3 point;
+		public float time;
+	}
+	public void AddStep(Vector3 pos, float time)
+	{
+		MoveStep s;
+		s.point = pos;
+		s.time = time;
+		Steps.Add(s);
+	}
+
+	public void ClearAndDestroy()
+	{
+		method = null;
+		tilemethod = null;
+		intmethod = null;
+		Target_Tile = null;
+		Target_Int = new int [0];
+		Target = null;
+		Steps = new List<MoveStep>();
+		Steps_curr = 0;
+
+		if(poolref) poolref.Unspawn();
+		else Destroy(this.gameObject);
 	}
 
 	public void SetThreshold(float thresh)

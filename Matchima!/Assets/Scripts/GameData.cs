@@ -510,7 +510,7 @@ public class GameData : MonoBehaviour {
 			{
 				int rand = UnityEngine.Random.Range(0,choices.Count);
 				br[i].Choices[z] = choices[rand];
-				choices.RemoveAt(rand);
+				if(choices.Count > 1) choices.RemoveAt(rand);
 			}
 		}
 		final.Brackets = br;
@@ -1116,6 +1116,24 @@ public class ItemNameContainer
 	public string RandomPrefix
 	{
 		get{ return Prefix[UnityEngine.Random.Range(0, Prefix.Length)];}
+	}
+}
+
+public class ChoiceComplete
+{
+	public int ChoiceCount;
+	public int ChoicePicked = 0;
+	public bool Result;
+	public ChoiceComplete(int num)
+	{
+		Result = false;
+		ChoiceCount = num;
+	}
+
+	public void SetChoice(int num)
+	{
+		Result = true;
+		ChoicePicked = num;
 	}
 }
 

@@ -500,20 +500,20 @@ public class PlayerControl : MonoBehaviour {
 
 	public void AddTilesToSelected(params Tile [] _newtiles)
 	{
-		foreach(Tile child in _newtiles)
+		//foreach(Tile child in _newtiles)
+		for(int i = 0; i < _newtiles.Length; i++)
 		{
 			bool add = true;
 			foreach(Tile tile in selectedTiles)
 			{
-				if(child == tile) 
+				if(_newtiles[i] == tile) 
 				{
 					add = false;
 					break;
 				}
 			}
 			if(!add) continue;
-			selectedTiles.Add(child);
-			//finalTiles.Add(child);
+			selectedTiles.Add(_newtiles[i]);
 		}
 	}
 
@@ -532,7 +532,6 @@ public class PlayerControl : MonoBehaviour {
 			}
 			if(!add) continue;
 			finalTiles.Add(child);
-			//finalTiles.Add(child);
 		}
 	}
 

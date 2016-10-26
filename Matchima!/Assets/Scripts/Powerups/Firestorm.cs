@@ -45,14 +45,14 @@ public class Firestorm : Powerup {
 		for(int i = 0; i < MGame.Length; i++)
 		{
 			MGame[i] = CreateTarget(TileMaster.Grid.Size[0]/2);
-			MGame[i].transform.localScale *= 0.9F;
+			MGame[i].transform.localScale *= 1.2F;
 			MGame_vel[i] = Random.Range(0.03F, 0.09F * lines);
 			if(Random.value > 0.5F) MGame_vel[i] = -MGame_vel[i];
 			yield return null;
 		}
 
 
-		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "Tap to cast\nfirestorm!", 100, GameData.Colour(Parent.Genus), 0.8F, 0.25F);
+		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.up*0.5F, "Tap to cast\nfirestorm!", 100, GameData.Colour(Parent.Genus), 0.8F, 0.25F);
 		m.DestroyOnEnd = false;
 		while(!Input.GetMouseButtonDown(0))
 		{
