@@ -8,6 +8,8 @@ public class Tutorial : Wave {
 	{
 		IntroAlert = false;
 
+		GameData.GetBonuses = false;
+
 		yield return StartCoroutine(Player.instance.AddClassToSlot(0, GameData.instance.GetClass("Barbarian")));
 
 		TileMaster.Types["resource"]["Red"].ChanceInitial = 1.0F;
@@ -224,7 +226,7 @@ public class Tutorial : Wave {
 				Player.Classes[1].Meter = Player.Classes[1].MeterTop - 3;
 				UIManager.instance.SetTileAlert(TileMaster.Types["resource"], "Blue");
 				yield return StartCoroutine(UIManager.instance.Alert(0.3F, "", "Collect mana to\ncast hero spells", "", true, 60));
-				
+				GameData.GetBonuses = true;
 				current++;
 			break;
 			case 13:
@@ -455,5 +457,6 @@ public class Tutorial : Wave {
 	public override void OnWaveDestroy()
 	{
 		if(TuteAlert != null) Destroy(TuteAlert.gameObject);
+		GameData.GetBonuses = true;
 	}
 }

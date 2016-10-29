@@ -161,6 +161,19 @@ public class UIGear : UIObjTweener {
 		drag_last_division = i;
 	}
 
+	public void MoveLeft()
+	{
+		drag_divisionlerp = true;
+		drag_closest_division+=1;
+		drag_last_division = drag_closest_division;	
+	}
+	public void MoveRight()
+	{
+		drag_divisionlerp = true;
+		drag_closest_division-=1;
+		drag_last_division = drag_closest_division;
+	}
+
 
 	public void AddSpin(float spin)
 	{

@@ -255,6 +255,7 @@ public class Tile : MonoBehaviour {
 		defaultScale = 1.1F * scale;
 		targetScale = defaultScale;
 		_Scale = scale;
+		attacking = false;
 
 		Name = Info.Name;
 		if(!Info.ShiftOverride) InitStats.Shift = Player.Stats.Shift;

@@ -277,7 +277,6 @@ public class Zone : MonoBehaviour {
 		
 		StCon [] floor = new StCon[]{new StCon("Entered")};
 		StCon [] title = new StCon[]{new StCon(Name, WallTint * 1.5F, false, 110)};
-		
 		yield return StartCoroutine(UIManager.instance.Alert(0.9F, floor, title));
 		
 	}

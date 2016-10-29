@@ -726,13 +726,11 @@ public class Class : Unit {
 		UIManager.ClassButtons.GetClass(Index).ShowClass(false);
 		Level ++;
 		
-
-		
 		//StCon [] floor = new StCon [] {new StCon(Name + " Level "), new StCon(Level+"")};
 		//InitStats.LevelUp(power, Index);
 
 
-		yield return StartCoroutine(Mutate(power));
+		if(CanMutate) yield return StartCoroutine(Mutate(power));
 		Reset();
 		/*yield return StartCoroutine(UIManager.instance.Alert(0.3F, floor, title, null, true));
 

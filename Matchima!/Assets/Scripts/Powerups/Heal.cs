@@ -9,6 +9,14 @@ public class Heal : Powerup {
 		60,
 		85
 	};
+
+	public float [] HealResist = new float []
+	{
+		0.00F,
+		0.001F,
+		0.003F
+	};
+
 	protected override IEnumerator Minigame(int Level)
 	{
 		int HealTotal = HealPower[Level-1];
@@ -26,6 +34,7 @@ public class Heal : Powerup {
 		{
 			AudioManager.instance.PlayClipOn(this.transform, "Powerup", "HealHeartbeat");
 			final_ratio += 0.07F;
+			MGame.transform.localScale += Vector3.one * 0.03F;
 			MiniAlertUI alert  = UIManager.instance.MiniAlert(PlayerControl.InputPos+Vector3.up,
 			(int)(final_ratio * HealTotal) + "%", 140, GameData.Colour(Parent.Genus), 0.3F, 0.4F);
 			alert.AddJuice(Juice.instance.BounceB, 0.1F);
@@ -41,12 +50,12 @@ public class Heal : Powerup {
 		bool istapping = true;
 		while(istapping)
 		{
-			MGame.transform.localScale *= 1.0F - (Time.deltaTime/5);
+			MGame.transform.localScale *= 1.0F - (Time.deltaTime/3);
 			MGame.Img[1].fillAmount = Mathf.Lerp(MGame.Img[1].fillAmount, final_ratio, Time.deltaTime * 5);
 			MGame.Txt[0].text ="";// "Healing\n" + (int)(final_ratio * HealTotal) + "%";
 
 			taptimer -= Time.deltaTime;
-
+			if(final_ratio > 0.0F) final_ratio -= HealResist[Level-1];
 			if(taptimer <= 0.0F || final_ratio >= 1.0F) istapping = false;
 			yield return null;
 		}

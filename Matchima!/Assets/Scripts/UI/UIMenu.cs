@@ -112,10 +112,26 @@ public class UIMenu : UIObj {
 		});
 		UIManager.Objects.BotGear[3][2].SetActive(false);
 
+
+		UIManager.Objects.BotGear[3][3].ClearActions();
+		UIManager.Objects.BotGear[3][3].AddAction(UIAction.MouseUp,
+			() => {
+				(UIManager.Objects.BotGear[3][0] as UIGear).MoveLeft();
+		});
+		UIManager.Objects.BotGear[3][3].SetActive(false);
+
+		UIManager.Objects.BotGear[3][4].ClearActions();
+		UIManager.Objects.BotGear[3][4].AddAction(UIAction.MouseUp,
+			() => {
+				(UIManager.Objects.BotGear[3][0] as UIGear).MoveRight();
+		});
+		UIManager.Objects.BotGear[3][4].SetActive(false);
+
 		UIManager.instance.SetHealthNotifier(false);
 		
 		UIManager.Objects.BotGear[3].SetActive(false);
-
+		UIManager.Objects.TopGear[3].SetActive(false);
+		UIManager.Objects.TopGear[4].SetActive(false);
 		
 		yield return null;
 		(UIManager.Objects.TopLeftButton as UIObjTweener).SetTween(0, false);
@@ -124,6 +140,7 @@ public class UIMenu : UIObj {
 		yield return null;
 		UIManager.Objects.TopGear.SetToState(1);
 		UIManager.Objects.BotGear.SetToState(1);
+		UIManager.instance.ShowGearTooltip(false);
 		////(UIManager.Objects.TopGear as UIObjTweener).SetTween(1,true);
 		//(UIManager.Objects.BotGear as UIObjTweener).SetTween(1,true);
 		yield return new WaitForSeconds(Time.deltaTime * 2);
@@ -273,6 +290,25 @@ public class UIMenu : UIObj {
 		UIManager.Objects.TopGear[1][2].Txt[0].enabled = true;
 		UIManager.Objects.TopGear[1][3].Txt[0].enabled = true;
 
+		UIManager.Objects.TopGear[3].SetActive(true);
+		UIManager.Objects.TopGear[3].ClearActions();
+		UIManager.Objects.TopGear[3].AddAction(UIAction.MouseUp, ()=>
+		{	
+			(UIManager.Objects.TopGear as UIGear).MoveRight();
+			//print(MiddleGearInfo_current-1);
+			GetMiddleGearInfo(MiddleGearInfo_current-1);
+		});
+
+		UIManager.Objects.TopGear[4].SetActive(true);
+		UIManager.Objects.TopGear[4].ClearActions();
+		UIManager.Objects.TopGear[4].AddAction(UIAction.MouseUp, ()=>
+		{	
+			(UIManager.Objects.TopGear as UIGear).MoveLeft();
+			//print(MiddleGearInfo_current+1);
+			GetMiddleGearInfo(MiddleGearInfo_current+1);
+		});
+
+
 		UIManager.Objects.TopLeftButton.ClearActions();
 		UIManager.Objects.TopLeftButton.AddAction(UIAction.MouseUp, () =>
 		{
@@ -345,7 +381,7 @@ public class UIMenu : UIObj {
 		UIManager.Objects.TopGear[1][0].Txt[0].text = "STORY";
 		UIManager.Objects.TopGear[1][1].Txt[0].text = "QUICK CRAWL";
 		UIManager.Objects.TopGear[1][2].Txt[0].text = "SHOP";
-		UIManager.Objects.TopGear[1][3].Txt[0].text = "ENDLESS";
+		UIManager.Objects.TopGear[1][3].Txt[0].text = "OTHER CRAWLS";
 
 		UIManager.Objects.TopGear.DoDivisionLerpActions = true;
 		UIManager.Objects.TopGear.DivisionActions.Clear();
@@ -422,6 +458,8 @@ public class UIMenu : UIObj {
 			});
 
 			UIManager.Objects.BotGear[3][2].SetActive(true);
+			UIManager.Objects.BotGear[3][3].SetActive(true);
+			UIManager.Objects.BotGear[3][4].SetActive(true);
 
 		}
 		else
@@ -506,6 +544,11 @@ public class UIMenu : UIObj {
 			UIManager.Objects.BotGear[4].Txt[0].text = "";
 			UIManager.Objects.TopGear.Txt[0].text = "LOADING\nENDLESS";
 			break;
+			case GameMode.Deep:
+			Reset();
+			UIManager.Objects.BotGear[4].Txt[0].text = "";
+			UIManager.Objects.TopGear.Txt[0].text = "LOADING\nTHE DEEP";
+			break;
 			case GameMode.Story:
 			Player.instance._Classes[0] = null;//GameData.instance.GetClass("Barbarian");
 			Player.instance._Classes[1] = null;//GameData.instance.GetClass("Rogue");
@@ -554,9 +597,11 @@ public class UIMenu : UIObj {
 	}
 
 	public Sprite NoHeroInSlot;
+	public int MiddleGearInfo_current = 0;
 	public void GetMiddleGearInfo(int i)
 	{
-		if(i == 4) i = 0;
+		while(i >= 4) i -= 4;
+		while(i < 0) i+=4;
 		UIManager.Objects.MiddleGear.AddSpin(6);
 		bool unlocked = false;
 		
@@ -564,6 +609,7 @@ public class UIMenu : UIObj {
 		UIGear MidGear = UIManager.Objects.MiddleGear as UIGear;
 		UIManager.instance.ShowFullVersionAlert(false);
 		UIManager.instance.SetHealthNotifier(false);
+		MiddleGearInfo_current = i;
 		switch(i)
 		{
 			case 0: // STORY
@@ -571,6 +617,8 @@ public class UIMenu : UIObj {
 			UIManager.Objects.MiddleGear[0].Txt[0].text = "LEARN THE ARTS OF MATCHING";
 			(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, true);
 			(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, false);
+			(UIManager.Objects.MiddleGear[0][5] as UIObjTweener).SetTween(0, false);
+			(UIManager.Objects.MiddleGear[0][6] as UIObjTweener).SetTween(0, false);
 
 			UIManager.Objects.MiddleGear[0].GetChild(1).ClearActions();
 
@@ -600,38 +648,61 @@ public class UIMenu : UIObj {
 			UIManager.instance.ShowFullVersionAlert(true);
 			(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, false);
 			(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, false);
+			(UIManager.Objects.MiddleGear[0][5] as UIObjTweener).SetTween(0, false);
+				(UIManager.Objects.MiddleGear[0][6] as UIObjTweener).SetTween(0, false);
 
 			UIManager.Objects.MiddleGear[0].Txt[0].text = "";
 			(UIManager.Objects.BotGear as UIGear).SetTween(3, true);
 
 			break;
 
-			case 2:  // Endless
-			unlocked = GameData.instance.ModeUnlocked_Endless;
+			case 2:  // Other Modes
+			bool unlocked_end = GameData.instance.ModeUnlocked_Endless;
+			bool unlocked_deep = GameData.instance.ModeUnlocked_Deep;
+			//unlocked = GameData.instance.ModeUnlocked_Endless;
 			top_division_last = 2;
-			UIManager.Objects.MiddleGear[0].Txt[0].text = unlocked ? 
-			"ENDLESSLY EXPLORE THE UNDERCITY, DELVING EVER DEEPER" : "LOCKED";
+			UIManager.Objects.MiddleGear[0].Txt[0].text = (unlocked_end || unlocked_deep) ? 
+			"" : "LOCKED";
 			
-			UIManager.Objects.MiddleGear[0].GetChild(1).ClearActions();
-			UIManager.Objects.MiddleGear[0].GetChild(0).ClearActions(UIAction.MouseUp);
+			//UIManager.Objects.MiddleGear[0].GetChild(1).ClearActions();
+			//UIManager.Objects.MiddleGear[0].GetChild(0).ClearActions(UIAction.MouseUp);
 
-			if(unlocked)
-			{
-				(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, true);
-				(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, true);
-				ChangeDifficulty(0);
-				UIManager.Objects.MiddleGear[0].GetChild(1).AddAction(UIAction.MouseUp,
-				() => {ChangeDifficulty();});
-
-				UIManager.Objects.MiddleGear[0].GetChild(0).AddAction(UIAction.MouseUp,
-				() => {
-					StartGame(GameMode.Endless);
-				});
-			}
-			else
+			if(unlocked_end)
 			{
 				(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, false);
 				(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, false);
+				(UIManager.Objects.MiddleGear[0][5] as UIObjTweener).SetTween(0, true);
+				//(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, true);
+				//UIManager.Objects.MiddleGear[0].GetChild(1).AddAction(UIAction.MouseUp,
+				//() => {ChangeDifficulty();});
+				UIManager.Objects.MiddleGear[0][5].ClearActions();
+				UIManager.Objects.MiddleGear[0][5].AddAction(UIAction.MouseUp,
+				() => {
+					GameManager.instance.DifficultyMode = DiffMode.Okay;
+					StartGame(GameMode.Endless);
+				});
+			}
+			if(unlocked_deep)
+			{
+				(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, false);
+				(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, false);
+				(UIManager.Objects.MiddleGear[0][6] as UIObjTweener).SetTween(0, true);
+				//(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, true);
+				//UIManager.Objects.MiddleGear[0].GetChild(1).AddAction(UIAction.MouseUp,
+				//() => {ChangeDifficulty();});
+				UIManager.Objects.MiddleGear[0][6].ClearActions();
+				UIManager.Objects.MiddleGear[0][6].AddAction(UIAction.MouseUp,
+				() => {
+					GameManager.instance.DifficultyMode = DiffMode.Hard;
+					StartGame(GameMode.Deep);
+				});
+			}
+			if(!unlocked_deep && !unlocked_end)
+			{
+				(UIManager.Objects.MiddleGear[0][0] as UIObjTweener).SetTween(0, false);
+				(UIManager.Objects.MiddleGear[0][1] as UIObjTweener).SetTween(0, false);
+				(UIManager.Objects.MiddleGear[0][5] as UIObjTweener).SetTween(0, false);
+				(UIManager.Objects.MiddleGear[0][6] as UIObjTweener).SetTween(0, false);
 			}
 			
 			(UIManager.Objects.BotGear as UIGear).SetTween(3, !Player.instance.GetUnlock("charselect"));
@@ -645,6 +716,8 @@ public class UIMenu : UIObj {
 			top_division_last = 3;
 			UIManager.Objects.MiddleGear[0].Txt[0].text = unlocked ? 
 			"EXPLORE A GENERATED DUNGEON" : "Locked";
+			(UIManager.Objects.MiddleGear[0][5] as UIObjTweener).SetTween(0, false);
+			(UIManager.Objects.MiddleGear[0][6] as UIObjTweener).SetTween(0, false);
 
 			UIManager.Objects.MiddleGear[0].GetChild(1).ClearActions();
 			UIManager.Objects.MiddleGear[0].GetChild(0).ClearActions(UIAction.MouseUp);

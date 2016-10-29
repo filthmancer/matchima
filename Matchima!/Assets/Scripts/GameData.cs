@@ -50,9 +50,9 @@ public class GameData : MonoBehaviour {
 	public static Status [] _Status;
 	public ItemInfo [] _Icons;
 
-	public ZoneMapContainer StoryModeMap, EndlessModeMap;
+	public ZoneMapContainer StoryModeMap, EndlessModeMap, DeepModeMap;
 	public Zone [] Zones;
-	public bool ModeUnlocked_Endless, ModeUnlocked_Quick;
+	public bool ModeUnlocked_Endless, ModeUnlocked_Quick, ModeUnlocked_Deep;
 
 	public GameObject WaveParent;
 	public GameObject AbilityParent;
@@ -63,6 +63,7 @@ public class GameData : MonoBehaviour {
 	public static bool loading_assets = false;
 	public static bool loaded_assets = false;
 	public static bool ChestsFromEnemies = true;
+	public static bool GetBonuses = true;
 	public static bool FullVersion;
 
 	public bool PrintLogs;
@@ -653,6 +654,7 @@ public class GameData : MonoBehaviour {
 		//MODES
 		ModeUnlocked_Quick = Player.instance.GetUnlock("quickmode");
 		ModeUnlocked_Endless = Player.instance.GetUnlock("endlessmode");
+		ModeUnlocked_Deep = Player.instance.GetUnlock("deepmode");
 
 		FullVersion = ZPlayerPrefs.GetInt("FullVersion") == 1;
 		LoadClasses();
@@ -662,6 +664,7 @@ public class GameData : MonoBehaviour {
 	{
 		ModeUnlocked_Quick = Player.instance.GetUnlock("quickmode");
 		ModeUnlocked_Endless = Player.instance.GetUnlock("endlessmode");
+		ModeUnlocked_Deep = Player.instance.GetUnlock("deepmode");
 	}
 	
 	public void LoadAbilities()
@@ -1217,6 +1220,7 @@ public class ZoneMapContainer
 		int index = Mathf.Clamp(Current-1, 0, Brackets.Length-1);
 		return Brackets[index];
 		}}
+
 	public int Length{get{return Brackets.Length;}}
 	public ZoneBracket this[int v]
 	{

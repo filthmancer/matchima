@@ -196,8 +196,9 @@ public class Enemy : Tile {
 
 		CameraUtility.instance.ScreenShake(0.22F + 0.02F * InitStats.TurnDamage,  GameData.GameSpeed(0.06F));
 
-		yield return new WaitForSeconds(GameData.GameSpeed(0.18F));
+		yield return new WaitForSeconds(GameData.GameSpeed(0.14F));
 		if(part) part.GetComponent<ObjectPoolerReference>().Unspawn();
+		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 	}
 
 	public override void AfterTurn()

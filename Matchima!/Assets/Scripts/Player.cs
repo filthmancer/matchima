@@ -119,13 +119,13 @@ public class Player : MonoBehaviour {
 		new Unlock("rogue", 0, ""),
 		new Unlock("wizard", 0, ""),
 		new Unlock("bard", 0, ""),
-		new Unlock("quickmode", 2, "Quick Crawl Mode"),
+		new Unlock("quickmode", 2, "Quick Crawl"),
 		new Unlock("charselect", 2, "Character Selection"),
 		new Unlock("farmer", 3, "The Farmer", false),
-		new Unlock("endlessmode", 5, "Endless Mode"),
+		new Unlock("endlessmode", 5, "Endless Crawl"),
 		//new Unlock("squire", 6, "The Squire", false),
 		new Unlock("warden", 6, "The Warden", false),
-		//new Unlock("merchant", 8, "The Merchant", false)
+		new Unlock("deepmode", 7, "The Deep", false)
 	};
 	public Unlock [] Unlocks{get{return _Unlocks;}}
 	
@@ -1030,7 +1030,7 @@ public class EquipmentContainer {
 public class LevelContainer
 {
 	public int Level = 1;
-	public int Level_Max = 6;
+	public int Level_Max = 7;
 	public int XP_Current;
 	public int XP_Required;
 
@@ -1049,6 +1049,15 @@ public class LevelContainer
 		200001
 	};
 	public Color [] Level_Colors;
+	private string [] Level_Titles = new string[]
+	{
+		"Trainee",
+		"Initiate",
+		"Delver",
+		"Explorer",
+		"Seeker",
+		"Matchimaster"
+	};
 	public int XP_RequiredArray_num = 0;
 
 	public float XP_Ratio {get{return (float)XP_Current/(float)XP_Required;}}
@@ -1107,6 +1116,18 @@ public class LevelContainer
 			else if(Level < 20)	num = 2;
 			num = Mathf.Clamp(num, 0, Level_Colors.Length-1);
 			return Level_Colors[num];
+		}
+	}
+
+	public string LevelTitle
+	{
+		get{
+			int num = 0;
+			if(Level < 5) num = 0;
+			else if(Level < 10) num = 1;
+			else if(Level < 20) num = 2;
+			num = Mathf.Clamp(num, 0, Level_Titles.Length-1);
+			return Level_Titles[num];
 		}
 	}
 

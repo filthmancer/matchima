@@ -384,6 +384,8 @@ public class UIManager : MonoBehaviour {
 	public void SetLoadScreen(bool active)
 	{
 		UIManager.Objects.TopGear.SetToState(active ? 1 : 0);
+		UIManager.Objects.TopGear[3].SetActive(false);
+		UIManager.Objects.TopGear[4].SetActive(false);
 		//(UIManager.Objects.TopGear as UIObjTweener).SetTween(1,active);
 		(UIManager.Objects.TopGear as UIGear).SetRotate(active, Vector3.forward * -0.7F);
 		
@@ -498,6 +500,7 @@ public class UIManager : MonoBehaviour {
 	{
 		StartedMeter = false;
 		MeterTimer = MeterTimer_init;
+
 		StartCoroutine(ShowBonuses());
 	}
 
@@ -578,40 +581,47 @@ public class UIManager : MonoBehaviour {
 		float bonus_time = 0.32F;
 
 		if(BonusGroups.Length == 0) yield break;
-		for(int i = 0; i < BonusGroups[0].Length; i++)
+		if(GameData.GetBonuses)
 		{
-			MiniAlertUI BonusObj = UIManager.instance.MiniAlert(
-				UIManager.Objects.MiddleGear[4][4].transform.position, 
-				BonusGroups[0][i].Name, 230, BonusGroups[0][i].col, bonus_time, 0.1F);
-
-			if(BonusGroups[0][i].Multiplier > 1.7F)
+			for(int i = 0; i < BonusGroups[0].Length; i++)
 			{
-				StartCoroutine(PlayHorns(bonus_time*2));
-			}
-					
-			//BonusObj.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
-			BonusObj.transform.rotation = Quaternion.Euler(0,0,0);
-			BonusObj.AddJuice(Juice.instance.BounceB, 0.45F);
+				if(BonusGroups[0].Length <= i) continue;
+				MiniAlertUI BonusObj = UIManager.instance.MiniAlert(
+					UIManager.Objects.MiddleGear[4][4].transform.position, 
+					BonusGroups[0][i].Name, 230, BonusGroups[0][i].col, bonus_time, 0.1F);
 
-			for(int g = 0; g < Meters.Length; g++)
-			{
-				if(Meters[g] == 0 || MeterObj[g] == null) continue;
-				Meters[g] = (int)((float)Meters[g] * BonusGroups[0][i].Multiplier);
-				MeterObj[g].AddJuice(Juice.instance.BounceB, 0.45F);
-				MeterObj[g].text = Meters[g] + "";	
-			}
-			
-			yield return new WaitForSeconds(bonus_time);
+				if(BonusGroups[0][i].Multiplier > 1.7F)
+				{
+					StartCoroutine(PlayHorns(bonus_time*2));
+				}
+						
+				//BonusObj.transform.SetParent(UIManager.Objects.MiddleGear[4][g].transform);
+				BonusObj.transform.rotation = Quaternion.Euler(0,0,0);
+				BonusObj.AddJuice(Juice.instance.BounceB, 0.45F);
+
+				for(int g = 0; g < Meters.Length; g++)
+				{
+					if(Meters[g] == 0 || MeterObj[g] == null) continue;
+					Meters[g] = (int)((float)Meters[g] * BonusGroups[0][i].Multiplier);
+					MeterObj[g].AddJuice(Juice.instance.BounceB, 0.45F);
+					MeterObj[g].text = Meters[g] + "";	
+				}
+				
+				yield return new WaitForSeconds(bonus_time);
 		}
+		
+		
 
 		yield return new WaitForSeconds(GameData.GameSpeed(0.08F));
+		}
+
 		BonusGroups = new BonusGroup[0];
 		float info_movespeed = 20.0F;
 		float info_finalscale = 0.3F;
 		
 		for(int g = 0; g < Meters.Length; g++)
 		{
-			if(Meters[g] == 0 || MeterObj[g] == null) continue;
+			if(Meters.Length <= g || Meters[g] == 0 || MeterObj[g] == null) continue;
 			
 			MiniAlertUI wavetarget = MiniAlert(MeterObj[g]);
 			
@@ -1682,7 +1692,8 @@ public class UIManager : MonoBehaviour {
 		}
 		
 		
-		Objects.MiddleGear[1][2].Txt[2].text = "Player Level";
+		Objects.MiddleGear[1][2].Txt[2].text = "";//Player Level";
+		Objects.MiddleGear[1][2].Txt[3].text = Player.Level.LevelTitle;
 		Objects.MiddleGear[1][2].Img[1].fillAmount = Player.Level.XP_Ratio;
 		Objects.MiddleGear[1][2].Img[2].color = Player.Level.LevelColor;
 

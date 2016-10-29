@@ -203,7 +203,7 @@ public class EffectManager : MonoBehaviour {
 				obj.transform.parent = t;
 				MoveToPoint p = obj.GetComponent<MoveToPoint>();
 				p.SetTarget(t.position + offset);
-				p.SetDelay(0.35F);
+				p.SetDelay(GameData.GameSpeed(0.45F));
 				p.SetThreshold(0.25F);
 			return obj;
 			case Effect.Destroy:

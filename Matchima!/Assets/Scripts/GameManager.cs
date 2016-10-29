@@ -15,6 +15,7 @@ public enum GameMode
 	Story,
 	Endless,
 	Quick,
+	Deep,
 	None
 }
 
@@ -338,6 +339,7 @@ public class GameManager : MonoBehaviour {
 #region Start Conditions
 	public IEnumerator LoadGame(bool resume, bool show_starter = false)
 	{
+		print("LOADING");
 		Class [] c = null;
 		if(resume)
 		{
@@ -388,6 +390,7 @@ public class GameManager : MonoBehaviour {
 			if(Mode == GameMode.Story) PlayStoryMode();
 			else if (Mode == GameMode.Endless) PlayEndlessMode();
 			else if (Mode == GameMode.Quick) PlayQuickMode();
+			else if (Mode == GameMode.Deep) PlayDeepMode();
 		}
 		yield return null;
 	}
@@ -490,6 +493,19 @@ public class GameManager : MonoBehaviour {
 		StartCoroutine(StartGameEnterZone());
 	}
 
+	public void PlayDeepMode()
+	{
+		StartCoroutine(Player.instance.BeginTurn());
+		RoundTokens = 0;
+		Player.Options.PowerupAlerted = false;
+		UIManager.instance.SetLoadScreen(false);
+
+		ZoneMap = GameData.instance.DeepModeMap;
+		
+		UIManager.instance.GenerateZoneMap();
+		StartCoroutine(StartGameEnterZone());
+	}
+
 	public void PlayQuickMode()
 	{
 		StartCoroutine(Player.instance.BeginTurn());
@@ -514,11 +530,13 @@ public class GameManager : MonoBehaviour {
 		brackets[0] = new Vector2(1,1);
 		for(int i = 1; i < length; i ++)
 		{
-			int min = (i>0 ? 2:1);
-			int max = Random.Range(2,5);
+			int min = (i!= 0 && i != length-1) ? 2:1;
+			int max = (i == length-1) ? 1 : Random.Range(2,5);
 			brackets[i] = new Vector2(min, max);
 		}
 		ZoneMap = GameData.instance.GenerateZoneMap(brackets);
+		print(ZoneMap[ZoneMap.Length-1]);
+		ZoneMap[ZoneMap.Length-1][0] = GameData.instance.GetZone("Lair");
 		if(QuickCrawlOverride) ZoneMap[0][0] = QuickCrawlOverride;
 
 	
@@ -848,9 +866,10 @@ public class GameManager : MonoBehaviour {
 	public void AdvanceZoneMap(int choice)
 	{
 		UIManager.instance.CloseZoneUI();
-		bool end = ZoneMap.Progress();
-		if(end) EnterZone(ZoneMap.CurrentBracket[choice]);		
-		else Victory();
+		//bool end = ZoneMap.Progress();
+		//if(end) 
+		EnterZone(ZoneMap.CurrentBracket[choice]);		
+		//else Victory();
 	}
 	
 	public void EnterZone(Zone z = null, string name = null)
