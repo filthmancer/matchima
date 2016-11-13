@@ -1217,6 +1217,10 @@ public class GameManager : MonoBehaviour {
 	public IEnumerator BeforeMatchRoutine()
 	{
 		List<Tile> newTiles = new List<Tile>();
+
+		//Tile mover = PlayerControl.instance.selectedTiles[0];
+		//PlayerControl.instance.selectedTiles.RemoveAt(0);
+
 		newTiles.AddRange(PlayerControl.instance.selectedTiles);
 		PlayerControl.instance.selectedTiles.Clear();
 		ComboFactor_RepeatedCombos = 1; //Number of repeated combos made by tiles
@@ -1228,6 +1232,8 @@ public class GameManager : MonoBehaviour {
 			for (int i = 0; i < newTiles.Count; i++)
 			{
 				if (newTiles[i] == null) continue;
+
+				//yield return StartCoroutine(mover.MoveToTile(newTiles[i]));
 				if (newTiles[i].BeforeMatchEffect) yield return StartCoroutine(newTiles[i].BeforeMatch(false));
 			}
 

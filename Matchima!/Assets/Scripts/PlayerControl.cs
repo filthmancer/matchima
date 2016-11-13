@@ -19,6 +19,7 @@ public class PlayerControl : MonoBehaviour {
 	public static Tile matchingTile;
 	public float TimeSinceLastMatch   = 0.0F;
 	public float TimeWithoutInput     = 0.0F;
+	public bool HasInput = false;
 	
 	public List<Tile> selectedTiles   = new List<Tile>();
 	public List<Tile> finalTiles      = new List<Tile>();
@@ -258,11 +259,16 @@ public class PlayerControl : MonoBehaviour {
 		float distance;
 		baseplane.Raycast(cursor, out distance);
 		InputPos = cursor.GetPoint(distance);
+
+		HasInput = Input.GetMouseButton(0) || Input.GetKey(KeyCode.Space);
 	}
 
 	public void CheckInput()
 	{
-		if(Input.GetMouseButton(0) || Input.GetKey(KeyCode.Space)) TimeWithoutInput = 0.0F;
+		if(Input.GetMouseButton(0) || Input.GetKey(KeyCode.Space)) 
+		{
+			TimeWithoutInput = 0.0F;
+		}
 		if(Input.GetMouseButtonUp(0) || Input.GetKeyUp(KeyCode.Space)) 
 		{
 			CheckMatch();

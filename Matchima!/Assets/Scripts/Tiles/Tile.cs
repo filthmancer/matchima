@@ -292,16 +292,13 @@ public class Tile : MonoBehaviour {
 		else SetState(TileState.Idle);
 	}
 
-
+	int looseupdate_frame_check = 0;
+	int looseupdate_frames = 5;
 	// Update is called once per frame
 	public virtual void Update () {
 		if(Destroyed || UnlockedFromGrid) return;
 
-		if(Stats.Shift != ShiftType.None && !Destroyed)
-		{
-			Velocity();
-		}
-		transform.name = Info.Name + " | " + Point.Base[0] + ":" + Point.Base[1];
+
 		if(GameManager.inStartMenu) 
 		{
 			if(Player.loaded && UIManager.loaded) Destroy(this.gameObject); 
@@ -315,28 +312,43 @@ public class Tile : MonoBehaviour {
 			DestroyThyself();
 		}
 
-		if(GameManager.instance.EnemyTurn && !IsState(TileState.Selected)) SetState(TileState.Locked);
-		if(Params._render != null) Params._render.color = Color.Lerp(Params._render.color, targetColor, 0.6F);
-		if(Params._border != null) Params._border.color = Color.Lerp(Params._border.color, targetColor, 0.6F);
-		
-		if(Stats.Hits > 1)
+		if(PlayerControl.instance.TimeWithoutInput < 1.0F) looseupdate_frame_check = looseupdate_frames;
+		if((looseupdate_frame_check++) >= looseupdate_frames)
 		{
-			if(Params.HitCounter != null && !Params.HitCounter.activeSelf) Params.HitCounter.SetActive(true);
-			if(Params.HitCounterText != null) Params.HitCounterText.text = "" + Stats.Hits;
-		}
-		else if(Params.HitCounter != null && Params.HitCounter.activeSelf) Params.HitCounter.SetActive(false);
+			looseupdate_frame_check = 0;
+
+			if(Stats.Shift != ShiftType.None && !Destroyed)
+			{
+				Velocity();
+			}
+
+			transform.name = Info.Name + " | " + Point.Base[0] + ":" + Point.Base[1];
+			if(Params._render != null) Params._render.color = Color.Lerp(Params._render.color, targetColor, 0.6F);
+			if(Params._border != null) Params._border.color = Color.Lerp(Params._border.color, targetColor, 0.6F);
 			
-		if(!isMatching) transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one * targetScale, Time.deltaTime * 5);
-		Params._shiny.enabled = IsState(TileState.Selected);
+			if(Stats.Hits > 1)
+			{
+				if(Params.HitCounter != null && !Params.HitCounter.activeSelf) Params.HitCounter.SetActive(true);
+				if(Params.HitCounterText != null) Params.HitCounterText.text = "" + Stats.Hits;
+			}
+			else if(Params.HitCounter != null && Params.HitCounter.activeSelf) Params.HitCounter.SetActive(false);
+				
+			if(!isMatching) transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one * targetScale, Time.deltaTime * 5);
+			Params._shiny.enabled = IsState(TileState.Selected);
+		}
+
+		
+
+		//if(GameManager.instance.EnemyTurn && !IsState(TileState.Selected)) SetState(TileState.Locked);
 
 		
 		if(!IsState(TileState.Selected))
 		{
 			//Params.lineIn.enabled = false;
 			//Params.lineOut.enabled = false;	
-			linepos = PlayerControl.InputPos;
-			if(Player.Options.ViewTileStats) SetCounter("" + Stats.Value);
-			else if(!GameManager.instance.EnemyTurn) SetCounter("");
+			//linepos = PlayerControl.InputPos;
+			/*if(Player.Options.ViewTileStats) SetCounter("" + Stats.Value);
+			else if(!GameManager.instance.EnemyTurn) SetCounter("");*/
 
 			if(GameManager.instance.EnemyTurn) return;
 
@@ -402,7 +414,7 @@ public class Tile : MonoBehaviour {
 				//Params.lineIn.enabled = false;
 				//Params.lineOut.enabled = false;			
 			}
-			else if(PlayerControl.instance.SecondLastSelected() == this && PlayerControl.instance.LastSelected() != null)
+			/*else if(PlayerControl.instance.SecondLastSelected() == this && PlayerControl.instance.LastSelected() != null)
 			{
 				LineTarget = PlayerControl.instance.LastSelected();
 			}
@@ -420,26 +432,13 @@ public class Tile : MonoBehaviour {
 				{
 					stretch = dist/softdist - (dist-softdist)/(dist-softdist);
 					//Params._render.transform.position = Vector3.Lerp(Point.targetPos, final, 0.02F);
-					linepos = final;
+					//linepos = final;
 				}
 				else
 				{
-					linepos = PlayerControl.InputPos;
+					//linepos = PlayerControl.InputPos;
 					//Params._render.transform.position = Vector3.Lerp(Point.targetPos, transform.position + vel, 0.02F);
 				}
-				/*Vector3 [] points = LightningLine(_Transform.position, linepos, 5, 0.01F + PlayerControl.MatchCount * 0.005F);
-				for(int i = 0; i < points.Length; i++)
-				{
-					Params.lineIn.SetPosition(i, points[i]);
-					Params.lineOut.SetPosition(i, points[i] + Vector3.back);
-				}
-
-				Params.lineIn.enabled = true;
-				Params.lineIn.SetColors(GameData.instance.GetGENUSColour(Genus) * 0.9F, GameData.instance.GetGENUSColour(Genus) * 0.9F);
-
-				Params.lineOut.enabled = true;
-				Params.lineOut.SetColors(Color.white, Color.white);
-				*/
 				
 			}
 			else if(GameManager.instance.EnemyTurn || UIManager.InMenu)
@@ -455,21 +454,7 @@ public class Tile : MonoBehaviour {
 					//Params.lineOut.enabled = false;
 					return;
 				}
-
-				/*Vector3 [] points = LightningLine(_Transform.position, LineTarget.transform.position, 5, 0.01F + PlayerControl.MatchCount * 0.005F);
-				for(int i = 0; i < points.Length; i++)
-				{
-					Params.lineIn.SetPosition(i, points[i]);
-					Params.lineOut.SetPosition(i, points[i] + Vector3.back);
-				}
-
-				Params.lineIn.enabled = true;
-				Params.lineIn.SetColors(GameData.instance.GetGENUSColour(Genus) * 0.9F, GameData.instance.GetGENUSColour(Genus) * 0.9F);
-
-				Params.lineOut.enabled = true;
-				Params.lineOut.SetColors(Color.white, Color.white);
-				*/
-			}
+			}*/
 		}		
 	}
 
@@ -1375,6 +1360,26 @@ public class Tile : MonoBehaviour {
 			
 		}, x,y);
 		
+	}
+
+	public IEnumerator MoveToTile(Tile t, float arc = 0.0F)
+	{
+		bool complete = false;
+		Vector3 newpoint = t.transform.position;
+		UnlockedFromGrid = true;
+
+		MoveToPoint mp = this.gameObject.AddComponent<MoveToPoint>();
+		mp.SetTarget(newpoint);
+		mp.SetPath(6.0F, arc);
+		mp.SetThreshold(0.1F);
+		mp.DontDestroy = true;
+
+		mp.SetMethod(() => {
+			complete = true;
+			UnlockedFromGrid = false;
+		});
+
+		while(!complete)yield return null;
 	}
 
 	public bool Isolated
