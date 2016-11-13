@@ -105,7 +105,8 @@ public class UIManager : MonoBehaviour {
 
 		if(!Application.isEditor)
 		{
-			if(Input.touches.Length == 0) ShowGearTooltip(false);
+			if(Input.touches.Length == 0) TargetTile();
+			//ShowGearTooltip(false);
 		}
 		if(!Objects.MiddleGear[5].isActive)
 			Objects.MiddleGear[5].SetActive(true);
@@ -252,7 +253,54 @@ public class UIManager : MonoBehaviour {
 		obj.Imgtk[0].SetSprite(TileMaster.Genus.Frames, outer_def);
 	}
 				
-		
+	
+	public Tile Tooltip_Target;
+	public UIObjtk Tooltip_Parent;
+	public void TargetTile(Tile t = null)
+	{
+		if(Tooltip_Target == t && t != null) return;
+		Tooltip_Target = t;
+
+		if(Tooltip_Target == null)
+		{
+			Tooltip_Parent.Imgtk[0].transform.gameObject.SetActive(false);//SetSprite(Tooltip_Target.Inner, Tooltip_Target.Info._GenusName);
+			Tooltip_Parent.Imgtk[1].SetSprite(TileMaster.Genus.Frames, "Omega");
+
+			for(int i = 0; i < Tooltip_Parent.Length; i++) Tooltip_Parent[i].SetActive(false);
+			return;
+		}
+
+		Tooltip_Target.CheckStats();
+
+	//Set the sprites of the tile
+		Tooltip_Parent.Imgtk[0].transform.gameObject.SetActive(true);
+		Tooltip_Parent.Imgtk[0].SetSprite(Tooltip_Target.Inner, Tooltip_Target.Info._GenusName);
+		Tooltip_Parent.Imgtk[1].SetSprite(TileMaster.Genus.Frames, Tooltip_Target.Info.Outer);
+
+	//Set the text info
+		Tooltip_Parent[0].SetActive(true);
+		Tooltip_Parent[0].Txt[0].text = t._Name.Value;
+		Tooltip_Parent[0].Txt[0].color = t._Name.Colour;
+
+		if(t.Stats.Hits > 1)
+		{
+			Tooltip_Parent[1].SetActive(true);
+			Tooltip_Parent[1].Txt[0].text = "" + t.Stats.Hits;
+		}
+		else Tooltip_Parent[1].SetActive(false);
+
+		if(t.Stats.Attack != 0)
+		{
+			Tooltip_Parent[2].SetActive(true);
+			Tooltip_Parent[2].Txt[0].text = "" + t.Stats.Attack;
+		}
+		else Tooltip_Parent[2].SetActive(false);
+
+		Tooltip_Parent[3].SetActive(false);
+		Tooltip_Parent[4].SetActive(false);
+		//Tooltip_Parent.Txt[3].text = t.Stats.Attack;
+		//Tooltip_Parent.Txt[4].text = t.Stats.Attack;
+	}
 
 	public IEnumerator Reset()
 	{
@@ -744,6 +792,9 @@ public class UIManager : MonoBehaviour {
 	{
 		if(!active) 
 		{
+			TargetTile();
+			return;
+		}
 			uitarget = null;
 			for(int i = 0; i < Objects.TopGear[1][1][3][0].Length; i++)
 			{
@@ -760,7 +811,7 @@ public class UIManager : MonoBehaviour {
 				if(Objects.TopGear[1][1][3][2].GetChild(i) != null)
 					Destroy(Objects.TopGear[1][1][3][2].GetChild(i).gameObject);
 			}
-		}
+		//}
 
 		(Objects.TopGear as UIGear).DragLerpSpeed = active ? 15 : 5;
 		(Objects.TopGear as UIGear).DoDivisionLerpActions = !active;

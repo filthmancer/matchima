@@ -105,6 +105,8 @@ public class Class : Unit {
 	public List<Slot> AllMods;
 	public Slot InitMod;
 
+	public Tile _Tile;
+
 	public Slot [] _Boons
 	{
 		get

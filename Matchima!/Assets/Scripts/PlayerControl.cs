@@ -329,7 +329,7 @@ public class PlayerControl : MonoBehaviour {
 			}
 			else if(nt != null && focusTile == nt)
 			{
-				UIManager.instance.ShowGearTooltip(true, focusTile);
+				UIManager.instance.TargetTile(focusTile);
 
 				/*if(tooltip_current > tooltip_time && ! tooltip_showing)
 				{
