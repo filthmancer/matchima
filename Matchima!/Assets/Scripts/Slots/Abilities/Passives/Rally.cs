@@ -36,12 +36,12 @@ public class Rally : Ability {
 	IEnumerator RallyRoutine()
 	{
 		GameObject part = Instantiate(Particle);
-		part.transform.position = UIManager.ClassButtons.GetClass(Parent.Index).transform.position;
+		part.transform.position = UIManager.CrewButtons[Parent.Index].transform.position;
 		yield return new WaitForSeconds(0.4F);
 
 		Player.Stats.Heal((int) (Heal * StrengthFactor));
 		Player.Stats.CompleteHealth();
-		UIManager.instance.MiniAlert(UIManager.ClassButtons.GetClass(Parent.Index).transform.position + Vector3.up*0.6F, "Rally!", 34, GameData.Colour(Parent.Genus), 0.8F, 0.1F, true);
+		UIManager.instance.MiniAlert(UIManager.CrewButtons[Parent.Index].transform.position + Vector3.up*0.6F, "Rally!", 34, GameData.Colour(Parent.Genus), 0.8F, 0.1F, true);
 		for(int i = 0; i < Player.Classes.Length; i++)
 		{
 			Player.instance.AddStatus(i, DamageBuff, DamageBuff_Duration, (DamageBuff_AttackInc*DexterityFactor) + "");

@@ -25,6 +25,23 @@ public class TileMaster : MonoBehaviour {
 		get {return TileMaster.Grid.Tiles;}
 	}
 
+	public static Tile[] Controllers
+	{
+		get
+		{
+			List<Tile> final = new List<Tile>();
+			for(int x = 0; x < Grid.Size[0]; x++)
+			{
+				for(int y = 0; y < Grid.Size[1]; y++)
+				{
+					if(Tiles[x,y] == null) continue;
+					if(Tiles[x,y].Controllable) final.Add(Tiles[x,y]);
+				}
+			}
+			return final.ToArray();
+		}
+	}
+
 	public static Tile RandomTile
 	{
 		get
@@ -65,7 +82,7 @@ public class TileMaster : MonoBehaviour {
 
 			int check = 0;
 			bool found = true;
-			while(!Tiles[x,y].IsType(types[i]))
+			while(Tiles[x,y] == null || !Tiles[x,y].IsType(types[i]))
 			{
 				x = Random.Range(0, Grid.Size[0]);
 				y = Random.Range(0, Grid.Size[1]);
@@ -250,6 +267,7 @@ public class TileMaster : MonoBehaviour {
 	}
 	public List<MatchContainer> DiagMatches;
 	public List<MatchContainer> StrtMatches;
+	public List<MatchContainer> HeroMatches;
 
 	void Awake()
 	{
@@ -295,7 +313,7 @@ public class TileMaster : MonoBehaviour {
 				generated = true;
 			}
 
-			if (FillGrid) ShiftTiles2(Player.Stats.Shift);
+			if (FillGrid) ShiftTiles2(ShiftType.None);//Player.Stats.Shift);
 		}
 	}
 
@@ -508,7 +526,6 @@ public class TileMaster : MonoBehaviour {
 
 		MapSize = final;
 		SetOrtho();
-		//print(Grid.Size[0] + ":" + Grid.Points.GetLength(0) + " -- " + Grid.Size[1] + ":" + Grid.Points.GetLength(1));
 		CameraUtility.SetTargetPos(Vector3.Lerp(Grid[0, 0].position,
 		                                        Grid[Grid.Size[0] - 1, Grid.Size[1] - 1].position,
 		                                        0.5F));
@@ -667,7 +684,7 @@ public class TileMaster : MonoBehaviour {
 		}
 
 		newtile = CreateTile(x, y, Vector2.zero, sp, g, false, newscale, addvalue);
-		Juice.instance.JuiceIt(Juice.instance.LandFromAbove, newtile.transform, 0.6F, 0.4F);
+		//Juice.instance.JuiceIt(Juice.instance.LandFromAbove, newtile.transform, 0.6F, 0.4F);
 		EffectManager.instance.PlayEffect(newtile.transform, Effect.Replace, GameData.instance.GetGENUSColour(newtile.Genus));
 		newtile.InitStats.Value += tempval;
 		newtile.PlayAudio("replace",0.6F);
@@ -682,15 +699,11 @@ public class TileMaster : MonoBehaviour {
 
 	public void SwapTiles(Tile a, Tile b)
 	{
-		//Grid[a.Point.Base[0], a.Point.Base[1]]._Tile = b;
-		//Grid[b.Point.Base[0], b.Point.Base[1]]._Tile = a;
 		int [] a_point = a.Point.Base;
 		int [] b_point = b.Point.Base;
 		
 		a.MoveToGridPoint(b_point[0], b_point[1], 0.25F);
 		b.MoveToGridPoint(a_point[0], a_point[1], -0.25F);
-		//a.Setup(b_point[0], b_point[1]);
-		//b.Setup(a_point[0], a_point[1]);
 	}
 
 	public void AddVelocity(Tile t)
@@ -847,25 +860,23 @@ public class TileMaster : MonoBehaviour {
 
 		//BASICALLY THE JEWELLER PASSIVE, WAS JUST TESTING
 		/*
-		CheckForMatches();
-		while(StrtMatches.Count > 0)
-		{
 			CheckForMatches();
-			yield return StartCoroutine(CollectMatchesRoutine(false));
-
-			spawn_stack = new float [Grid.Size[0]];
-			for(int x = 0; x < Grid.Size[0]; x++)
+			while(StrtMatches.Count > 0)
 			{
-				if(Player.Stats.Shift == ShiftType.Down) spawn_stack[x] = CameraUtility.instance.Cam.CameraSettings.orthographicSize + 2.0F;
-				else if(Player.Stats.Shift == ShiftType.Up) spawn_stack[x] = -(CameraUtility.instance.Cam.CameraSettings.orthographicSize);
+				CheckForMatches();
+				yield return StartCoroutine(CollectMatchesRoutine(false));
+				spawn_stack = new float [Grid.Size[0]];
+				for(int x = 0; x < Grid.Size[0]; x++)
+				{
+					if(Player.Stats.Shift == ShiftType.Down) spawn_stack[x] = CameraUtility.instance.Cam.CameraSettings.orthographicSize + 2.0F;
+					else if(Player.Stats.Shift == ShiftType.Up) spawn_stack[x] = -(CameraUtility.instance.Cam.CameraSettings.orthographicSize);
+				}
+				while(!AllLanded)
+				{
+					if(Player.Stats.isKilled) yield break;
+					yield return null;
+				}
 			}
-
-			while(!AllLanded)
-			{
-				if(Player.Stats.isKilled) yield break;
-				yield return null;
-			}
-		}
 		*/
 		//END
 
@@ -909,11 +920,37 @@ public class TileMaster : MonoBehaviour {
 		CheckForEmptys();
 		if (!FillGrid) yield break;
 
-		if (!TileMaster.instance.CheckForMatches())
+		CheckForMatches();
+		/*if(HeroMatches.Count < Player.Classes.Length)
+		{
+			for(int i = 0; i < Player.Classes.Length; i++)
+			{
+				bool add = true;
+				for(int h =0;h<HeroMatches.Count;h++)
+				{
+					if(HeroMatches[h].Controller == Player.Classes[i]._Tile)
+					{
+						add = false;
+						break;
+					}
+				}
+				if(add)
+				{
+					Tile [] n = Player.Classes[i]._Tile.Point.GetNeighbours(true, "resource");
+					if(n.Length > 0) 
+					{
+						ReplaceTile(n[Random.Range(0,n.Length)], Types["resource"], Player.Classes[i].Genus);
+						yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+					}
+				}
+
+			}
+		}*/
+		if (!CheckForMatches())
 		{
 			MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "NO MATCHES!", 140, GameData.Colour(GENUS.OMG),
-														GameData.GameSpeed(0.75F), 0.1F, true);
-			yield return new WaitForSeconds(GameData.GameSpeed(0.75F));
+														GameData.GameSpeed(0.85F), 0.1F, true);
+			yield return new WaitForSeconds(GameData.GameSpeed(0.9F));
 
 			Tile [] omegas = GetTiles("", GENUS.OMG);
 			for(int i = 0; i < omegas.Length; i++)
@@ -972,6 +1009,7 @@ public class TileMaster : MonoBehaviour {
 		if (Tiles[x, y] != null && Tiles[x, y].gameObject != null)
 		{
 			Player.instance.OnTileDestroy(Tiles[x, y]);
+			//print(Tiles[x,y]);
 			int scale = Grid[x, y]._Tile.Point.Scale;
 			for (int xx = 0; xx < scale; xx++)
 			{
@@ -1008,7 +1046,6 @@ public class TileMaster : MonoBehaviour {
 		t.ClearActions();
 		t.ClearEffects();
 		t.Info._Type.TilePool.Unspawn(t);
-		if (Player.Stats.Shift == ShiftType.None) ReplaceTile(t.Point.Base[0], t.Point.Base[1]);
 	}
 
 	public void CollectTile(Tile t, bool destroy)
@@ -1062,7 +1099,9 @@ public class TileMaster : MonoBehaviour {
 				m.DestroyOnEnd = true;
 			}
 			
-			UIManager.instance.GetMeterPoints(g, values[0]);
+
+			PlayerControl.instance.Controller.AddMana(t.Genus, values[0]);
+			//UIManager.instance.GetMeterPoints(g, values[0]);
 			
 
 		}
@@ -1260,6 +1299,8 @@ public class TileMaster : MonoBehaviour {
 					if (Tiles[x, y] == null) fill_from_none[x, y] = true;
 				}
 			}
+
+			//CheckForEmptys();
 		}
 		else if (type == ShiftType.Down)
 		{
@@ -1586,6 +1627,8 @@ public class TileMaster : MonoBehaviour {
 	{
 		DiagMatches = new List<MatchContainer>();
 		StrtMatches = new List<MatchContainer>();
+		HeroMatches = new List<MatchContainer>();
+
 		for (int xx = 0; xx < Grid.Size[0]; xx++)
 		{
 			for (int yy = 0; yy < Grid.Size[1]; yy++)
@@ -1602,8 +1645,20 @@ public class TileMaster : MonoBehaviour {
 				if (Tiles[xx, yy] == null || Tiles[xx, yy].Genus == GENUS.OMG || Tiles[xx, yy].Genus == GENUS.NONE) continue;
 				MatchContainer diag = FloodCheck(Tiles[xx, yy]);
 
-				if (diag.Size >= 3) DiagMatches.Add(diag);
-
+				if (diag.Size >= 3) 
+				{
+					DiagMatches.Add(diag);
+					if (diag.ContainsController()) 
+					{
+						bool add = true;
+						for(int i = 0; i < HeroMatches.Count; i++)
+						{
+							if(HeroMatches[i].Controller == diag.Controller) add = false;
+						}
+						if(add) HeroMatches.Add(diag);
+					}
+				}
+				
 			}
 		}
 
@@ -1622,7 +1677,20 @@ public class TileMaster : MonoBehaviour {
 			{
 				if (Tiles[xx, yy] == null || Tiles[xx, yy].Genus == GENUS.OMG || Tiles[xx, yy].Genus == GENUS.NONE) continue;
 				MatchContainer strt = FloodCheck(Tiles[xx, yy], false);
-				if (strt.Size >= 3) StrtMatches.Add(strt);
+				if (strt.Size >= 3) 
+				{
+					StrtMatches.Add(strt);
+					if (strt.ContainsController()) 
+					{
+						bool add = true;
+						for(int i = 0; i < HeroMatches.Count; i++)
+						{
+							if(HeroMatches[i].Controller == strt.Controller) add = false;
+						}
+						if(add) HeroMatches.Add(strt);
+					}
+				}
+				
 
 			}
 		}
@@ -1881,6 +1949,7 @@ public static class Spawner2
 public class MatchContainer
 {
 	public bool DiagonalMatch;
+	public Tile Controller;
 	public MatchContainer(bool d)
 	{
 		Tiles = new List<Tile>();
@@ -1944,6 +2013,19 @@ public class MatchContainer
 		foreach (Tile child in Tiles)
 		{
 			if (child.IsType(s)) return true;
+		}
+		return false;
+	}
+
+	public bool ContainsController()
+	{
+		foreach(Tile child in Tiles)
+		{
+			if(child.Controllable) 
+			{	
+				Controller = child;
+				return true;
+			}
 		}
 		return false;
 	}

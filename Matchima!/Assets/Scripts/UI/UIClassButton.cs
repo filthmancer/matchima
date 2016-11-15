@@ -235,7 +235,6 @@ public class UIClassButton : UIObj {
 		over = true;
 		if(PlayerControl.HoldingSlot)
 		{
-			UIManager.instance.ShowClassAbilities(_class);
 			if(!PartialOpen.IsObjectOpened())
 			{
 			 	PartialOpen.OpenCloseObjectAnimation();

@@ -164,7 +164,7 @@ public class ThrowKnives : Powerup {
 		Color classcol = Color.white;
 		if(Parent) 
 		{
-			par = UIManager.ClassButtons[Parent.Index].transform;
+			par = UIManager.CrewButtons[Parent.Index].transform;
 			classcol = GameData.Colour(Parent.Genus);
 		}
 		else if(ParentOverride) par = ParentOverride;

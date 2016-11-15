@@ -515,7 +515,7 @@ public class ModContainer : MonoBehaviour {
 			{
 				Tile e = TileMaster.Enemies[UnityEngine.Random.Range(0, TileMaster.Enemies.Length)];
 				e.SetState(TileState.Selected, true);
-				GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[0].transform, Effect.Spell);
+				GameObject initpart = EffectManager.instance.PlayEffect(UIManager.CrewButtons[0].transform, Effect.Spell);
 				MoveToPoint charm = initpart.GetComponent<MoveToPoint>();
 				charm.SetTarget(e.transform.position);
 				charm.SetPath(0.6F, 0.3F);
@@ -540,7 +540,7 @@ public class ModContainer : MonoBehaviour {
 			{
 				Tile e = TileMaster.Enemies[UnityEngine.Random.Range(0, TileMaster.Enemies.Length)];
 				e.SetState(TileState.Selected, true);
-				GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[0].transform, Effect.Spell);
+				GameObject initpart = EffectManager.instance.PlayEffect(UIManager.CrewButtons[0].transform, Effect.Spell);
 				MoveToPoint charm = initpart.GetComponent<MoveToPoint>();
 				charm.SetTarget(e.transform.position);
 				charm.SetPath(0.6F, 0.3F);

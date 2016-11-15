@@ -37,6 +37,8 @@ public class Stat
 		}
 	}
 
+
+
 	public int _Health = 0, _HealthMax = 0;
 	public int MeterMax = 0;
 	public float MeterDecay_Global = 0;
@@ -91,6 +93,8 @@ public class Stat
 	public float AttackPower = 0.0F;
 	public int _Spell = 0;
 	public float SpellPower = 0.0F;
+
+	public int _Move = 3;
 
 	public float AttackRate = 0;
 	
@@ -185,6 +189,7 @@ public class Stat
 			Stat_HealthInc = prev.Stat_HealthInc;
 			Stat_MeterInc = prev.Stat_MeterInc;
 			Stat_AtkInc = prev.Stat_AtkInc;
+			Stat_MoveInc = prev.Stat_MoveInc;
 			Stat_SplInc = prev.Stat_SplInc;
 			Stat_ValueInc = prev.Stat_ValueInc;
 		//}
@@ -204,6 +209,7 @@ public class Stat
 		ComboBonus   = prev.ComboBonus;
 		_Attack      = prev._Attack;
 		_Spell 		 = prev._Spell;
+		_Move  		 = prev._Move;
 		AttackRate   = prev.AttackRate;
 		HealthRegen  = prev.HealthRegen;
 		HealthLeech  = prev.HealthLeech;
@@ -247,6 +253,7 @@ public class Stat
 		Stat_HealthInc += other.Stat_HealthInc;
 		Stat_MeterInc += other.Stat_MeterInc;
 		Stat_AtkInc += other.Stat_AtkInc;
+		Stat_MoveInc += other.Stat_MoveInc;
 		Stat_SplInc += other.Stat_SplInc;
 		Stat_ValueInc += other.Stat_ValueInc;
 
@@ -262,6 +269,7 @@ public class Stat
 
 		_Attack     += other._Attack;
 		_Spell 		+= other._Spell;
+		_Move       += other._Move;
 		AttackRate  += other.AttackRate;
 		HealthRegen += other.HealthRegen;
 		HealthLeech += other.HealthLeech;
@@ -298,11 +306,12 @@ public class Stat
 	Stat_MeterInc  = 0,
 	Stat_AtkInc    = 0, 
 	Stat_ValueInc  = 0,
+	Stat_MoveInc   = 0,
 	Stat_SplInc    = 0;
 
 	public void ApplyStatInc()
 	{
-		ValueInc      += (int)Stat_ValueInc;
+		_Move         += (int)Stat_MoveInc;
 		_Attack       += (int)Stat_AtkInc;
 		_Spell 		  += (int)Stat_SplInc;
 		MeterMax 	  += (int)Stat_MeterInc;
@@ -311,10 +320,9 @@ public class Stat
 
 	public void CheckStatInc() {
 		Stat_HealthInc = (float)Strength * 5;
-		Stat_SplInc = (float)Wisdom / 10.0F;
-		//Stat_MeterInc = (float)Wisdom / 4.0F;
-		Stat_AtkInc = (float)Dexterity / 10.0F;
-		Stat_ValueInc = (float)Charisma / 30.0F;
+		Stat_SplInc = (float)Wisdom / 5.0F;
+		Stat_AtkInc = (float)Dexterity / 5.0F;
+		Stat_MoveInc = (float)Charisma / 2.0F;
 	}
 	
 	public int GetGENUSStat(GENUS ab) {
@@ -675,6 +683,7 @@ public class StatContainer
 	public StatContainer(StatContainer prev = null, bool mult = false)
 	{
 		ThisTurn = 0;
+		Lvl_Required = 30;
 		if(prev != null)
 		{
 			StatCurrent = prev.StatCurrent;
@@ -714,6 +723,22 @@ public class StatContainer
 		StatLeech += prev.StatLeech;
 		StatRegen += prev.StatRegen;
 
+	}
+
+	private int Lvl_Current = 0, Lvl_Required = 30;
+	public int QuickLvl(int v)
+	{
+		int total = 0;
+		Lvl_Current += v;
+		while(Lvl_Current > Lvl_Required)
+		{
+			Lvl_Required = 30;
+			StatCurrent_soft += 1.0F;
+			StatCurrent = (int) StatCurrent_soft;
+			Lvl_Current -= Lvl_Required;
+			total++;
+		}
+		return total;
 	}
 
 	public StCon [] LevelUp(int power, bool slotmult = false)

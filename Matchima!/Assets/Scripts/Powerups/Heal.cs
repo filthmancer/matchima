@@ -83,7 +83,7 @@ public class Heal : Powerup {
 		Player.Stats.Heal(final, true);
 		Player.Stats.CompleteHealth();
 
-		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(false);
+		//UIManager.CrewButtons[Parent.Index].ShowClass(false);
 		UIManager.instance.ScreenAlert.SetTween(0,false);
 		GameManager.instance.paused = false;
 		yield return null;

@@ -55,6 +55,7 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 
 	public virtual void SetActive(bool? active = null)
 	{
+		//print(this);
 		bool actual = active ?? !this.gameObject.activeSelf;
 		isActive = actual;
 		this.gameObject.SetActive(actual);
@@ -206,7 +207,7 @@ public class UIObj : MonoBehaviour, IPointerClickHandler, IPointerDownHandler, I
 	public void OnPointerDown(PointerEventData eventData)
 	{
 		//if(Application.isMobilePlatform) return;
-		if(UIManager.instance.LogUIObjs) print(Actions_MouseDown.Count + ":" +  this);
+		//if(UIManager.instance.LogUIObjs) print(Actions_MouseDown.Count + ":" +  this);
 
 		if((Actions_MouseUp.Count > 0 || TypeActions_MouseUp.Count > 0) || PlayClickDown)
 		{

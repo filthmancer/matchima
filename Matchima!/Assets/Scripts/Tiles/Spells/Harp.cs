@@ -26,11 +26,11 @@ public class Harp : Tile {
 	{
 		get{
 			return new StCon[]{new StCon("Changes nearby tiles to " + GameData.ResourceLong(Genus), GameData.Colour(Genus),true, 40),
-				new StCon("Charms enemy tiles", GameData.Colour(GENUS.CHA),true, 40)};
+				new StCon("Charms enemies", GameData.Colour(GENUS.CHA),true, 40)};
 		}
 	}
 
-	public override IEnumerator BeforeMatch(bool original, int Damage = 0)
+	public override IEnumerator BeforeMatch(Tile Controller)
 	{
 		if(isMatching) yield break;
 		isMatching = true;
@@ -57,7 +57,7 @@ public class Harp : Tile {
 		new_part.transform.parent = transform;
 		AudioSource s = PlayAudio("cast");
 		if(s) s.GetComponent<DestroyTimer>().Timer = 1.4F;
-		TileMaster.instance.Ripple(this, to_collect, 2.1F*Stats.Value, GameData.GameSpeed(0.35F), 0.2F);
+		TileMaster.instance.Ripple(this, to_collect, 2.1F*Stats.Value, GameData.GameSpeed(0.22F), 0.2F);
 		yield return new WaitForSeconds(GameData.GameSpeed(0.26F));
 
 		List<Tile> charmed = new List<Tile>();
@@ -65,7 +65,7 @@ public class Harp : Tile {
 		{
 			foreach(Tile child in to_collect)
 			{
-				if(child != null)
+				if(child != null && !child.IsType("hero"))
 				{
 					child.ChangeGenus(Genus);
 					EffectManager.instance.PlayEffect(child.transform, Effect.Replace, GameData.instance.GetGENUSColour(child.Genus));	
@@ -90,7 +90,7 @@ public class Harp : Tile {
 
 		}
 		if(new_part) Destroy(new_part);
-		yield break;
+		yield return StartCoroutine(base.BeforeMatch(Controller));
 	}
 
 

@@ -21,7 +21,7 @@ public class Lens : Tile {
 	}
 
 
-	public override IEnumerator BeforeMatch(bool original, int Damage = 0)
+	public override IEnumerator BeforeMatch(Tile Controller)
 	{
 		for(int xx = 0; xx < TileMaster.Grid.Size[0]; xx++)
 		{

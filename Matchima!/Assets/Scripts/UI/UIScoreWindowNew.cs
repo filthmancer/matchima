@@ -55,13 +55,13 @@ public class UIScoreWindowNew : MonoBehaviour {
 		UIBonus Score = SetBonusObj[(int) Genus];
 		BonusComplete[(int) Genus] = false;
 		Score.gameObject.SetActive(true);
-		UIManager.ClassButtons.GetClass((int)Genus)._SpriteMask.enabled = true;
+		//UIManager.CrewButtons.GetClass((int)Genus)._SpriteMask.enabled = true;
 		yield return StartCoroutine(Score.Setup(points, col, c));
 
 		yield return StartCoroutine(Score.SetupBonus(bonus));
 		
 		Sprite tile = null; //TileMaster.Genus.Frame[(int)Genus];
-		RectTransform trans = UIManager.ClassButtons[(int)Genus].transform as RectTransform;//UIManager.instance.Wheel.GetResourceRect(Genus);
+		RectTransform trans = UIManager.CrewButtons[(int)Genus].transform as RectTransform;//UIManager.instance.Wheel.GetResourceRect(Genus);
 
 		if(trans != null)
 		{
@@ -92,7 +92,7 @@ public class UIScoreWindowNew : MonoBehaviour {
 
 
 		BonusComplete[(int) Genus] = true;
-		UIManager.ClassButtons.GetClass((int)Genus)._SpriteMask.enabled = false;
+		//UIManager.CrewButtons.GetClass((int)Genus)._SpriteMask.enabled = false;
 		Score.Reset();
 		yield break;
 		

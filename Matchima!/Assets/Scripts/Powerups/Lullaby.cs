@@ -81,7 +81,7 @@ public class Lullaby : Powerup {
 
 		UIManager.instance.ScreenAlert.SetTween(0,false);
 		TileMaster.instance.SetAllTileStates(TileState.Locked, true);
-		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(true);
+		//UIManager.CrewButtons[Parent.Index].ShowClass(true);
 
 		Tile [] targets  = TileMaster.Enemies;
 		for(int i = 0; i < targets.Length; i++)
@@ -99,7 +99,7 @@ public class Lullaby : Powerup {
 
 		yield return new WaitForSeconds(0.3F);
 		GameManager.instance.paused = false;
-		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(false);
+		//UIManager.CrewButtons[Parent.Index].ShowClass(false);
 		TileMaster.instance.ResetTiles(true);
 	}
 
@@ -134,7 +134,7 @@ public class Lullaby : Powerup {
 	public void Sleep(Tile target, int duration)
 	{
 		Transform par;
-		if(Parent) par = UIManager.ClassButtons[Parent.Index].transform;
+		if(Parent) par = UIManager.CrewButtons[Parent.Index].transform;
 		else if(ParentOverride) par = ParentOverride;
 		else par = UIManager.instance.Health.transform;
 
@@ -156,7 +156,7 @@ public class Lullaby : Powerup {
 	void CharmAndValue(Tile target, int duration, int hpinc = 1, int atkinc = 3)
 	{
 		Transform par = UIManager.instance.Health.transform;
-		if(Parent != null) par = UIManager.ClassButtons[Parent.Index].transform;
+		if(Parent != null) par = UIManager.CrewButtons[Parent.Index].transform;
 
 		target.SetState(TileState.Selected, true);
 		GameObject initpart = EffectManager.instance.PlayEffect(par, "spell");

@@ -138,7 +138,7 @@ public class Wave : Unit {
 			Slot2 = final[1];
 			Slot3 = final[2];
 		}
-		yield return StartCoroutine(WaveActivateRoutine());
+		//yield return StartCoroutine(WaveActivateRoutine());
 	}
 
 	public void AddPoints(int p, bool overridepoints = false)

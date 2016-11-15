@@ -68,23 +68,16 @@ public class PlayerControl : MonoBehaviour {
 	}
 
 	void Start () {
-		//_Line.SetPoints(Vector3.zero, -Vector3.one* 5);
-		//_Line.DrawLightning();
-
-		//InnerLine.sortingLayerID = Params._render.sortingLayerID;
-		//OuterLine.sortingLayerID = Params._render.sortingLayerID;
 		for(int x = 0; x < InnerLine.Length; x++)
 		{
 			InnerLine[x].sortingOrder = 1;
 			OuterLine[x].sortingOrder = 1;
 			InnerLine[x].SetWidth(0.2F, 0.2F);
 			OuterLine[x].SetWidth(0.05F, 0.05F);
-		}
-
-		
-		
+		}		
 	}
 
+	
 	void Update () {
 		CheckTouch();
 		if(GameManager.instance.isPaused) return;
@@ -100,13 +93,16 @@ public class PlayerControl : MonoBehaviour {
 		{
 			bool input = Input.GetMouseButton(0) || Input.GetKey(KeyCode.Space);
 
-			if(Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space) || (matchingTile == null && input)) 
+			if(Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space) || (Controller == null && input)) 
 			{
-				isMatching = true;
-				SetMatchingTile(focusTile);
+				if(focusTile.Controllable)
+				{
+					isMatching = true;
+					SetController(focusTile);
+				}
+				
 			}
 
-			CheckCheats();
 		}
 
 		if(!canMatch) return;
@@ -187,6 +183,36 @@ public class PlayerControl : MonoBehaviour {
 			last = final[i];
 		}
 		return final;
+	}
+
+	public Tile Controller;
+	public GENUS Controller_Genus;
+	public void SetController(Tile t)
+	{
+		if(t==null) Controller = null;
+		else if(t.Controllable) Controller = t;
+		if(Controller != null)
+		{
+			selectedTiles.Add(Controller);
+			Controller_Genus = Controller.Genus;
+			if(Controller_Genus == GENUS.ALL)
+			{
+				foreach(Tile child in selectedTiles)
+				{
+					if(child.Genus != GENUS.ALL) Controller_Genus = child.Genus;
+				}
+			}
+			//Adding ability, item and other values to attack
+			int [] finaldamage = Player.instance.GetAttackValues(selectedTiles.ToArray());
+
+			for(int i = 0; i < selectedTiles.Count; i++)
+			{
+				if(selectedTiles[i].Type.isEnemy)
+				{
+					selectedTiles[i].SetDamageWarning(finaldamage[i]);
+				}
+			}
+		}
 	}
 
 	public void SetMatchingTile(Tile t)
@@ -355,6 +381,11 @@ public class PlayerControl : MonoBehaviour {
 		int point = 0;
 		bool move_back = false;
 
+		/*if(Controller != null && t == Controller && LastSelected() != Controller)
+		{
+			AddTilesToSelected(t);
+			return;
+		}*/
 		for(int i = 0; i < selectedTiles.Count-1; i++)
 		{
 			if(selectedTiles[i] == t)
@@ -379,7 +410,12 @@ public class PlayerControl : MonoBehaviour {
 			}
 
 			selectedTiles.RemoveRange(point+1, range);
-			SetMatchingTile(selectedTiles[point]);
+			Controller_Genus = Controller.Genus;
+			foreach(Tile child in selectedTiles)
+			{
+				if(child.Genus != GENUS.ALL && child.Genus != Controller.Genus) Controller_Genus = child.Genus;
+			}
+			//SetMatchingTile(selectedTiles[point]);
 
 			for(int i = 0; i < selectedTiles.Count; i++)
 			{
@@ -389,11 +425,13 @@ public class PlayerControl : MonoBehaviour {
 		}
 	}
 
-	public void GetSelectedTile(Tile t)
+	/*public void GetSelectedTile(Tile t)
 	{
+		print(t);
 		selectedTiles.Add(t);
-		SetMatchingTile(t);
-	}
+		//SetController(t);
+		//SetMatchingTile(t);
+	}*/
 
 	public void CheckMatch()
 	{
@@ -445,33 +483,10 @@ public class PlayerControl : MonoBehaviour {
 			selectedTiles.Clear();
 			selectedTiles = new List<Tile>();
 			SetMatchingTile(null);
+			SetController(null);
 		}
 	}
 
-	public void CheckCheats()
-	{
-		if(Input.GetKeyDown(KeyCode.H)) focusTile.Info.Shift = ShiftType.None;
-		if(Input.GetKeyDown(KeyCode.J)) TileMaster.instance.ReplaceTile(focusTile.Point.Base[0], focusTile.Point.Base[1], TileMaster.Types["cross"], GENUS.ALL, 6);
-		if(Input.GetKeyDown(KeyCode.K)) TileMaster.instance.ReplaceTile(focusTile.Point.Base[0], focusTile.Point.Base[1], TileMaster.Types["cross"], GENUS.ALL, 1);
-		if(Input.GetKeyDown(KeyCode.Plus)) 
-		{
-			Player.Stats.MapSize += new Vector2(0,1);
-			if(TileMaster.instance.MapSize != Player.Stats.MapSize)
-			{
-				TileMaster.instance.MapSize = Player.Stats.MapSize;
-				TileMaster.instance.GenerateGrid(null, 0.2F);
-			}
-		}
-		if(Input.GetKeyDown(KeyCode.Minus)) 
-		{
-			Player.Stats.MapSize += new Vector2(1,0);
-			if(TileMaster.instance.MapSize != Player.Stats.MapSize)
-			{
-				TileMaster.instance.MapSize = Player.Stats.MapSize;
-				TileMaster.instance.GenerateGrid(null, 0.2F);
-			}
-		}
-	}
 
 	public Tile LastSelected()
 	{
@@ -506,9 +521,15 @@ public class PlayerControl : MonoBehaviour {
 
 	public void AddTilesToSelected(params Tile [] _newtiles)
 	{
-		//foreach(Tile child in _newtiles)
 		for(int i = 0; i < _newtiles.Length; i++)
 		{
+
+			if(Controller != null)
+			{
+				Controller.CheckStats();
+				if(selectedTiles.Count > Controller.Stats.Movement) return;
+			} 
+			//if(_newtiles[i] == Controller && LastSelected() == Controller) continue;
 			bool add = true;
 			foreach(Tile tile in selectedTiles)
 			{
@@ -519,6 +540,10 @@ public class PlayerControl : MonoBehaviour {
 				}
 			}
 			if(!add) continue;
+			if(Controller_Genus == GENUS.ALL)
+			{
+				if(_newtiles[i].Genus != GENUS.ALL) Controller_Genus = _newtiles[i].Genus;
+			}
 			selectedTiles.Add(_newtiles[i]);
 		}
 	}
@@ -527,6 +552,7 @@ public class PlayerControl : MonoBehaviour {
 	{
 		foreach(Tile child in _newtiles)
 		{
+			if(child == Controller) continue;
 			bool add = true;
 			foreach(Tile tile in finalTiles)
 			{

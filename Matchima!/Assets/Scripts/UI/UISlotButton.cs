@@ -103,7 +103,7 @@ public class UISlotButton : UIButton {
 			if(PlayerControl.HeldButton != this)
 			{
 				//print("HIT");
-				UIManager.instance.SwapSlotButtons(this, (PlayerControl.HeldButton as UISlotButton).Parent, 0);
+				//UIManager.instance.SwapSlotButtons(this, (PlayerControl.HeldButton as UISlotButton).Parent, 0);
 				//PlayerControl.instance.SwapSlots();
 				//UIManager.instance.HideBoonUI();
 			}
@@ -121,7 +121,7 @@ public class UISlotButton : UIButton {
 							{
 								c.GetSlot(slot, i);
 								Destroy(this.gameObject);//Setup(null);
-								UIManager.instance.ShowClassAbilities(c);
+								//UIManager.instance.ShowClassAbilities(c);
 								break;
 							}
 						}
@@ -132,12 +132,12 @@ public class UISlotButton : UIButton {
 						{
 							c.GetSlot(slot, 0);
 							Destroy(this.gameObject);//Setup(null);
-							UIManager.instance.ShowClassAbilities(c);
+							//UIManager.instance.ShowClassAbilities(c);
 							
 						}
 						else 
 						{
-							UIManager.instance.SwapSlotButtons(this, c, 0);
+						//	UIManager.instance.SwapSlotButtons(this, c, 0);
 						}
 					}
 					

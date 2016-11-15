@@ -17,6 +17,8 @@ public class Zone : MonoBehaviour {
 			return _Prefix + " " + _Name;
 		}
 	}
+
+	public string Mission = "Kill 50 Enemies";
 	public Wave IntroWave;
 	public Wave [] Waves;
 	public Wave BossWave;

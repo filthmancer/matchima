@@ -22,7 +22,7 @@ public class Vacuum : Tile {
 		if(Params._render != null) Params._render.color = Color.Lerp(Params._render.color, GameData.Colour(Genus), 0.6F);
 	}
 
-	public override IEnumerator BeforeMatch(bool original, int Damage = 0)
+	public override IEnumerator BeforeMatch(Tile Controller)
 	{
 		List<Tile> to_collect = new List<Tile>();
 		Tile target = null;

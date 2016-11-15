@@ -291,24 +291,32 @@ public class GameData : MonoBehaviour {
 
 	public static GENUS StringToGENUS(string g)
 	{
+		g = g.ToLower();
 		switch(g)
 		{
-			case "STR":
+			case "str":
 			return GENUS.STR;
-			case "DEX":
+			case "dex":
 			return GENUS.DEX;
-			case "WIS":
+			case "wis":
 			return GENUS.WIS;
-			case "CHA":
+			case "cha":
 			return GENUS.CHA;
-			case "Red":
+			case "red":
 			return GENUS.STR;
-			case "Blue":
+			case "blue":
 			return GENUS.DEX;
-			case "Green":
+			case "green":
 			return GENUS.WIS;
-			case "Yellow":
+			case "yellow":
 			return GENUS.CHA;
+			case "alpha":
+			return GENUS.ALL;
+			case "all":
+			Debug.Log("WRONG GENUS INFO");
+			return GENUS.ALL;
+			case "omega":
+			return GENUS.OMG;
 		}
 		return GENUS.STR;
 	}

@@ -261,6 +261,13 @@ public class GridPoint
 {
 	public int [] num = new int[2];
 	public Vector3 position;
+	public Vector3 Pos
+	{
+		get{
+			if(_Tile != null) return _Tile.transform.position;
+			else return position;
+		}
+	}
 	public TileInfo Info;
 	public Tile _Tile;
 

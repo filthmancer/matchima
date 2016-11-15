@@ -10,6 +10,7 @@ public class MoveToPoint : MonoBehaviour {
 	public bool ArcingMovement = false;
 	public bool LerpingMovement = true;
 	public bool DontDestroy = false;
+	public bool NoDestroy = false;
 
 	[HideInInspector]
 	public Unit Target;
@@ -91,10 +92,11 @@ public class MoveToPoint : MonoBehaviour {
 			{
 				ClearAndDestroy();
 			}
-			else Destroy(this);//GetComponent<ObjectPoolerReference>().Unspawn();
+			else if(!NoDestroy) Destroy(this);//GetComponent<ObjectPoolerReference>().Unspawn();
 			//ClearAndDestroy();
 		}
 	}
+
 
 	public void SetTarget(Vector3 pos)
 	{
@@ -122,7 +124,7 @@ public class MoveToPoint : MonoBehaviour {
 		Steps.Add(s);
 	}
 
-	public void ClearAndDestroy()
+	public void Clear()
 	{
 		method = null;
 		tilemethod = null;
@@ -132,6 +134,11 @@ public class MoveToPoint : MonoBehaviour {
 		Target = null;
 		Steps = new List<MoveStep>();
 		Steps_curr = 0;
+	}
+
+	public void ClearAndDestroy()
+	{
+		Clear();
 
 		if(poolref) poolref.Unspawn();
 		else Destroy(this.gameObject);

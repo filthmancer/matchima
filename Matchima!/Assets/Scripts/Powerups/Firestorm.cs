@@ -94,7 +94,7 @@ public class Firestorm : Powerup {
 		yield return new WaitForSeconds(GameData.GameSpeed(0.4F));
 
 		GameManager.instance.paused = false;
-		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(false);
+		////UIManager.CrewButtons[Parent.Index].ShowClass(false);
 	}
 
 	UIObj CreateTarget(int i)

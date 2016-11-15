@@ -4,6 +4,22 @@
 		"selected_items":
 		[
 			[
+				"Tooltip",
+				"Tooltip_DescObj"
+			],
+			[
+				"intia",
+				"initial_match"
+			],
+			[
+				"Controller",
+				"Controller_Parent"
+			],
+			[
+				"Controll",
+				"Controller_Parent"
+			],
+			[
 				"Toolti",
 				"Tooltip_Parent"
 			],
@@ -456,58 +472,34 @@
 	"buffers":
 	[
 		{
-			"file": "Scripts/TileMaster.cs",
-			"settings":
-			{
-				"buffer_size": 50703,
-				"line_ending": "Windows"
-			}
-		},
-		{
 			"file": "Scripts/GameManager.cs",
 			"settings":
 			{
-				"buffer_size": 47142,
+				"buffer_size": 49715,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "Scripts/UI/NewUI/CrewMenuUIObj.cs",
+			"file": "Scripts/TileMaster.cs",
 			"settings":
 			{
-				"buffer_size": 1147,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"file": "Scripts/UI/UIClassButton.cs",
-			"settings":
-			{
-				"buffer_size": 6314,
+				"buffer_size": 52234,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "Scripts/Units/Class.cs",
+			"file": "Scripts/Tiles/Enemies/Enemy.cs",
 			"settings":
 			{
-				"buffer_size": 39263,
+				"buffer_size": 10364,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "Scripts/UIManager.cs",
+			"file": "Scripts/Player.cs",
 			"settings":
 			{
-				"buffer_size": 66370,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Scripts/UI/UIObjtk.cs",
-			"settings":
-			{
-				"buffer_size": 116,
+				"buffer_size": 24501,
 				"line_ending": "Windows"
 			}
 		},
@@ -515,15 +507,23 @@
 			"file": "Scripts/Tiles/Tile.cs",
 			"settings":
 			{
-				"buffer_size": 43161,
+				"buffer_size": 43726,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "Scripts/PlayerControl.cs",
+			"file": "Scripts/UIManager.cs",
 			"settings":
 			{
-				"buffer_size": 14010,
+				"buffer_size": 69154,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Scripts/Utilities/MoveToPoint.cs",
+			"settings":
+			{
+				"buffer_size": 4162,
 				"line_ending": "Windows"
 			}
 		}
@@ -568,16 +568,74 @@
 	},
 	"file_history":
 	[
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Arcane.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Tile.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Bomb.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Cross.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Class.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Harp.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Flame.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Neutral/ItemTile.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Neutral/Stairs.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/BlackHole.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Force.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Lens.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Lightning.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Vacuum.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Enemy.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/UIManager.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/GameManager.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/TileMaster.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/WaveUnit.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Zone.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Mana.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Hero.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Stat.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/PlayerControl.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIObj.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/GameData.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Neutral/Attack.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/NewUI/CrewMenuUIObj.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIMenu.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Player.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIClassButton.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/ClassAbilityUI.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIScoreWindowNew.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UISlotButton.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Barbarian.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/Tutorial.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Passives/Thievery.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Items/ModContainer.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Actives/Fireball.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Actives/SlashOld.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Ward.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Healing.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Actives/Swap.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Passives/Rally.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/Firestorm.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Passives/AddTileEffect.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Actives/DrawAggro.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/Maturation.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/Lullaby.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/Heal.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/ThrowKnives.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/CreateBombs.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/AudioManager.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/Powerup.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/ClassSlotsUI.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIObjtk.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/MoveToPoint.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/EffectManager.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/GridInfo.cs",
+		"/A/Projects/matchima/Matchima!/Assets/TK2DROOT/tk2d/Code/Sprites/tk2dBaseSprite.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/TileTypes.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/MoverTile.cs",
 		"/A/Projects/greatgrand/Assets/Scripts/UIObj.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Chicken.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Neutral/Altar.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Lightning.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Enemy.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Harp.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/MiniTile2.cs",
 		"/A/Projects/greatgrand/Assets/Scripts/Generator/FaceObj.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Tile.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UIManager.cs",
 		"/C/Users/MaxerJ/Desktop/unitystation/Assets/scripts/SS.UI/ControlClothing.cs",
 		"/C/Users/MaxerJ/Desktop/unitystation/Assets/scripts/GameManager.cs",
 		"/C/Users/MaxerJ/Desktop/unitystation/Assets/scripts/Camera2DFollow.cs",
@@ -586,40 +644,24 @@
 		"/C/Users/MaxerJ/Desktop/Matchima Stuff/Web Stuff/presskit/data.xml",
 		"/C/Users/MaxerJ/Desktop/Matchima Stuff/Web Stuff/presskit/style.css",
 		"/C/Users/MaxerJ/Desktop/Matchima Stuff/Web Stuff/presskit/readme.txt",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Neutral/Stairs.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/GameData.cs",
 		"/C/Users/MaxerJ/Desktop/Matchima Stuff/Web Stuff/_data.xml",
 		"/C/Users/MaxerJ/Desktop/Matchima Stuff/Web Stuff/data.xml",
 		"/C/Users/MaxerJ/Desktop/install.php",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Zone.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/GameManager.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/Juice.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/MoveToPoint.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Class.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Player.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/ThrowKnives.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/_GameSaveLoad.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Stairs.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIClassSelect.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/GromWave.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/GiantTerrorsWave.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/WardenBattle.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/WardenIntro.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Items/ModContainer.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/AudioManager.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/TileMaster.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Barbarian.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Bard.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Thief.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Farmer.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Warden.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Classes/Wizard.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIMenu.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/Firestorm.cs",
 		"/C/Users/MaxerJ/AppData/Roaming/Sublime Text 2/Packages/Alignment/Default (Windows).sublime-keymap",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/WaveTile.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/Lullaby.cs",
 		"/C/Users/MaxerJ/AppData/Roaming/Sublime Text 2/Packages/User/Default (Windows).sublime-keymap",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Sleep.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/WardenWaveUnit.cs",
@@ -629,73 +671,31 @@
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/CameraUtility.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/StoryModeZone_A.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Spawning.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/Tutorial.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Blob.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Stoneform.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Frenzy.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Healing.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Status.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/DamageInc.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/TileTypes.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Arcane.cs",
 		"/A/Projects/matchima/Matchima!/Assets/TK2DROOT/tk2d/Code/Camera/tk2dCamera.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Stat.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIObj.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/ColourSwap.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIClassButton.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Mimic.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Flame.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Scumworks.cs",
 		"/A/Projects/matchima/Matchima!/Assets/RadarChart/Scripts/RadarPolygon.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/Powerup.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIKillScreen.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Bomb.cs",
 		"/A/Projects/matchima/Matchima!/Assets/ZFrame/Readme/readme_ZPlayerPrefs.txt",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Lens.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/MiniAlertUI.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Neutral/ItemTile.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Cross.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIGear.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/Calldown.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/Heal.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/DestroyTimer.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/ObjectPooler.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Giant.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/GridInfo.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/TileEffect.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Grunt.cs",
 		"/A/Projects/deepspacefive/Deep Space Five/Assets/PlayerControl.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/EffectManager.cs",
 		"/C/Users/MaxerJ/AppData/Roaming/Sublime Text 2/Packages/Zen Tabs/ZenTabs.sublime-settings",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIObjtk.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Minion.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Advanced Save System/Scripts/Save Variables/AdvancedSaveSystem.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Advanced Save System/Scripts/ExampleScripts/ASS_MoveObject.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Guard.cs",
-		"/C/Users/MaxerJ/AppData/LocalLow/DefaultCompany/Matchima!/PlayerData.xml",
-		"/A/Projects/matchima/Matchima!/Assets/Editor/ObjectPoolerReferenceEditor.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Editor/StatEditor.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Force.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/Velocitizer.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/Slash.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Abilities/Actives/SlashOld.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/Maturation.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/StoryModeZone_A_Wave1.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/Utility.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/WaveEffect.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIAbilityButton.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Charm.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/WaveGroup.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/CreateBombs.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIObjects.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Mana.cs",
-		"/A/Projects/matchima/Matchima!/Assets/TextMesh Pro/Scripts/TextMeshProUGUI.cs",
-		"/A/Projects/matchima/Matchima!/Assets/UITween/Editor/EditorUITween.cs",
-		"/A/Projects/matchima/Matchima!/Assets/UITween/Scripts/EasyTween.cs",
-		"/A/Projects/matchima/Matchima!/Assets/UITween/Scripts/UITween.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Unit.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/StoryModeZone_Init.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Slots/Ability.cs"
+		"/A/Projects/matchima/Matchima!/Assets/Advanced Save System/Scripts/ExampleScripts/ASS_MoveObject.cs"
 	],
 	"find":
 	{
@@ -734,134 +734,134 @@
 		"case_sensitive": true,
 		"find_history":
 		[
-			"TargetTile",
-			"Name",
-			"Attack",
-			"ShowGearTooltip",
-			"GearTooltip",
-			"enabled",
-			"TargetTile",
-			"ShowGearTooltip",
-			"Imgtk[2]",
-			"(Imgtk[2] as tk2dClippedSprite)",
-			"_FrameMask",
-			"_Sprite",
-			"_SpriteMask",
-			"_GenusName",
-			"SetRender",
-			"Inner",
-			"TT",
-			"release",
-			"release-date",
-			"int",
-			"RandomTile",
-			"Escape",
-			"AfterTurn",
-			"SetSprite",
-			"DestroyThy",
-			"EscapeZone",
-			"_GetWave",
-			"AfterTurn",
-			"Turn()",
-			"ClearGrid",
-			"ReplaceTile",
-			"ReplaceTiles",
-			"render",
-			"SetSprite",
-			"part",
-			"MiniTileObj",
-			"MiniTile2",
-			"ResMiniTile",
-			"MiniTile",
-			"t",
-			"EnterZone",
-			"ClearGrid",
-			"TravelTiles",
-			"t",
-			"CreateTile",
-			"QueuedTiles",
-			"Scale",
-			"ReplaceTile",
+			"mp",
+			"MoveToPoint mp ",
+			"ClearAndDestroy",
+			"MoveComp",
+			"endspot[0]",
 			"BeforeMatch",
-			"ZoneIndex",
-			"TakeToNextLevel",
-			"Match",
+			"_EnterZone",
+			"ShowControllerUI",
+			"_EnterZone",
+			"HitCounter",
+			"CheckStats",
+			"BeforeMatch",
+			"Random.Range",
+			"Random",
+			"CastParticle",
+			"Turn(",
+			"AttackParticle",
+			"Turn(",
+			"EnterZone",
+			"SetZoneObj",
+			"GenusString",
+			"Zone",
+			"PowerDown",
+			"ReplaceTile",
+			"EnterZone",
+			"Turn(",
+			"MoveInc",
+			"Stat_MoveInc",
+			"InitStats",
+			"Move",
+			"AddTilesToSelected",
+			"MatchCount",
+			"Stat_AtkInc",
+			"Stat_MoveInc",
+			"Stat_AtkInc",
+			"desc",
+			"TargetTile",
+			"Tooltip_Parent[5]",
+			"Tooltip_DescParent",
+			"TargetTile",
+			"SetLoadScreen",
+			" WaveTimer",
+			"hero",
+			"Canvas",
+			"MiniAlert(",
+			"MiniAlertUI",
+			"StartGame",
+			"GameMode",
+			"StartGame",
+			"NewGameActivate",
+			"LogoAnimation",
+			"Turn(",
+			"CreateControllerUI",
+			"active",
+			"ShowControllerUI",
+			"ShowCrew",
+			"MeterLoop",
+			"Complete",
+			"ManaThisTurn",
+			"ShowClass(false);",
+			"ShowClass(true);",
+			"UIManager.CrewButtons.GetClass",
+			"UIManager.CrewButtons",
+			" UIManager.CrewButtons.GetClass",
+			"GetClass[",
+			"GetClass",
+			"UIManager.CrewButtons.GetClass",
+			"UIManager.CrewButtons",
+			"UIManager.CrewButtons.GetClass(3)",
+			"UIManager.CrewButtons",
+			"UIManager.CrewButtons[Index].ShowClass(false);",
+			"UIManager.CrewButtons[Index].ShowClass(true);",
+			"GetClass(Index)",
+			"{\n",
+			"GetClass(",
+			"ShowCrewButtons",
+			"CrewButtons",
+			"ClassButtons",
+			"UIManager.ClassButtons[(int)_Unit.Genus]",
+			"UIManager.ClassButtons[0]",
+			"UIManager.ClassButtons[(int)Parent.Genus]",
+			"UIManager.CrewButton[Parent.Index]",
+			"UIManager.ClassButtons[Parent.Index]",
+			"UIManager.ClassButtons.GetClass(Parent.Index)",
+			"UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(true);",
+			"UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(false);",
+			"ClassButtons.GetClass(Parent.Index)",
+			"ClassButtons",
+			"ShowClassButtons",
+			"ClassButtons",
+			"CrewMenuUIObj",
+			"_ClassButtons",
+			"ClassButtons",
+			"CrewButton",
+			"OnPointerUp",
+			"isPressed",
+			"CollectThysel",
+			"CollectThyself",
+			"MoveToPoint",
+			"UIObjtk",
+			"control[i]",
+			"target",
+			"_class",
+			"cobj",
+			"UIObj",
+			"AddToMeter",
+			"DestroyTile",
+			"DestroyThyself",
+			"MatchRoutine",
+			"DontDestroy",
+			"t.",
+			"ComboFactor_RepeatedCombos == 1",
+			"PlayAudio",
 			"BeforeMatchRoutine",
 			"BeforeMatch",
-			"Match",
-			"ResumeGameHealth",
-			"Current",
-			"ZoneMap",
-			"ZoneMapContainer",
-			"ZoneMap",
-			"ResumeZoneIndex",
-			"ResumeZoneCurrent",
-			"ResumeWaveIndex",
-			"Current_BracketIndex",
-			"Current",
-			"ResumeGame",
-			"PlayStoryMode",
-			"_ResumeGame",
-			"ResumeWaveCurrent",
-			"ResetStats",
-			"ResumeWaveName",
-			"OnStart",
-			"ResumeWaveCurrent",
-			"ResumeGame",
-			"_ResumeGame",
-			"ResetStats",
-			"Reset",
-			"Rseet",
+			"MatchRoutine",
+			"Controller_Genus",
+			"SetMatchingTile",
+			"Controller",
+			"AddTilesToSelected",
+			"SecondLastSelected",
+			"LastSelected",
 			"_EnterZone",
-			"ResumeWaveIndex",
-			"_EnterZone",
-			"ResumeWaveIndex",
-			"ade(1,",
-			"1,",
-			"\"Hearty\",",
-			"Curses",
-			"BoonsAll",
-			"Upgrade(",
-			"BoonsAll",
-			"Index",
-			"BoonsAll",
-			"UpgradeData",
-			"DataToUpgrade",
-			"UpgradeToData",
-			"Reset",
-			"Meter",
-			"i",
-			"Level",
-			"Level;\n    } ",
-			"ZoneUI",
-			"SlotContainerData",
-			"ModContainerData",
-			"float",
-			"int",
-			"float",
-			"string",
-			"public",
-			"s",
-			"Mods",
-			"Mutations",
-			"AllMods",
-			"PlayerLoader",
-			"ResumeGameAct",
+			"StartGame",
 			"UIManager",
-			"ShowSettingsUI",
-			"Mutate(",
-			"LoadUI",
-			"UnloadUI",
-			"CompleteTurnRoutine",
-			"TileMaster.instance.MapSize",
-			"TileMaster.instance.MapSize.y",
-			"TileMaster.instance.MapSize.x",
-			"TileMaster.instance.MapSize.y",
-			"TileMaster.instance.MapSize.x",
-			"TileMaster.instance.MapSize.y",
-			"TileMaster.instance.MapSize.x",
-			"Random.Range(0, TileMaster.Grid.Size[1]",
-			"Random.Range(0, TileMaster.Grid.Size[0]"
+			"Tooltip_Target",
+			"Tooltip_Parent",
+			"UIObj"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -869,6 +869,11 @@
 		"regex": false,
 		"replace_history":
 		[
+			"CrewButtons",
+			"UIManager.CrewButtons[Parent.Index]",
+			"UIManager.CrewButton[Parent.Index]",
+			"//UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(true);",
+			"//UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(false);",
 			"ShowPlayerLvl",
 			"UpdatePlayerLvl",
 			"UIManager.ClassButtons.GetClass(Parent.Index)",
@@ -929,23 +934,23 @@
 	"groups":
 	[
 		{
-			"selected": 5,
+			"selected": 4,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "Scripts/TileMaster.cs",
+					"file": "Scripts/GameManager.cs",
 					"settings":
 					{
-						"buffer_size": 50703,
+						"buffer_size": 49715,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
+								35138,
+								35138
 							]
 						],
 						"settings":
@@ -1002,25 +1007,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 23034.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "Scripts/GameManager.cs",
+					"file": "Scripts/TileMaster.cs",
 					"settings":
 					{
-						"buffer_size": 47142,
+						"buffer_size": 52234,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								7024,
-								7024
+								10858,
+								10858
 							]
 						],
 						"settings":
@@ -1077,25 +1082,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 5358.0,
+						"translation.y": 8022.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 2,
-					"file": "Scripts/UI/NewUI/CrewMenuUIObj.cs",
+					"file": "Scripts/Tiles/Enemies/Enemy.cs",
 					"settings":
 					{
-						"buffer_size": 1147,
+						"buffer_size": 10364,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								681,
-								679
+								5440,
+								5440
 							]
 						],
 						"settings":
@@ -1148,28 +1153,29 @@
 								"bh_single_quote_open",
 								"bh_single_quote_close"
 							],
-							"syntax": "Packages/Unity3D/UnityC#.tmLanguage"
+							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
+							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 285.0,
+						"translation.y": 3648.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 3,
-					"file": "Scripts/UI/UIClassButton.cs",
+					"file": "Scripts/Player.cs",
 					"settings":
 					{
-						"buffer_size": 6314,
+						"buffer_size": 24501,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1089,
-								1089
+								15292,
+								15292
 							]
 						],
 						"settings":
@@ -1226,25 +1232,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 1093.0,
+						"translation.y": 12018.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 4,
-					"file": "Scripts/Units/Class.cs",
+					"file": "Scripts/Tiles/Tile.cs",
 					"settings":
 					{
-						"buffer_size": 39263,
+						"buffer_size": 43726,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2161,
-								2161
+								35633,
+								35633
 							]
 						],
 						"settings":
@@ -1301,7 +1307,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 969.0,
+						"translation.y": 25099.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1311,15 +1317,15 @@
 					"file": "Scripts/UIManager.cs",
 					"settings":
 					{
-						"buffer_size": 66370,
+						"buffer_size": 69154,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								7328,
-								7328
+								11546,
+								11546
 							]
 						],
 						"settings":
@@ -1376,99 +1382,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 4430.0,
+						"translation.y": 6672.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 6,
-					"file": "Scripts/UI/UIObjtk.cs",
+					"file": "Scripts/Utilities/MoveToPoint.cs",
 					"settings":
 					{
-						"buffer_size": 116,
+						"buffer_size": 4162,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								0,
-								0
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close"
-							],
-							"syntax": "Packages/Unity3D/UnityC#.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 7,
-					"file": "Scripts/Tiles/Tile.cs",
-					"settings":
-					{
-						"buffer_size": 43161,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								195,
-								195
+								2065,
+								2065
 							]
 						],
 						"settings":
@@ -1525,82 +1457,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 8,
-					"file": "Scripts/PlayerControl.cs",
-					"settings":
-					{
-						"buffer_size": 14010,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								8662,
-								8662
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close"
-							],
-							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 5798.0,
+						"translation.y": 972.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"

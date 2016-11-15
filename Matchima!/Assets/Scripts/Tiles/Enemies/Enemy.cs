@@ -123,7 +123,11 @@ public class Enemy : Tile {
 	public override void Update () {
 		base.Update();
 
-		float hp = Mathf.Ceil(Player.Options.RealHP ? ((float)Stats.Hits/(float)Player.Stats._Attack) : (Stats.Hits));
+		float hp = Stats.Hits;
+		if(PlayerControl.instance.Controller != null) 
+		{
+			hp = Mathf.Ceil((float)Stats.Hits/(float)PlayerControl.instance.Controller.Stats.Attack);
+		}
 		if(hp > 1)
 		{
 			if(Params.HitCounter != null && !Params.HitCounter.activeSelf) Params.HitCounter.SetActive(true);
@@ -177,28 +181,86 @@ public class Enemy : Tile {
 		return effects && !Stats.isNew && !Stats.isFrozen && Stats.isAlerted && !AttackedThisTurn;
 	}
 
-	public override IEnumerator BeforeMatch(bool original, int Damage = 0)
+	public override IEnumerator BeforeMatch(Tile Controller)
 	{
+		if(this == null) yield break;
+		if(Controllable) yield break;
+
 		if(isMatching) yield break;
 		isMatching = true;
 
-		if(original) InitStats.TurnDamage += (original ? Player.AttackValue : Damage);
+		InitStats.TurnDamage += Controller.Stats.Attack;
 
-		if(InitStats.TurnDamage == 0) yield break;
+		yield return StartCoroutine(AttackParticles());
 
+		CheckStats();
+		int fullhit = 0;
+
+		fullhit += Stats.TurnDamage;
+
+		InitStats.TurnDamage = 0;
+		InitStats.Hits -= fullhit;
+		print(fullhit + ":" + InitStats.Hits);
+		CheckStats();
+		
+		StartCoroutine(GetHit());
+		yield return null;
+	}
+
+	IEnumerator AttackParticles()
+	{
 		PlayAudio("hit", 1.5F);
 		AudioManager.instance.PlayClipOn(this.transform, "Player", "Attack");
-		GameObject part = EffectManager.instance.PlayEffect(_Transform, Effect.Attack);
-		yield return new WaitForSeconds(GameData.GameSpeed(0.05F));
+		MoveToPoint part = EffectManager.instance.PlayEffect(_Transform, Effect.Attack).GetComponent<MoveToPoint>();
 
 		Vector3 pos = TileMaster.Grid.GetPoint(Point.Point(0)) + Vector3.down * 0.3F;
 		MiniAlertUI hit = UIManager.instance.DamageAlert(pos, InitStats.TurnDamage);
 
 		CameraUtility.instance.ScreenShake(0.22F + 0.02F * InitStats.TurnDamage,  GameData.GameSpeed(0.06F));
+		yield return new WaitForSeconds(GameData.GameSpeed(0.06F));
+		//yield return new WaitForSeconds(GameData.GameSpeed(0.14F));
+		if(part) part.ClearAndDestroy();
+		yield return new WaitForSeconds(GameData.GameSpeed(0.04F));
+	}
 
-		yield return new WaitForSeconds(GameData.GameSpeed(0.14F));
-		if(part) part.GetComponent<ObjectPoolerReference>().Unspawn();
+	public IEnumerator GetHit()
+	{
+		CheckStats();
 		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+		Player.instance.OnTileMatch(this);
+		if(Stats.Hits <= 0)
+		{
+			isMatching = true;
+			Player.Stats.PrevTurnKills ++;	
+			//Stats.Value *= resource;
+					
+			CollectThyself(true);
+
+			PlayAudio("death");
+			if(GameData.ChestsFromEnemies)
+			{
+				float item_chance = (float)Stats.Value/32.0F;
+				if(Stats.Value > 10) item_chance += 0.4F;
+				if(Random.value < item_chance) 
+				{
+					int x = Random.Range(Point.BaseX, Point.BaseX + Point.Scale);
+					int y = Random.Range(Point.BaseY, Point.BaseY + Point.Scale);
+
+					GENUS g = Genus;
+					float randg = Random.value;
+					if(Random.value < 0.4F) g = (GENUS) Random.Range(0,4);
+					if(Random.value < 0.8F) TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["chest"], g,  Point.Scale);
+					else TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["mimic"], g, Point.Scale);
+				}
+				else TileMaster.Tiles[Point.Base[0], Point.Base[1]] = null;
+			}
+			else TileMaster.Tiles[Point.Base[0], Point.Base[1]] = null;
+		}
+		else 
+		{
+			//CollectThyself(false);
+			isMatching = false;
+		}
 	}
 
 	public override void AfterTurn()

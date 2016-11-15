@@ -15,7 +15,7 @@ public class Bomb : Tile {
 	private int BombDamage
 	{
 		get{
-			return (2 * Stats.Value) + (int)Player.SpellValue;
+			return (2 * Stats.Value) + (int)PlayerControl.instance.Controller.Stats.Spell;
 		}
 	}
 
@@ -23,9 +23,8 @@ public class Bomb : Tile {
 	{
 		get{
 			return new StCon[]{
-				new StCon("Collects in " + radius + " radius.", Color.white,true, 40),
-				new StCon("Deals ", Color.white, false, 40),
-				new StCon(BombDamage + " damage to enemy tiles", GameData.Colour(Genus),true, 40)
+				new StCon(radius + " radius explosion", Color.white,true, 40),
+				new StCon(BombDamage + " damage", GameData.Colour(GENUS.WIS),true, 40)
 			};
 		}
 	}
@@ -37,7 +36,7 @@ public class Bomb : Tile {
 	}
 
 
-	public override IEnumerator BeforeMatch(bool original, int Damage = 0)
+	public override IEnumerator BeforeMatch(Tile Controller)
 	{
 		if(isMatching) yield break;
 		isMatching = true;		
@@ -46,16 +45,17 @@ public class Bomb : Tile {
 		List<Tile> to_collect = new List<Tile>();
 		int xx = Point.Base[0], yy = Point.Base[1];
 
-		for(int x = 0; x < TileMaster.Tiles.GetLength(0); x++)
+		for(int x = 0; x < TileMaster.Grid.Size[0]; x++)
 		{
-			for(int y = 0; y < TileMaster.Tiles.GetLength(1); y++)
+			for(int y = 0; y < TileMaster.Grid.Size[1]; y++)
 			{
 				int distX = Mathf.Abs(x - xx);
 				int distY = Mathf.Abs(y - yy);
 				if(distX + distY <= radius)
 				{
 					Tile tile = TileMaster.Tiles[x,y];
-					TileMaster.Tiles[x,y].SetState(TileState.Selected, true);
+					if(tile == null) continue;
+					tile.SetState(TileState.Selected, true);
 					to_collect.Add(tile);
 				}
 			}
@@ -87,12 +87,20 @@ public class Bomb : Tile {
 				Vector3 pos = TileMaster.Grid.GetPoint(to_collect[i].Point.Point(0)) + Vector3.down * 0.3F;
 				MiniAlertUI hit = UIManager.instance.DamageAlert(pos, BombDamage);
 
-				to_collect[i].InitStats.Hits -= BombDamage;
+				to_collect[i].InitStats.TurnDamage += BombDamage;
+
 				to_collect[i].PlayAudio("hit");
 				EffectManager.instance.PlayEffect(to_collect[i].transform,Effect.Attack);
+			}
+
+			if(to_collect[i].isMatching)
+			{
+				to_collect.RemoveAt(i);
+				i--;
 			}
 		}
 		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
 		yield return new WaitForSeconds( GameData.GameSpeed(0.2F));
+		yield return StartCoroutine(base.BeforeMatch(Controller));
 	}
 }

@@ -179,6 +179,7 @@ public class EffectManager : MonoBehaviour {
 			p.SetTarget(t.position + offset);
 			p.SetDelay(0.35F);
 			p.SetThreshold(0.25F);
+			p.DontDestroy = true;
 		}
 		return final;
 	}
@@ -205,6 +206,7 @@ public class EffectManager : MonoBehaviour {
 				p.SetTarget(t.position + offset);
 				p.SetDelay(GameData.GameSpeed(0.45F));
 				p.SetThreshold(0.25F);
+				p.DontDestroy = false;
 			return obj;
 			case Effect.Destroy:
 				part = (ParticleSystem) Instantiate(Particles._Destroy);

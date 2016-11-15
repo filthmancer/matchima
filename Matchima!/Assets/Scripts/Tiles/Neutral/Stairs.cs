@@ -36,7 +36,7 @@ public class Stairs : Tile {
 	}
 
 	public List<Tile> TakeTiles;
-	public override IEnumerator BeforeMatch(bool original, int Damage = 0)
+	public override IEnumerator BeforeMatch(Tile Controller)
 	{
 		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, "stairstravel", GameData.Colour(Genus));
 

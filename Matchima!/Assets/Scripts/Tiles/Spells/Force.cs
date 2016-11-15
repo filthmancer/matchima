@@ -23,7 +23,7 @@ public class Force : Tile {
 		}
 	}
 
-	public override IEnumerator BeforeMatch(bool original, int Damage = 0)
+	public override IEnumerator BeforeMatch(Tile Controller)
 	{
 		CheckStats();
 		float part_time = 0.2F;

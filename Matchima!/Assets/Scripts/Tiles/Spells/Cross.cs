@@ -40,8 +40,7 @@ public class Cross : Tile {
 		get{
 			return new StCon[]{
 				new StCon("Collects in a" + Stats.Value + " cross", GameData.Colour(Genus), true, 40),
-				new StCon("Deals ", Color.white, false, 40),
-				new StCon(CrossDamage + " damage", GameData.Colour(Genus), true, 40)
+				new StCon(CrossDamage + " damage", GameData.Colour(GENUS.WIS), true, 40)
 			};
 		}
 	}
@@ -65,10 +64,12 @@ public class Cross : Tile {
 		}
 	}
 
-	public override IEnumerator BeforeMatch(bool original, int Damage = 0)
+	public override IEnumerator BeforeMatch(Tile Controller)
 	{
 		if(isMatching) yield break;
+		//print("MATCHING");
 		isMatching = true;
+
 		for(int i = 0; i < Particles.Length; i++)
 		{
 			Particles[i].startSize = 2 * _Scale;
@@ -95,7 +96,7 @@ public class Cross : Tile {
 						if(dist > CrossSize) continue;
 						if(_tiles[x,y].Type.isEnemy) 
 						{
-							_tiles[x,y].InitStats.Hits -= CrossDamage;
+							_tiles[x,y].InitStats.TurnDamage += CrossDamage;
 
 							Vector3 pos = TileMaster.Grid.GetPoint(_tiles[x,y].Point.Point(0)) + Vector3.down * 0.3F;
 							MiniAlertUI hit = UIManager.instance.DamageAlert(pos, CrossDamage);
@@ -103,11 +104,11 @@ public class Cross : Tile {
 							_tiles[x,y].PlayAudio("Hit");
 							EffectManager.instance.PlayEffect(_tiles[x,y].transform,Effect.Attack);
 						}
-						//if(!_tiles[x,y].isMatching)
-						//{
+						if(!_tiles[x,y].isMatching)
+						{
 							_tiles[x,y].SetState(TileState.Selected, true);
 							to_collect.Add(_tiles[x,y]);	
-						//}			
+						}			
 					}
 				} 
 			}
@@ -122,7 +123,8 @@ public class Cross : Tile {
 			//Particles[i].Stop();
 			Particles[i].enableEmission = false;
 		}
+		yield return StartCoroutine(base.BeforeMatch(Controller));
+		//yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 
-		yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 	}
 }

@@ -27,7 +27,7 @@ public class ClassAbilityUI : UIObj {
 
 	public void Setup(Class c)
 	{
-		float newx = UIManager.ClassButtons[c.Index].transform.position.x;
+		float newx = UIManager.CrewButtons[c.Index].transform.position.x;
 		//newx = Mathf.Clamp(newx, -1.3F, 1.3F);
 
 		//ClosedTrans.position = new Vector3(newx, ClosedTrans.position.y, ClosedTrans.position.z);

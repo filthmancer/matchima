@@ -291,10 +291,11 @@ public class GameManager : MonoBehaviour {
 				Wave.AddPoints(150);
 				break;
 				case 3: //c
-				TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["lightning"], GENUS.ALL,1, 1);
+				Tile t = TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["hero"], GENUS.STR,1, 1);
+				(t as Hero).SetClass(Player.Classes[0]);
 				//Player.instance.ResetLevel();
 				
-				/*UIManager.Objects.DeathIcon.transform.position = UIManager.ClassButtons[1].transform.position + Vector3.up * 5;
+				/*UIManager.Objects.DeathIcon.transform.position = UIManager.CrewButtons[1].transform.position + Vector3.up * 5;
 				UIManager.Objects.DeathIcon.gameObject.SetActive(true);
 				UIManager.Objects.DeathIcon.SetFrame(0);
 				UIManager.Objects.DeathIcon.Play("PlayDeath");*/
@@ -350,7 +351,8 @@ public class GameManager : MonoBehaviour {
 		inStartMenu = false;
 
 		UIManager.instance.SetLoadScreen(true);
-		
+		UIManager.instance.LoadText.text = "LOADING";
+
 		if(show_starter) StartCoroutine(ShowStarterAd());
 		TileMaster.instance.MapSize = new Vector2(1,1);
 		Player.instance.Load(c);
@@ -368,7 +370,8 @@ public class GameManager : MonoBehaviour {
 		(UIManager.instance.AdAlertMini[0] as UIObjTweener).SetTween(0, false);
 		//(UIManager.instance.AdAlert[0] as UIObjTweener).SetTween(0, false);
 		yield return new WaitForSeconds(0.1F);
-		UIManager.Objects.TopGear.Txt[0].text = "Touch to begin";
+		//UIManager.Objects.TopGear.Txt[0].text = "Touch to begin";
+		UIManager.instance.LoadText.text = "Touch to begin";
 		
 		bool press_start = false;
 		while(!press_start)
@@ -376,7 +379,7 @@ public class GameManager : MonoBehaviour {
 			if(Input.GetMouseButton(0)) press_start = true;
 			yield return null;
 		}
-
+		UIManager.instance.LoadText.text = "";
 		gameStart = true;
 		
 		Resources.UnloadUnusedAssets();
@@ -555,6 +558,7 @@ public class GameManager : MonoBehaviour {
 	IEnumerator StartGameEnterZone()
 	{
 		UIManager.instance.SetHealthNotifier(true);
+
 		UIManager.Objects.TopGear.Txt[0].text = "";
 		ResetFactors();
 
@@ -574,6 +578,8 @@ public class GameManager : MonoBehaviour {
 				CastReward(t);
 			}
 		}
+
+		
 	}
 
 	private void CastReward(Tile t)
@@ -906,7 +912,7 @@ public class GameManager : MonoBehaviour {
 			CurrentWave = null;
 		}
 
-		yield return StartCoroutine(CurrentZone.Enter());
+		//yield return StartCoroutine(CurrentZone.Enter());
 		yield return StartCoroutine(TileMaster.instance.CreateTravelTiles());
 
 		yield return StartCoroutine(_GetWave(w));
@@ -927,11 +933,29 @@ public class GameManager : MonoBehaviour {
 			Destroy(CurrentWave.gameObject);
 			CurrentWave = null;
 		}
+		UIManager.instance.SetZoneObj(true);
+		UIManager.instance.SetTooltipObj(true);
+		
+
 		yield return StartCoroutine(CurrentZone.Enter());
+
 		CurrentZone.SetCurrent(wavenum);
 		if(name != string.Empty) yield return StartCoroutine(_GetWave(CurrentZone.GetWaveByName(name)));
 		else yield return StartCoroutine(_GetWave());
+
+		Tile t = TileMaster.instance.ReplaceTile(TileMaster.Tiles[0,0], TileMaster.Types["hero"], GENUS.ALL,1, 1);
+		(t as Hero).SetClass(Player.Classes[0]);
+		t = TileMaster.instance.ReplaceTile(TileMaster.Tiles[1,0], TileMaster.Types["hero"], GENUS.ALL,1, 1);
+		(t as Hero).SetClass(Player.Classes[1]);
+		t = TileMaster.instance.ReplaceTile(TileMaster.Tiles[2,0], TileMaster.Types["hero"], GENUS.ALL,1, 1);
+		(t as Hero).SetClass(Player.Classes[2]);
+		t = TileMaster.instance.ReplaceTile(TileMaster.Tiles[3,0], TileMaster.Types["hero"], GENUS.ALL,1, 1);
+		(t as Hero).SetClass(Player.Classes[3]);
+		UIManager.instance.CreateControllerUI();
+		UIManager.instance.ShowControllerUI(true);
+		
 	}
+
 
 	public void EscapeZone()
 	{	
@@ -1057,9 +1081,9 @@ public class GameManager : MonoBehaviour {
 		EnemyTurn = true;
 		TileMaster.instance.SetFillGrid(false);
 		UIManager.instance.current_class = null;
-		UIManager.instance.SetClassButtons(false);
+		//UIManager.instance.SetCrewButtons(false);
 		UIManager.instance.ShowGearTooltip(false);
-		
+		bool showcontrol = UIManager.instance.ShowControllerUI(false);
 		UIManager.Objects.BotGear.SetToState(0);
 		UIManager.Objects.TopGear.SetToState(0);
 		UIManager.instance.MoveTopGear(0);
@@ -1070,7 +1094,7 @@ public class GameManager : MonoBehaviour {
 		//Debug.Log("BEFORE MATCH");
 		if(Player.instance.CompleteMatch) 
 		{
-			yield return StartCoroutine(MatchRoutine(PlayerControl.instance.finalTiles.ToArray()));
+			//yield return StartCoroutine(MatchRoutine(PlayerControl.instance.finalTiles.ToArray()));
 		}
 		else 
 		{
@@ -1101,7 +1125,7 @@ public class GameManager : MonoBehaviour {
 		while(TileMaster.EnemiesAttacking()) yield return null;
 		TileMaster.instance.ResetTiles(true);
 		//UIManager.instance.CashMeterPoints();
-		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+		//yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 		
 		yield return StartCoroutine(TileMaster.instance.AfterTurn());
 
@@ -1118,9 +1142,24 @@ public class GameManager : MonoBehaviour {
 		UIManager.Objects.BotGear.SetToState(0);
 		yield return StartCoroutine(Player.instance.BeginTurn());
 		
+
 		TileMaster.instance.ResetTiles(true);
 		UIManager.instance.ResetTopGear();
+		UIManager.instance.CreateControllerUI();
+		if(showcontrol) UIManager.instance.ShowControllerUI(true);
 		paused = false;
+
+		for(int i = 0; i < Random.Range(0, 3); i++)
+		{
+			Tile t = TileMaster.RandomResTile;
+			UIManager.instance.CastParticle(UIManager.instance.ZoneObj.transform, t, (Tile targ) =>
+				{
+					TileMaster.instance.ReplaceTile(targ, TileMaster.Types["grunt"], GENUS.RAND);
+					});
+
+			
+			yield return new WaitForSeconds(0.1F);
+		}
 		yield return null;
 	}
 
@@ -1218,41 +1257,83 @@ public class GameManager : MonoBehaviour {
 	{
 		List<Tile> newTiles = new List<Tile>();
 
-		//Tile mover = PlayerControl.instance.selectedTiles[0];
+		Tile mover = PlayerControl.instance.Controller;
+		int [] startpoint = new int[]{mover.x, mover.y};
+		int [] endpoint;
+		mover.Params.transform.position += Vector3.forward * -1.5F;
 		//PlayerControl.instance.selectedTiles.RemoveAt(0);
 
 		newTiles.AddRange(PlayerControl.instance.selectedTiles);
 		PlayerControl.instance.selectedTiles.Clear();
+
 		ComboFactor_RepeatedCombos = 1; //Number of repeated combos made by tiles
-		
+
+		TileMaster.instance.SetFillGrid(false);
+
+		int [] endspot = new int [2]{newTiles[newTiles.Count-1].x,newTiles[newTiles.Count-1].y};
+
+		bool initial_match = true;
 		while(newTiles.Count > 0)
 		{
+			yield return StartCoroutine(Player.instance.BeforeMatch(newTiles));
+
 			PlayerControl.instance.AddTilesToFinal(newTiles.ToArray());
-			//List<Tile> beforematch = new List<Tile>();
 			for (int i = 0; i < newTiles.Count; i++)
 			{
 				if (newTiles[i] == null) continue;
 
-				//yield return StartCoroutine(mover.MoveToTile(newTiles[i]));
-				if (newTiles[i].BeforeMatchEffect) yield return StartCoroutine(newTiles[i].BeforeMatch(false));
+
+				if(initial_match) yield return StartCoroutine(mover.MoveToPoint(newTiles[i].x, newTiles[i].y, false, 10.0F + 0.5F * i));
+
+				yield return StartCoroutine(newTiles[i].BeforeMatch(mover));
+				
+			}
+			if(initial_match)
+			{
+				endpoint = new int[2];
+				for (int i = newTiles.Count-1; i >= 0; i--)
+				{
+					if(newTiles[i].Destroyed) 
+					{
+						//print("DESTROYED " +  newTiles[i]);
+						endpoint = new int [] {newTiles[i].x, newTiles[i].y};
+						yield return StartCoroutine(mover.MoveToPoint(endpoint[0], endpoint[1], true, 10.0F));
+						break;
+					}
+					else if(i > 1)
+					{
+						//print("ALIVE " +  newTiles[i] + ", MOVING TO " + newTiles[i-1]);
+						yield return StartCoroutine(mover.MoveToPoint(newTiles[i-1].x, newTiles[i-1].y, false, 10.0F));
+					}
+					else 
+					{
+						//print("STARTPOINT " +  startpoint);
+						endpoint = startpoint;
+						yield return StartCoroutine(mover.MoveToPoint(endpoint[0], endpoint[1], true, 10.0F));
+						break;
+					}
+				}				
 			}
 
-			/*beforematch.Sort((a,b) => {return a.BeforeMatchPriority.CompareTo(b.BeforeMatchPriority);});
-			beforematch.OrderBy(b => b.BeforeMatchPriority);
-			for(int n = 0; n < beforematch.Count; n++)
-			{
-				yield return StartCoroutine(beforematch[n].BeforeMatch(false));
-			}*/
+			//print("COMPLETED MOVE");
+			
 
-			yield return StartCoroutine(Player.instance.BeforeMatch(newTiles));
+			
+				
+
 			yield return null;
 			newTiles.Clear();
 			newTiles.AddRange(PlayerControl.instance.selectedTiles);
 			yield return null;
 			PlayerControl.instance.selectedTiles.Clear();
 			ComboFactor_RepeatedCombos++;
-			//yield return new WaitForSeconds( GameData.GameSpeed(0.1F));
+			initial_match = false;
+			
+			yield return new WaitForSeconds( GameData.GameSpeed(0.1F));
 		}
+		//yield return StartCoroutine(Player.instance.BeforeMatch(PlayerControl.instance.finalTiles));
+		TileMaster.instance.SetFillGrid(true);
+		mover.Params.transform.position += Vector3.forward * 1.5F;
 	}
 
 	public IEnumerator MatchRoutine(params Tile [] tiles)
@@ -1309,7 +1390,7 @@ public class GameManager : MonoBehaviour {
 
 	public IEnumerator CompleteTurnRoutine()
 	{
-		UIManager.instance.SetClassButtons(false);
+		//UIManager.instance.SetCrewButtons(false);
 		UIManager.Objects.BotGear.SetToState(0);
 		UIManager.Objects.TopGear.SetToState(0);
 
@@ -1327,7 +1408,9 @@ public class GameManager : MonoBehaviour {
 		PlayerControl.instance.focusTile = null;
 		PlayerControl.instance.selectedTiles.Clear();
 		PlayerControl.instance.finalTiles.Clear();
+
 		PlayerControl.matchingTile = null;
+		PlayerControl.instance.SetController(null);
 		AudioManager.instance.ClearAlerts();
 
 		////CameraUtility.SetTurnOffset(false);
@@ -1509,7 +1592,7 @@ public class GameManager : MonoBehaviour {
 			//m.AddAction(() => {mini.enabled = true;});
 			//m.DestroyOnEnd = false;
 
-			//mini.SetTarget(UIManager.ClassButtons[(int)g].transform.position);
+			//mini.SetTarget(UIManager.CrewButtons[(int)g].transform.position);
 			//mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
 			//mini.SetMethod(() =>{
 			//		Player.Classes[(int)g].AddToMeter(5);
@@ -1558,7 +1641,7 @@ public class GameManager : MonoBehaviour {
 				//MoveToPoint mini = m.GetComponent<MoveToPoint>();
 				//m.AddAction(() => {mini.enabled = true;});
 				//m.DestroyOnEnd = false;
-				//mini.SetTarget(UIManager.ClassButtons[i].transform.position);
+				//mini.SetTarget(UIManager.CrewButtons[i].transform.position);
 				//mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
 				//mini.SetMethod(() =>{
 				//		Player.Classes[i].AddToMeter(5);
@@ -1642,7 +1725,7 @@ public class GameManager : MonoBehaviour {
 			MoveToPoint mini = m.GetComponent<MoveToPoint>();
 			m.AddAction(() => {mini.enabled = true;});
 			m.DestroyOnEnd = false;
-			mini.SetTarget(UIManager.ClassButtons[i].transform.position);
+			mini.SetTarget(UIManager.CrewButtons[i].transform.position);
 			mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
 			mini.SetMethod(() =>{
 					Player.Classes[i].AddToMeter(5);

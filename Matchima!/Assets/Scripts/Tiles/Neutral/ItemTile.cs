@@ -51,18 +51,22 @@ public class ItemTile : Tile {
 		new RollCon("lens", GENUS.RAND)
 	};
 
-	public override bool Match(int resource)
+	public override IEnumerator BeforeMatch(Tile Controller)
 	{
-		if(isMatching) return true;
+		if(this == null) yield break;
+		if(Controllable) yield break;
+
+		if(isMatching) yield break;
 		isMatching = true;
 
-		InitStats.Value *=  resource;
+		//InitStats.Value *=  resource;
 		CheckStats();
 		
 		RollCon type = Rolls[Random.Range(0, Rolls.Length)];
 		TileMaster.instance.ReplaceTile(this, TileMaster.Types[type.species], type.genus, Point.Scale, Stats.Value);
 		PlayAudio("cast");
-		return false;
+		yield return null;
+
 	//CHANGE ITEM STATS BASED ON VALUE
 
 	/*	GameObject item_obj = Instantiate(ItemObj);

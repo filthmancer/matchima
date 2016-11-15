@@ -14,7 +14,7 @@ public class AddTileEffect : Ability {
 	{
 		TileMaster.instance.SetAllTileStates(TileState.Locked, true);
 		GameObject part = Instantiate(Particle);
-		part.transform.position = UIManager.ClassButtons.GetClass(Parent.Index).transform.position;
+		part.transform.position = UIManager.CrewButtons[Parent.Index].transform.position;
 
 		yield return new WaitForSeconds(Time.deltaTime * 30);
 		

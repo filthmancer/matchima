@@ -23,15 +23,13 @@ public class Lightning : Tile {
 		get{
 			return new StCon[]{
 				new StCon("Shoots lightning at a random tile", Color.white,true, 40),
-				new StCon("Deals ", Color.white, false, 40),
-				new StCon(final_damage+"", GameData.Colour(GENUS.WIS), false, 40),
-				new StCon(" damage", Color.white, true, 40)
+				new StCon(final_damage+" damage", GameData.Colour(GENUS.WIS), false, 40)
 			};
 		}
 	}
 
 	
-	public override IEnumerator BeforeMatch(bool original, int Damage = 0)
+	public override IEnumerator BeforeMatch(Tile Controller)
 	{
 		if(isMatching) yield break;
 		isMatching = true;
@@ -161,8 +159,9 @@ public class Lightning : Tile {
 
 		//yield return StartCoroutine(Player.instance.BeforeMatch(to_collect));
 		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
-		
-		yield return new WaitForSeconds( GameData.GameSpeed(0.08F));
+		yield return StartCoroutine(base.BeforeMatch(Controller));
+		//yield return new WaitForSeconds( GameData.GameSpeed(0.08F));
+
 		//if(part) Destroy(part);
 	}
 

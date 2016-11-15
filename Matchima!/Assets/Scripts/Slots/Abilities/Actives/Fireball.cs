@@ -49,10 +49,10 @@ public class Fireball : Ability {
 		int yy = Random.Range(0, TileMaster.Grid.Size[1]);
 		Tile target = TileMaster.Tiles[xx,yy];
 
-		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(true);
-		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons.GetClass(Parent.Index).transform.position + Vector3.up, 
+		//UIManager.CrewButtons[Parent.Index].ShowClass(true);
+		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.CrewButtons[Parent.Index].transform.position + Vector3.up, 
 													"Fireball", 55, GameData.Colour(Parent.Genus), 1.2F, 0.25F);
-		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ClassButtons[(int)Parent.Genus].transform, Effect.Spell);
+		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.CrewButtons[Parent.Index].transform, Effect.Spell);
 
 		MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
 		mp.SetTarget(target.transform.position);
@@ -64,7 +64,7 @@ public class Fireball : Ability {
 		yield return new WaitForSeconds(GameData.GameSpeed(0.6F));
 
 		
-		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(false);
+		//UIManager.CrewButtons[Parent.Index].ShowClass(false);
 		//yield return StartCoroutine(CollectTiles(target));
 		//activated = false;
 	}

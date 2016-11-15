@@ -48,8 +48,8 @@ public class SlashOld : Ability{
 
 	public IEnumerator SlashRoutine()
 	{
-		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(true);
-		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons.GetClass(Parent.Index).transform.position + Vector3.up, 
+		//UIManager.CrewButtons[Parent.Index].ShowClass(true);
+		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.CrewButtons[Parent.Index].transform.position + Vector3.up, 
 													"Slash", 55, GameData.Colour(Parent.Genus), 1.2F, 0.25F);
 		yield return new WaitForSeconds(Time.deltaTime * 15);
 		TileMaster.instance.SetAllTileStates(TileState.Locked, true);

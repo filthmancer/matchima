@@ -300,10 +300,10 @@ public class Player : MonoBehaviour {
 		PlayerControl.matchingTile = null;
 
 		TileMaster.instance.SetFillGrid(true);
-		while (!TileMaster.AllLanded)	yield return null;
+		//while (!TileMaster.AllLanded)	yield return null;
 		UIManager.instance.SetBonuses(GameManager.instance.GetBonuses(GameManager.ComboSize));
 		UIManager.instance.StartTimer();
-		while (UIManager.instance.IsShowingMeters) yield return null;
+		//while (UIManager.instance.IsShowingMeters) yield return null;
 		yield break;
 	}
 
@@ -324,11 +324,11 @@ public class Player : MonoBehaviour {
 			}
 
 			//yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
-			UIManager.instance.SetClassButtons(false);
+		//	UIManager.instance.SetCrewButtons(false);
 		}
 
 
-		UIManager.instance.SetClassButtons(false);
+		//UIManager.instance.SetCrewButtons(false);
 		for (int i = 0; i < _Status.Count; i++)
 		{
 			if (_Status[i].CheckDuration())
@@ -703,17 +703,18 @@ public class Player : MonoBehaviour {
 		Stats.MapSize.x = Mathf.Clamp(Stats.MapSize.x, 0, 4);
 		Stats.MapSize.y = Mathf.Clamp(Stats.MapSize.y, 0, 4);
 
-		Stats._Attack = Mathf.Clamp(Stats._Attack, 0, 9999999);
+		Stats._Attack = 0; //Mathf.Clamp(Stats._Attack, 0, 9999999);
 		Stats._HealthMax = (int) Mathf.Clamp(Stats._HealthMax, 1, 999999);
 		Stats._Health = (int) Mathf.Clamp(Stats._HealthMax * ratio, 0, Stats._HealthMax);
 
 		Stats.MatchNumberModifier = Mathf.Clamp(Stats.MatchNumberModifier, -2, 100);
 
+
 		if (!Stats.isKilled && TileMaster.GridSetup)
 		{
 			TileMaster.instance.CheckGrid();
 		}
-
+		//Stats.Shift = ShiftType.None;
 		RequiredMatchNumber = Mathf.Clamp(3 + Stats.MatchNumberModifier, 1, 10);
 		ResetChances();
 	}

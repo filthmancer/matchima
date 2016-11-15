@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using System;
 
 public class UIManager : MonoBehaviour {
 #region Variables
@@ -19,7 +20,8 @@ public class UIManager : MonoBehaviour {
 	public UIObj Health;
 	public TextMeshProUGUI Armour;
 	public TextMeshProUGUI WaveHealthText;
-	public TextMeshProUGUI WaveTimer;
+	public TextMeshProUGUI LoadText;
+
 
 	public UITooltip Tooltip;
 
@@ -33,9 +35,12 @@ public class UIManager : MonoBehaviour {
 
 	public UIObj FullVersionAlert, AdAlert, AdAlertMini;
 
+	//public ClassSlotsUI _CrewButtons;
+	//public static ClassSlotsUI CrewButtons{get{return UIManager.instance._CrewButtons;}}
 
-	public ClassSlotsUI _ClassButtons;
-	public static ClassSlotsUI ClassButtons{get{return UIManager.instance._ClassButtons;}}
+	public CrewMenuUIObj [] _CrewButtons;
+	public static CrewMenuUIObj [] CrewButtons{get{return UIManager.instance._CrewButtons;}}
+
 	public static UIObj [] WaveButtons{get{return Objects.TopGear[1][0].Child;}}
 	public ItemUI ItemUI;
 
@@ -72,18 +77,18 @@ public class UIManager : MonoBehaviour {
 	{
 		instance = this;
 		Objects = this.GetComponent<UIObjects>();
-		Canvas = this.transform.GetChild(0).GetComponent<Canvas>();
+		Canvas = this.transform.GetChild(1).GetComponent<Canvas>();
 		Menu = Objects.MenuUI.GetComponent<UIMenu>();
 		Objects.MiddleGear.SetActive(true);
 	}
 
 	void Start () {
 		Objects.MainUI.SetActive(false);	
-		for(int i = 0; i < ClassButtons.Length; i++)
-		{
-			ClassButtons.GetClass(i)._Frame.SetSprite(TileMaster.Genus.Frames, i);
-			ClassButtons.GetClass(i)._FrameMask.SetSprite(TileMaster.Genus.Frames, i);
-		}
+		//for(int i = 0; i < CrewButtons.Length; i++)
+		//{
+		//	CrewButtons.GetClass(i)._Frame.SetSprite(TileMaster.Genus.Frames, i);
+		//	CrewButtons.GetClass(i)._FrameMask.SetSprite(TileMaster.Genus.Frames, i);
+		//}
 		
 	}
 
@@ -138,8 +143,8 @@ public class UIManager : MonoBehaviour {
 			}
 		}
 		
-		CameraUtility.instance.MainLight.color = Color.Lerp(
-			CameraUtility.instance.MainLight.color, BackingTint, Time.deltaTime * 5);
+		//CameraUtility.instance.MainLight.color = Color.Lerp(
+		//	CameraUtility.instance.MainLight.color, BackingTint, Time.deltaTime * 5);
 		Objects.Walls.color = Color.Lerp(
 			Objects.Walls.color, WallTint, Time.deltaTime * 5);
 
@@ -160,7 +165,7 @@ public class UIManager : MonoBehaviour {
 				if(GameManager.Wave[i] != null && GameManager.Wave[i].Active)
 				{
 					UIObjtk obj = WaveButtons[i] as UIObjtk;
-					GetWaveButton(ref obj, GameManager.Wave[i] as WaveUnit);								
+					//GetWaveButton(ref obj, GameManager.Wave[i] as WaveUnit);								
 				}
 				else 
 				{
@@ -252,10 +257,11 @@ public class UIManager : MonoBehaviour {
 
 		obj.Imgtk[0].SetSprite(TileMaster.Genus.Frames, outer_def);
 	}
-				
+	
 	
 	public Tile Tooltip_Target;
 	public UIObjtk Tooltip_Parent;
+	public UIObj Tooltip_DescObj;
 	public void TargetTile(Tile t = null)
 	{
 		if(Tooltip_Target == t && t != null) return;
@@ -265,7 +271,7 @@ public class UIManager : MonoBehaviour {
 		{
 			Tooltip_Parent.Imgtk[0].transform.gameObject.SetActive(false);//SetSprite(Tooltip_Target.Inner, Tooltip_Target.Info._GenusName);
 			Tooltip_Parent.Imgtk[1].SetSprite(TileMaster.Genus.Frames, "Omega");
-
+			Tooltip_Parent.Imgtk[2].color = GameData.Colour(GENUS.OMG);
 			for(int i = 0; i < Tooltip_Parent.Length; i++) Tooltip_Parent[i].SetActive(false);
 			return;
 		}
@@ -274,10 +280,16 @@ public class UIManager : MonoBehaviour {
 
 	//Set the sprites of the tile
 		Tooltip_Parent.Imgtk[0].transform.gameObject.SetActive(true);
-		Tooltip_Parent.Imgtk[0].SetSprite(Tooltip_Target.Inner, Tooltip_Target.Info._GenusName);
-		Tooltip_Parent.Imgtk[1].SetSprite(TileMaster.Genus.Frames, Tooltip_Target.Info.Outer);
 
+		string render = Tooltip_Target.GenusName;
+		tk2dSpriteDefinition id = Tooltip_Target.Inner.GetSpriteDefinition(render);
+		if(id == null) render = "Alpha";
+		Tooltip_Parent.Imgtk[0].SetSprite(Tooltip_Target.Inner, render);
+		Tooltip_Parent.Imgtk[0].scale = (Tooltip_Target is Hero) ? new Vector3(-3.4F, 3.4F, 1.0F) : Vector3.one * 19.0F;
+		Tooltip_Parent.Imgtk[1].SetSprite(TileMaster.Genus.Frames, Tooltip_Target.Info.Outer);
+		Tooltip_Parent.Imgtk[2].color = GameData.Colour(Tooltip_Target.Genus);
 	//Set the text info
+
 		Tooltip_Parent[0].SetActive(true);
 		Tooltip_Parent[0].Txt[0].text = t._Name.Value;
 		Tooltip_Parent[0].Txt[0].color = t._Name.Colour;
@@ -296,10 +308,105 @@ public class UIManager : MonoBehaviour {
 		}
 		else Tooltip_Parent[2].SetActive(false);
 
-		Tooltip_Parent[3].SetActive(false);
-		Tooltip_Parent[4].SetActive(false);
-		//Tooltip_Parent.Txt[3].text = t.Stats.Attack;
-		//Tooltip_Parent.Txt[4].text = t.Stats.Attack;
+		if(t.Stats.Spell != 0)
+		{
+			Tooltip_Parent[3].SetActive(true);
+			Tooltip_Parent[3].Txt[0].text = "" + t.Stats.Spell;
+		}
+		else Tooltip_Parent[3].SetActive(false);
+
+		if(t.Stats.Movement != 0)
+		{
+			Tooltip_Parent[4].SetActive(true);
+			Tooltip_Parent[4].Txt[0].text = "" + t.Stats.Movement;
+		}
+		else Tooltip_Parent[4].SetActive(false);
+
+		Tooltip_Parent[5].DestroyChildren();
+		if(t.FullDescription.Length != 0)
+		{
+			Tooltip_Parent[5].SetActive(true);
+			UIObj prev = null;
+			for(int i = 0; i < t.FullDescription.Length; i++)
+			{
+				StCon d = t.FullDescription[i];
+				//if(d.NewLine || prev == null)
+				//{
+					prev = (UIObj) Instantiate(Tooltip_DescObj);
+				//}
+
+				Tooltip_Parent[5].AddChild(prev);
+				prev.transform.SetParent(Tooltip_Parent[5].transform);
+				prev.transform.localScale = new Vector3(-1,1,1);
+
+				
+				prev.Txt[0].text = d.Value;
+				prev.Txt[1].text = "";
+				prev.Txt[0].color = d.Colour;
+				prev.Img[1].color = Color.grey;
+			}
+		}
+		
+	}
+
+	public UIObjTweener Controller_Parent;
+	public CrewMenuUIObj Controller_Obj;
+	public UIObj CrewButton;
+	public void CreateControllerUI()
+	{
+		CrewButton.ClearActions();
+		CrewButton.AddAction(UIAction.MouseUp, ()=>{ShowControllerUI();});
+		if(Controller_Parent.Length != 0)
+		{
+			Controller_Parent.DestroyChildren();
+		}
+
+		Tile [] control = TileMaster.Controllers;
+		List<CrewMenuUIObj> controlobjs = new List<CrewMenuUIObj>();
+		for(int i = 0; i < control.Length; i++)
+		{
+			CrewMenuUIObj cobj = (CrewMenuUIObj) Instantiate(Controller_Obj);
+			cobj.transform.SetParent(Controller_Parent.transform);
+			cobj.transform.localScale = Vector3.one;
+			cobj.transform.position = Vector3.zero;
+
+			cobj.Setup(control[i]);
+
+			controlobjs.Add(cobj);
+		}
+
+		_CrewButtons = controlobjs.ToArray();
+		Controller_Parent.AddChild(controlobjs.ToArray());
+		
+	}
+
+	public UIObjtk ZoneObj;
+	public void SetZoneObj(bool active)
+	{
+		ZoneObj.SetTween(0, active);
+		ZoneObj.Txt[0].text = GameManager.Zone.Name;
+		ZoneObj.Txt[1].text = GameManager.Zone.Mission;
+
+		ZoneObj.Imgtk[0].SetSprite(GameManager.Zone.BossWave[0].InnerOverrideData, GameManager.Zone.BossWave[0].InnerOverride);
+		ZoneObj.Imgtk[1].SetSprite(TileMaster.Genus.Frames, "Omega");
+
+
+	}
+
+	public void SetTooltipObj(bool active)
+	{
+		Tooltip_Parent.SetTween(0, active);
+	}
+
+	public bool ShowControllerUI(bool? active = null)
+	{
+		bool initial = Controller_Parent.GetTween(0);
+		Controller_Parent.SetTween(0, active);
+		bool actual = active ?? !initial;
+			
+		(CrewButton as UIObjtk).Imgtk[2].gameObject.SetActive(!actual);
+		(CrewButton as UIObjtk).Imgtk[1].gameObject.SetActive(actual);
+		return initial;
 	}
 
 	public IEnumerator Reset()
@@ -327,11 +434,11 @@ public class UIManager : MonoBehaviour {
 
 		i = 0;
 		
-		foreach(UIClassButton child in ClassButtons.Class)
-		{
-			child.Setup(Player.Classes[i]);
-			i++;
-		}
+		//foreach(UIClassButton child in CrewButtons.Class)
+		//{
+		//	child.Setup(Player.Classes[i]);
+		//	i++;
+		//}
 		yield return null;
 
 		Objects.MiddleGear[2][0].AddAction(UIAction.MouseUp, ()=>
@@ -377,7 +484,7 @@ public class UIManager : MonoBehaviour {
 
 		Objects.TopRightButton.ClearActions();
 
-		UIManager.ShowClassButtons(false);
+		//UIManager.ShowCrewButtons(false);
 		UIManager.ShowWaveButtons(false);
 		
 		UIManager.Objects.BotGear[0].SetActive(false);
@@ -431,6 +538,8 @@ public class UIManager : MonoBehaviour {
 
 	public void SetLoadScreen(bool active)
 	{
+
+		/*
 		UIManager.Objects.TopGear.SetToState(active ? 1 : 0);
 		UIManager.Objects.TopGear[3].SetActive(false);
 		UIManager.Objects.TopGear[4].SetActive(false);
@@ -448,6 +557,7 @@ public class UIManager : MonoBehaviour {
 		
 		UIManager.Objects.BotGear[0].SetActive(!active);
 		if(!active) UIManager.Objects.TopGear.Txt[0].text = "";
+		*/
 	}
 
 
@@ -583,7 +693,7 @@ public class UIManager : MonoBehaviour {
 			ShowingMeter[g] = true;
 			Meters[g] = points;
 			//MeterTimer = MeterTimer_init;
-			float init_rotation = Random.Range(-7,7);
+			float init_rotation = UnityEngine.Random.Range(-7,7);
 			
 
 			MeterObj[g] = UIManager.instance.MiniAlert(
@@ -696,7 +806,7 @@ public class UIManager : MonoBehaviour {
 			classtarget.transform.localScale = Vector3.one;
 
 			MoveToPoint classtarget_mover = AttachMoverToAlert(ref classtarget);
-			classtarget_mover.SetTarget(ClassButtons.GetClass(g).transform.position);
+			classtarget_mover.SetTarget(CrewButtons[g].transform.position);
 			classtarget_mover.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
 			classtarget_mover.SetIntMethod( 
 				(int [] amt) =>
@@ -728,37 +838,6 @@ public class UIManager : MonoBehaviour {
 		
 	}
 
-	public void SwapSlotButtons(UISlotButton a, Class c, int slot)
-	{
-		UIClassButton _class = ClassButtons.GetClass(c.Index);
-		UISlotButton b = _class.SlotUI[0] as UISlotButton;
-
-		if(a != null && b != null)
-		{
-			Slot slota = a.slot;
-			Slot slotb = b.slot;
-			if(a.Parent != null)
-			{
-				//StartCoroutine(
-					a.Parent.GetSlot(slotb, a.Index);
-					ClassButtons.GetClass(a.Parent.Index).TweenClass(false);
-			}
-			if(b.Parent != null) 
-			{
-				//StartCoroutine(
-
-					b.Parent.GetSlot(slota, b.Index);
-					ClassButtons.GetClass(b.Parent.Index).TweenClass(false);
-			}
-			
-			b.Setup(slota);
-			a.Setup(slotb);
-			b.Drag = DragType.None;
-			a.Drag = DragType.None;
-
-			_class.Setup(c);
-		}
-	}
 	public IEnumerator ShowKillUI(End_Type e, int [] xp_steps)
 	{
 		yield return StartCoroutine(KillUI.Activate(e, xp_steps));
@@ -873,24 +952,24 @@ public class UIManager : MonoBehaviour {
 		else Objects.TopGear[1][1][3][2].SetActive(false);		
 	}
 
-	public static void ShowClassButtons(bool? active = null)
+	/*public static void ShowCrewButtons(bool? active = null)
 	{
-		foreach(UIObj child in ClassButtons.Child)
+		foreach(UIObj child in CrewButtons.Child)
 		{
 			child.SetActive(active);
 		}
 	}
 
-	public void SetClassButtons(bool open)
+	public void SetCrewButtons(bool open)
 	{
-		foreach(UIClassButton child in ClassButtons.Class)
+		foreach(UIClassButton child in CrewButtons.Class)
 		{
 			if(child.PartialOpen.IsObjectOpened() != open)
 			{
 			 child.PartialOpen.OpenCloseObjectAnimation();
 			}
 		}
-	}
+	}*/
 
 	
 	public static void ShowWaveButtons(bool? active = null)
@@ -902,16 +981,16 @@ public class UIManager : MonoBehaviour {
 	}
 
 
-	public void ShowClassAbilities(Class c, bool? over = null)
+	/*public void ShowClassAbilities(Class c, bool? over = null)
 	{
 		bool active = over ?? (current_class != c);
 		current_class = (active ? c : null);
 		targetui_class = (active ? c : null);
-		for(int i = 0; i < ClassButtons.Length; i++)
+		for(int i = 0; i < CrewButtons.Length; i++)
 		{
-			ClassButtons.GetClass(i).Setup(ClassButtons.GetClass(i)._class);
+			CrewButtons.GetClass(i).Setup(CrewButtons.GetClass(i)._class);
 		}
-	}
+	}*/
 
 	public void ShowItemUI(params Item [] i)
 	{
@@ -931,10 +1010,10 @@ public class UIManager : MonoBehaviour {
 		ItemUI.gameObject.SetActive(false);
 		ItemUI_active = false;
 		ItemUI.DestroySlots();
-		ShowClassAbilities(null, false);
+		//ShowClassAbilities(null, false);
 		current_class = null;
 		targetui_class = null;
-		UIManager.instance.SetClassButtons(false);
+		//UIManager.instance.SetCrewButtons(false);
 	}
 
 	public void BotGearTween(bool? open = null)
@@ -950,7 +1029,7 @@ public class UIManager : MonoBehaviour {
 	private GameObject borderprefab, borderactual;
 	[SerializeField]
 	private GameObject borderactual_parent;
-	private Object borderpref_obj;
+	private UnityEngine.Object borderpref_obj;
 	public void AddBorderPrefab(Zone z)
 	{
 		if(borderactual != null)
@@ -1136,7 +1215,7 @@ public class UIManager : MonoBehaviour {
 	public void OpenBoonUI(UpgradeGroup group)
 	{
 		current_class = group.Target;
-		ShowClassAbilities(current_class, true);
+	//	ShowClassAbilities(current_class, true);
 		InMenu = true;
 		BoonUI_active = true;
 		LevelChoice = null;
@@ -1675,19 +1754,19 @@ public class UIManager : MonoBehaviour {
 		current_quote.answer = num;
 	}
 
-	public RectTransform GetResourceByTileType(Tile t)
+	/*public RectTransform GetResourceByTileType(Tile t)
 	{
-		if(t.Type.isHealth) return ClassButtons[0].transform as RectTransform;
-		if(t.Genus == GENUS.CHA) return ClassButtons[3].transform as RectTransform;
+		if(t.Type.isHealth) return CrewButtons[0].transform as RectTransform;
+		if(t.Genus == GENUS.CHA) return CrewButtons[3].transform as RectTransform;
 
-		if(t.Genus == GENUS.DEX) return ClassButtons[1].transform as RectTransform;
+		if(t.Genus == GENUS.DEX) return CrewButtons[1].transform as RectTransform;
 
-		if(t.Genus == GENUS.WIS) return ClassButtons[2].transform as RectTransform;
+		if(t.Genus == GENUS.WIS) return CrewButtons[2].transform as RectTransform;
 
-		if(t.Genus == GENUS.STR) return ClassButtons[0].transform as RectTransform;
+		if(t.Genus == GENUS.STR) return CrewButtons[0].transform as RectTransform;
 
 		return null;
-	}
+	}*/
 
 	public void ShowWaveInfo(bool active, int num)
 	{
@@ -1697,17 +1776,17 @@ public class UIManager : MonoBehaviour {
 
 	public IEnumerator AddClass(Class c, int slot)
 	{
-		ClassButtons.GetClass(slot).Setup(c);
+		//CrewButtons.GetClass(slot).Setup(c);
 	
-	  	/*UIManager.ClassButtons.GetClass(slot).ShowClass(true);
-	  	GameObject powerup = EffectManager.instance.PlayEffect(UIManager.ClassButtons.GetClass(slot).transform, Effect.ManaPowerUp, GameData.Colour(c.Genus));
+	  	/*UIManager.CrewButtons.GetClass(slot).ShowClass(true);
+	  	GameObject powerup = EffectManager.instance.PlayEffect(UIManager.CrewButtons.GetClass(slot).transform, Effect.ManaPowerUp, GameData.Colour(c.Genus));
 	  	powerup.transform.localScale = Vector3.one;
 	  	
 	  	yield return new WaitForSeconds(Time.deltaTime * 55);*/
 	  	MiniAlert(Health.transform.position + Vector3.up * 2.5F,
 		c.Name + " joined\nthe party!", 80, GameData.Colour((GENUS)slot), 1.1F, 0.1F, true);
 
-	  	//UIManager.ClassButtons.GetClass(slot).ShowClass(false);
+	  	//UIManager.CrewButtons.GetClass(slot).ShowClass(false);
 	  	//Destroy(powerup);
 	  	yield return new WaitForSeconds(Time.deltaTime * 55);
 	}
@@ -1721,7 +1800,7 @@ public class UIManager : MonoBehaviour {
 		GameManager.instance.paused = open;
 
 		ScreenAlert.SetTween(0, open);
-		if(!open) UIManager.instance.SetClassButtons(false);
+		//if(!open) UIManager.instance.SetCrewButtons(false);
 			UpdatePlayerLvl();
 
 	}
@@ -1856,7 +1935,7 @@ public class UIManager : MonoBehaviour {
 		Objects.MiddleGear[1][1].SetActive(false);
 		Objects.MiddleGear[1][2].SetActive(true);
 
-		if(!open) UIManager.instance.SetClassButtons(false);
+		//if(!open) UIManager.instance.SetCrewButtons(false);
 		if(ended)
 		{
 			//TITLE
@@ -2061,7 +2140,7 @@ public class UIManager : MonoBehaviour {
 		yield return StartCoroutine(GameData.DeltaWait(0.08F));
 		MiniAlertUI deathcomes = MiniAlert(Objects.MiddleGear.transform.position + Vector3.up * 1.5F, "DEATH COMES", 160, GameData.instance.BadColour, 1.9F, 0.2F);
 		//deathcomes.AddJuice(Juice.instance.Spooky, 0.45F);
-		ClassButtons.GetClass(c.Index).ShowClass(true);
+		//CrewButtons.GetClass(c.Index).ShowClass(true);
 		yield return StartCoroutine(GameData.DeltaWait(0.65F));
 
 		Objects.DeathParent.SetTween(0, true);
@@ -2074,7 +2153,7 @@ public class UIManager : MonoBehaviour {
 		deathimg.color = Color.white;
 
 		
-		Transform classbutton = ClassButtons.GetClass(c.Index).Img[0].transform;
+		Transform classbutton = c._Tile.transform;//CrewButtons.GetClass(c.Index).Img[0].transform;
 		death.position = classbutton.position + Vector3.down*0.65F;
 		death.localScale = new Vector3(c.Index > 1 ? -1:1,1,1);
 
@@ -2091,7 +2170,7 @@ public class UIManager : MonoBehaviour {
 		}
 		if(outcome_death) c.OnDeath();
 		MiniAlertUI m = UIManager.instance.MiniAlert(classbutton.position, (outcome_death ? "DEATH!" : "SAFE!"), 100, GameData.Colour(c.Genus), 1.2F, 0.2F);
-		(ClassButtons.GetClass(c.Index) as UIClassButton).Death.enabled = outcome_death;
+		CrewButtons[c.Index].Death.enabled = outcome_death;
 		float falling_time = 0.8F;
 		float falling_acc = 0.5F;
 		while((falling_time -= Time.deltaTime) > 0.0F)
@@ -2104,7 +2183,7 @@ public class UIManager : MonoBehaviour {
 		}
 
 		Objects.DeathParent.SetTween(0, false);
-		ClassButtons.GetClass(c.Index).ShowClass(false);
+		//CrewButtons[c.Index].ShowClass(false);
 		GameManager.instance.paused = false;
 		ScreenAlert.SetActive(false);
 		ScreenAlert.SetTween(0,false);
@@ -2183,7 +2262,7 @@ public class UIManager : MonoBehaviour {
 
 	public MiniAlertUI DamageAlert(Vector3 pos, int damage)
 	{
-		float init_rotation = Random.Range(-3,3);
+		float init_rotation = UnityEngine.Random.Range(-3,3);
 		float info_time = 0.5F;
 		float info_start_size = Mathf.Clamp(240 + (damage*2), 240, 350);
 		float info_movespeed = 0.25F;
@@ -2202,7 +2281,7 @@ public class UIManager : MonoBehaviour {
 
 	public MiniAlertUI HealAlert(Vector3 pos, int heal)
 	{
-		float init_rotation = Random.Range(-3,3);
+		float init_rotation = UnityEngine.Random.Range(-3,3);
 		float info_time = 0.5F;
 		float info_start_size = Mathf.Clamp(240 + (heal*2), 240, 350);
 		float info_movespeed = 0.25F;
@@ -2218,6 +2297,21 @@ public class UIManager : MonoBehaviour {
 		fin.Gravity = false;
 		fin.AddJuice(Juice.instance.BounceB, info_time/0.8F);
 		return fin;
+	}
+
+	public MoveToPoint CastParticle(Transform parent, Tile t, Action<Tile> a)
+	{
+		GameObject part = EffectManager.instance.PlayEffect(parent, Effect.Spell);
+
+		MoveToPoint mp = part.GetComponent<MoveToPoint>();
+		
+		mp.SetPath(28.0F, 0.2F);
+
+		mp.AddStep(t.transform.position, 0.0F);
+		//part.GetComponent<ParticleSystem>().startColor = GameData.Colour(Genus);
+
+		mp.SetTileMethod(t, a);
+		return mp;
 	}
 
 	/*

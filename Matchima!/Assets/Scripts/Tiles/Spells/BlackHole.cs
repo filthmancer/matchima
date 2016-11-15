@@ -17,7 +17,7 @@ public class BlackHole : Tile {
 		}
 	}
 
-	public override IEnumerator BeforeMatch(bool original, int Damage = 0)
+	public override IEnumerator BeforeMatch(Tile Controller)
 	{
 		if(isMatching) yield break;
 		isMatching = true;

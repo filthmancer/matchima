@@ -25,14 +25,13 @@ public class Flame : Tile {
 		get{
 			return new StCon[]{
 				new StCon("Collects a cone of tiles", GameData.Colour(Genus), true, 40),
-				new StCon("Deals ", Color.white, false, 40),
-				new StCon(damage + " damage", GameData.Colour(Genus), true, 40)
+				new StCon(damage + " damage", GameData.Colour(GENUS.WIS), true, 40)
 			};
 		}
 	}
 
 
-	public override IEnumerator BeforeMatch(bool original, int Damage = 0)
+	public override IEnumerator BeforeMatch(Tile Controller)
 	{
 		if(isMatching) yield break;
 		isMatching = true;
@@ -91,7 +90,7 @@ public class Flame : Tile {
 		int cycle = 0;
 
 		GameObject targ = (GameObject)Instantiate(TargetObj);
-		targ.transform.position = TileMaster.Tiles[x,y].transform.position;
+		targ.transform.position = TileMaster.Grid[x,y].Pos;
 		PlayAudio("cast");
 		while(cycle < total_cycles)
 		{	
@@ -106,23 +105,20 @@ public class Flame : Tile {
 				velocity.y = -velocity.y;
 			}
 
-			if(!TileMaster.Tiles[x,y].isMatching)
+			if(TileMaster.Tiles[x,y] != null && !TileMaster.Tiles[x,y].isMatching)
 			{
-				
 				if(TileMaster.Tiles[x,y] != this)
 				{
 					to_collect.Add(TileMaster.Tiles[x,y]);	
+					FlameTile(TileMaster.Tiles[x,y]);
+					yield return new WaitForSeconds(GameData.GameSpeed(0.04F));
 				}
-					
-				FlameTile(TileMaster.Tiles[x,y]);
-				yield return new WaitForSeconds(GameData.GameSpeed(0.04F));
-				//yield return new WaitForSeconds(Time.deltaTime * 5);
 			}
 
 			if(cycle < total_cycles-1)
 			{
-				Vector3 initpos = TileMaster.Tiles[x,y].transform.position;
-				Vector3 nextpos = TileMaster.Tiles[x+velocity.x, y+velocity.y].transform.position;
+				Vector3 initpos = TileMaster.Grid[x,y].Pos;
+				Vector3 nextpos = TileMaster.Grid[x+velocity.x, y+velocity.y].Pos;
 				bool isLerping = true;
 				float rate = 0.0F;
 
@@ -132,9 +128,7 @@ public class Flame : Tile {
 					rate += Time.deltaTime * 8;
 					if(rate >= 1.0F) isLerping = false;
 					yield return null;
-				}	
-
-				
+				}			
 			}
 			
 			
@@ -150,8 +144,7 @@ public class Flame : Tile {
 
 		if(to_collect.Count == 0) yield break;
 
-
-		yield return StartCoroutine(Player.instance.BeforeMatch(to_collect));
+		//yield return StartCoroutine(Player.instance.BeforeMatch(to_collect));
 		PlayerControl.instance.RemoveTileToMatch(this);
 		to_collect.Add(this);
 
@@ -170,7 +163,8 @@ public class Flame : Tile {
 		}
 
 		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
-		yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
+		yield return StartCoroutine(base.BeforeMatch(Controller));
+		//yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 	}
 
 	void FlameTile(Tile t)

@@ -76,7 +76,7 @@ public class Tile : MonoBehaviour {
 	public GENUS Genus{
 		get{return Info._GenusEnum;}
 	}
-	public string GenusName
+	public virtual string GenusName
 	{
 		get{return GameData.ResourceLong(Genus);}
 	}
@@ -101,6 +101,8 @@ public class Tile : MonoBehaviour {
 	public TileState state;
 	[HideInInspector]
 	public TilePointContainer Point;
+
+	public bool Controllable;
 
 	[HideInInspector]
 	public bool isMatching;
@@ -136,7 +138,7 @@ public class Tile : MonoBehaviour {
 	private float targetScale = 1.1F;
 	private float defaultScale = 1.1f;
 
-	private SphereCollider collider;
+	private SphereCollider _collider;
 
 	public bool NewVisuals = false;
 
@@ -244,8 +246,8 @@ public class Tile : MonoBehaviour {
 		marked = false;
 		originalMatch = false;
 		state_override = false;
-		collider = GetComponent<SphereCollider>();
-		//collider.enabled = true;
+		_collider = GetComponent<SphereCollider>();
+		//_collider.enabled = true;
 		for(int i = 0; i < Effects.Count; i++)
 		{
 			Destroy(Effects[i].gameObject);
@@ -298,7 +300,6 @@ public class Tile : MonoBehaviour {
 	public virtual void Update () {
 		if(Destroyed || UnlockedFromGrid) return;
 
-
 		if(GameManager.inStartMenu) 
 		{
 			if(Player.loaded && UIManager.loaded) Destroy(this.gameObject); 
@@ -306,7 +307,7 @@ public class Tile : MonoBehaviour {
 			return;
 		}
 		if(TileMaster.Tiles.GetLength(0) <= Point.Base[0] || TileMaster.Tiles.GetLength(1) <= Point.Base[1]) return;
-		if(TileMaster.Tiles[Point.Base[0], Point.Base[1]] != this && TileMaster.Tiles[Point.Base[0], Point.Base[1]] != null && !Destroyed) 
+		if(!Controllable && TileMaster.Tiles[Point.Base[0], Point.Base[1]] != this && TileMaster.Tiles[Point.Base[0], Point.Base[1]] != null && !Destroyed) 
 		{
 			TileMaster.instance.SetFillGrid(true);
 			DestroyThyself();
@@ -336,57 +337,48 @@ public class Tile : MonoBehaviour {
 			if(!isMatching) transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one * targetScale, Time.deltaTime * 5);
 			Params._shiny.enabled = IsState(TileState.Selected);
 		}
-
-		
-
-		//if(GameManager.instance.EnemyTurn && !IsState(TileState.Selected)) SetState(TileState.Locked);
-
 		
 		if(!IsState(TileState.Selected))
 		{
-			//Params.lineIn.enabled = false;
-			//Params.lineOut.enabled = false;	
-			//linepos = PlayerControl.InputPos;
-			/*if(Player.Options.ViewTileStats) SetCounter("" + Stats.Value);
-			else if(!GameManager.instance.EnemyTurn) SetCounter("");*/
-
 			if(GameManager.instance.EnemyTurn) return;
-
-			if(PlayerControl.instance.focusTile == this && !PlayerControl.HoldingSlot)
+			bool hascontrol = PlayerControl.instance.Controller != null;
+			bool controlgenus = IsGenus(PlayerControl.instance.Controller_Genus);
+			if(PlayerControl.instance.focusTile == this)
 			{
-				if(IsGenus(PlayerControl.matchingTile) || PlayerControl.matchingTile == null)
+				if(hascontrol)
 				{
-					if(Application.isEditor)
+					if(controlgenus)
 					{
-						SetState(TileState.Hover);	
-					} 
-
-					if(Input.GetMouseButton(0) || Input.GetKey(KeyCode.Space)) 
-					{
-						Tile lastselected = PlayerControl.instance.LastSelected();
-						int [] diff;
-						if(lastselected!= null && lastselected != this)
+						if(Input.GetMouseButton(0) || Input.GetKey(KeyCode.Space)) 
 						{
-							lastselected.SetArrow(this);
+							Tile lastselected = PlayerControl.instance.LastSelected();
+							int [] diff;
+							if(lastselected!= null && lastselected != this)
+							{
+								lastselected.SetArrow(this);
+							}
+							if(lastselected == null || (lastselected != this && TileMaster.instance.AreNeighbours(lastselected, this, out diff)))
+							{	
+								SetState(TileState.Selected);
+								PlayerControl.instance.AddTilesToSelected(this);
+								PlayAudio("touch");
+							}
+							else SetState(TileState.Idle);	
 						}
-						if(lastselected == null || TileMaster.instance.AreNeighbours(lastselected, this, out diff))
-						{	
-							SetState(TileState.Selected);
-							PlayerControl.instance.GetSelectedTile(this);
-
-							PlayAudio("touch");
-						}
-						else SetState(TileState.Idle);	
-					}		
+					}
+					else
+					{
+						if(!IsState(TileState.Locked)) PlayAudio("touch");
+						SetState(TileState.Locked);
+					}	
 				}
-				else 
+				else
 				{
-					if(!IsState(TileState.Locked)) PlayAudio("touch");
-					SetState(TileState.Locked);
-
+					SetState(TileState.Selected);
 				}
+				
 			}
-			else if(PlayerControl.matchingTile != null && !IsGenus(PlayerControl.matchingTile))
+			else if(hascontrol && !controlgenus)
 			{
 				SetState(TileState.Locked);
 			}
@@ -410,51 +402,9 @@ public class Tile : MonoBehaviour {
 		{
 			if(PlayerControl.instance.focusTile == this && PlayerControl.instance.SecondLastSelected() == this)	
 			{
-				PlayerControl.instance.BackTo(this);
-				//Params.lineIn.enabled = false;
-				//Params.lineOut.enabled = false;			
+				PlayerControl.instance.BackTo(this);		
 			}
-			/*else if(PlayerControl.instance.SecondLastSelected() == this && PlayerControl.instance.LastSelected() != null)
-			{
-				LineTarget = PlayerControl.instance.LastSelected();
-			}
-			if(PlayerControl.instance.LastSelected() == this && PlayerControl.instance.focusTile != null && !GameManager.instance.EnemyTurn && !UIManager.InMenu)
-			{
-				float softdist = 1.4F * Point.Scale;
-				float stretch = 1.0F;
-				float str_decay = 1.0F;
-
-				float dist = Vector3.Distance(PlayerControl.InputPos, transform.position);
-				Vector3 vel = PlayerControl.InputPos - transform.position;
-				Vector3 final = transform.position + vel.normalized * softdist;
-
-				if(dist > softdist)
-				{
-					stretch = dist/softdist - (dist-softdist)/(dist-softdist);
-					//Params._render.transform.position = Vector3.Lerp(Point.targetPos, final, 0.02F);
-					//linepos = final;
-				}
-				else
-				{
-					//linepos = PlayerControl.InputPos;
-					//Params._render.transform.position = Vector3.Lerp(Point.targetPos, transform.position + vel, 0.02F);
-				}
-				
-			}
-			else if(GameManager.instance.EnemyTurn || UIManager.InMenu)
-			{
-				//Params.lineIn.enabled = false;
-				//Params.lineOut.enabled = false;
-			}
-			else 
-			{
-				if(LineTarget == null) 
-				{
-					//Params.lineIn.enabled = false;
-					//Params.lineOut.enabled = false;
-					return;
-				}
-			}*/
+			else SetState(TileState.Idle);
 		}		
 	}
 
@@ -466,8 +416,6 @@ public class Tile : MonoBehaviour {
 	void LateUpdate()
 	{
 		_Transform.rotation = Quaternion.Slerp(_Transform.rotation, Quaternion.Euler(rotation), Time.deltaTime * 8);
-		//Params.counter.transform.rotation = Quaternion.Euler(Vector3.zero);
-		//Params.otherWarning.transform.rotation = Quaternion.Euler(Vector3.zero);
 	}
 
 	
@@ -580,7 +528,7 @@ public class Tile : MonoBehaviour {
 			{
 				if(speed >= 0.0F) speed = -0.1F;
 				_Transform.localScale = new Vector3(defaultScale+speed/90, defaultScale,defaultScale);
-				if(collider.enabled) collider.enabled = false;
+				if(_collider.enabled) _collider.enabled = false;
 				isFalling = true;
 			}
 		}
@@ -635,9 +583,28 @@ public class Tile : MonoBehaviour {
 
 	[HideInInspector]
 	public int BeforeMatchPriority = 0;
-	public virtual IEnumerator BeforeMatch(bool original, int Damage = 0)
+	public virtual IEnumerator BeforeMatch(Tile Controller)
 	{
-		InitStats.TurnDamage = Damage;
+		if(this == null) yield break;//return false;
+		if(Controllable) yield break; //return ControlMatch(0);
+
+		//InitStats.TurnDamage += Controller.Stats.Attack;
+		InitStats.Hits -= 1;
+		CheckStats();
+		PlayAudio("match");
+		if(Stats.Hits <= 0)
+		{
+			isMatching = true;
+			//Stats.Value *=  resource;
+			CollectThyself(true);
+			TileMaster.Tiles[Point.Base[0], Point.Base[1]] = null;		
+		}
+		else 
+		{
+			isMatching = false;
+			CollectThyself(false);
+			EffectManager.instance.PlayEffect(_Transform,Effect.Attack);
+		}
 		yield break;
 	}
 
@@ -666,6 +633,8 @@ public class Tile : MonoBehaviour {
 	public virtual bool Match(int resource)
 	{
 		if(this == null) return false;
+		if(Controllable) return ControlMatch(resource);
+
 		InitStats.Hits -= 1;
 		CheckStats();
 		PlayAudio("match");
@@ -673,7 +642,6 @@ public class Tile : MonoBehaviour {
 		{
 			isMatching = true;
 			Stats.Value *=  resource;
-			
 			CollectThyself(true);
 			TileMaster.Tiles[Point.Base[0], Point.Base[1]] = null;
 
@@ -686,6 +654,11 @@ public class Tile : MonoBehaviour {
 			CollectThyself(false);
 			EffectManager.instance.PlayEffect(_Transform,Effect.Attack);
 		}
+		return false;
+	}
+
+	public virtual bool ControlMatch(int resource)
+	{
 		return false;
 	}
 
@@ -719,7 +692,7 @@ public class Tile : MonoBehaviour {
 			}
 		}
 
-		collider.enabled = true;
+		_collider.enabled = true;
 		isFalling = false;
 		if(!IsState(TileState.Selected) && !IsState(TileState.Locked))  {
 			SetState(TileState.Idle);
@@ -817,6 +790,11 @@ public class Tile : MonoBehaviour {
 		yield return null;
 	}
 
+	public virtual void AddMana(GENUS g, int m)
+	{
+		
+	}
+
 	public virtual IEnumerator Animate(string type, float time = 0.0F)
 	{
 		if(_anim == null) yield break;
@@ -911,12 +889,17 @@ public class Tile : MonoBehaviour {
 
 	public bool IsType(params string [] s)
 	{
+		bool genus = true;
+		string asgenus = s[0].ToLower();
+		GENUS g = TileMaster.Genus.GenusOf(asgenus);
+
+		if(g != GENUS.NONE && Genus != g) genus = false;
+
 		for(int i = 0; i < s.Length; i++)
 		{
-			if(Type.IsType(s[i])) return true;
+			if(Type.IsType(s[i])) return genus;
 		}
 		return false;
-		//return Type.IsType(s);
 	}
 
 	public bool IsType(string g, string s)
@@ -1339,18 +1322,95 @@ public class Tile : MonoBehaviour {
 		SetSprite();
 	}
 
+
+
+	private MoveToPoint _movecomp;
+	public MoveToPoint MoveComp
+	{
+		get{
+			if(_movecomp == null) _movecomp = this.gameObject.AddComponent<MoveToPoint>();
+			return _movecomp;
+		}
+	}
+	public IEnumerator MoveToTile(Tile t, bool overtake, float speed = 6.0F, float arc = 0.0F)
+	{
+		bool complete = false;
+		Vector3 newpoint = t.Point.targetPos;
+		UnlockedFromGrid = true;
+
+		MoveComp.Clear();
+		MoveComp.SetTarget(newpoint);
+		MoveComp.SetPath(speed, arc);
+		MoveComp.SetThreshold(0.1F);
+		MoveComp.DontDestroy = true;
+		MoveComp.NoDestroy = true;
+
+		MoveComp.SetMethod(() => {
+			complete = true;
+			
+			if(overtake)
+			{
+				UnlockedFromGrid = false;
+				TileMaster.Grid[x,y]._Tile = null;
+				TileMaster.Grid[t.x, t.y]._Tile = this;
+				Setup(t.x, t.y);
+				transform.position = new Vector3(Point.targetPos.x, Point.targetPos.y, transform.position.z);
+				SetSprite();
+			}
+			
+		});
+
+		while(!complete) yield return null;
+	}
+
+	public IEnumerator MoveToPoint(int _x, int _y, bool overtake, float speed = 6.0F, float arc = 0.0F)
+	{
+		bool complete = false;
+		Vector3 newpoint = TileMaster.Grid[_x,_y].Pos;
+		UnlockedFromGrid = true;
+
+		MoveComp.Clear();
+		MoveComp.SetTarget(newpoint);
+		MoveComp.SetPath(speed, arc);
+		MoveComp.SetThreshold(0.1F);
+		MoveComp.DontDestroy = true;
+		MoveComp.NoDestroy = true;
+
+		MoveComp.SetMethod(() => {
+			complete = true;
+			
+			if(overtake)
+			{
+				UnlockedFromGrid = false;
+				TileMaster.Grid[x,y]._Tile = null;
+				TileMaster.Grid[_x, _y]._Tile = this;
+				Setup(_x, _y);
+				transform.position = new Vector3(Point.targetPos.x, Point.targetPos.y, transform.position.z);
+				SetSprite();
+			}
+			
+		});
+
+		while(!complete) 
+		{
+			yield return null;
+		}
+		
+	}
+
 	public void MoveToGridPoint(int x, int y, float arc = 0.0F)
 	{
 		Vector3 newpoint = TileMaster.Grid[x,y].position;
 		UnlockedFromGrid = true;
 
-		MoveToPoint mp = this.gameObject.AddComponent<MoveToPoint>();
-		mp.SetTarget(newpoint);
-		mp.SetPath(6.0F, arc);
-		mp.SetThreshold(0.1F);
-		mp.DontDestroy = true;
+		MoveComp.Clear();
+		MoveComp.SetTarget(newpoint);
+		MoveComp.SetPath(6.0F, arc);
+		MoveComp.SetThreshold(0.1F);
+		MoveComp.DontDestroy = true;
+		MoveComp.NoDestroy = true;
 
-		mp.SetIntMethod((int [] num) => {
+		MoveComp.SetIntMethod((int [] num) => {
 			TileMaster.Grid[num[0], num[1]]._Tile = this;
 			Setup(num[0], num[1]);
 
@@ -1360,26 +1420,6 @@ public class Tile : MonoBehaviour {
 			
 		}, x,y);
 		
-	}
-
-	public IEnumerator MoveToTile(Tile t, float arc = 0.0F)
-	{
-		bool complete = false;
-		Vector3 newpoint = t.transform.position;
-		UnlockedFromGrid = true;
-
-		MoveToPoint mp = this.gameObject.AddComponent<MoveToPoint>();
-		mp.SetTarget(newpoint);
-		mp.SetPath(6.0F, arc);
-		mp.SetThreshold(0.1F);
-		mp.DontDestroy = true;
-
-		mp.SetMethod(() => {
-			complete = true;
-			UnlockedFromGrid = false;
-		});
-
-		while(!complete)yield return null;
 	}
 
 	public bool Isolated
@@ -1425,6 +1465,9 @@ public class TileStat
 	
 	public int Hits        = 0;
 	public int Attack      = 0;
+	public int Spell 	   = 0;
+	public int Movement    = 0;
+	
 	public int Lifetime    = 0;
 	public int Deathtime   = 0;
 	
@@ -1460,6 +1503,7 @@ public class TileStat
 		
 		Hits        += t.Hits;
 		Attack      += t.Attack;
+		Movement    += t.Movement;
 		Lifetime    += t.Lifetime;
 		Deathtime   += t.Deathtime;
 		
@@ -1499,6 +1543,7 @@ public class TileStat
 			Armour 	  = t.Armour;
 			Hits      = t.Hits;
 			Attack    = t.Attack;
+			Movement  = t.Movement;
 			Lifetime  = t.Lifetime;
 			Deathtime = t.Deathtime;
 
@@ -1653,7 +1698,7 @@ public class TilePointContainer
 		return point;
 	}
 
-	public Tile [] GetNeighbours(bool diags = false)
+	public Tile [] GetNeighbours(bool diags = false, string type = "")
 	{
 		List<Tile> final = new List<Tile>();
 		for(int xx = 0; xx < AllX.Count; xx++)
@@ -1665,22 +1710,22 @@ public class TilePointContainer
 				Tile c = TileMaster.instance.GetTile(AllX[xx], AllY[yy]-1);
 				Tile d = TileMaster.instance.GetTile(AllX[xx], AllY[yy]+1);
 				
-				if(a != null && !final.Contains(a) && a != parent) final.Add(a);
-				if(b != null && !final.Contains(b) && b != parent) final.Add(b);
-				if(c != null && !final.Contains(c) && c != parent) final.Add(c);
-				if(d != null && !final.Contains(d) && d != parent) final.Add(d);
+				if(a != null && !final.Contains(a) && a != parent && a.IsType(type)) final.Add(a);
+				if(b != null && !final.Contains(b) && b != parent && b.IsType(type)) final.Add(b);
+				if(c != null && !final.Contains(c) && c != parent && c.IsType(type)) final.Add(c);
+				if(d != null && !final.Contains(d) && d != parent && d.IsType(type)) final.Add(d);
 
 				if(diags)
 				{
 					Tile e = TileMaster.instance.GetTile(AllX[xx]+1, AllY[yy]+1);
 					Tile f = TileMaster.instance.GetTile(AllX[xx]-1, AllY[yy]-1);
-					if(e != null && !final.Contains(e) && e != parent) final.Add(e);
-					if(f != null && !final.Contains(f) && f != parent) final.Add(f);
+					if(e != null && !final.Contains(e) && e != parent && e.IsType(type)) final.Add(e);
+					if(f != null && !final.Contains(f) && f != parent && f.IsType(type)) final.Add(f);
 
 					Tile g = TileMaster.instance.GetTile(AllX[xx]+1, AllY[yy]-1);
 					Tile h = TileMaster.instance.GetTile(AllX[xx]-1, AllY[yy]+1);
-					if(g != null && !final.Contains(g) && g != parent) final.Add(g);
-					if(h != null && !final.Contains(h) && h != parent) final.Add(h);
+					if(g != null && !final.Contains(g) && g != parent && g.IsType(type)) final.Add(g);
+					if(h != null && !final.Contains(h) && h != parent && h.IsType(type)) final.Add(h);
 				}
 				
 			}

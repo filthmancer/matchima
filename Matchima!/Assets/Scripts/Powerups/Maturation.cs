@@ -7,10 +7,10 @@ public class Maturation : Powerup {
 	{
 		GameManager.instance.paused = true;
 		UIManager.instance.ScreenAlert.SetTween(0,true);
-		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(true);
+		//UIManager.CrewButtons[Parent.Index].ShowClass(true);
 		GameObject powerup = EffectManager.instance.PlayEffect(this.transform,  "powerupstart", GameData.Colour(Parent.Genus));
-		powerup.transform.SetParent(UIManager.ClassButtons.GetClass(Parent.Index).transform);
-		powerup.transform.position = UIManager.ClassButtons.GetClass(Parent.Index).transform.position;
+		powerup.transform.SetParent(UIManager.CrewButtons[Parent.Index].transform);
+		powerup.transform.position = UIManager.CrewButtons[Parent.Index].transform.position;
 		powerup.transform.localScale = Vector3.one;
 
 		float step_time = 0.75F;
@@ -26,7 +26,7 @@ public class Maturation : Powerup {
 			"Play the\nnotes!", 140, GameData.Colour(GENUS.STR), step_time, 0.2F);
 		c.AddJuice(Juice.instance.BounceB, 0.1F);
 		yield return new WaitForSeconds(GameData.GameSpeed(step_time));
-		UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(false);
+		//UIManager.CrewButtons[Parent.Index].ShowClass(false);
 		Destroy(powerup);
 
 

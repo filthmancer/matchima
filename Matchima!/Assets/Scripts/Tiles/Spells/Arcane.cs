@@ -30,10 +30,8 @@ public class Arcane : Tile {
 	{
 		get{
 			return new StCon[]{
-				new StCon("Attacks " + TilesCollected + " enemy tiles", Color.white,true, 40),
-				new StCon("Deals ", Color.white, false, 40),
-				new StCon(final_damage+"", GameData.Colour(GENUS.WIS), false, 40),
-				new StCon(" damage", Color.white, true, 40)
+				new StCon("Attacks " + TilesCollected + " enemies", Color.white,true, 40),
+				new StCon(final_damage + "damage", GameData.Colour(GENUS.WIS), false, 40)
 			};
 		}
 	}
@@ -48,7 +46,7 @@ public class Arcane : Tile {
 	}
 
 
-	public override IEnumerator BeforeMatch(bool original, int Damage = 0)
+	public override IEnumerator BeforeMatch(Tile Controller)
 	{
 		float part_time = 0.25F;
 		if(isMatching) yield break;
@@ -64,6 +62,7 @@ public class Arcane : Tile {
 		{
 			for(int yy = 0; yy < y; yy++)
 			{
+				if(TileMaster.Tiles[xx,yy] == null) continue;
 				if(TileMaster.Tiles[xx,yy].IsGenus(GENUS.OMG, false) &&
 					!TileMaster.Tiles[xx,yy].isMatching) to_collect.Add(TileMaster.Tiles[xx,yy]);
 			}
@@ -90,41 +89,44 @@ public class Arcane : Tile {
 			yield return new WaitForSeconds(part_time);	
 		}
 
-		if(TileMaster.instance.EnemiesOnScreen == 0 || TileMaster.Enemies.Length == 0) yield break;
-
-		List<Tile> enemies = new List<Tile>();
-		enemies.AddRange(TileMaster.Enemies);
-		
-		while(to_collect.Count < TilesCollected)
+		if(TileMaster.instance.EnemiesOnScreen != 0 || TileMaster.Enemies.Length != 0)
 		{
-			if(enemies.Count == 0) enemies.AddRange(TileMaster.Enemies);
-
-			Tile c = enemies[UnityEngine.Random.Range(0, enemies.Count)];
-			enemies.Remove(c);
-			to_collect.Add(c);	
-			PlayAudio("cast");
-
-
-			AttackParticle((float) part_num/TilesCollected, c, (Tile child) =>
+			List<Tile> enemies = new List<Tile>();
+			enemies.AddRange(TileMaster.Enemies);
+			
+			while(to_collect.Count < TilesCollected)
 			{
-				child.SetState(TileState.Selected, true);
-				child.InitStats.Hits -= final_damage;
-				child.PlayAudio("hit");
+				if(enemies.Count == 0) enemies.AddRange(TileMaster.Enemies);
 
-				PlayerControl.instance.AddTilesToSelected(child);
+				Tile c = enemies[UnityEngine.Random.Range(0, enemies.Count)];
+				enemies.Remove(c);
+				to_collect.Add(c);	
+				PlayAudio("cast");
 
-				Vector3 pos = TileMaster.Grid.GetPoint(child.Point.Point(0)) + Vector3.down * 0.3F;
-				MiniAlertUI hit = UIManager.instance.DamageAlert(pos, final_damage);
 
-				CameraUtility.instance.ScreenShake(0.26F + 0.02F * final_damage,  GameData.GameSpeed(0.06F));
-				EffectManager.instance.PlayEffect(child.transform,Effect.Attack);
-			});
-			part_num++;
-				
-			yield return new WaitForSeconds(part_time);
+				AttackParticle((float) part_num/TilesCollected, c, (Tile child) =>
+				{
+					child.SetState(TileState.Selected, true);
+					child.InitStats.TurnDamage += final_damage;
+					child.PlayAudio("hit");
+
+					PlayerControl.instance.AddTilesToSelected(child);
+
+					Vector3 pos = TileMaster.Grid.GetPoint(child.Point.Point(0)) + Vector3.down * 0.3F;
+					MiniAlertUI hit = UIManager.instance.DamageAlert(pos, final_damage);
+
+					CameraUtility.instance.ScreenShake(0.26F + 0.02F * final_damage,  GameData.GameSpeed(0.06F));
+					EffectManager.instance.PlayEffect(child.transform,Effect.Attack);
+				});
+				part_num++;
+					
+				yield return new WaitForSeconds(part_time);
+			}
+			yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 		}
 
-		yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
+		
+		yield return StartCoroutine(base.BeforeMatch(Controller));
 	}
 
 	public void AttackParticle(float ratio, Tile t, Action<Tile> a)

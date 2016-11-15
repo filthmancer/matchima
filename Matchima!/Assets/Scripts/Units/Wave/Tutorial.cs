@@ -263,14 +263,14 @@ public class Tutorial : Wave {
 			if(Player.Classes[0].MeterLvl >= 1)
 			{
 				yield return StartCoroutine(UIManager.instance.Alert(0.3F, "A spell\nis ready!", "Tap Barbarian's\nicon to\ncast Heal", "",
-																	 true, 60, UIManager.ClassButtons.GetClass(0)));
+																	 true, 60, UIManager.CrewButtons[0]));
 				yield return StartCoroutine(Player.Classes[0].UseManaPower());
 				shownpowerupalert = true;		
 			}
 			if(Player.Classes[1] != null && Player.Classes[1].MeterLvl >= 1)
 			{
 				yield return StartCoroutine(UIManager.instance.Alert(0.3F, "A spell\nis ready!", "Tap Rogue's\nicon to\ncast Throw Knives", "",
-																	 true, 60, UIManager.ClassButtons.GetClass(1)));
+																	 true, 60, UIManager.CrewButtons[1]));
 				yield return StartCoroutine(Player.Classes[1].UseManaPower());
 				shownpowerupalert = true;
 			}
@@ -301,10 +301,10 @@ public class Tutorial : Wave {
 		//yield return StartCoroutine(UIManager.instance.ImageQuote(0.9F, Player.Classes[0], 
 		//												UIManager.Objects.QuoteAtlas, "death"));
 		ThrowKnives p = GameData.instance.GetPowerup("Throw Knives", null) as ThrowKnives;
-		p.SetParentOverride(UIManager.ClassButtons.GetClass(1).transform);
-		UIManager.ClassButtons.GetClass(1).ShowClass(true);
+		p.SetParentOverride(UIManager.CrewButtons[1].transform);
+		//UIManager.CrewButtons[1].ShowClass(true);
 		
-		GameObject powerup = EffectManager.instance.PlayEffect(UIManager.ClassButtons.GetClass(1).transform, Effect.ManaPowerUp, GameData.Colour((GENUS) 1));
+		GameObject powerup = EffectManager.instance.PlayEffect(UIManager.CrewButtons[1].transform, Effect.ManaPowerUp, GameData.Colour((GENUS) 1));
 		powerup.transform.localScale = Vector3.one;
 
 		//StartCoroutine(UIManager.instance.ImageQuote(0.7F, Player.Classes[0], 
@@ -330,7 +330,7 @@ public class Tutorial : Wave {
 		{if(p.knifelist[i] != null) Destroy(p.knifelist[i].gameObject);}
 
 		Destroy(p.gameObject);
-		UIManager.ClassButtons.GetClass(1).ShowClass(false);
+		//UIManager.CrewButtons[1].ShowClass(false);
 		Destroy(powerup);
 
 		yield return new WaitForSeconds(Time.deltaTime * 25);
@@ -355,8 +355,8 @@ public class Tutorial : Wave {
 
 	IEnumerator AddWizard()
 	{
-		UIManager.ClassButtons.GetClass(2).ShowClass(true);
-		GameObject powerup = EffectManager.instance.PlayEffect(UIManager.ClassButtons.GetClass(2).transform, Effect.ManaPowerUp, GameData.Colour((GENUS) 2));
+		//UIManager.CrewButtons[2].ShowClass(true);
+		GameObject powerup = EffectManager.instance.PlayEffect(UIManager.CrewButtons[2].transform, Effect.ManaPowerUp, GameData.Colour((GENUS) 2));
 		powerup.transform.localScale = Vector3.one;
 
 		Firestorm p = GameData.instance.GetPowerup("Firestorm", null) as Firestorm;
@@ -375,7 +375,7 @@ public class Tutorial : Wave {
 		TileMaster.instance.SetFillGrid(true);
 
 		Destroy(p.gameObject);
-		UIManager.ClassButtons.GetClass(2).ShowClass(false);
+		//UIManager.CrewButtons[2].ShowClass(false);
 		Destroy(powerup);
 	
 		yield return new WaitForSeconds(Time.deltaTime * 25);
@@ -400,12 +400,12 @@ public class Tutorial : Wave {
 
 	IEnumerator AddBard()
 	{
-		UIManager.ClassButtons.GetClass(3).ShowClass(true);
-		GameObject powerup = EffectManager.instance.PlayEffect(UIManager.ClassButtons.GetClass(3).transform, Effect.ManaPowerUp, GameData.Colour((GENUS) 3));
+		//UIManager.CrewButtons[3].ShowClass(true);
+		GameObject powerup = EffectManager.instance.PlayEffect(UIManager.CrewButtons[3].transform, Effect.ManaPowerUp, GameData.Colour((GENUS) 3));
 		powerup.transform.localScale = Vector3.one;
 
 		Lullaby p = GameData.instance.GetPowerup("Lullaby", null) as Lullaby;
-		p.SetParentOverride(UIManager.ClassButtons.GetClass(3).transform);
+		p.SetParentOverride(UIManager.CrewButtons[3].transform);
 		for(int i = 0; i < TileMaster.Enemies.Length; i++)
 		{
 			p.Sleep(TileMaster.Enemies[i], 2);
@@ -422,7 +422,7 @@ public class Tutorial : Wave {
 		TileMaster.instance.SetFillGrid(true);
 
 		Destroy(p.gameObject);
-		UIManager.ClassButtons.GetClass(3).ShowClass(false);
+		//UIManager.CrewButtons[3].ShowClass(false);
 		Destroy(powerup);
 
 		yield return new WaitForSeconds(Time.deltaTime * 25);

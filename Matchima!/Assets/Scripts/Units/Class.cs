@@ -106,6 +106,7 @@ public class Class : Unit {
 	public Slot InitMod;
 
 	public Tile _Tile;
+	public tk2dSpriteCollectionData Atlas;
 
 	public Slot [] _Boons
 	{
@@ -268,7 +269,7 @@ public class Class : Unit {
 	public virtual void Update()
 	{
 		if(time_from_last_pulse < 5.0F) time_from_last_pulse += Time.deltaTime;
-		if(ManaPowerParticle != null)	ManaPowerParticle.transform.position = UIManager.ClassButtons.GetClass(Index).transform.position;
+		if(ManaPowerParticle != null)	ManaPowerParticle.transform.position = UIManager.CrewButtons[Index].transform.position;
 	}
 
 	public virtual float GetMeterRatio()
@@ -318,8 +319,8 @@ public class Class : Unit {
 			child.Up(Stats, child.RateFinal);
 		}
 
-		//Stats.ApplyStatInc();
-		//Stats._Health = (int) Mathf.Clamp(Stats._HealthMax * ratio, 0, Stats._HealthMax);
+		Stats.ApplyStatInc();
+		Stats._Health = (int) Mathf.Clamp(Stats._HealthMax * ratio, 0, Stats._HealthMax);
 		//Stats.HealThisTurn = heal;
 		Stats.Class_Type = Genus;
 		mainStat = Stats.GetResourceFromGENUS(Genus);
@@ -415,19 +416,19 @@ public class Class : Unit {
 		if(Manapower_audio != null) Destroy(Manapower_audio.gameObject);
 		Manapower_audio = AudioManager.instance.PlayClip(this.transform, AudioManager.instance.Player, "Mana Powerup");
 		if(Manapower_audio != null) Manapower_audio.GetComponent<DestroyTimer>().enabled = false;
-		UIManager.ClassButtons.GetClass(Index).ShowClass(true);
+		//UIManager.CrewButtons[Index].ShowClass(true);
 		yield return new WaitForSeconds(GameData.GameSpeed(0.05F));
 		
 		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, GameData.Colour(Genus));
-		powerup.transform.SetParent(UIManager.ClassButtons.GetClass(Index).transform);
-		powerup.transform.position = UIManager.ClassButtons.GetClass(Index).transform.	position;
+		powerup.transform.SetParent(_Tile.transform);
+		powerup.transform.position = _Tile.transform.position;
 		powerup.transform.localScale = Vector3.one;
 
 		yield return new WaitForSeconds(GameData.GameSpeed(0.5F));
 		Destroy(powerup);
 		if(Manapower_audio != null) Destroy(Manapower_audio.gameObject);
 
-		Vector3 alertpos = UIManager.ClassButtons.GetClass(Index).transform.position;
+		Vector3 alertpos = UIManager.CrewButtons[Index].transform.position;
 		float hp_x = UIManager.instance.Health.transform.position.x;
 		alertpos.x = Mathf.Clamp(alertpos.x, hp_x-1.0F, hp_x+1.0F);
 		MiniAlertUI m = UIManager.instance.MiniAlert(alertpos, "SPELL READY!", 120, GameData.Colour(Genus), 1.2F, 0.2F, true);
@@ -448,7 +449,8 @@ public class Class : Unit {
 		ParticleSystem part = EffectManager.instance.PlayEffect(this.transform, e, GameData.Colour(Genus)).GetComponent<ParticleSystem>();
 		if(ManaPowerParticle != null) Destroy(ManaPowerParticle);
 		ManaPowerParticle = part.gameObject;
-		ManaPowerParticle.transform.position = UIManager.ClassButtons.GetClass(Index).transform.position;
+		ManaPowerParticle.transform.SetParent(_Tile.transform);
+		ManaPowerParticle.transform.position = _Tile.transform.position;
 
 		
 		yield return null;
@@ -472,11 +474,11 @@ public class Class : Unit {
 
 	public IEnumerator PowerDown()
 	{
-		//UIManager.ClassButtons[Index].ShowClass(true);
+		////UIManager.CrewButtons[Index].ShowClass(true);
 		if(Manapower_audio != null) Destroy(Manapower_audio.gameObject);
 		MeterLvl = 0;
 		Meter = 0;
-		//MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ClassButtons.GetClass(Index).transform.position, "POWER\nDOWN", 75, GameData.Colour(Genus), 1.2F, 0.2F);
+		//MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.CrewButtons[Index].transform.position, "POWER\nDOWN", 75, GameData.Colour(Genus), 1.2F, 0.2F);
 		//yield return new WaitForSeconds(0.1F);
 		MeterDecay_soft = MeterDecayInit[0];
 		MeterDecay = (int) MeterDecay_soft;
@@ -597,9 +599,19 @@ public class Class : Unit {
 			if(time_from_last_pulse > 1.3F)
 			{
 				AudioManager.instance.PlayClipOn(this.transform, "Player", "Mana Up", 0.5F);
-				UIManager.ClassButtons.GetClass(Index).GetComponent<Animator>().SetTrigger("Pulse");
+				//UIManager.CrewButtons[Index].GetComponent<Animator>().SetTrigger("Pulse");
 				time_from_last_pulse = 0.0F;			
 			}
+		}
+	}
+
+	public void AddToStat(GENUS g, int res)
+	{
+		int lvl = InitStats[(int)g].QuickLvl(res);
+		Reset();
+		if(lvl > 0) 
+		{
+			MiniAlertUI a = UIManager.instance.MiniAlert(_Tile.transform.position, GameData.Stat(g) + "+" + lvl, 40, GameData.Colour(g), 0.85F,0.04F);
 		}
 	}
 
@@ -617,21 +629,8 @@ public class Class : Unit {
 
 		int current_meter = ManaThisTurn;
 		Vector3 tpos = Vector3.up * 0.3F;
-		MiniAlertUI heal = UIManager.instance.MiniAlert(
-			UIManager.ClassButtons.GetClass(Index).transform.position + tpos, 
-			"+" + current_meter, info_size,   GameData.Colour(Genus), 0.2F, 0.18F);
-
-		heal.transform.SetParent(UIManager.ClassButtons.GetClass(Index).transform);
+		MiniAlertUI heal = UIManager.CrewButtons[Index].ManaAlert;
 		heal.AddJuice(Juice.instance.BounceB, 0.3F);
-		MoveToPoint mini = heal.GetComponent<MoveToPoint>();
-		heal.AddAction(() => {mini.enabled = true;});
-		heal.DestroyOnEnd = false;
-		mini.SetTarget(UIManager.ClassButtons.GetClass(Index).transform.position);
-		mini.SetPath(info_movespeed, 0.1F, 0.0F, info_finalscale);
-		/*mini.SetMethod(() =>{
-				
-			}
-		);*/
 		Complete();
 		while(heal.lifetime > 0.0F)
 		{
@@ -725,7 +724,7 @@ public class Class : Unit {
 	protected IEnumerator LevelUp(int power)
 	{
 		GameManager.instance.paused = true;
-		UIManager.ClassButtons.GetClass(Index).ShowClass(false);
+		//UIManager.CrewButtons[Index].ShowClass(false);
 		Level ++;
 		
 		//StCon [] floor = new StCon [] {new StCon(Name + " Level "), new StCon(Level+"")};
@@ -750,15 +749,15 @@ public class Class : Unit {
 		{
 			mutation_psuedochance = Mathf.Clamp(mutation_psuedochance + 0.04F, mutation_psuedochance_min, mutation_psuedochance_max);	
 		}*/
-		UIManager.ClassButtons.GetClass(Index).ShowClass(false);
+		//UIManager.CrewButtons[Index].ShowClass(false);
 		Player.instance.ResetStats();
 		yield return null;
 	}
 
 	public IEnumerator Mutate(int power)
 	{
-		UIManager.ClassButtons.GetClass(Index).ShowClass(true);
-		GameObject powerup = EffectManager.instance.PlayEffect(UIManager.ClassButtons.GetClass(Index).transform, Effect.ManaPowerUp, GameData.Colour(Genus));
+		//UIManager.CrewButtons[Index].ShowClass(true);
+		GameObject powerup = EffectManager.instance.PlayEffect(UIManager.CrewButtons[Index].transform, Effect.ManaPowerUp, GameData.Colour(Genus));
 		powerup.transform.localScale = Vector3.one;
 
 		AudioManager.instance.PlayClipOn(this.transform, "Player", "Mutate");
@@ -1019,7 +1018,7 @@ public class Class : Unit {
 		}
 		else
 		{
-			UIManager.ClassButtons.GetClass(Index).GetChild(num.Value).SetActive(true);
+			UIManager.CrewButtons[Index].GetChild(num.Value).SetActive(true);
 			s.transform.parent = this.transform;
 			_Slots[num.Value] = s;
 			s.Parent = this;
@@ -1090,7 +1089,7 @@ public class Class : Unit {
 	{
 		killtimer = 0;
 		isKilled = false;
-		UIManager.instance.MiniAlert(UIManager.ClassButtons.GetClass(Index).Img[0].transform.position, "REVIVE!", 75, GameData.Colour(Genus), 1.2F, 0.2F);
+		UIManager.instance.MiniAlert(UIManager.CrewButtons[Index].Img[0].transform.position, "REVIVE!", 75, GameData.Colour(Genus), 1.2F, 0.2F);
 	}
 
 	public virtual void OnLowHealth()

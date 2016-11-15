@@ -571,17 +571,7 @@ public class TileInfo
 	public string _GenusName
 	{
 		get{
-			switch(_GenusEnum)
-			{
-				case GENUS.STR: return "Red";
-				case GENUS.WIS: return "Green";
-				case GENUS.DEX: return "Blue";
-				case GENUS.CHA: return "Yellow";
-				case GENUS.PRP: return "Purple";
-				case GENUS.ALL: return "Alpha";
-				case GENUS.OMG: return "Omega";
-			}
-			return "Null";
+			return GameData.ResourceLong(_GenusEnum);
 		}
 
 	}

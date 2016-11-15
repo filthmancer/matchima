@@ -124,7 +124,7 @@ public class AudioManager : MonoBehaviour {
 		AudioSource aud = CreateAudioObj(prop);
 		if(!aud) return null;
 
-		aud.transform.position = UIManager.ClassButtons.GetClass(cl.Index).transform.position;
+		aud.transform.position = UIManager.CrewButtons[cl.Index].transform.position;
 		aud.transform.parent = this.transform;
 
 		if(PrintLogs) print("played " + prop.Name + " at " + cl);
