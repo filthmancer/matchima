@@ -140,8 +140,7 @@ public class TileMaster : MonoBehaviour {
 				for (int y = 0; y < Tiles.GetLength(1); y++)
 				{
 					if (Tiles[x, y] == null || Tiles[x,y].Destroyed) continue;
-					if(Tiles[x,y].CanAttack() && !Tiles[x,y].Stats.isAlly)
-					//if (Tiles[x, y].Stats.isEnemy && !Tiles[x,y].Stats.isAlly) 
+					if(Tiles[x,y].Stats.isEnemy)
 					{
 						if(!final.Contains(Tiles[x,y])) final.Add(Tiles[x,y]);
 					}
@@ -1032,6 +1031,7 @@ public class TileMaster : MonoBehaviour {
 	public void DestroyTile(Tile t)
 	{
 		Player.instance.OnTileDestroy(t);
+		if(GameManager.Zone != null) GameManager.Zone.OnTileDestroy(t);
 		for (int xx = 0; xx < t.Point.Scale; xx++)
 		{
 			for (int yy = 0; yy < t.Point.Scale; yy++)
@@ -1052,6 +1052,7 @@ public class TileMaster : MonoBehaviour {
 	{
 		t.CheckStats();
 		CollectTileResource(t, destroy);
+		if(GameManager.Zone != null) GameManager.Zone.OnTileCollect(t);
 		Player.instance.OnTileCollect(t);
 	}
 
@@ -1119,8 +1120,8 @@ public class TileMaster : MonoBehaviour {
 				m.AddAction(() => {mini.enabled = true;});
 				m.DestroyOnEnd = true;
 			}
-			
-			Player.Stats.Heal(values[1]);
+			PlayerControl.instance.Controller.AddHealth(t.Genus, values[1]);
+			//Player.Stats.Heal(values[1]);
 		}
 		if (values[2] > 0)
 		{

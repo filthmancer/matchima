@@ -15,7 +15,7 @@ public class Bomb : Tile {
 	private int BombDamage
 	{
 		get{
-			return (2 * Stats.Value) + (int)PlayerControl.instance.Controller.Stats.Spell;
+			return (2 * Stats.Value) + (PlayerControl.instance.Controller ? (int) PlayerControl.instance.Controller.Stats.Spell : 0);
 		}
 	}
 

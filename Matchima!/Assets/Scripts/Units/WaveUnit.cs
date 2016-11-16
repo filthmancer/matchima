@@ -7,16 +7,11 @@ public class WaveUnit : Unit {
 
 	public string Description;
 	protected Wave Parent;
-	public tk2dSpriteCollectionData InnerOverrideData;
-	public string InnerOverride;
-	public IntVector PrepTime = new IntVector(0,0);
-	public int Timer = 0;
-	public int TimeActive = 0;
+	public tk2dSpriteCollectionData InnerOverrideData, InnerAtlas;
+	public string InnerOverride, InnerString, OuterString;
 
 	public bool Active = false, Ended = false;
 
-	public int PointsPerTurn = 3, PointsPerEnemy = 1;
-	private int PointsThisTurn = 0;
 
 	public IntVector DiffScale = new IntVector(0, 2);
 
@@ -25,20 +20,19 @@ public class WaveUnit : Unit {
 		Parent = p;
 		Index = i;
 		Active = false;
-		Timer = UnityEngine.Random.Range(PrepTime.x, PrepTime.y);
-		
+		//Timer = UnityEngine.Random.Range(PrepTime.x, PrepTime.y);
 		//Inner.SetSprite(InnerOverride);
 		//Outer.SetSprite(OuterOverride);
 	}
 
-	public void Activate()
+	public virtual void Activate()
 	{
 		Active = true;
 		Randomise();
 		//OnStart();
 	}
 
-	public void Randomise()
+	public virtual void Randomise()
 	{
 
 	}
@@ -47,6 +41,38 @@ public class WaveUnit : Unit {
 	{
 		if(!Active || Ended) return;
 	}
+
+	public Tile [] GetTilesToReplace(int num, params string [] types)
+	{
+		Tile [] final = new Tile[num];
+		bool [,] replacedtile = new bool [(int)TileMaster.Grid.Size[0], (int)TileMaster.Grid.Size[1]];
+
+		int checks_max = (TileMaster.Grid.Size[0] * TileMaster.Grid.Size[1])-1;
+		for(int i = 0; i < num; i++)
+		{
+			int checks = 0;
+			Tile t = TileMaster.RandomTileOfType(types);
+
+			int x = t.Point.Base[0];
+			int y = t.Point.Base[1];
+			while(replacedtile[x, y]||
+					TileMaster.Tiles[x,y].Point.Scale > 1 ||
+					y < 2)
+			{
+				t = TileMaster.RandomTileOfType(types);
+				x = t.Point.Base[0];
+				y = t.Point.Base[1];
+
+				if(checks >= checks_max) break;
+				checks ++;
+			}
+			replacedtile[x,y] = true;
+
+			final[i] = TileMaster.Tiles[x,y];
+		}
+		return final;
+	}
+
 
 
 	public virtual IEnumerator OnStart()
@@ -73,7 +99,7 @@ public class WaveUnit : Unit {
 	public virtual IEnumerator BeginTurn()
 	{
 		if(!Active || Ended) yield break;
-		TimeActive ++;
+		//TimeActive ++;
 		//AddPoints(-PointsPerTurn);
 	}
 
@@ -94,49 +120,31 @@ public class WaveUnit : Unit {
 	public virtual int EnemyKilled(Enemy e)
 	{
 		if(!Active || Ended) return 0;
-		if(PointsPerEnemy <= 0) return 0;
-		return PointsPerEnemy * e.Stats.Value;
+		//if(PointsPerEnemy <= 0) return 0;
+		return 0;//PointsPerEnemy * e.Stats.Value;
 		
 	}
 
-	IEnumerator ShowHealthRoutine()
-	{
-		ShowingHealth = true;
-		int current_heal = PointsThisTurn;
-
-		string prefix = current_heal < 0 ? "  +" : "  -";
-		Vector3 tpos = Vector3.right * 0.4F;
-		MiniAlertUI heal = UIManager.instance.MiniAlert(
-			UIManager.Objects.TopGear[1][Index].Txt[0].transform.position + tpos, 
-			prefix + current_heal, 42, GameData.instance.BadColour, 1.7F,	0.01F);
-
-		while(heal.lifetime > 0.0F)
-		{
-			if(PointsThisTurn == 0)
-			{
-				heal.lifetime = 0.0F;
-				heal.text = "";
-				break;
-			}
-			else if(PointsThisTurn != current_heal)
-			{
-				heal.lifetime += 0.2F;
-				heal.size = 42 + current_heal * 0.75F;
-				current_heal = PointsThisTurn;
-				heal.text = prefix + current_heal;
-			}
-			
-
-			yield return null;
-		}
-
-		ShowingHealth = false;
-
-		yield return null;
-	}
 	public void Reset()
 	{
 
+	}
+
+	public void SetImgtk(tk2dSprite inner, tk2dSprite outer)
+	{
+		if(InnerAtlas != null)
+		{
+			inner.SetSprite(InnerAtlas, InnerString);
+		}
+		else
+		{
+			string render = OuterString;
+			tk2dSpriteDefinition id = TileMaster.Types[InnerString].Atlas.GetSpriteDefinition(render);
+			if(id == null) render = "Alpha";
+			inner.SetSprite(TileMaster.Types[InnerString].Atlas, render);
+		}
+		
+		outer.SetSprite(TileMaster.Genus.Frames, OuterString);
 	}
 
 	public void CastAction(Tile targ, Action<Tile> a)

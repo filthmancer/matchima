@@ -677,6 +677,37 @@ public class TileInfo
 	}
 }
 
+[System.Serializable]
+public class TileShortInfo
+{
+	public string _Type;
+
+	public GENUS _Genus;
+	public string GenusString
+	{
+		get
+		{
+			return GameData.Stat(_Genus);
+		}
+	}
+
+	public IntVector _Value;
+	public int Value
+	{
+		get
+		{
+			int v = UnityEngine.Random.Range(_Value.x, _Value.y);
+			if(v <= 0) v = 1;
+			return v;
+		}
+	}
+
+	public int Scale = 1;
+	public List<TileEffectInfo> FinalEffects;
+
+	public string [] Params;
+}
+
 
 
 

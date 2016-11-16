@@ -93,7 +93,8 @@ public class Enemy : Tile {
 
 		factor *= Random.Range(0.8F, 1.4F);
 
-		InitStats.Hits        = (int)(hpfactor);
+		InitStats.HitsMax       = (int)(hpfactor);
+		InitStats.Hits = InitStats.HitsMax;
 		InitStats.Attack      = (int)(atkfactor);
 		SetSprite();
 		if(Stats.isNew)
@@ -110,6 +111,7 @@ public class Enemy : Tile {
 		m.AddJuice(Juice.instance.Ripple.Scale, 0.4F);
 		yield return new WaitForSeconds(0.4F);
 
+		InitStats.HitsMax += (int) (InitStats.value_soft) - InitStats.Value;
 		InitStats.Hits += (int) (InitStats.value_soft) - InitStats.Value;
 		InitStats.Attack += (int) (InitStats.value_soft) - InitStats.Value;
 		InitStats.Value = (int)InitStats.value_soft;
@@ -193,17 +195,7 @@ public class Enemy : Tile {
 
 		yield return StartCoroutine(AttackParticles());
 
-		CheckStats();
-		int fullhit = 0;
-
-		fullhit += Stats.TurnDamage;
-
-		InitStats.TurnDamage = 0;
-		InitStats.Hits -= fullhit;
-		print(fullhit + ":" + InitStats.Hits);
-		CheckStats();
-		
-		StartCoroutine(GetHit());
+		StartCoroutine(TakeTurnDamage());
 		yield return null;
 	}
 
@@ -223,9 +215,18 @@ public class Enemy : Tile {
 		yield return new WaitForSeconds(GameData.GameSpeed(0.04F));
 	}
 
-	public IEnumerator GetHit()
+	
+	public override IEnumerator TakeTurnDamage()
 	{
 		CheckStats();
+		int fullhit = 0;
+
+		fullhit += Stats.TurnDamage;
+
+		InitStats.TurnDamage = 0;
+		InitStats.Hits -= fullhit;
+		CheckStats();
+
 		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 		Player.instance.OnTileMatch(this);
 		if(Stats.Hits <= 0)
@@ -262,6 +263,7 @@ public class Enemy : Tile {
 			isMatching = false;
 		}
 	}
+
 
 	public override void AfterTurn()
 	{

@@ -176,7 +176,7 @@ public class Tile : MonoBehaviour {
 		{
 			return new TileUpgrade []
 			{
-				new TileUpgrade(0.05F, 5, () => {InitStats.Hits += 1;}),
+				new TileUpgrade(0.05F, 5, () => {InitStats.HitsMax += 1;}),
 				new TileUpgrade(1.0F, 1, () => {InitStats.Value += 1;}),
 				new TileUpgrade(0.1F, 2, () => {InitStats.Resource +=1;})
 			};
@@ -271,7 +271,9 @@ public class Tile : MonoBehaviour {
 		}
 		InitStats.Value = Info.Value;
 		if(!Type.isEnemy) InitStats.Value += Player.Stats.ValueInc;
-		if(InitStats.Hits == 0) InitStats.Hits = 1;
+		if(InitStats.HitsMax == 0) InitStats.HitsMax = 1;
+
+		InitStats.Hits = InitStats.HitsMax;
 		AddUpgrades(val);
 
 		InitStats.Lifetime = 0;
@@ -287,11 +289,18 @@ public class Tile : MonoBehaviour {
 		}
 
 		CheckStats();
+
+		Stats.Hits = Stats.HitsMax;
 		SetSprite();
 		ClearActions();
 
 		if(GameManager.instance.EnemyTurn) SetState(TileState.Locked);
 		else SetState(TileState.Idle);
+	}
+
+	public virtual void GetParams(params string [] args)
+	{
+
 	}
 
 	int looseupdate_frame_check = 0;
@@ -313,15 +322,17 @@ public class Tile : MonoBehaviour {
 			DestroyThyself();
 		}
 
+		if(Stats.Shift != ShiftType.None && !Destroyed)
+		{
+			Velocity();
+		}
+		
 		if(PlayerControl.instance.TimeWithoutInput < 1.0F) looseupdate_frame_check = looseupdate_frames;
 		if((looseupdate_frame_check++) >= looseupdate_frames)
 		{
 			looseupdate_frame_check = 0;
 
-			if(Stats.Shift != ShiftType.None && !Destroyed)
-			{
-				Velocity();
-			}
+			
 
 			transform.name = Info.Name + " | " + Point.Base[0] + ":" + Point.Base[1];
 			if(Params._render != null) Params._render.color = Color.Lerp(Params._render.color, targetColor, 0.6F);
@@ -657,6 +668,36 @@ public class Tile : MonoBehaviour {
 		return false;
 	}
 
+	public virtual IEnumerator TakeTurnDamage()
+	{
+		CheckStats();
+		int fullhit = 0;
+
+		fullhit += Stats.TurnDamage;
+
+		InitStats.TurnDamage = 0;
+		InitStats.Hits -= fullhit;
+		CheckStats();
+
+		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+		Player.instance.OnTileMatch(this);
+		if(Stats.Hits <= 0)
+		{
+			isMatching = true;
+			//Player.Stats.PrevTurnKills ++;	
+			//Stats.Value *= resource;
+					
+			CollectThyself(true);
+
+			PlayAudio("death");
+		}
+		else 
+		{
+			//CollectThyself(false);
+			isMatching = false;
+		}
+	}
+
 	public virtual bool ControlMatch(int resource)
 	{
 		return false;
@@ -795,6 +836,16 @@ public class Tile : MonoBehaviour {
 		
 	}
 
+	public virtual void AddHealth(GENUS g, int h)
+	{
+		if(Stats.Hits < Stats.HitsMax)
+		{
+			InitStats.Hits += h;
+			CheckStats();
+			Stats.Hits = Mathf.Clamp(Stats.Hits, 0, Stats.HitsMax);
+		}
+	}
+
 	public virtual IEnumerator Animate(string type, float time = 0.0F)
 	{
 		if(_anim == null) yield break;
@@ -804,7 +855,7 @@ public class Tile : MonoBehaviour {
 		else yield return null;
 	}
 
-	public virtual bool CanAttack() {return !AttackedThisTurn && Type.isEnemy && Stats.Attack > 0;}
+	public virtual bool CanAttack() {return !AttackedThisTurn && Stats.Attack > 0;}
 	public virtual int GetAttack() {return Mathf.Max(Stats.Attack, 0);}
 	public virtual int GetHealth() {return Mathf.Max(Stats.Hits,0);}
 	public virtual void Stun(int Stun){}
@@ -1062,6 +1113,8 @@ public class Tile : MonoBehaviour {
 		PlayAudio("attack");
 		//UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), "" + GetAttack(), 95, Color.red, 0.8F,0.08F);
 
+		t.SetState(TileState.Selected);
+
 		float init_size = UnityEngine.Random.Range(190,210);
 		float init_rotation = UnityEngine.Random.Range(-7,7);
 
@@ -1071,7 +1124,9 @@ public class Tile : MonoBehaviour {
 		float info_finalscale = 0.75F;
 
 		Vector3 pos = TileMaster.Grid.GetPoint(Point.Point(0));
-		MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + GetAttack(), info_size, Color.white, info_time, 0.03F, false);
+
+		Color inside = Stats.isEnemy ? Color.black : Color.white;
+		MiniAlertUI m = UIManager.instance.MiniAlert(pos,  "" + GetAttack(), info_size, inside, info_time, 0.03F, false);
 		m.Txt[0].outlineColor = GameData.Colour(Genus);
 		m.transform.rotation = Quaternion.Euler(0,0,init_rotation);
 		MoveToPoint mini = m.GetComponent<MoveToPoint>();
@@ -1089,12 +1144,13 @@ public class Tile : MonoBehaviour {
 					t.InitStats.TurnDamage += GetAttack();
 					t.PlayAudio("hit");
 					EffectManager.instance.PlayEffect(t.transform,Effect.Attack);
-					t.Match(1);
+					StartCoroutine(t.TakeTurnDamage());
 					//UIManager.instance.CashMeterPoints();
 					GameData.Log(this +  " dealt " + GetAttack() + "damage to " + t);
 				} 
 			}
 		);
+		mini.DontDestroy = false;
 	}
 
 
@@ -1137,12 +1193,15 @@ public class Tile : MonoBehaviour {
 
 	public void CheckStats()
 	{
+		//float ratio = (float)Stats.Hits / (float)Stats.HitsMax;
 		Stats = new TileStat(InitStats);
 		for(int i = 0; i < Effects.Count; i++)
 		{
 			if(Effects[i] == null) Effects.RemoveAt(i);
 			else Stats.Add(Effects[i].CheckStats(), false);
 		}
+
+		//Stats.Hits = Mathf.Clamp((int)(Stats.HitsMax * ratio), 0, Stats.HitsMax);
 
 	}
 
@@ -1464,6 +1523,7 @@ public class TileStat
 	public int Armour      = 0;
 	
 	public int Hits        = 0;
+	public int HitsMax     = 0;
 	public int Attack      = 0;
 	public int Spell 	   = 0;
 	public int Movement    = 0;
@@ -1502,6 +1562,7 @@ public class TileStat
 		Armour      += t.Armour;
 		
 		Hits        += t.Hits;
+		HitsMax 	+= t.HitsMax;
 		Attack      += t.Attack;
 		Movement    += t.Movement;
 		Lifetime    += t.Lifetime;
@@ -1538,10 +1599,13 @@ public class TileStat
 		{
 			Value     = t.Value;
 
+			Hits      = t.Hits;
+			HitsMax  = t.HitsMax;
+
 			Resource  = t.Resource;
 			Heal 	  = t.Heal;
 			Armour 	  = t.Armour;
-			Hits      = t.Hits;
+			
 			Attack    = t.Attack;
 			Movement  = t.Movement;
 			Lifetime  = t.Lifetime;

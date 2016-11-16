@@ -933,24 +933,27 @@ public class GameManager : MonoBehaviour {
 			Destroy(CurrentWave.gameObject);
 			CurrentWave = null;
 		}
-		UIManager.instance.SetZoneObj(true);
-		UIManager.instance.SetTooltipObj(true);
-		
 
 		yield return StartCoroutine(CurrentZone.Enter());
+		UIManager.instance.SetZoneObj(true);
+		UIManager.instance.SetTooltipObj(true);
 
 		CurrentZone.SetCurrent(wavenum);
-		if(name != string.Empty) yield return StartCoroutine(_GetWave(CurrentZone.GetWaveByName(name)));
-		else yield return StartCoroutine(_GetWave());
+		
+		/*if(name != string.Empty) yield return StartCoroutine(_GetWave(CurrentZone.GetWaveByName(name)));
+		else yield return StartCoroutine(_GetWave());*/
 
-		Tile t = TileMaster.instance.ReplaceTile(TileMaster.Tiles[0,0], TileMaster.Types["hero"], GENUS.ALL,1, 1);
-		(t as Hero).SetClass(Player.Classes[0]);
-		t = TileMaster.instance.ReplaceTile(TileMaster.Tiles[1,0], TileMaster.Types["hero"], GENUS.ALL,1, 1);
-		(t as Hero).SetClass(Player.Classes[1]);
-		t = TileMaster.instance.ReplaceTile(TileMaster.Tiles[2,0], TileMaster.Types["hero"], GENUS.ALL,1, 1);
-		(t as Hero).SetClass(Player.Classes[2]);
-		t = TileMaster.instance.ReplaceTile(TileMaster.Tiles[3,0], TileMaster.Types["hero"], GENUS.ALL,1, 1);
-		(t as Hero).SetClass(Player.Classes[3]);
+		yield return new WaitForSeconds(0.4F);
+
+		for(int i = 0; i < Player.Classes.Length; i++)
+		{
+			if(Player.Classes[i] != null)
+			{
+				Tile t = TileMaster.instance.ReplaceTile(TileMaster.Tiles[i,0], TileMaster.Types["hero"], GENUS.ALL,1, 1);
+				(t as Hero).SetClass(Player.Classes[i]);
+			}
+		}
+		
 		UIManager.instance.CreateControllerUI();
 		UIManager.instance.ShowControllerUI(true);
 		
@@ -1114,7 +1117,8 @@ public class GameManager : MonoBehaviour {
 		yield return StartCoroutine(TileMaster.instance.BeforeTurn());
 		//Debug.Log("BEFORE TURN");
 	/* ENEMY TURN *////////////////////////////////////////////////////
-		if(CurrentWave) yield return StartCoroutine(CurrentWave.BeginTurn());
+		if(Zone) yield return StartCoroutine(Zone.BeforeTurn());
+		yield return StartCoroutine(ControllerTurnRoutine());
 		if(Player.instance.Turns % (int)Player.Stats.AttackRate == 0 && TileMaster.instance.EnemiesOnScreen > 0)
 		{
 			yield return StartCoroutine(EnemyTurnRoutine());
@@ -1132,24 +1136,23 @@ public class GameManager : MonoBehaviour {
 		//Debug.Log("AFTER TURN");
 		yield return StartCoroutine(CompleteTurnRoutine());
 		yield return StartCoroutine(Player.instance.CheckHealth());	
-		if(CurrentWave) yield return StartCoroutine(CurrentWave.AfterTurn());
+		if(Zone) yield return StartCoroutine(Zone.AfterTurn());
 
-		if(CurrentWave && CurrentWave.Ended && !Player.Stats.isKilled)
+		/*if(Zone && Zone.Ended && !Player.Stats.isKilled)
 		{
 			yield return StartCoroutine(_GetWave());
-		}
-		
-		UIManager.Objects.BotGear.SetToState(0);
+		}*/
+		//UIManager.Objects.BotGear.SetToState(0);
 		yield return StartCoroutine(Player.instance.BeginTurn());
 		
-
 		TileMaster.instance.ResetTiles(true);
 		UIManager.instance.ResetTopGear();
 		UIManager.instance.CreateControllerUI();
 		if(showcontrol) UIManager.instance.ShowControllerUI(true);
 		paused = false;
 
-		for(int i = 0; i < Random.Range(0, 3); i++)
+
+		/*for(int i = 0; i < Random.Range(0, 3); i++)
 		{
 			Tile t = TileMaster.RandomResTile;
 			UIManager.instance.CastParticle(UIManager.instance.ZoneObj.transform, t, (Tile targ) =>
@@ -1159,10 +1162,65 @@ public class GameManager : MonoBehaviour {
 
 			
 			yield return new WaitForSeconds(0.1F);
-		}
+		}*/
 		yield return null;
 	}
 
+
+	IEnumerator ControllerTurnRoutine()
+	{
+		List<Tile> allied_attackers = new List<Tile>();
+		//ALLY ATTACKERS
+		for(int x = 0; x < TileMaster.Grid.Size[0]; x++)
+		{
+			for(int y = 0; y < TileMaster.Grid.Size[1];y++)
+			{
+				Tile tile = TileMaster.Tiles[x,y];
+				if(tile == null) continue;
+				if(tile.CanAttack())
+				{
+					tile.AttackedThisTurn = true;
+					if(tile.Stats.isAlly || tile.Controllable)
+					{
+						allied_attackers.Add(tile);
+					}
+					
+				}
+			}
+		}
+		
+		//ALLIED ATTACKERS
+		if(allied_attackers.Count > 0) 
+		{
+			TileMaster.instance.ResetTiles();
+			yield return new WaitForSeconds(GameData.GameSpeed(0.21F));
+		}
+
+		foreach(Tile child in allied_attackers)
+		{
+			if(child == null || child == PlayerControl.instance.Controller) continue;
+
+			child.SetState(TileState.Selected);
+			child.OnAttack();
+
+			Tile target = null;
+			if(TileMaster.Enemies.Length == 0) continue;
+			Tile [] targs = child.Point.GetNeighbours(true, "enemy");
+		
+			if(targs.Length == 0) continue;
+			else
+			{
+				target = targs[Random.Range(0, targs.Length)];
+
+				child.AttackTile(target);
+				yield return StartCoroutine(child.Animate("Attack", 0.05F));
+			}
+
+			yield return new WaitForSeconds(GameData.GameSpeed(0.04F));
+		}
+
+		if(allied_attackers.Count > 0) yield return new WaitForSeconds(GameData.GameSpeed(0.17F));
+	}
 
 	IEnumerator EnemyTurnRoutine()
 	{
@@ -1171,7 +1229,7 @@ public class GameManager : MonoBehaviour {
 		int total_damage = 0;
 		List<Tile> column;
 
-		List<Tile> allied_attackers = new List<Tile>();
+		
 	
 		yield return new WaitForSeconds(GameData.GameSpeed(0.08F));
 		UIManager.Objects.BotGear.SetToState(3);
@@ -1188,13 +1246,10 @@ public class GameManager : MonoBehaviour {
 				if(tile.CanAttack())
 				{
 					tile.AttackedThisTurn = true;
-					if(tile.Stats.isAlly)
-					{
-						allied_attackers.Add(tile);
-					}
-					else
+					if(tile.Stats.isEnemy)
 					{
 						column.Add(tile);
+						
 					}
 					
 				}
@@ -1204,12 +1259,18 @@ public class GameManager : MonoBehaviour {
 			{
 				if(column[i] == null || !column[i].gameObject.activeSelf || column[i].Destroyed) continue;
 
-				column[i].SetState(TileState.Selected);
-				column[i].OnAttack();
-				total_damage += column[i].GetAttack();
-
-				column[i].AttackPlayer();
-				yield return StartCoroutine(column[i].Animate("Attack", 0.05F));
+				Tile [] targ = column[i].Point.GetNeighbours(false, "hero");
+				if(targ.Length > 0)
+				{
+					Tile targ_final = targ[Random.Range(0, targ.Length)];
+					column[i].SetState(TileState.Selected);
+					column[i].OnAttack();
+					total_damage += column[i].GetAttack();
+					yield return StartCoroutine(column[i].Animate("Attack", 0.05F));
+					column[i].AttackTile(targ_final);
+				}
+				
+				
 			}
 
 			//total_attackers.AddRange(column);
@@ -1222,33 +1283,7 @@ public class GameManager : MonoBehaviour {
 		} */
 		if(total_damage > 0) yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 
-		//ALLIED ATTACKERS
-		if(allied_attackers.Count > 0) 
-		{
-			TileMaster.instance.ResetTiles();
-			yield return new WaitForSeconds(GameData.GameSpeed(0.21F));
-		}
-
-		foreach(Tile child in allied_attackers)
-		{
-			if(child == null) continue;
-
-			child.SetState(TileState.Selected);
-			child.OnAttack();
-
-			Tile target = null;
-			if(TileMaster.Enemies.Length == 0) continue;
-			target = TileMaster.Enemies[Random.Range(0, TileMaster.Enemies.Length)];
-			if(target == null) continue;
-			else
-			{
-				child.AttackTile(target);
-				yield return StartCoroutine(child.Animate("Attack", 0.05F));
-				
-			}
-		}
-
-		if(allied_attackers.Count > 0) yield return new WaitForSeconds(GameData.GameSpeed(0.14F));
+		
 	}
 #endregion
 
@@ -1741,10 +1776,6 @@ public class GameManager : MonoBehaviour {
 		Player.Options.ViewTileStats = !Player.Options.ViewTileStats;
 	}
 
-	public void EnemyKilled(Enemy e)
-	{
-		CurrentWave.EnemyKilled(e);
-	}
 
 	public void ToggleEasyGENUSe()
 	{

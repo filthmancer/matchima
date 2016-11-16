@@ -35,7 +35,8 @@ public class Blob : Enemy {
 		hpfactor    *= BlobHPAdded + factor / 4.0F;
 		atkfactor   *= BlobATKAdded + factor / 6.0F;
 
-		InitStats.Hits        = (int)(hpfactor);
+		InitStats.HitsMax        = (int)(hpfactor);
+		InitStats.Hits = InitStats.HitsMax;
 		InitStats.Attack      = (int)(atkfactor);
 
 		CheckStats();

@@ -276,6 +276,8 @@ public class UIManager : MonoBehaviour {
 			return;
 		}
 
+		ShowControllerUI(false);
+
 		Tooltip_Target.CheckStats();
 
 	//Set the sprites of the tile
@@ -297,7 +299,7 @@ public class UIManager : MonoBehaviour {
 		if(t.Stats.Hits > 1)
 		{
 			Tooltip_Parent[1].SetActive(true);
-			Tooltip_Parent[1].Txt[0].text = "" + t.Stats.Hits;
+			Tooltip_Parent[1].Txt[0].text = t.Stats.Hits + "/" +t.Stats.HitsMax;
 		}
 		else Tooltip_Parent[1].SetActive(false);
 
@@ -354,8 +356,8 @@ public class UIManager : MonoBehaviour {
 	public UIObj CrewButton;
 	public void CreateControllerUI()
 	{
-		CrewButton.ClearActions();
-		CrewButton.AddAction(UIAction.MouseUp, ()=>{ShowControllerUI();});
+		Tooltip_Parent.ClearActions();
+		Tooltip_Parent.AddAction(UIAction.MouseUp, ()=>{ShowControllerUI();});
 		if(Controller_Parent.Length != 0)
 		{
 			Controller_Parent.DestroyChildren();
@@ -384,13 +386,10 @@ public class UIManager : MonoBehaviour {
 	public void SetZoneObj(bool active)
 	{
 		ZoneObj.SetTween(0, active);
-		ZoneObj.Txt[0].text = GameManager.Zone.Name;
-		ZoneObj.Txt[1].text = GameManager.Zone.Mission;
-
-		ZoneObj.Imgtk[0].SetSprite(GameManager.Zone.BossWave[0].InnerOverrideData, GameManager.Zone.BossWave[0].InnerOverride);
-		ZoneObj.Imgtk[1].SetSprite(TileMaster.Genus.Frames, "Omega");
-
-
+		ZoneObj.Txt[0].text = GameManager.Zone.TargetBoss.Name;
+		ZoneObj[0].Txt[0].text = GameManager.Zone.TargetBoss.Mission;
+		ZoneObj[0].Img[1].fillAmount = GameManager.Zone.TargetBoss.MissionRatio;
+		GameManager.Zone.TargetBoss.SetImgtk(ZoneObj.Imgtk[0], ZoneObj.Imgtk[1]);
 	}
 
 	public void SetTooltipObj(bool active)
@@ -403,9 +402,10 @@ public class UIManager : MonoBehaviour {
 		bool initial = Controller_Parent.GetTween(0);
 		Controller_Parent.SetTween(0, active);
 		bool actual = active ?? !initial;
-			
-		(CrewButton as UIObjtk).Imgtk[2].gameObject.SetActive(!actual);
-		(CrewButton as UIObjtk).Imgtk[1].gameObject.SetActive(actual);
+		
+		if(actual) TargetTile(null);
+		//(CrewButton as UIObjtk).Imgtk[2].gameObject.SetActive(!actual);
+		//(CrewButton as UIObjtk).Imgtk[1].gameObject.SetActive(actual);
 		return initial;
 	}
 

@@ -44,6 +44,12 @@ public class Thief : Class {
 		base.StartClass();
 	}
 
+	public override void GetTile(Tile t)
+	{
+		_Tile = t;
+		_Tile.AddEffect("Spawning", -1, "alpha", "sword", "0.1");
+	}
+
 	public override Upgrade [] Boons
 	{
 		get{

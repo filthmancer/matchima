@@ -24,16 +24,21 @@ public class Hero : Tile {
 	public void SetClass(Class c)
 	{
 		_Class = c;
-		_Class._Tile = this;
+		_Class.GetTile(this);
 
 		_Class.Reset();
 
+		InitStats.HitsMax = _Class.Stats._Health;
 		InitStats.Hits = _Class.Stats._Health;
 		InitStats.Attack = _Class.Stats._Attack;
 		InitStats.Spell = _Class.Stats._Spell;
 		InitStats.Movement = _Class.Stats._Move;
 
 		CheckStats();
+
+		Stats._Team = Team.Ally;
+
+		Stats.Hits = Stats.HitsMax;
 		SetSprite();
 	}
 
@@ -55,6 +60,11 @@ public class Hero : Tile {
 			Params._render.SetSprite(_Class.Atlas, render);
 			Params._render.scale = new Vector3(0.2F, 0.2F, 1.0F);
 		}
+	}
+
+	public override void GetParams(params string [] args)
+	{
+		SetClass(GameData.instance.GetClass(args[0]));
 	}
 
 

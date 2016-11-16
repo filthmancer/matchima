@@ -55,8 +55,8 @@ public class WardenWaveUnit : WaveUnit {
 		yield return StartCoroutine(base.BeginTurn());
 		if(!Active || Ended) yield break;
 		yield return null;
-		TimeActive ++;
-		if(TimeActive % 3 == 0)
+		//TimeActive ++;
+		/*if(TimeActive % 3 == 0)
 		{
 			QuoteGroup tute = new QuoteGroup("Tute");
 			int r = Random.Range(0,3);
@@ -79,7 +79,7 @@ public class WardenWaveUnit : WaveUnit {
 					});
 			}
 			
-		}
+		}*/
 	}
 
 	public override IEnumerator AfterTurn()

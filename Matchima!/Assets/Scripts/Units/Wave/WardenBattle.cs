@@ -33,14 +33,14 @@ public class WardenBattle : Wave {
 	{
 		warden_actual_health = 120;
 		
-		Slot1.Timer = 0;
+		//Slot1.Timer = 0;
 		Slot1.Activate();
 		Current = 0;
 		Timer = 0;
 
-		Slot2.Timer = 0;
+		//Slot2.Timer = 0;
 		Slot2.Activate();
-		Slot3.Timer = 0;
+		//Slot3.Timer = 0;
 		Slot3.Activate();
 		
 		//Current = warden_actual_health;

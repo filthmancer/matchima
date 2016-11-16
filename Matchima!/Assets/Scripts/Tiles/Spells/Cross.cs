@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class Cross : Tile {
 	public int CrossSize{
 		get{
-			return Stats.Value/2 + 2;
+			return Stats.Value/4 + 2;
 		}
 	}
 
@@ -31,7 +31,7 @@ public class Cross : Tile {
 	{
 		get
 		{
-			return (int) (1 * Stats.Value) + (int) Player.SpellValue;
+			return 1 + (int) (Stats.Value/2) + (PlayerControl.instance.Controller ? (int) PlayerControl.instance.Controller.Stats.Spell : 0);
 		}
 	}
 

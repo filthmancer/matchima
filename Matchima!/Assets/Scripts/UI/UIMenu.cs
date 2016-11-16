@@ -27,7 +27,7 @@ public class UIMenu : UIObj {
 
 	public TextMeshProUGUI ResumeGameInfo;
 	public tk2dSpriteAnimator LogoAnimation;
-	public UIObjTweener GoButton;
+	public UIObjTweener GoButton, TwoButton, ThreeButton;
 
 	public string [] DiffText;
 
@@ -163,7 +163,21 @@ public class UIMenu : UIObj {
 		GoButton.ClearActions();
 		GoButton.AddAction(UIAction.MouseUp, () =>
 		{
-			StartGame(GameMode.Quick);
+			StartGame(GameMode.Quick,1);
+			});
+
+		TwoButton.SetTween(0, true);
+		TwoButton.ClearActions();
+		TwoButton.AddAction(UIAction.MouseUp, () =>
+		{
+			StartGame(GameMode.Quick, 2);
+			});
+
+		ThreeButton.SetTween(0, true);
+		ThreeButton.ClearActions();
+		ThreeButton.AddAction(UIAction.MouseUp, () =>
+		{
+			StartGame(GameMode.Quick,3);
 			});
 		//UIManager.Objects.BotGear[1].Img[0].enabled = false;
 
@@ -514,7 +528,7 @@ public class UIMenu : UIObj {
 	}
 
 
-	public void StartGame(GameMode g)
+	public void StartGame(GameMode g, int pnum= 4)
 	{
 		GameManager.instance.Mode = g;
 		switch(GameManager.instance.Mode)
@@ -548,10 +562,14 @@ public class UIMenu : UIObj {
 			break;
 			case GameMode.Quick:
 
-			Player.instance._Classes[0] = GameData.instance.GetClass("Barbarian");
-			Player.instance._Classes[1] = GameData.instance.GetClass("Rogue");
-			Player.instance._Classes[2] = GameData.instance.GetClass("Wizard");
-			Player.instance._Classes[3] = GameData.instance.GetClass("Bard");
+			for(int i = 0; i < pnum; i++)
+			{
+				Player.instance._Classes[i] = GameData.instance.GetClass("");
+			}
+			
+			//Player.instance._Classes[1] = GameData.instance.GetClass("Rogue");
+			//Player.instance._Classes[2] = GameData.instance.GetClass("Wizard");
+			//Player.instance._Classes[3] = GameData.instance.GetClass("Bard");
 			/*for(int i = 0; i < Player.instance._Classes.Length; i++)
 			{
 				if(Player.instance._Classes[i] == null)
@@ -567,6 +585,8 @@ public class UIMenu : UIObj {
 		}
 
 		GoButton.SetTween(0, false);
+		TwoButton.SetTween(0, false);
+		ThreeButton.SetTween(0, false);
 		/*(UIManager.Objects.MiddleGear["resume"] as UIObjTweener).SetTween(0,false);
 
 		UIManager.Objects.MiddleGear[0].SetActive(false);

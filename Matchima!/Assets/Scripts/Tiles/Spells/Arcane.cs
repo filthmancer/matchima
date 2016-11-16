@@ -12,7 +12,7 @@ public class Arcane : Tile {
 		get
 		{
 			CheckStats();
-			return 2 + Stats.Value/2;
+			return 2 + Stats.Value/4;
 		}
 	}
 
@@ -21,7 +21,7 @@ public class Arcane : Tile {
 		get
 		{
 			CheckStats();
-			return (1 * (Stats.Value)) + (int)Player.SpellValue;
+			return 1 + (Stats.Value/2) + (PlayerControl.instance.Controller ? (int) PlayerControl.instance.Controller.Stats.Spell : 0);
 		}
 	}
 

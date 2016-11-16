@@ -26,6 +26,11 @@ public class WaveTile : WaveUnit
 	public WaveTileSpawnStyle [] _SpawnStyles = new WaveTileSpawnStyle[]{
 		new WaveTileSpawnStyle(WaveTileSpawn.XPsuedoChance, new Vector2(1,3))
 	};
+
+
+	public int PointsPerTurn = 3, PointsPerEnemy = 1;
+	private int PointsThisTurn = 0;
+
 	//public WaveTileSpawn SpawnType;
 
 	
@@ -54,7 +59,7 @@ public class WaveTile : WaveUnit
 		Parent = p;
 		Index = i;
 		Active = false;
-		Timer = Random.Range(PrepTime.x, PrepTime.y);
+		//Timer = Random.Range(PrepTime.x, PrepTime.y);
 		if(GenusOverride.ToLower() == "random") GenusString = GameData.ResourceLong((GENUS)Random.Range(0,4));
 		else if(GenusOverride.ToLower() == "randomall") GenusString = GameData.ResourceLong((GENUS)Random.Range(0,6));
 		else GenusString = GenusOverride;
@@ -99,38 +104,6 @@ public class WaveTile : WaveUnit
 			}
 		}
 	}
-
-	public Tile [] GetTilesToReplace(int num, params string [] types)
-	{
-		Tile [] final = new Tile[num];
-		bool [,] replacedtile = new bool [(int)TileMaster.Grid.Size[0], (int)TileMaster.Grid.Size[1]];
-
-		int checks_max = (TileMaster.Grid.Size[0] * TileMaster.Grid.Size[1])-1;
-		for(int i = 0; i < num; i++)
-		{
-			int checks = 0;
-			Tile t = TileMaster.RandomTileOfType(types);
-
-			int x = t.Point.Base[0];
-			int y = t.Point.Base[1];
-			while(replacedtile[x, y]||
-					TileMaster.Tiles[x,y].Point.Scale > 1 ||
-					y < 2)
-			{
-				t = TileMaster.RandomTileOfType(types);
-				x = t.Point.Base[0];
-				y = t.Point.Base[1];
-
-				if(checks >= checks_max) break;
-				checks ++;
-			}
-			replacedtile[x,y] = true;
-
-			final[i] = TileMaster.Tiles[x,y];
-		}
-		return final;
-	}
-
 
 
 	public override IEnumerator OnStart()
@@ -246,33 +219,12 @@ public class WaveTile : WaveUnit
 	
 }
 
-[System.Serializable]
 public class WaveTileSpawnStyle
 {
 	public WaveTileSpawn Type;
-	[SerializeField]
-	private Vector2 _Value;
-
-	public float Value
+	public int Value;
+	public WaveTileSpawnStyle(WaveTileSpawn s, Vector2 v)
 	{
-		get{
-			return Random.Range(_Value.x, _Value.y+0.001F);
-		}
+
 	}
-
-	public WaveTileSpawnStyle(WaveTileSpawn sp, Vector2 val)
-	{
-		Type = sp;
-		_Value = val;
-	}
-}
-
-public enum WaveTileSpawn
-{
-	XAtStart,
-	XPerTurn,
-	XChance,
-	XPsuedoChance,
-	XOnScreen
-
 }

@@ -22,6 +22,9 @@ public class Zone : MonoBehaviour {
 	public Wave IntroWave;
 	public Wave [] Waves;
 	public Wave BossWave;
+	public Boss [] Bosses;
+	public Boss TargetBoss;
+
 	public ZoneStyle Style;
 	public Wave this [int i]{get{return Waves[i];}}
 
@@ -255,19 +258,58 @@ public class Zone : MonoBehaviour {
 		return Depth;
 	}
 
+
+	public IEnumerator BeforeTurn()
+	{
+		yield return StartCoroutine(TargetBoss.BeforeTurn());
+	}
+
+	public IEnumerator AfterTurn()
+	{
+		if(TargetBoss.Arrived && !TargetBoss.Entered)
+		{
+			yield return StartCoroutine(OnArrive());
+		}
+		yield return StartCoroutine(TargetBoss.AfterTurn());
+	}
+
+	public IEnumerator OnEnd()
+	{
+		TargetBoss.OnEnd();
+		yield return null;
+	}
+
+	public IEnumerator OnArrive()
+	{
+		TargetBoss.OnArrive();
+		yield return null;
+	}
+
+	public IEnumerator OnStart()
+	{
+		yield return StartCoroutine(TargetBoss.OnStart());
+	}
+
+	public void GetChances()
+	{
+		if(TargetBoss) TargetBoss.GetChances();
+	}
+
+
 	public virtual IEnumerator Enter()
 	{
 		Randomise();
 		
-		(UIManager.Objects.MiddleGear[2] as UIObjTweener).SetTween(0, false);
-		(UIManager.Objects.MiddleGear[1] as UIObjTweener).SetTween(0, false);
-		UIManager.instance.BackingTint = Tint;
-		UIManager.instance.WallTint = WallTint;
-		UIManager.instance.AddBorderPrefab(this);
+		//(UIManager.Objects.MiddleGear[2] as UIObjTweener).SetTween(0, false);
+		//(UIManager.Objects.MiddleGear[1] as UIObjTweener).SetTween(0, false);
+		//UIManager.instance.BackingTint = Tint;
+		//UIManager.instance.WallTint = WallTint;
+		//UIManager.instance.AddBorderPrefab(this);
 		
 
 		TileMaster.instance.MapSize_Default = GetMapSize();
 		
+
 		
 		Player.instance.ResetStats();
 		
@@ -277,10 +319,28 @@ public class Zone : MonoBehaviour {
 			yield return StartCoroutine(TileMaster.instance.NewGridRoutine());
 		}
 		
-		StCon [] floor = new StCon[]{new StCon("Entered")};
-		StCon [] title = new StCon[]{new StCon(Name, WallTint * 1.5F, false, 110)};
-		yield return StartCoroutine(UIManager.instance.Alert(0.9F, floor, title));
-		
+		//StCon [] floor = new StCon[]{new StCon("Entered")};
+		//StCon [] title = new StCon[]{new StCon(Name, WallTint * 1.5F, false, 110)};
+		//yield return StartCoroutine(UIManager.instance.Alert(0.9F, floor, title));
+		Boss t = Bosses[Random.Range(0, Bosses.Length)];
+		TargetBoss = (Boss) Instantiate(t);
+		TargetBoss.Setup();
+
+		yield return StartCoroutine(OnStart());
+
+		//UIManager.instance.
+	}
+
+	public void OnTileCollect(Tile t)
+	{
+		TargetBoss.CheckMission(t);
+		UIManager.instance.SetZoneObj(true);
+	}
+
+	public void OnTileDestroy(Tile t)
+	{
+		TargetBoss.CheckMission(t);
+		UIManager.instance.SetZoneObj(true);
 	}
 
 }

@@ -207,9 +207,9 @@ public class Wave : Unit {
 			if(AllSlots[i] == null) continue;
 			if(AllSlots[i].Active)
 			{
-				AllSlots[i].Timer ++;
+				
 
-				AddPoints(AllSlots[i].PointsPerTurn, true);
+				//AddPoints(AllSlots[i].PointsPerTurn, true);
 				yield return StartCoroutine(AllSlots[i].BeginTurn());
 			}
 		}

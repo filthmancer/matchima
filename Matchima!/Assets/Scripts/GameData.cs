@@ -1039,6 +1039,7 @@ public class GameData : MonoBehaviour {
 	
 		public Class GetClass(string name)
 		{
+			if(name == string.Empty) return Classes[UnityEngine.Random.Range(0, 5)];
 			foreach(Class child in Classes)
 			{
 				if(name == child.Name || name == child.Info.ShortName)

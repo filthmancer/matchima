@@ -134,6 +134,8 @@ public class EffectManager : MonoBehaviour {
 			p.SetTarget(t.position + offset);
 			p.SetDelay(0.35F);
 			p.SetThreshold(0.25F);
+			p.DontDestroy = false;
+			final.GetComponent<DestroyTimer>().Timer = 0.5F;
 		}
 
 
@@ -179,7 +181,8 @@ public class EffectManager : MonoBehaviour {
 			p.SetTarget(t.position + offset);
 			p.SetDelay(0.35F);
 			p.SetThreshold(0.25F);
-			p.DontDestroy = true;
+			p.DontDestroy = false;
+			final.GetComponent<DestroyTimer>().Timer = 0.5F;
 		}
 		return final;
 	}

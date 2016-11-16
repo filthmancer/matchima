@@ -741,7 +741,7 @@ public class Player : MonoBehaviour {
 			}
 		}
 
-		if (GameManager.Wave != null) GameManager.Wave.GetChances();
+		if (GameManager.Zone != null) GameManager.Zone.GetChances();
 
 		Spawner2.GetSpawnables(TileMaster.Types);
 	}

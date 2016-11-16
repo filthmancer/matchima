@@ -97,7 +97,8 @@ public class Grunt : Enemy {
 		}
 		
 		
-		InitStats.Hits        = (int)(hpfactor);
+		InitStats.HitsMax        = (int)(hpfactor);
+		InitStats.Hits = InitStats.HitsMax;
 		InitStats.Attack      = (int)(atkfactor);
 
 		Stats = new TileStat(InitStats);

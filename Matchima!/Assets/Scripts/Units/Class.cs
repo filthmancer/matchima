@@ -95,6 +95,7 @@ public class Class : Unit {
 		}
 	}
 
+
 	public string Description;
 	public string TileDescription;
 	public bool Unlocked = true;
@@ -106,6 +107,10 @@ public class Class : Unit {
 	public Slot InitMod;
 
 	public Tile _Tile;
+	public virtual void GetTile(Tile t)
+	{
+		_Tile = t;
+	}
 	public tk2dSpriteCollectionData Atlas;
 
 	public Slot [] _Boons
@@ -420,8 +425,11 @@ public class Class : Unit {
 		yield return new WaitForSeconds(GameData.GameSpeed(0.05F));
 		
 		GameObject powerup = EffectManager.instance.PlayEffect(this.transform, Effect.ManaPowerUp, GameData.Colour(Genus));
-		powerup.transform.SetParent(_Tile.transform);
-		powerup.transform.position = _Tile.transform.position;
+		if(_Tile)
+		{
+			powerup.transform.SetParent(_Tile.transform);
+			powerup.transform.position = _Tile.transform.position;
+		}
 		powerup.transform.localScale = Vector3.one;
 
 		yield return new WaitForSeconds(GameData.GameSpeed(0.5F));
