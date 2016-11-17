@@ -46,9 +46,9 @@ public class Cross : Tile {
 	}
 
 
-	public override void Setup(int x, int y, int scale, TileInfo inf, int value_inc = 0)
+	public override void Setup(GridInfo g, int x, int y, int scale, TileInfo inf, int value_inc = 0)
 	{
-		base.Setup(x,y,scale,inf,value_inc);
+		base.Setup(g, x,y,scale,inf,value_inc);
 		CrossParts = (GameObject) Instantiate(CrossParts);
 		CrossParts.transform.position = this.transform.position;
 		CrossParts.transform.parent = this.transform;

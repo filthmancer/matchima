@@ -243,13 +243,11 @@ public class _GameSaveLoad: MonoBehaviour {
         }
 
        GameManager.instance.ResumeGameMeter[i] = d.Meter;
-        
       }
     
 
-      GridInfo level = new GridInfo();
-      Vector2 size = new Vector2(myData._iUser.Rows.Length, myData._iUser.Rows[0].GenusIndex.Length);
-      level.SetUp(size);
+      /*GridInfo level = //new GridInfo(new Vector2(0,0), myData._iUser.Rows.Length, myData._iUser.Rows[0].GenusIndex.Length);
+
       for(int xx = 0; xx < myData._iUser.Rows.Length; xx++)
       {
         for(int yy = 0; yy < myData._iUser.Rows[0].GenusIndex.Length; yy++)
@@ -260,9 +258,9 @@ public class _GameSaveLoad: MonoBehaviour {
           sp.Scale = myData._iUser.Rows[xx].ScaleIndex[yy];
           level.SetPointInfo(xx,yy, sp);
         }
-      }
+      }*/
 
-      TileMaster.instance.LevelToLoad(level);
+     // TileMaster.instance.LevelToLoad(level);
       if(myData._iUser.HasZoneMap)
       {
         GameManager.ZoneMap = GameData.instance.GenerateZoneMap(myData._iUser.ZoneMap.BracketData);

@@ -573,8 +573,10 @@ public class TileInfo
 		get{
 			return GameData.ResourceLong(_GenusEnum);
 		}
-
 	}
+
+	public bool Empty;
+
 
 	public SPECIES _Type;
 	public TYPE _TypeEnum;
@@ -624,11 +626,6 @@ public class TileInfo
 		FinalEffects = new List<TileEffectInfo>();
 		FinalEffects.AddRange(s.Effects);
 		FinalEffects.AddRange(s[g].Effects);
-		
-		/*if(!s.isEnemy && !s.isHealth) 
-		{
-			FinalValue.Mult(1 + GameManager.Difficulty/10);
-		}*/
 	}
 
 	public TileInfo(TileInfo t)
@@ -641,6 +638,7 @@ public class TileInfo
 		Outer = t.Outer;
 		Rarity = t.Rarity;
 		Shift = t.Shift;
+		Empty = t.Empty;
 		FinalChance = t.FinalChance;
 		FinalValue = t.FinalValue;
 		FinalEffects = t.FinalEffects;
@@ -650,6 +648,7 @@ public class TileInfo
 	{
 		get
 		{
+			if(Empty) return 0;
 			int v = UnityEngine.Random.Range(FinalValue.x, FinalValue.y);
 			if(v <= 0) v = 1;
 			return v;
@@ -659,6 +658,7 @@ public class TileInfo
 
 	public bool IsType(string g, string t)
 	{
+		if(Empty) return false;
 		bool genus = false;
 		bool type = false;
 
@@ -671,6 +671,11 @@ public class TileInfo
 
 	public void ChangeGenus(GENUS g)
 	{
+		if(Empty) return;
+		if(g == GENUS.RAND)
+		{
+			g = (GENUS) UnityEngine.Random.Range(0,3);
+		}
 		int i = (int)g;
 		_GenusEnum = g;
 		Outer = TileMaster.Genus.Frames.GetSpriteIdByName(_GenusName);

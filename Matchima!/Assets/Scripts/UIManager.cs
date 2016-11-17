@@ -385,6 +385,7 @@ public class UIManager : MonoBehaviour {
 	public UIObjtk ZoneObj;
 	public void SetZoneObj(bool active)
 	{
+		if(GameManager.Zone.TargetBoss == null) return;
 		ZoneObj.SetTween(0, active);
 		ZoneObj.Txt[0].text = GameManager.Zone.TargetBoss.Name;
 		ZoneObj[0].Txt[0].text = GameManager.Zone.TargetBoss.Mission;

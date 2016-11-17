@@ -89,6 +89,8 @@ public class IntVector
 		y = a;
 	}
 
+	public string ToString() {return x + ":" + y;}
+
 	public static IntVector operator + (IntVector a, IntVector b)
 	{
 		return new IntVector(b.x+a.x, b.y+a.y);

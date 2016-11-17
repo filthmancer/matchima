@@ -11,9 +11,9 @@ public class Attack : Tile {
 		}
 	}
 
-	public override void Setup(int x, int y, int scale, TileInfo inf, int value_inc)
+	public override void Setup(GridInfo g, int x, int y, int scale, TileInfo inf, int value_inc)
 	{
-		base.Setup(x, y, scale, inf, value_inc);
+		base.Setup(g, x, y, scale, inf, value_inc);
 		InitStats.Attack = Stats.Value;
 		CheckStats();
 	}

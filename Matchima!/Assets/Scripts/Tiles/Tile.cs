@@ -215,11 +215,11 @@ public class Tile : MonoBehaviour {
 
 	}
 
-	public void Setup(int x, int y)
+	public void Setup(GridInfo g, int x, int y)
 	{
 		//Setup(x,y, _Scale, Info, InitStats.Value-1);
 
-		Point = new TilePointContainer(x,y,_Scale, this);
+		Point = new TilePointContainer(g, x,y,_Scale, this);
 		_Transform = this.transform;
 		if(!Info.ShiftOverride) InitStats.Shift = Player.Stats.Shift;
 		else InitStats.Shift = Info.Shift;
@@ -227,9 +227,9 @@ public class Tile : MonoBehaviour {
 		CheckStats();
 	}
 
-	public virtual void Setup(int x, int y, int scale, TileInfo inf, int value_inc = 0)
+	public virtual void Setup(GridInfo g, int x, int y, int scale, TileInfo inf, int value_inc = 0)
 	{
-		Point = new TilePointContainer(x,y,scale, this);
+		Point = new TilePointContainer(g, x,y,scale, this);
 		_Transform = this.transform;
 		Info = new TileInfo(inf);
 
@@ -315,12 +315,23 @@ public class Tile : MonoBehaviour {
 			if(transform.position.y < -10) Destroy(this.gameObject);
 			return;
 		}
-		if(TileMaster.Tiles.GetLength(0) <= Point.Base[0] || TileMaster.Tiles.GetLength(1) <= Point.Base[1]) return;
-		if(!Controllable && TileMaster.Tiles[Point.Base[0], Point.Base[1]] != this && TileMaster.Tiles[Point.Base[0], Point.Base[1]] != null && !Destroyed) 
+		
+		if(!Controllable && TileMaster.Grid == Point.Grid)
 		{
-			TileMaster.instance.SetFillGrid(true);
-			DestroyThyself();
+			if(TileMaster.Tiles[Point.Base[0], Point.Base[1]] != this && TileMaster.Tiles[Point.Base[0], Point.Base[1]] != null && !Destroyed)
+			{
+				TileMaster.instance.SetFillGrid(true);
+				DestroyThyself();
+			}
+			if(TileMaster.Grid[x,y].Empty && !GameManager.instance.isPaused)
+			{
+				//TileMaster.instance.SetFillGrid(true);
+				DestroyThyself();
+			}
 		}
+		else if(TileMaster.Grid != Point.Grid) return;
+
+		if(TileMaster.Tiles.GetLength(0) <= Point.Base[0] || TileMaster.Tiles.GetLength(1) <= Point.Base[1]) return;
 
 		if(Stats.Shift != ShiftType.None && !Destroyed)
 		{
@@ -1412,7 +1423,7 @@ public class Tile : MonoBehaviour {
 				UnlockedFromGrid = false;
 				TileMaster.Grid[x,y]._Tile = null;
 				TileMaster.Grid[t.x, t.y]._Tile = this;
-				Setup(t.x, t.y);
+				Setup(t.Point.Grid, t.x, t.y);
 				transform.position = new Vector3(Point.targetPos.x, Point.targetPos.y, transform.position.z);
 				SetSprite();
 			}
@@ -1424,6 +1435,7 @@ public class Tile : MonoBehaviour {
 
 	public IEnumerator MoveToPoint(int _x, int _y, bool overtake, float speed = 6.0F, float arc = 0.0F)
 	{
+		print("MOVING" + TileMaster.Grid[_x,_y]._Tile + ":" + this);
 		bool complete = false;
 		Vector3 newpoint = TileMaster.Grid[_x,_y].Pos;
 		UnlockedFromGrid = true;
@@ -1435,6 +1447,7 @@ public class Tile : MonoBehaviour {
 		MoveComp.DontDestroy = true;
 		MoveComp.NoDestroy = true;
 
+
 		MoveComp.SetMethod(() => {
 			complete = true;
 			
@@ -1443,7 +1456,7 @@ public class Tile : MonoBehaviour {
 				UnlockedFromGrid = false;
 				TileMaster.Grid[x,y]._Tile = null;
 				TileMaster.Grid[_x, _y]._Tile = this;
-				Setup(_x, _y);
+				Setup(TileMaster.Grid, _x, _y);
 				transform.position = new Vector3(Point.targetPos.x, Point.targetPos.y, transform.position.z);
 				SetSprite();
 			}
@@ -1471,7 +1484,7 @@ public class Tile : MonoBehaviour {
 
 		MoveComp.SetIntMethod((int [] num) => {
 			TileMaster.Grid[num[0], num[1]]._Tile = this;
-			Setup(num[0], num[1]);
+			Setup(TileMaster.Grid, num[0], num[1]);
 
 			transform.position = new Vector3(Point.targetPos.x, Point.targetPos.y, transform.position.z);
 			SetSprite();
@@ -1564,6 +1577,7 @@ public class TileStat
 		Hits        += t.Hits;
 		HitsMax 	+= t.HitsMax;
 		Attack      += t.Attack;
+		Spell       += t.Spell;
 		Movement    += t.Movement;
 		Lifetime    += t.Lifetime;
 		Deathtime   += t.Deathtime;
@@ -1607,6 +1621,7 @@ public class TileStat
 			Armour 	  = t.Armour;
 			
 			Attack    = t.Attack;
+			Spell     = t.Spell;
 			Movement  = t.Movement;
 			Lifetime  = t.Lifetime;
 			Deathtime = t.Deathtime;
@@ -1638,7 +1653,7 @@ public class TilePointContainer
 	public int BaseX, BaseY;
 	public List<int> AllX, AllY;
 	public int Scale;
-
+	public GridInfo Grid;
 
 	public Vector3 targetPos;
 	public Tile parent;
@@ -1663,8 +1678,9 @@ public class TilePointContainer
 
 	public int Length{get{return AllX.Count;}}
 
-	public TilePointContainer(int x, int y, int sc, Tile p)
+	public TilePointContainer(GridInfo g, int x, int y, int sc, Tile p)
 	{
+		Grid = g;
 		BaseX = x;
 		BaseY = y;
 		Scale = sc;
@@ -1677,7 +1693,7 @@ public class TilePointContainer
 		AllX = new List<int>();
 		AllY = new List<int>();
 		targetPos = Vector3.zero;
-		if(TileMaster.Tiles == null || TileMaster.Grid == null) 
+		if(Grid == null)
 		{
 			return;
 		}
@@ -1689,17 +1705,17 @@ public class TilePointContainer
 		{
 			for(int yy = 0; yy < Scale; yy++)
 			{
-				if(TileMaster.Tiles.GetLength(0) <= BaseX + xx || TileMaster.Tiles.GetLength(1) <= BaseY + yy) continue;
+				if(Grid.Size[0] <= BaseX + xx || Grid.Size[1] <= BaseY + yy) continue;
 				AllX.Add(BaseX + xx);
 				AllY.Add(BaseY + yy);
-				TileMaster.Tiles[BaseX+xx, BaseY+yy] = parent;
+				Grid[BaseX+xx, BaseY+yy]._Tile = parent;
 			}
 			
 		}
 		int end = AllX.Count - 1;
 
-		Vector3 bottomleft = TileMaster.Grid.GetPoint(BaseX, BaseY);
-		Vector3 topright = TileMaster.Grid.GetPoint(TopX, TopY);
+		Vector3 bottomleft = Grid.GetPoint(BaseX, BaseY);
+		Vector3 topright = Grid.GetPoint(TopX, TopY);
 		if(topright == Vector3.zero) topright = bottomleft;
 
 		//Debug.Log(BaseY + ":" + AllY[end] + ":" + TileMaster.Grid.Size[1]);

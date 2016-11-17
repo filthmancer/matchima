@@ -9,17 +9,27 @@ public class TileMaster : MonoBehaviour {
 	[SerializeField] private GenusTypes _GenusTypes;
 
 	public static GridInfo Grid;
+	public static GridInfo Room
+	{
+		get{
+			return Grid;
+		}
+	}
+
+	public GridInfo GridTest;
+
 	public static bool FillGridActive
 	{
 		get {return instance.FillGrid;}
 	}
-	public static bool GridSetup
+	public static bool HasRoom
 	{
 		get {
 			if (Grid == null) return false;
 			else return Grid.setup;
 		}
 	}
+
 	public static Tile[,] Tiles
 	{
 		get {return TileMaster.Grid.Tiles;}
@@ -61,7 +71,7 @@ public class TileMaster : MonoBehaviour {
 			int check = 0;
 			int max_check = (int)((float)(Grid.Size[0] * Grid.Size[1]) * 0.8F);
 
-			while(!Tiles[x,y].IsType("resource"))
+			while(Grid[x,y].Empty || Tiles[x,y] == null || !Tiles[x,y].IsType("resource"))
 			{
 				x = Random.Range(0, Grid.Size[0]);
 				y = Random.Range(0, Grid.Size[1]);
@@ -200,7 +210,7 @@ public class TileMaster : MonoBehaviour {
 	}
 
 	public Vector2 MapSize;
-	[HideInInspector]
+	//[HideInInspector]
 	public Vector2 MapSize_Default;
 	public float tileBufferX = 0.2F, tileBufferY = 0.2F;
 	public float YOffset = 1.0F;
@@ -302,7 +312,8 @@ public class TileMaster : MonoBehaviour {
 
 				ClearQueuedTiles();
 				spawn_stack = new float [(int)MapSize.x];
-				GenerateGrid(level_to_load);
+
+				//GenerateGrid(level_to_load);
 
 				Player.instance.ResetChances();
 				AllChanceInit = Spawner2.AllChanceFactors;
@@ -413,18 +424,16 @@ public class TileMaster : MonoBehaviour {
 //Generates a grid
 	private IEnumerator _GenerateGrid(GridInfo level, float wait)
 	{
+		generated = true;
 		if (level != null) //If loading a GridInfo file
 		{
-
-			MapSize = new Vector2(level.Points.GetLength(0),  level.Points.GetLength(1));
+			MapSize = new Vector2(level.Size[0],  level.Size[1]);
 			bool evenX = MapSize[0] % 2 == 0;
 			bool evenY = MapSize[1] % 2 == 0;
 			float tileBufferX_offset = (float)(evenX ? (1.0F + tileBufferX) / 2 : 0);
 			float tileBufferY_offset = (float)(evenY ? (1.0F + tileBufferY) / 2 : 0);
-			Grid = new GridInfo();
-			Grid.SetUp(MapSize);
-			Grid.SetInfo(level);
-			//print(level.Points[0,0].Info + " : " + Grid.Points[0,0].Info);
+			Grid = (GridInfo) Instantiate(RoomObj);//new GridInfo(offset);
+			Grid.Setup(Vector2.zero, level);
 
 			int [] tile_size = new int [2] {(int)Grid.Size[0], (int)Grid.Size[1]};
 
@@ -434,6 +443,7 @@ public class TileMaster : MonoBehaviour {
 			CameraUtility.SetTargetPos(Vector3.Lerp( Grid[0, 0].position,
 			                           Grid[Grid.Size[0] - 1, Grid.Size[1] - 1].position,
 			                           0.5F));
+
 			spawn_stack = new float [Grid.Size[0]];
 			for (int sx = 0; sx < Grid.Size[0]; sx++)
 			{
@@ -447,8 +457,8 @@ public class TileMaster : MonoBehaviour {
 				y = 0;
 				for (int yy = -tile_size[1] / 2; yy < (evenY ? tile_size[1] / 2 : tile_size[1] / 2 + 1); yy++)
 				{
-					if (Grid.Points[x, y].Info != null) CreateTile(x, y, new Vector2(0, 1), Grid.Points[x, y].Info);
-					//else print(x + ":" + y + " -- " + Grid.Points[x,y]);
+					if (Grid[x, y].Info != null) CreateTile(x, y, new Vector2(0, 1), Grid[x, y].Info);
+					//else print(x + ":" + y + " -- " + Grid[x,y]);
 					y++;
 				}
 				x++;
@@ -465,29 +475,25 @@ public class TileMaster : MonoBehaviour {
 			float tileBufferX_offset = (float)(evenX ? (1.0F + tileBufferX) / 2 : 0);
 			float tileBufferY_offset = (float)(evenY ? (1.0F + tileBufferY) / 2 : 0);
 
-			Grid = new GridInfo();
-			Grid.SetUp(MapSize);
+			Grid = (GridInfo) Instantiate(RoomObj);//new GridInfo(offset);
+			Grid.Setup(Vector2.zero, MapSize);
 
+			Grid[1,1].Empty = true;
+			Grid[3,1].Empty = true;
+			Grid[3,3].Empty = true;
+
+			GridTest = Grid;
 			SetOrtho();
-
+			SetFillGrid(true);
 			CameraUtility.SetTargetPos(Vector3.Lerp( Grid[0, 0].position,
 			                           Grid[Grid.Size[0] - 1, Grid.Size[1] - 1].position,
 			                           0.5F));
 
-			spawn_stack = new float [Grid.Size[0]];
-			for (int x = 0; x < Grid.Size[0]; x++)
-			{
-				if (Player.Stats.Shift == ShiftType.Down) spawn_stack[x] = CameraUtility.instance.Cam.CameraSettings.orthographicSize + 2.0F;
-				else if (Player.Stats.Shift == ShiftType.Up) spawn_stack[x] = -(CameraUtility.instance.Cam.CameraSettings.orthographicSize);
-			}
-			Vector2 velocity = Vector2.zero;
-			if (Player.Stats.Shift == ShiftType.Down) velocity = new Vector2(0, 1);
-			else if (Player.Stats.Shift == ShiftType.Up) velocity = new Vector2(0, -1);
 			for (int xx = 0; xx < Grid.Size[0]; xx++)
 			{
 				for (int yy = 0; yy < Grid.Size[1]; yy++)
 				{
-					CreateTile(xx, yy, velocity);
+					CreateTile(xx, yy, Vector2.zero);
 				}
 				yield return null;
 			}
@@ -504,6 +510,86 @@ public class TileMaster : MonoBehaviour {
 			}
 		}
 	}
+	public GridInfo RoomObj;
+	public GridInfo GenerateGrid2(Vector2 offset, GridInfo level, bool populate = false)
+	{
+		generated = true;
+		GridInfo final;
+		if (level != null) //If loading a GridInfo file
+		{
+			MapSize = new Vector2(level.Size[0],  level.Size[1]);
+
+			bool evenX = MapSize[0] % 2 == 0;
+			bool evenY = MapSize[1] % 2 == 0;
+			float tileBufferX_offset = (float)(evenX ? (1.0F + tileBufferX) / 2 : 0);
+			float tileBufferY_offset = (float)(evenY ? (1.0F + tileBufferY) / 2 : 0);
+			final = (GridInfo) Instantiate(RoomObj);//new GridInfo(offset);
+			final.Setup(offset, level);
+		}
+		else //Create random grid
+		{
+			MapSize = MapSize_Default;
+
+			bool evenX = MapSize[0] % 2 == 0;
+			bool evenY = MapSize[1] % 2 == 0;
+			float tileBufferX_offset = (float)(evenX ? (1.0F + tileBufferX) / 2 : 0);
+			float tileBufferY_offset = (float)(evenY ? (1.0F + tileBufferY) / 2 : 0);
+
+			final = (GridInfo) Instantiate(RoomObj);//new GridInfo(offset);
+			final.Setup(offset, MapSize);
+		}
+
+		if(populate)
+		{
+			for(int i = 0; i < Random.Range(0,5);i++)
+			{
+				int x = Random.Range(0, final.Grid.Length-1);
+				int y = Random.Range(1, final.Grid[0].Length-1);
+				final[x,y].Empty = true;
+			}
+
+			string [] randtypes = new string []
+			{
+				"grunt",
+				"cross",
+				"health",
+				"minion",
+				"bomb",
+				"arcane",
+				"chest"
+			};
+
+			for(int i = 0; i < Random.Range(3, 8); i++)
+			{
+				int x = Random.Range(0, final.Grid.Length);
+				int y = Random.Range(1, final.Grid[0].Length);
+				int r = Random.Range(0, randtypes.Length);
+				final[x,y].Info = new TileInfo(Types[randtypes[r]], GENUS.RAND);
+			}
+		}
+
+		for (int xx = 0; xx < final.Size[0]; xx++)
+		{
+			for (int yy = 0; yy < final.Size[1]; yy++)
+			{
+				if (final[xx, yy].Info != null) CreateTile(final, xx, yy, Vector2.zero, final[xx, yy].Info);
+				else CreateTile(final, xx,yy, Vector2.zero);
+			}
+		}
+		for (int x = 0; x < final.Size[0]; x++)
+		{
+			for (int y = 0; y < final.Size[1]; y++)
+			{
+				if (final[x, y]._Tile == null) continue;
+				if (final[x, y]._Tile != null || final[x, y]._Tile.Type == null)
+				{
+					final[x, y]._Tile.InitStats.isNew = false;
+				}
+			}
+		}
+
+		return final;
+	}
 
 	public void CheckGrid()
 	{
@@ -512,7 +598,7 @@ public class TileMaster : MonoBehaviour {
 
 		if(MapSize != finalMap)
 		{
-			IncreaseGridTo(finalMap);
+			//IncreaseGridTo(finalMap);
 		}
 	}
 
@@ -589,8 +675,50 @@ public class TileMaster : MonoBehaviour {
 		yield return null;
 	}
 
+	public Tile nextstairs;
+	public IEnumerator MoveToRoom(Vector2 direction, GridInfo r = null)
+	{
+		GameManager.instance.paused = true;
+		Vector3 pos = Vector3.zero;
+		if(Grid != null)
+		{
+			pos = Grid.Position;
+			pos += new Vector3(direction.x * Grid.Size[0]*3, direction.y * Grid.Size[1]*3, 0);
+		}
+
+		GridInfo newroom = GenerateGrid2(pos, r, true);
+	
+		Grid = newroom;
+		GridTest = Grid;
+
+		//yield return new WaitForSeconds(0.2F);
+		
+		yield return StartCoroutine(CameraUtility.instance.MoveToRoom(newroom));
+
+		yield return new WaitForSeconds(0.4F);
+
+		yield return StartCoroutine(CreateTravelTiles());
+
+		nextstairs = ReplaceTile(3,Grid.Size[1]-1, Types["stairs"], GENUS.RAND); //ReplaceTile(Tiles[3,Grid.Size[1]-1], Types["stairs"], GENUS.RAND);
+		
+		for(int i = 0; i < Player.ClassTiles.Length; i++)
+		{
+			yield return StartCoroutine(Player.ClassTiles[i].MoveToPoint(i,0, true, 100.0F));
+		}
+		yield return new WaitForSeconds(0.2F);
+		nextstairs.ChangeGenus(GENUS.OMG);
+
+		GameManager.instance.paused = false;
+		PlayerControl.instance.SetController(null);
+
+	}
 
 	private Tile CreateTile(int x, int y, Vector2 velocity, TileInfo t, int scale = 1, int value = 0)
+	{
+		if(Grid == null) return null;
+		return CreateTile(Grid, x, y, velocity, t, scale, value);
+	}
+	private Tile CreateTile(GridInfo g, int x, int y, Vector2 velocity, TileInfo t, int scale = 1, int value = 0)
 	{
 		//???? WAHT IS DIS
 		//if(Tiles.GetLength(0)>x && Tiles.GetLength(1) > y)
@@ -599,30 +727,31 @@ public class TileMaster : MonoBehaviour {
 		//}
 		//????
 
-		if (t == null) return null;
+		if(t == null) return null;
+		if(g != null && !g[x,y].ToFill()) return null;
 
 		if (t.Inner == null) t.Inner = t._Type.Atlas;
 		if (t.Outer == null) t.Outer = TileMaster.Genus.Frames.GetSpriteIdByName(t._GenusName);
 		Tile new_tile = t._Type.TilePool.Spawn();
-		float ny = velocity.y == 0.0F ? Grid.GetPoint(x, y).y : spawn_stack[x];
-		float nx = velocity.x == 0.0F ? Grid.GetPoint(x, y).x : spawn_stack[y];
+		float ny = velocity.y == 0.0F ? g.GetPoint(x, y).y : spawn_stack[x];
+		float nx = velocity.x == 0.0F ? g.GetPoint(x, y).x : spawn_stack[y];
 
 		new_tile.transform.position = new Vector3(nx, ny, 0);
 		new_tile.name = "Tile | " + x + ":" + y;
 
-		new_tile.transform.parent = Grid.Column[x].transform;
+		new_tile.transform.parent = g.Column[x].transform;
 		for (int xx = 0; xx < scale; xx++)
 		{
 			for (int yy = 0; yy < scale; yy++)
 			{
-				Grid[x + xx, y + yy]._Tile = new_tile;
+				g[x + xx, y + yy]._Tile = new_tile;
 			}
 		}
 
-		Grid[x, y]._Tile.Setup(x, y, scale, t, value);
+		g[x, y]._Tile.Setup(g, x, y, scale, t, value);
 
-		if (GameManager.instance.EnemyTurn) Grid[x, y]._Tile.SetState(TileState.Locked);
-		else Grid[x, y]._Tile.SetState(TileState.Idle);
+		if (GameManager.instance.EnemyTurn) g[x, y]._Tile.SetState(TileState.Locked);
+		else g[x, y]._Tile.SetState(TileState.Idle);
 
 
 		float half_x = (tileBufferX) / 2;
@@ -634,7 +763,7 @@ public class TileMaster : MonoBehaviour {
 		else if (velocity.y < 0.0F) spawn_stack[x] -= tile_col.radius * 2;
 		else if (velocity.x > 0.0F) spawn_stack[y] += tile_col.radius * 2;
 		else if (velocity.x < 0.0F) spawn_stack[y] -= tile_col.radius * 2;
-		return Grid[x, y]._Tile;
+		return g[x, y]._Tile;
 	}
 
 	private Tile CreateTile(int x, int y, Vector2 velocity, SPECIES s = null, GENUS g = GENUS.NONE, bool no_enemies = false, int scale = 1, int value = 0)
@@ -657,6 +786,28 @@ public class TileMaster : MonoBehaviour {
 		}
 
 		return CreateTile(x, y, velocity, t, scale, value);
+	}
+
+	private Tile CreateTile(GridInfo grid, int x, int y, Vector2 velocity, SPECIES s = null, GENUS g = GENUS.NONE, bool no_enemies = false, int scale = 1, int value = 0)
+	{
+		TileInfo t = null;
+		if (s == null || s == SPECIES.None)
+		{
+			if (no_enemies) t = Spawner2.RandomTileNoEnemies();
+			else t = Spawner2.RandomTile();
+
+			if (g != GENUS.NONE) t.ChangeGenus(g);
+			if (t._GenusEnum == GENUS.RAND)
+			{
+				t._GenusEnum = (GENUS) Random.Range(0, 3);
+			}
+		}
+		else
+		{
+			t = new TileInfo(s, g);
+		}
+
+		return CreateTile(grid, x, y, velocity, t, scale, value);
 	}
 
 	public Tile ReplaceTile(int x, int y, SPECIES sp = null, GENUS g = GENUS.NONE, int newscale = 1, int addvalue = 0, bool override_old = false)
@@ -710,7 +861,6 @@ public class TileMaster : MonoBehaviour {
 
 	}
 
-
 	public void AddVelocityToColumn(int x, int y, float amount)
 	{
 		return;
@@ -729,9 +879,9 @@ public class TileMaster : MonoBehaviour {
 		if (Grid == null) return;
 		if (Tiles == null || Tiles.GetLength(0) == 0) return;
 		FillGrid = false;
-		for (int x = 0; x < Grid.Points.GetLength(0); x++)
+		for (int x = 0; x < Grid.Size[0]; x++)
 		{
-			for (int y = 0; y < Grid.Points.GetLength(1); y++)
+			for (int y = 0; y < Grid.Size[1]; y++)
 			{
 				if (Tiles.GetLength(0) > x && Tiles.GetLength(1) > y && Tiles[x, y] != null)
 				{
@@ -773,6 +923,8 @@ public class TileMaster : MonoBehaviour {
 			}
 		}
 	}
+
+
 
 	public IEnumerator NewGridRoutine(SPECIES sp = null, GENUS g = GENUS.NONE, bool no_enemies = false)
 	{
@@ -906,6 +1058,8 @@ public class TileMaster : MonoBehaviour {
 				//else if(fill_from_none[xx, yy]) ReplaceTile(xx,yy);
 			}
 		}
+
+		if(EnemiesOnScreen == 0 && nextstairs.Genus == GENUS.OMG) nextstairs.ChangeGenus(GENUS.RAND);
 
 		spawn_stack = new float [Grid.Size[0]];
 		for (int x = 0; x < Grid.Size[0]; x++)
@@ -1101,7 +1255,7 @@ public class TileMaster : MonoBehaviour {
 			}
 			
 
-			PlayerControl.instance.Controller.AddMana(t.Genus, values[0]);
+			if(PlayerControl.instance.Controller) PlayerControl.instance.Controller.AddMana(t.Genus, values[0]);
 			//UIManager.instance.GetMeterPoints(g, values[0]);
 			
 
@@ -1120,7 +1274,7 @@ public class TileMaster : MonoBehaviour {
 				m.AddAction(() => {mini.enabled = true;});
 				m.DestroyOnEnd = true;
 			}
-			PlayerControl.instance.Controller.AddHealth(t.Genus, values[1]);
+			if(PlayerControl.instance.Controller) PlayerControl.instance.Controller.AddHealth(t.Genus, values[1]);
 			//Player.Stats.Heal(values[1]);
 		}
 		if (values[2] > 0)
@@ -1235,24 +1389,27 @@ public class TileMaster : MonoBehaviour {
 		QueuedTiles.RemoveRange(0, remove);
 	}
 
-	private List<TileQuickInfo> TravelTiles = new List<TileQuickInfo>();
+	//private List<TileQuickInfo> TravelTiles = new List<TileQuickInfo>();
+	private List<Tile> TravelTiles = new List<Tile>();
 	public void AddTravelTiles(params Tile [] t)
 	{
-		for(int i = 0; i < t.Length; i++)
+		TravelTiles.AddRange(t);
+		/*for(int i = 0; i < t.Length; i++)
 		{
-			TravelTiles.Add(new TileQuickInfo(t[i].Genus, t[i].Type, t[i].Info.Scale, t[i].Stats.Value-1));
-		}
+			TravelTiles.Add(t);//new TileQuickInfo(t[i].Genus, t[i].Type, t[i].Info.Scale, t[i].Stats.Value-1));
+		}*/
 		
 	}
 	public IEnumerator CreateTravelTiles()
 	{
 		if(TravelTiles.Count == 0) yield break;
 
-		GameObject powerup = EffectManager.instance.PlayEffect(UIManager.Objects.MiddleGear.transform, "stairstravel", Color.white);
+		GameObject powerup = EffectManager.instance.PlayEffect(Tiles[0,0].transform, "stairstravel", Color.white);
 		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 		for(int i = 0; i < TravelTiles.Count; i++)
 		{
-			Tile target = RandomResTile;
+			if(i > Grid.Size[0]-1) continue;
+			Tile target = Tiles[i,0];
 			//TileMaster.instance.ReplaceTile(target, TravelTiles[i].Species, TravelTiles[i].Genus,TravelTiles[i].Scale, TravelTiles[i].Value);
 			CastQuickTile(powerup.transform, target, TravelTiles[i]);
 			
@@ -1263,11 +1420,12 @@ public class TileMaster : MonoBehaviour {
 		Destroy(powerup);
 	}
 
-	private void CastQuickTile(Transform trans, Tile target, TileQuickInfo t)
+	private void CastQuickTile(Transform trans, Tile target, Tile trav)
 	{
-		GameData.instance.ActionCaster(trans, target, () => {
+		/*GameData.instance.ActionCaster(trans, target, () => {
 					TileMaster.instance.ReplaceTile(target, t.Species, t.Genus,t.Scale, t.Value);
-				});
+				});*/
+		trav.MoveToTile(target, true, 100.0F);
 	}
 
 	private class TileQuickInfo
@@ -1297,10 +1455,9 @@ public class TileMaster : MonoBehaviour {
 			{
 				for (int y = 0; y < Grid.Size[1]; y++)
 				{
-					if (Tiles[x, y] == null) fill_from_none[x, y] = true;
+					fill_from_none[x, y] = Grid[x,y].ToFill();
 				}
 			}
-
 			//CheckForEmptys();
 		}
 		else if (type == ShiftType.Down)
@@ -1316,20 +1473,20 @@ public class TileMaster : MonoBehaviour {
 					//if(ignore[x,y])continue;
 
 					//INITAL SETTING OF THE BOTTOM EMPTY TILE OF A ROW
-					if (Tiles[x, y] == null && !empty.HasValue)
+					if (Grid[x,y].ToFill() && !empty.HasValue)
 					{
 						empty = y;
 						if (y < Grid.Size[1] - 1) fill_from_none[x, y] = true;
 					}
 
 					//IF THE TILE ABOVE AN EMPTY SPOT ISN'T NULL
-					else if (empty.HasValue && Tiles[x, y] != null)
+					else if (empty.HasValue && !Grid[x,y].ToFill())
 					{
-						if (Tiles[x, y].Stats.Shift != ShiftType.None)
+						if (Grid[x,y]._Tile.Stats.Shift != ShiftType.None)
 						{
 
 							//IF TILE ABOVE IS GIANT WITH BASE ELSWHERE, CONTINUE
-							if (Tiles[x, y].Point.BaseX != x)
+							if (Grid[x,y]._Tile.Point.BaseX != x)
 							{
 								fill_from_none[x, empty.Value] = true;
 								empty++;
@@ -1338,9 +1495,9 @@ public class TileMaster : MonoBehaviour {
 
 							//IF NO SPACE FOR TILE TO FALL, CONTINUE
 							bool nospace = false;
-							for (int xx = 0; xx < Tiles[x, y].Point.Scale; xx++)
+							for (int xx = 0; xx < Grid[x,y]._Tile.Point.Scale; xx++)
 							{
-								for (int yy = 0; yy < Tiles[x, y].Point.Scale; yy++)
+								for (int yy = 0; yy < Grid[x,y]._Tile.Point.Scale; yy++)
 								{
 									if (x + xx > Grid.Size[0] - 1 || y + yy > Grid.Size[1] - 1)
 									{
@@ -1349,8 +1506,8 @@ public class TileMaster : MonoBehaviour {
 										break;
 									}
 
-									nospace = Tiles[x + xx, y] != null && Tiles[x + xx, y] != Tiles[x, y];
-									nospace = Tiles[x + xx, y + yy] != null && Tiles[x + xx, y + yy] != Tiles[x, y];
+									nospace = Tiles[x + xx, y] != null && Tiles[x + xx, y] != Grid[x,y]._Tile;
+									nospace = Tiles[x + xx, y + yy] != null && Tiles[x + xx, y + yy] != Grid[x,y]._Tile;
 
 									if (nospace) break;
 								}
@@ -1379,7 +1536,7 @@ public class TileMaster : MonoBehaviour {
 							}
 
 							//SET TILE POINTS
-							Grid[x, empty.Value]._Tile = Tiles[x, y];
+							Grid[x, empty.Value]._Tile = Grid[x,y]._Tile;
 							Grid[x, empty.Value]._Tile.Point.BaseX = x;
 							Grid[x, empty.Value]._Tile.Point.BaseY = empty.Value;
 							Grid[x, empty.Value]._Tile.Point.SetPoints();
@@ -1413,7 +1570,7 @@ public class TileMaster : MonoBehaviour {
 						}
 					}
 					//IF THE TILE ABOVE AN EMPTY SPOT IS NULL
-					else if (Tiles[x, y] == null)
+					else if (Grid[x,y]._Tile == null)
 					{
 						if (y < Grid.Size[1] - 1) fill_from_none[x, y] = true;
 						empty = y;
@@ -1429,7 +1586,7 @@ public class TileMaster : MonoBehaviour {
 				for (int y = 0; y < Grid.Size[1]; y++)
 				{
 
-					if (Tiles[x, y] == null && !fill_from_none[x, y])
+					if (Grid[x,y]._Tile == null && !fill_from_none[x, y])
 					{
 						new_tiles_num++;
 						if (new_tiles_start[x] == null) new_tiles_start[x] = y;

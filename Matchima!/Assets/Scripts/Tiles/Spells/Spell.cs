@@ -28,9 +28,9 @@ public class Spell : Tile {
 
 	private bool can_be_destroyed = true;
 
-	public override void Setup(int x, int y, int scale, TileInfo inf, int value_inc = 0)
+	public override void Setup(GridInfo g, int x, int y, int scale, TileInfo inf, int value_inc = 0)
 	{
-		base.Setup(x,y,scale,inf, value_inc);
+		base.Setup(g, x,y,scale,inf, value_inc);
 		if(SpellName == string.Empty)
 		{
 			SpellEffect = (Ability) Instantiate(GameData.instance.GetTeamAbility());

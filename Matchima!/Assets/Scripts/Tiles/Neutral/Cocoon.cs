@@ -17,9 +17,9 @@ public class Cocoon : Tile {
 								new StCon((boon_chance_current*100).ToString("0") + "% boon tile chance.", GameData.Colour(GENUS.STR))};}
 	}
 
-	public override void Setup(int x, int y, int scale, TileInfo inf, int value_inc = 0)
+	public override void Setup(GridInfo g, int x, int y, int scale, TileInfo inf, int value_inc = 0)
 	{
-		base.Setup(x,y,scale, inf, value_inc);
+		base.Setup(g, x, y, scale, inf, value_inc);
 		InitStats.Hits = 3 + (target_lifetime - InitStats.Lifetime)/10;
 		boon_chance_current = boon_chance_init;
 

@@ -76,9 +76,9 @@ public class Enemy : Tile {
 	}
 
 
-	public sealed override void Setup(int x, int y, int scale, TileInfo sp, int value_inc = 0)
+	public sealed override void Setup(GridInfo g, int x, int y, int scale, TileInfo sp, int value_inc = 0)
 	{
-		base.Setup(x,y, scale, sp, value_inc);
+		base.Setup(g, x,y, scale, sp, value_inc);
 		_Effect = Params._effect;
 		_Effect.enabled = false;
 		InitStats._Team = Team.Enemy;

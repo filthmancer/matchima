@@ -145,13 +145,13 @@ public class GameManager : MonoBehaviour {
 			//GameData.instance.Save();
 			//PlayerPrefs.SetInt("PlayerLevel", Player.Level.Level);
 			//PlayerPrefs.SetInt("PlayerXP", Player.Level.XP_Current);
-			if(gameStart) 
+			/*if(gameStart) 
 			{
 				PlayerLoader.Save();
 				PlayerPrefs.SetInt("Resume", gameStart ? 1 : 0);
 				PlayerPrefs.SetString("Name", Player.Classes[0].Name);
 				PlayerPrefs.SetInt("Turns", Player.instance.Turns);
-			}
+			}*/
 		}
 	
 		void OnApplicationPause()
@@ -159,14 +159,14 @@ public class GameManager : MonoBehaviour {
 			//GameData.instance.Save();
 			//PlayerPrefs.SetInt("PlayerLevel", Player.Level.Level);
 			//PlayerPrefs.SetInt("PlayerXP", Player.Level.XP_Current);
-			if(gameStart)
+			/*if(gameStart)
 			{
 				PlayerLoader.Save();
 				PlayerPrefs.SetInt("Resume", gameStart ? 1 : 0);
 				PlayerPrefs.SetString("Name", Player.Classes[0].Name);
 				PlayerPrefs.SetInt("Turns", Player.instance.Turns);
 			}
-			PlayerPrefs.Save();
+			PlayerPrefs.Save();*/
 		}
 	
 		void Awake()
@@ -288,11 +288,13 @@ public class GameManager : MonoBehaviour {
 				break;
 				case 2: //X
 				//EscapeZone();
-				Wave.AddPoints(150);
+				//Wave.AddPoints(150);
+				StartCoroutine(TileMaster.instance.MoveToRoom(Vector3.up));
 				break;
 				case 3: //c
-				Tile t = TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["hero"], GENUS.STR,1, 1);
-				(t as Hero).SetClass(Player.Classes[0]);
+				StartCoroutine(TileMaster.instance.MoveToRoom(Vector3.right));
+				//Tile t = TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["hero"], GENUS.STR,1, 1);
+				//(t as Hero).SetClass(Player.Classes[0]);
 				//Player.instance.ResetLevel();
 				
 				/*UIManager.Objects.DeathIcon.transform.position = UIManager.CrewButtons[1].transform.position + Vector3.up * 5;
@@ -380,6 +382,8 @@ public class GameManager : MonoBehaviour {
 			yield return null;
 		}
 		UIManager.instance.LoadText.text = "";
+
+		yield return StartCoroutine(TileMaster.instance.MoveToRoom(Vector3.zero));
 		gameStart = true;
 		
 		Resources.UnloadUnusedAssets();
@@ -1287,6 +1291,7 @@ public class GameManager : MonoBehaviour {
 	}
 #endregion
 
+	public static bool OverrideMatch;
 #region Match Loops, Routines, Bonuses
 	public IEnumerator BeforeMatchRoutine()
 	{
@@ -1304,26 +1309,24 @@ public class GameManager : MonoBehaviour {
 		ComboFactor_RepeatedCombos = 1; //Number of repeated combos made by tiles
 
 		TileMaster.instance.SetFillGrid(false);
-
+		OverrideMatch = false;
 		int [] endspot = new int [2]{newTiles[newTiles.Count-1].x,newTiles[newTiles.Count-1].y};
 
 		bool initial_match = true;
-		while(newTiles.Count > 0)
+		while(newTiles.Count > 0 && !OverrideMatch)
 		{
 			yield return StartCoroutine(Player.instance.BeforeMatch(newTiles));
 
 			PlayerControl.instance.AddTilesToFinal(newTiles.ToArray());
 			for (int i = 0; i < newTiles.Count; i++)
 			{
-				if (newTiles[i] == null) continue;
-
-
+				if (newTiles[i] == null || GameManager.OverrideMatch) continue;
 				if(initial_match) yield return StartCoroutine(mover.MoveToPoint(newTiles[i].x, newTiles[i].y, false, 10.0F + 0.5F * i));
 
 				yield return StartCoroutine(newTiles[i].BeforeMatch(mover));
 				
 			}
-			if(initial_match)
+			if(!OverrideMatch && initial_match)
 			{
 				endpoint = new int[2];
 				for (int i = newTiles.Count-1; i >= 0; i--)
@@ -1351,9 +1354,6 @@ public class GameManager : MonoBehaviour {
 			}
 
 			//print("COMPLETED MOVE");
-			
-
-			
 				
 
 			yield return null;

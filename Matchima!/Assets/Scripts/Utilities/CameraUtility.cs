@@ -57,12 +57,19 @@ public class CameraUtility : MonoBehaviour {
 		{
 			Cam.CameraSettings.orthographicSize = Mathf.Lerp(Cam.CameraSettings.orthographicSize, TargetOrtho, Time.deltaTime * 8);
 			UICam.HostCamera.orthographicSize = Mathf.Lerp(UICam.HostCamera.orthographicSize, TargetOrtho, Time.deltaTime * 8);
-			
-
 		}
+
 		Background.localScale = (Vector3.one * background_factor_a) + Vector3.one * (OrthoFactor * background_factor_b);
-		Vector3 final_pos = TargetPos + (TurnOffset_enabled ? TurnOffsetA:TurnOffsetB);
-		if(!isShaking && TileMaster.Grid != null) Cam.transform.position = Vector3.Lerp(Cam.transform.position, final_pos, Time.deltaTime * 8);
+		/*if(!isShaking && TargetRoom != null) 
+		{
+			Vector3 vel = TargetPos -Cam.transform.position;
+			if(Vector3.Distance(vel, Vector3.zero) > 0.2F)
+			{
+				Cam.transform.position += vel.normalized * Time.deltaTime * 15;
+			}
+			
+		}*/
+		//Vector3.Lerp(Cam.transform.position, TargetPos, Time.deltaTime*2);
 	}
 
 	float max_intensity = 1.5F;
@@ -125,6 +132,47 @@ public class CameraUtility : MonoBehaviour {
 		TargetPos.y += yOffset * TileMaster.Grid.Size[1];
 		TurnOffsetA = Vector3.up * 0.35F;
 		TurnOffsetB = Vector3.down * 0.7F;
+	}
+
+
+	public static GridInfo TargetRoom;
+	public void SetTargetRoom(GridInfo r)
+	{
+		//StartCoroutine(MoveToRoom(r));
+		/*TargetRoom = r;
+		TargetPos = r.Position;
+
+		TargetPos.z = -18.8F;
+		TargetPos.y += yOffset * r.Size[1];*/
+	}
+
+	public IEnumerator MoveToRoom(GridInfo r)
+	{
+		float pullout_timer = 0.3F;
+		while((pullout_timer -= Time.deltaTime) > 0.0F)
+		{
+			TargetOrtho += Time.deltaTime * 7;
+			yield return null;
+		}
+
+		yield return new WaitForSeconds(Time.deltaTime * 5);
+
+		TargetRoom = r;
+		TargetPos = r.Position;
+		TargetPos.z = -18.8F;
+		TargetPos.y += yOffset * r.Size[1];
+
+		while(Vector3.Distance(Cam.transform.position, TargetPos) > 0.15F)
+		{
+			Vector3 vel = TargetPos - Cam.transform.position;
+			Cam.transform.position += vel.normalized * Time.deltaTime * 20;
+			yield return null;
+		}
+		
+		float ortho = Mathf.Max(r.Size[0] * 1.55F, r.Size[1] * 1.55F);
+		TargetOrtho = Mathf.Clamp(ortho, 7, Mathf.Infinity);
+		yield return null;
+
 	}
 
 	public static void SetTurnOffset(bool active)

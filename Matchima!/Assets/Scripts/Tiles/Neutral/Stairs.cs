@@ -28,9 +28,9 @@ public class Stairs : Tile {
 		}
 	}
 
-	public override void Setup(int x, int y, int scale, TileInfo inf, int value_inc = 0)
+	public override void Setup(GridInfo g, int x, int y, int scale, TileInfo inf, int value_inc = 0)
 	{
-		base.Setup(x,y,scale,inf, value_inc);
+		base.Setup(g, x,y,scale,inf, value_inc);
 		ZoneIndex = Random.Range(0,4);
 		InitStats.Hits = 1;
 	}
@@ -59,16 +59,21 @@ public class Stairs : Tile {
 			}
 		}
 
+		//TakeTiles.AddRange(Player.ClassTiles);
+
 		yield return new WaitForSeconds(GameData.GameSpeed(0.3F));
 
 		TileMaster.instance.AddTravelTiles(TakeTiles.ToArray());
+		PlayerControl.instance.selectedTiles.Clear();
 		PlayerControl.instance.finalTiles.Clear();
 		Player.instance.CompleteMatch = false;
+		GameManager.OverrideMatch = true;
 
-		TileMaster.instance.ClearGrid(false);
+		yield return StartCoroutine(TileMaster.instance.MoveToRoom(Vector3.up));
 		yield return new WaitForSeconds(GameData.GameSpeed(0.5F));
 		Destroy(powerup);
-		GameManager.instance.AdvanceZoneMap(IndexFinal);
+
+		//GameManager.instance.AdvanceZoneMap(IndexFinal);
 		
 		yield return null;
 	}

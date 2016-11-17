@@ -43,6 +43,20 @@ public class Player : MonoBehaviour {
 
 	public Class [] _Classes = new Class [4];
 	public static Class [] Classes;
+	public static Tile [] ClassTiles
+	{
+		get
+		{
+			List<Tile> final = new List<Tile>();
+			for(int i = 0; i < Classes.Length; i++)
+			{
+				if(Classes[i] == null) continue;
+				if(Classes[i]._Tile == null) continue;
+				final.Add(Classes[i]._Tile);
+			}
+			return final.ToArray();
+		}
+	}
 
 	public static Slot [] Slots
 	{
@@ -710,7 +724,7 @@ public class Player : MonoBehaviour {
 		Stats.MatchNumberModifier = Mathf.Clamp(Stats.MatchNumberModifier, -2, 100);
 
 
-		if (!Stats.isKilled && TileMaster.GridSetup)
+		if (!Stats.isKilled && TileMaster.HasRoom)
 		{
 			TileMaster.instance.CheckGrid();
 		}
