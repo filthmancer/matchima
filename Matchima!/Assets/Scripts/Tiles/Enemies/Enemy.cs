@@ -93,9 +93,8 @@ public class Enemy : Tile {
 
 		factor *= Random.Range(0.8F, 1.4F);
 
-		InitStats.HitsMax       = (int)(hpfactor);
-		InitStats.Hits = InitStats.HitsMax;
-		InitStats.Attack      = (int)(atkfactor);
+		InitStats._Hits.Set((int)(hpfactor));
+		InitStats._Attack.Set((int)(atkfactor));
 		SetSprite();
 		if(Stats.isNew)
 		{
@@ -111,7 +110,7 @@ public class Enemy : Tile {
 		m.AddJuice(Juice.instance.Ripple.Scale, 0.4F);
 		yield return new WaitForSeconds(0.4F);
 
-		InitStats.HitsMax += (int) (InitStats.value_soft) - InitStats.Value;
+		InitStats._Hits.Max += (int) (InitStats.value_soft) - InitStats.Value;
 		InitStats.Hits += (int) (InitStats.value_soft) - InitStats.Value;
 		InitStats.Attack += (int) (InitStats.value_soft) - InitStats.Value;
 		InitStats.Value = (int)InitStats.value_soft;
@@ -143,7 +142,7 @@ public class Enemy : Tile {
 		else if(Params.HitCounter != null && Params.HitCounter.activeSelf) Params.HitCounter.SetActive(false);
 
 		if(!Stats.isAlerted) return;
-		if(Stats.isFrozen) return;
+		//if(Stats.isFrozen) return;
 
 		if(threat_time <= 0.0F)
 		{
@@ -180,7 +179,7 @@ public class Enemy : Tile {
 		{
 			if(!child.CanAttack()) effects = false;
 		}
-		return effects && !Stats.isNew && !Stats.isFrozen && Stats.isAlerted && !AttackedThisTurn;
+		return effects && !Stats.isNew && Stats.isAlerted && !AttackedThisTurn;
 	}
 
 	public override IEnumerator BeforeMatch(Tile Controller)

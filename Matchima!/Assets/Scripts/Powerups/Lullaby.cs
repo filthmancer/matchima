@@ -170,8 +170,8 @@ public class Lullaby : Powerup {
 		{
 			MiniAlertUI m = UIManager.instance.MiniAlert(charm.Target_Tile.Point.targetPos, "Charm", 85, GameData.Colour(charm.Target_Tile.Genus), 1.2F, 0.1F);
 			charm.Target_Tile.AddEffect("Charm", duration);
-			charm.Target_Tile.InitStats.Hits += hpinc;
-			charm.Target_Tile.InitStats.Attack += atkinc;
+			charm.Target_Tile.InitStats._Hits.Max += hpinc;
+			charm.Target_Tile.InitStats._Attack.Max += atkinc;
 			charm.Target_Tile.CheckStats();
 		});
 	}

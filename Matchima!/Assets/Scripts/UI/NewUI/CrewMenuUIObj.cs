@@ -41,7 +41,7 @@ public class CrewMenuUIObj : UIObjtk {
 		tk2dSpriteDefinition id = Target.Inner.GetSpriteDefinition(render);
 		if(id == null) render = "Alpha";
 		Imgtk[0].SetSprite(Target.Inner, render);
-		Imgtk[0].scale = (Target is Hero) ? new Vector3(-1.4F, 1.4F, 1.0F) : Vector3.one * 6.8F;
+		Imgtk[0].scale = (Target is Hero) ? new Vector3(-2F, 2F, 1.0F) : Vector3.one * 11.2F;
 		Imgtk[1].SetSprite(TileMaster.Genus.Frames, Target.Info.Outer);
 		Imgtk[2].color = GameData.Colour(Target.Genus);
 

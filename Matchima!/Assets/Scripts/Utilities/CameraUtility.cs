@@ -33,7 +33,7 @@ public class CameraUtility : MonoBehaviour {
 
 	public bool IgnoreTargetOrtho = false;
 
-	public tk2dCamera Cam;
+	public tk2dCamera Cam, TrackCam;
 	public tk2dUICamera UICam;
 	private static float yOffset = 0.00F;
 
@@ -55,7 +55,9 @@ public class CameraUtility : MonoBehaviour {
 	{
 		if(!IgnoreTargetOrtho)
 		{
+			//print(TargetOrtho);
 			Cam.CameraSettings.orthographicSize = Mathf.Lerp(Cam.CameraSettings.orthographicSize, TargetOrtho, Time.deltaTime * 8);
+			TrackCam.CameraSettings.orthographicSize = Mathf.Lerp(TrackCam.CameraSettings.orthographicSize, TargetOrtho, Time.deltaTime * 8);
 			UICam.HostCamera.orthographicSize = Mathf.Lerp(UICam.HostCamera.orthographicSize, TargetOrtho, Time.deltaTime * 8);
 		}
 
@@ -162,15 +164,18 @@ public class CameraUtility : MonoBehaviour {
 		TargetPos.z = -18.8F;
 		TargetPos.y += yOffset * r.Size[1];
 
-		while(Vector3.Distance(Cam.transform.position, TargetPos) > 0.15F)
+		while(Vector3.Distance(Cam.transform.position, TargetPos) > 0.2F)
 		{
 			Vector3 vel = TargetPos - Cam.transform.position;
-			Cam.transform.position += vel.normalized * Time.deltaTime * 20;
+			Cam.transform.position += vel * Time.deltaTime * 6;
 			yield return null;
 		}
+
+		Cam.transform.position = TargetPos;
 		
-		float ortho = Mathf.Max(r.Size[0] * 1.55F, r.Size[1] * 1.55F);
+		float ortho = Mathf.Max(r.Size[0] * 1.4F, r.Size[1] * 1.15F);
 		TargetOrtho = Mathf.Clamp(ortho, 7, Mathf.Infinity);
+		IgnoreTargetOrtho = false;
 		yield return null;
 
 	}

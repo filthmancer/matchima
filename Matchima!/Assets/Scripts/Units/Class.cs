@@ -274,7 +274,7 @@ public class Class : Unit {
 	public virtual void Update()
 	{
 		if(time_from_last_pulse < 5.0F) time_from_last_pulse += Time.deltaTime;
-		if(ManaPowerParticle != null)	ManaPowerParticle.transform.position = UIManager.CrewButtons[Index].transform.position;
+		if(ManaPowerParticle != null && _Tile != null)	ManaPowerParticle.transform.position = _Tile.transform.position;
 	}
 
 	public virtual float GetMeterRatio()

@@ -30,7 +30,7 @@ public class Frenzy : TileEffect {
 	public override TileStat CheckStats()
 	{
 		TileStat s = new TileStat();
-		s.Attack = Damage;
+		s._Attack.Set(Damage);
 		return s;
 	}
 }

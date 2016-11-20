@@ -21,6 +21,20 @@ public class Hero : Tile {
 			return new StCon(valpref + effectpref + " " + _Class.Name, GameData.Colour(Genus), true, 60);}
 	}
 
+	protected override TileUpgrade [] BaseUpgrades
+	{
+		get
+		{
+			return new TileUpgrade []
+			{
+				new TileUpgrade(1.0F, 5, () => {InitStats._Hits.Max += 1;}),
+				new TileUpgrade(1.0F, 5, () => {InitStats.Attack += 1;}),
+				new TileUpgrade(0.4F, 1, () => {InitStats.Value += 1;}),
+				new TileUpgrade(0.1F, 2, () => {InitStats.Resource +=1;})
+			};
+		}
+	}
+
 	public void SetClass(Class c)
 	{
 		_Class = c;
@@ -28,17 +42,22 @@ public class Hero : Tile {
 
 		_Class.Reset();
 
-		InitStats.HitsMax = _Class.Stats._Health;
-		InitStats.Hits = _Class.Stats._Health;
-		InitStats.Attack = _Class.Stats._Attack;
-		InitStats.Spell = _Class.Stats._Spell;
-		InitStats.Movement = _Class.Stats._Move;
+		InitStats._Hits.Set(_Class.Stats._Health);
+		//InitStats.Hits = _Class.Stats._Health;
+		InitStats._Attack.Set(_Class.Stats._Attack);
+		InitStats._Spell.Set(_Class.Stats._Spell);
+		InitStats._Movement.Set(_Class.Stats._Move);
+
+		InitStats._Strength.Add(_Class.Stats._Strength);
+		InitStats._Dexterity.Add(_Class.Stats._Dexterity);
+		InitStats._Charisma.Add(_Class.Stats._Charisma);
+		InitStats._Wisdom.Add(_Class.Stats._Wisdom);
 
 		CheckStats();
 
 		Stats._Team = Team.Ally;
 
-		Stats.Hits = Stats.HitsMax;
+		Stats.Hits = Stats._Hits.Max;
 		SetSprite();
 	}
 
@@ -61,6 +80,9 @@ public class Hero : Tile {
 			Params._render.scale = new Vector3(0.2F, 0.2F, 1.0F);
 		}
 	}
+
+	public override string InnerRender(){return "Default";}
+	public override tk2dSpriteCollectionData InnerAtlas(){return _Class.Atlas;}
 
 	public override void GetParams(params string [] args)
 	{

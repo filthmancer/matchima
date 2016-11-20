@@ -22,8 +22,8 @@ public class Curse : TileEffect {
 	public override void Setup(Tile t)
 	{
 		base.Setup(t);
-		_Tile.Stats.Attack -= AttackReduction;
-		_Tile.Stats.Hits  -= HealthReduction;
+		_Tile.Stats._Attack.Add(-AttackReduction);
+		_Tile.Stats._Hits.Add(-HealthReduction);
 	}
 
 	public override void GetArgs(int _dur, params string [] args)
@@ -38,8 +38,8 @@ public class Curse : TileEffect {
 		Duration -= 1;
 		if(Duration != 0)
 		{
-			_Tile.Stats.Attack -= AttackReduction;
-			_Tile.Stats.Hits  -= HealthReduction;
+			_Tile.Stats._Attack.Add(-AttackReduction);
+			_Tile.Stats._Hits.Add(-HealthReduction);
 		}
 		return Duration == 0;
 	}

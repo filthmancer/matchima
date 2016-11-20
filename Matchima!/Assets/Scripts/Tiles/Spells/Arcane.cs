@@ -53,41 +53,7 @@ public class Arcane : Tile {
 
 		isMatching = true;
 		List<Tile> to_collect = new List<Tile>();
-		int x = TileMaster.Tiles.GetLength(0);
-		int y = TileMaster.Tiles.GetLength(1);
-
 		int part_num = 1;
-
-		for(int xx = 0; xx < x; xx ++)
-		{
-			for(int yy = 0; yy < y; yy++)
-			{
-				if(TileMaster.Tiles[xx,yy] == null) continue;
-				if(TileMaster.Tiles[xx,yy].IsGenus(GENUS.OMG, false) &&
-					!TileMaster.Tiles[xx,yy].isMatching) to_collect.Add(TileMaster.Tiles[xx,yy]);
-			}
-		}	
-		while(to_collect.Count > TilesCollected)
-		{
-			to_collect.RemoveAt(UnityEngine.Random.Range(0, to_collect.Count));
-		}
-
-		foreach(Tile child in to_collect)
-		{
-			PlayerControl.instance.RemoveTileToMatch(child);
-			PlayAudio("cast");
-
-			AttackParticle((float)part_num/TilesCollected, child, (Tile c) =>
-			{
-				c.SetState(TileState.Selected, true);
-				c.ChangeGenus(Genus);
-				EffectManager.instance.PlayEffect(c.transform, Effect.Replace, GameData.instance.GetGENUSColour(c.Genus));	
-			});
-
-			part_num ++;
-
-			yield return new WaitForSeconds(part_time);	
-		}
 
 		if(TileMaster.instance.EnemiesOnScreen != 0 || TileMaster.Enemies.Length != 0)
 		{
@@ -112,8 +78,8 @@ public class Arcane : Tile {
 
 					PlayerControl.instance.AddTilesToSelected(child);
 
-					Vector3 pos = TileMaster.Grid.GetPoint(child.Point.Point(0)) + Vector3.down * 0.3F;
-					MiniAlertUI hit = UIManager.instance.DamageAlert(pos, final_damage);
+					//Vector3 pos = TileMaster.Grid.GetPoint(child.Point.Point(0)) + Vector3.down * 0.3F;
+					//MiniAlertUI hit = UIManager.instance.DamageAlert(pos, final_damage);
 
 					CameraUtility.instance.ScreenShake(0.26F + 0.02F * final_damage,  GameData.GameSpeed(0.06F));
 					EffectManager.instance.PlayEffect(child.transform,Effect.Attack);
@@ -125,6 +91,39 @@ public class Arcane : Tile {
 			yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 		}
 
+		int x = TileMaster.Tiles.GetLength(0);
+		int y = TileMaster.Tiles.GetLength(1);
+		
+		if(to_collect.Count >= TilesCollected) yield break;
+
+
+		for(int xx = 0; xx < x; xx ++)
+		{
+			for(int yy = 0; yy < y; yy++)
+			{
+				if(TileMaster.Tiles[xx,yy] == null) continue;
+				if(TileMaster.Tiles[xx,yy].IsGenus(GENUS.OMG, false) &&
+					!TileMaster.Tiles[xx,yy].isMatching) to_collect.Add(TileMaster.Tiles[xx,yy]);
+			}
+		}	
+		while(to_collect.Count < TilesCollected)
+		{
+			//to_collect.RemoveAt(UnityEngine.Random.Range(0, to_collect.Count));
+			Tile child = TileMaster.RandomTileOfGenus(GENUS.OMG);
+			if(child == null) break;
+			PlayerControl.instance.RemoveTileToMatch(child);
+			PlayAudio("cast");
+
+			AttackParticle((float)part_num/TilesCollected, child, (Tile c) =>
+			{
+				c.SetState(TileState.Selected, true);
+				c.ChangeGenus(Genus);
+				EffectManager.instance.PlayEffect(c.transform, Effect.Replace, GameData.instance.GetGENUSColour(c.Genus));	
+			});
+
+			part_num ++;
+			yield return new WaitForSeconds(part_time);
+		}
 		
 		yield return StartCoroutine(base.BeforeMatch(Controller));
 	}

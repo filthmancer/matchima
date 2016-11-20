@@ -11,10 +11,10 @@ public class MiniTile2 : MonoBehaviour {
 		transform.position -= Vector3.forward * 2;
 		_Border.SetSprite(TileMaster.Genus.Frames, t.Info.Outer);
 
-		string render = t.Info._GenusName;
-		tk2dSpriteDefinition id = t.Info.Inner.GetSpriteDefinition(render);
+		string render = t.InnerRender();
+		tk2dSpriteDefinition id = t.InnerAtlas().GetSpriteDefinition(render);
 		if(id == null) render = "Alpha";
-		_Render.SetSprite(t.Info.Inner, render);
+		_Render.SetSprite(t.InnerAtlas(), render);
 	}
 
 	public void Explode()

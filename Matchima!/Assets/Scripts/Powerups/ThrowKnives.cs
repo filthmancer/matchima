@@ -193,7 +193,7 @@ public class ThrowKnives : Powerup {
 		{
 			child.PlayAudio("attack");
 			child.SetState(TileState.Selected, true);
-			child.InitStats.Hits -= final_damage;
+			child.InitStats._Hits.Add(-final_damage);
 			foreach(Tile alreadycollected in to_collect)
 			{
 				if(alreadycollected == child) add = false;

@@ -21,6 +21,11 @@ public class Utility : MonoBehaviour {
 		return new Vector3(UnityEngine.Random.Range(0, x), UnityEngine.Random.Range(0, y), UnityEngine.Random.Range(0,z));
 	}
 
+	public static Vector2 RandomVector2(float x = 0.0F, float y = 0.0F)
+	{
+		return new Vector2(UnityEngine.Random.Range(0, x), UnityEngine.Random.Range(0, y));
+	}
+
 	public static Vector3 RandomVectorInclusive(float x = 0.0F, float y = 0.0F, float z = 0.0F)
 	{
 		return new Vector3(UnityEngine.Random.Range(-x, x), UnityEngine.Random.Range(-y, y), UnityEngine.Random.Range(-z,z));
@@ -123,6 +128,8 @@ public class IntVector
 		x -= a.x;
 		y -= a.y;
 	}
+
+
 
 	public void Mult(float m)
 	{

@@ -320,9 +320,9 @@ public class Stat
 
 	public void CheckStatInc() {
 		Stat_HealthInc = (float)Strength * 5;
-		Stat_SplInc = (float)Wisdom / 5.0F;
-		Stat_AtkInc = (float)Dexterity / 5.0F;
-		Stat_MoveInc = (float)Charisma / 2.0F;
+		Stat_SplInc = (float)Wisdom / 2.0F;
+		Stat_AtkInc = (float)Dexterity / 2.0F;
+		Stat_MoveInc = (float)Charisma / 1.0F;
 	}
 	
 	public int GetGENUSStat(GENUS ab) {
@@ -683,7 +683,7 @@ public class StatContainer
 	public StatContainer(StatContainer prev = null, bool mult = false)
 	{
 		ThisTurn = 0;
-		Lvl_Required = 30;
+		Lvl_Required = 10;
 		if(prev != null)
 		{
 			StatCurrent = prev.StatCurrent;
@@ -725,17 +725,19 @@ public class StatContainer
 
 	}
 
-	private int Lvl_Current = 0, Lvl_Required = 30;
+	private int Lvl_Current = 0, Lvl_Required = 10;
 	public int QuickLvl(int v)
 	{
 		int total = 0;
 		Lvl_Current += v;
+		if(Lvl_Required == 0) Lvl_Required = 10;
+
 		while(Lvl_Current > Lvl_Required)
 		{
-			Lvl_Required = 30;
+			Lvl_Current -= Lvl_Required;
+			Lvl_Required = (int)(Lvl_Required * 1.2F);
 			StatCurrent_soft += 1.0F;
 			StatCurrent = (int) StatCurrent_soft;
-			Lvl_Current -= Lvl_Required;
 			total++;
 		}
 		return total;

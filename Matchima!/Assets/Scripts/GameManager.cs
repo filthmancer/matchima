@@ -289,10 +289,10 @@ public class GameManager : MonoBehaviour {
 				case 2: //X
 				//EscapeZone();
 				//Wave.AddPoints(150);
-				StartCoroutine(TileMaster.instance.MoveToRoom(Vector3.up));
+				StartCoroutine(TileMaster.instance.MoveToRoom(new IntVector(1, 0)));
 				break;
 				case 3: //c
-				StartCoroutine(TileMaster.instance.MoveToRoom(Vector3.right));
+				StartCoroutine(TileMaster.instance.MoveToRoom(new IntVector(0, 1)));
 				//Tile t = TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["hero"], GENUS.STR,1, 1);
 				//(t as Hero).SetClass(Player.Classes[0]);
 				//Player.instance.ResetLevel();
@@ -332,7 +332,8 @@ public class GameManager : MonoBehaviour {
 				//CameraUtility.instance.ScreenShake(0.6F, 1.1F);
 				break;
 				case 9: //S
-				TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["arcane"], GENUS.ALL,1, 1);
+				Stairs s =	TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["stairs"], GENUS.ALL,1, 1) as Stairs;
+				s.ToNextLevel = true;
 				//TileMaster.instance.Ripple(TileMaster.Grid.Tiles[3,3]);
 				break;
 			}
@@ -352,17 +353,23 @@ public class GameManager : MonoBehaviour {
 		}
 		inStartMenu = false;
 
+		UIManager.Menu[0].SetActive(false);
 		UIManager.instance.SetLoadScreen(true);
+		UIManager.instance.LoadText.gameObject.SetActive(true);
 		UIManager.instance.LoadText.text = "LOADING";
 
 		if(show_starter) StartCoroutine(ShowStarterAd());
 		TileMaster.instance.MapSize = new Vector2(1,1);
 		Player.instance.Load(c);
-		yield return new WaitForSeconds(0.1F);
+		
+		yield return new WaitForSeconds(Time.deltaTime);
+		
 		AudioManager.instance.GetZoneMusic();
+		Debug.Log("LOADED PLAYER");
 		yield return StartCoroutine(UIManager.instance.LoadGameUI());
+		Debug.Log("LOADED UI");
 		yield return StartCoroutine(GameData.instance.LoadAssets_Routine());
-
+		Debug.Log("LOADED ASSETS");
 		/*while(!Advertisement.IsReady())
 	  	{
 	  		yield return null;
@@ -381,9 +388,10 @@ public class GameManager : MonoBehaviour {
 			if(Input.GetMouseButton(0)) press_start = true;
 			yield return null;
 		}
-		UIManager.instance.LoadText.text = "";
 
-		yield return StartCoroutine(TileMaster.instance.MoveToRoom(Vector3.zero));
+		UIManager.instance.LoadText.gameObject.SetActive(false);
+
+		yield return StartCoroutine(TileMaster.instance.MoveToRoom(new IntVector(0,0)));
 		gameStart = true;
 		
 		Resources.UnloadUnusedAssets();
@@ -881,6 +889,12 @@ public class GameManager : MonoBehaviour {
 		EnterZone(ZoneMap.CurrentBracket[choice]);		
 		//else Victory();
 	}
+
+	public void DefeatedBoss()
+	{
+		Stairs s = TileMaster.instance.ReplaceTile(TileMaster.RandomResTile, TileMaster.Types["stairs"], GENUS.RAND) as Stairs;
+		s.ToNextLevel = true;
+	}
 	
 	public void EnterZone(Zone z = null, string name = null)
 	{
@@ -953,7 +967,7 @@ public class GameManager : MonoBehaviour {
 		{
 			if(Player.Classes[i] != null)
 			{
-				Tile t = TileMaster.instance.ReplaceTile(TileMaster.Tiles[i,0], TileMaster.Types["hero"], GENUS.ALL,1, 1);
+				Tile t = TileMaster.instance.ReplaceTile(TileMaster.Tiles[i,0], TileMaster.Types["hero"], GENUS.ALL,1, 50);
 				(t as Hero).SetClass(Player.Classes[i]);
 			}
 		}
@@ -1095,10 +1109,9 @@ public class GameManager : MonoBehaviour {
 		UIManager.Objects.TopGear.SetToState(0);
 		UIManager.instance.MoveTopGear(0);
 
-		yield return StartCoroutine(BeforeMatchRoutine());
-		bool all_of_resource = false;
-		
 		//Debug.Log("BEFORE MATCH");
+		yield return StartCoroutine(BeforeMatchRoutine());
+		
 		if(Player.instance.CompleteMatch) 
 		{
 			//yield return StartCoroutine(MatchRoutine(PlayerControl.instance.finalTiles.ToArray()));
@@ -1108,10 +1121,7 @@ public class GameManager : MonoBehaviour {
 			EnemyTurn = false;
 			yield break;
 		}
-
-		
 		//Debug.Log("MATCH");
-
 		yield return StartCoroutine(Player.instance.AfterMatch());
 		yield return StartCoroutine(Player.instance.EndTurn());
 		//Debug.Log("AFTER MATCH");
@@ -1123,14 +1133,15 @@ public class GameManager : MonoBehaviour {
 	/* ENEMY TURN *////////////////////////////////////////////////////
 		if(Zone) yield return StartCoroutine(Zone.BeforeTurn());
 		yield return StartCoroutine(ControllerTurnRoutine());
+
 		if(Player.instance.Turns % (int)Player.Stats.AttackRate == 0 && TileMaster.instance.EnemiesOnScreen > 0)
 		{
 			yield return StartCoroutine(EnemyTurnRoutine());
 		}
 
 		//Debug.Log("TURN");
-	
-		while(TileMaster.EnemiesAttacking()) yield return null;
+		
+		while(TileMaster.TilesAttacking()) yield return null;
 		TileMaster.instance.ResetTiles(true);
 		//UIManager.instance.CashMeterPoints();
 		//yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
@@ -1142,11 +1153,7 @@ public class GameManager : MonoBehaviour {
 		yield return StartCoroutine(Player.instance.CheckHealth());	
 		if(Zone) yield return StartCoroutine(Zone.AfterTurn());
 
-		/*if(Zone && Zone.Ended && !Player.Stats.isKilled)
-		{
-			yield return StartCoroutine(_GetWave());
-		}*/
-		//UIManager.Objects.BotGear.SetToState(0);
+		//Debug.Log("CLEARING");
 		yield return StartCoroutine(Player.instance.BeginTurn());
 		
 		TileMaster.instance.ResetTiles(true);
@@ -1173,6 +1180,7 @@ public class GameManager : MonoBehaviour {
 
 	IEnumerator ControllerTurnRoutine()
 	{
+		//print("Start controller Move");
 		List<Tile> allied_attackers = new List<Tile>();
 		//ALLY ATTACKERS
 		for(int x = 0; x < TileMaster.Grid.Size[0]; x++)
@@ -1188,7 +1196,6 @@ public class GameManager : MonoBehaviour {
 					{
 						allied_attackers.Add(tile);
 					}
-					
 				}
 			}
 		}
@@ -1196,34 +1203,36 @@ public class GameManager : MonoBehaviour {
 		//ALLIED ATTACKERS
 		if(allied_attackers.Count > 0) 
 		{
+			bool has_attacked = false;
 			TileMaster.instance.ResetTiles();
-			yield return new WaitForSeconds(GameData.GameSpeed(0.21F));
-		}
 
-		foreach(Tile child in allied_attackers)
-		{
-			if(child == null || child == PlayerControl.instance.Controller) continue;
-
-			child.SetState(TileState.Selected);
-			child.OnAttack();
-
-			Tile target = null;
-			if(TileMaster.Enemies.Length == 0) continue;
-			Tile [] targs = child.Point.GetNeighbours(true, "enemy");
-		
-			if(targs.Length == 0) continue;
-			else
+			foreach(Tile child in allied_attackers)
 			{
-				target = targs[Random.Range(0, targs.Length)];
+				if(child == null || child == PlayerControl.instance.Controller) continue;
 
-				child.AttackTile(target);
-				yield return StartCoroutine(child.Animate("Attack", 0.05F));
+
+				Tile target = null;
+				if(TileMaster.Enemies.Length == 0) continue;
+				Tile [] targs = child.Point.GetNeighbours(true, "enemy");
+			
+				if(targs.Length == 0) continue;
+				else
+				{
+					has_attacked = true;
+					target = targs[Random.Range(0, targs.Length)];
+
+					child.SetState(TileState.Selected);
+					child.OnAttack();
+					child.AttackTile(target);
+					yield return StartCoroutine(child.Animate("Attack", 0.05F));
+				}
+
+				yield return new WaitForSeconds(GameData.GameSpeed(0.04F));
 			}
 
-			yield return new WaitForSeconds(GameData.GameSpeed(0.04F));
+			if(has_attacked) yield return new WaitForSeconds(GameData.GameSpeed(0.4F));
 		}
-
-		if(allied_attackers.Count > 0) yield return new WaitForSeconds(GameData.GameSpeed(0.17F));
+		//print("End controller Move");
 	}
 
 	IEnumerator EnemyTurnRoutine()
@@ -1233,7 +1242,7 @@ public class GameManager : MonoBehaviour {
 		int total_damage = 0;
 		List<Tile> column;
 
-		
+		//print("Start enemy Move");
 	
 		yield return new WaitForSeconds(GameData.GameSpeed(0.08F));
 		UIManager.Objects.BotGear.SetToState(3);
@@ -1286,7 +1295,7 @@ public class GameManager : MonoBehaviour {
 			
 		} */
 		if(total_damage > 0) yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
-
+		//print("end enemy Move");
 		
 	}
 #endregion
@@ -1364,7 +1373,7 @@ public class GameManager : MonoBehaviour {
 			ComboFactor_RepeatedCombos++;
 			initial_match = false;
 			
-			yield return new WaitForSeconds( GameData.GameSpeed(0.1F));
+			//yield return new WaitForSeconds( GameData.GameSpeed(0.1F));
 		}
 		//yield return StartCoroutine(Player.instance.BeforeMatch(PlayerControl.instance.finalTiles));
 		TileMaster.instance.SetFillGrid(true);

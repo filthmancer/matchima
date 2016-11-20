@@ -33,6 +33,7 @@ public class Stairs : Tile {
 		base.Setup(g, x,y,scale,inf, value_inc);
 		ZoneIndex = Random.Range(0,4);
 		InitStats.Hits = 1;
+		ToNextLevel = false;
 	}
 
 	public List<Tile> TakeTiles;
@@ -50,7 +51,7 @@ public class Stairs : Tile {
 				tilesafter = true;
 				continue;
 			} 
-			if(tilesafter)
+			if(tilesafter && !child.Controllable)
 			{
 				TakeTiles.Add(child);
 				MoveToPoint p = TileMaster.instance.CreateMiniTile(child.transform.position, this.transform, child);
@@ -59,7 +60,14 @@ public class Stairs : Tile {
 			}
 		}
 
-		//TakeTiles.AddRange(Player.ClassTiles);
+		for(int i = 0; i < TileMaster.Controllers.Length; i++)
+		{
+			//if(TakeTiles.Contains(TileMaster.Controllers[i])) continue;
+			//TakeTiles.Add(TileMaster.Controllers[i]);
+			MoveToPoint p = TileMaster.instance.CreateMiniTile(TileMaster.Controllers[i].transform.position, this.transform, TileMaster.Controllers[i]);
+			TileMaster.Controllers[i].gameObject.SetActive(false);
+			yield return new WaitForSeconds(GameData.GameSpeed(0.08F));
+		}
 
 		yield return new WaitForSeconds(GameData.GameSpeed(0.3F));
 
@@ -69,7 +77,9 @@ public class Stairs : Tile {
 		Player.instance.CompleteMatch = false;
 		GameManager.OverrideMatch = true;
 
-		yield return StartCoroutine(TileMaster.instance.MoveToRoom(Vector3.up));
+		if(!ToNextLevel) yield return StartCoroutine(TileMaster.instance.MoveToRoom(Direction));
+		else yield return StartCoroutine(TileMaster.instance.MoveToLevel());
+		
 		yield return new WaitForSeconds(GameData.GameSpeed(0.5F));
 		Destroy(powerup);
 
@@ -77,4 +87,14 @@ public class Stairs : Tile {
 		
 		yield return null;
 	}
+
+
+	IntVector Direction;
+	public void SetDirection(IntVector n)
+	{
+		Direction = n;
+		//print(Direction.ToString());
+	}
+
+	public bool ToNextLevel = false;
 }

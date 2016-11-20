@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 [System.Serializable]
 public class GridInfo : MonoBehaviour{
@@ -14,6 +15,23 @@ public class GridInfo : MonoBehaviour{
 		get{
 			//return Offset;
 			return Vector3.Lerp(Grid[0][0].Pos, Grid[Grid.Length-1][Grid[Grid.Length-1].Length-1].Pos, 0.5F);
+		}
+	}
+
+	public Tile [] Controllers
+	{
+		get
+		{
+			List<Tile> final = new List<Tile>();
+			for(int x = 0; x < Size[0]; x++)
+			{
+				for(int y = 0; y < Size[1]; y++)
+				{
+					if(Tiles[x,y] == null) continue;
+					if(Tiles[x,y].Controllable) final.Add(Tiles[x,y]);
+				}
+			}
+			return final.ToArray();
 		}
 	}
 
@@ -50,6 +68,12 @@ public class GridInfo : MonoBehaviour{
 			}
 			return final;
 		}
+	}
+
+	public void SetActive(bool? active = null)
+	{
+		bool actual = active ?? !GridParent.activeSelf;
+		GridParent.SetActive(actual);
 	}
 
 /*	public int [] Size

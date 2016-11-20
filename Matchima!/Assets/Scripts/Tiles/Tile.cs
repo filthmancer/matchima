@@ -176,7 +176,7 @@ public class Tile : MonoBehaviour {
 		{
 			return new TileUpgrade []
 			{
-				new TileUpgrade(0.05F, 5, () => {InitStats.HitsMax += 1;}),
+				new TileUpgrade(0.05F, 5, () => {InitStats._Hits.Max += 1;}),
 				new TileUpgrade(1.0F, 1, () => {InitStats.Value += 1;}),
 				new TileUpgrade(0.1F, 2, () => {InitStats.Resource +=1;})
 			};
@@ -221,6 +221,7 @@ public class Tile : MonoBehaviour {
 
 		Point = new TilePointContainer(g, x,y,_Scale, this);
 		_Transform = this.transform;
+		_Transform.SetParent(g.Column[x].transform);
 		if(!Info.ShiftOverride) InitStats.Shift = Player.Stats.Shift;
 		else InitStats.Shift = Info.Shift;
 		transform.name = Info.Name + " | " + Point.Base[0] + ":" + Point.Base[1];
@@ -231,6 +232,7 @@ public class Tile : MonoBehaviour {
 	{
 		Point = new TilePointContainer(g, x,y,scale, this);
 		_Transform = this.transform;
+		_Transform.SetParent(g.Column[x].transform);
 		Info = new TileInfo(inf);
 
 		if(Params != null)
@@ -271,9 +273,9 @@ public class Tile : MonoBehaviour {
 		}
 		InitStats.Value = Info.Value;
 		if(!Type.isEnemy) InitStats.Value += Player.Stats.ValueInc;
-		if(InitStats.HitsMax == 0) InitStats.HitsMax = 1;
+		if(InitStats._Hits.Max == 0) InitStats._Hits.Max = 1;
 
-		InitStats.Hits = InitStats.HitsMax;
+		InitStats._Hits.Current = InitStats._Hits.Max;
 		AddUpgrades(val);
 
 		InitStats.Lifetime = 0;
@@ -290,7 +292,7 @@ public class Tile : MonoBehaviour {
 
 		CheckStats();
 
-		Stats.Hits = Stats.HitsMax;
+		Stats._Hits.Current = Stats._Hits.Max;
 		SetSprite();
 		ClearActions();
 
@@ -349,10 +351,10 @@ public class Tile : MonoBehaviour {
 			if(Params._render != null) Params._render.color = Color.Lerp(Params._render.color, targetColor, 0.6F);
 			if(Params._border != null) Params._border.color = Color.Lerp(Params._border.color, targetColor, 0.6F);
 			
-			if(Stats.Hits > 1)
+			if(Stats._Hits.Current > 1)
 			{
 				if(Params.HitCounter != null && !Params.HitCounter.activeSelf) Params.HitCounter.SetActive(true);
-				if(Params.HitCounterText != null) Params.HitCounterText.text = "" + Stats.Hits;
+				if(Params.HitCounterText != null) Params.HitCounterText.text = "" + Stats._Hits.Current;
 			}
 			else if(Params.HitCounter != null && Params.HitCounter.activeSelf) Params.HitCounter.SetActive(false);
 				
@@ -611,10 +613,10 @@ public class Tile : MonoBehaviour {
 		if(Controllable) yield break; //return ControlMatch(0);
 
 		//InitStats.TurnDamage += Controller.Stats.Attack;
-		InitStats.Hits -= 1;
+		InitStats._Hits.Current -= 1;
 		CheckStats();
 		PlayAudio("match");
-		if(Stats.Hits <= 0)
+		if(Stats._Hits.Current <= 0)
 		{
 			isMatching = true;
 			//Stats.Value *=  resource;
@@ -657,10 +659,10 @@ public class Tile : MonoBehaviour {
 		if(this == null) return false;
 		if(Controllable) return ControlMatch(resource);
 
-		InitStats.Hits -= 1;
+		InitStats._Hits.Current -= 1;
 		CheckStats();
 		PlayAudio("match");
-		if(Stats.Hits <= 0)
+		if(Stats._Hits.Current <= 0)
 		{
 			isMatching = true;
 			Stats.Value *=  resource;
@@ -687,12 +689,12 @@ public class Tile : MonoBehaviour {
 		fullhit += Stats.TurnDamage;
 
 		InitStats.TurnDamage = 0;
-		InitStats.Hits -= fullhit;
+		InitStats._Hits.Current -= fullhit;
 		CheckStats();
 
 		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 		Player.instance.OnTileMatch(this);
-		if(Stats.Hits <= 0)
+		if(Stats._Hits.Current <= 0)
 		{
 			isMatching = true;
 			//Player.Stats.PrevTurnKills ++;	
@@ -849,11 +851,11 @@ public class Tile : MonoBehaviour {
 
 	public virtual void AddHealth(GENUS g, int h)
 	{
-		if(Stats.Hits < Stats.HitsMax)
+		if(Stats._Hits.Current < Stats.HitsMax)
 		{
-			InitStats.Hits += h;
+			InitStats._Hits.Current += h;
 			CheckStats();
-			Stats.Hits = Mathf.Clamp(Stats.Hits, 0, Stats.HitsMax);
+			Stats._Hits.Current = Mathf.Clamp(Stats._Hits.Current, 0, Stats.HitsMax);
 		}
 	}
 
@@ -868,7 +870,7 @@ public class Tile : MonoBehaviour {
 
 	public virtual bool CanAttack() {return !AttackedThisTurn && Stats.Attack > 0;}
 	public virtual int GetAttack() {return Mathf.Max(Stats.Attack, 0);}
-	public virtual int GetHealth() {return Mathf.Max(Stats.Hits,0);}
+	public virtual int GetHealth() {return Mathf.Max(Stats._Hits.Current,0);}
 	public virtual void Stun(int Stun){}
 
 	public virtual void OnAttack(){}
@@ -976,7 +978,6 @@ public class Tile : MonoBehaviour {
 		if(g == "Purple" && Genus == GENUS.PRP) genus = true;
 		if((g == "All" || g == "Prism") && Genus == GENUS.ALL) genus = true;
 		if(g == "Gray" && Genus == GENUS.OMG) genus = true;
-
 		if(s == "Enemy" && Stats.isAlly) return false;
 		return genus && IsType(s);
 	}
@@ -998,7 +999,7 @@ public class Tile : MonoBehaviour {
 		state_override = false;
 		originalMatch = false;
 		AttackedThisTurn = false;
-		attacking = false;
+		//attacking = false;
 		if(idle) SetState(TileState.Idle);
 	}
 
@@ -1123,7 +1124,7 @@ public class Tile : MonoBehaviour {
 	{
 		PlayAudio("attack");
 		//UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), "" + GetAttack(), 95, Color.red, 0.8F,0.08F);
-
+		attacking = true;
 		t.SetState(TileState.Selected);
 
 		float init_size = UnityEngine.Random.Range(190,210);
@@ -1149,6 +1150,7 @@ public class Tile : MonoBehaviour {
 		mini.SetTarget(t.transform.position);
 		mini.SetPath(info_movespeed, 0.4F, 0.0F, info_finalscale);
 		mini.SetMethod(() =>{
+				attacking = false;
 				if(t == null) return;
 				if(t != null)
 				{
@@ -1433,9 +1435,12 @@ public class Tile : MonoBehaviour {
 		while(!complete) yield return null;
 	}
 
+	public virtual string InnerRender(){return Info._GenusName;}
+	public virtual tk2dSpriteCollectionData InnerAtlas(){return Info.Inner;}
+
 	public IEnumerator MoveToPoint(int _x, int _y, bool overtake, float speed = 6.0F, float arc = 0.0F)
 	{
-		print("MOVING" + TileMaster.Grid[_x,_y]._Tile + ":" + this);
+		//print("MOVING" + TileMaster.Grid[_x,_y]._Tile + ":" + this);
 		bool complete = false;
 		Vector3 newpoint = TileMaster.Grid[_x,_y].Pos;
 		UnlockedFromGrid = true;
@@ -1524,6 +1529,150 @@ public enum Team
 }
 
 [System.Serializable]
+public class StatCon
+{
+	public int Current;
+	public float Current_Soft;
+	public int Min;
+	public int Max;
+	private float Max_Soft;
+
+	public float ThisTurn;
+
+	public float Gain;
+	public float Leech;
+	public float Regen;
+
+	public float Multiplier = 0.0F;
+
+	public string String
+	{
+		get
+		{
+			return GameData.PowerString(Current);	
+		}
+	}
+
+	public float Ratio
+	{
+		get{return Current_Soft/Max_Soft;}
+	}
+
+
+	public StatCon(StatCon prev = null)
+	{
+		ThisTurn = 0;
+		if(prev != null)
+		{
+			Current = prev.Current;
+			Current_Soft = prev.Current_Soft;
+			Min = prev.Min;
+			Max = prev.Max;
+			Max_Soft = prev.Max_Soft;
+
+			Gain 	= prev.Gain;
+			Leech = prev.Leech;
+			Regen = prev.Regen;
+
+			Multiplier = prev.Multiplier;
+		}
+	}
+
+	public void Add(StatCon prev)
+	{
+		Current += prev.Current;
+		Current_Soft += prev.Current_Soft;
+		Min += prev.Min;
+		Max += prev.Max;
+		Max_Soft += prev.Max_Soft;
+
+		Gain 	+= prev.Gain;
+		Leech += prev.Leech;
+		Regen += prev.Regen;
+
+		Multiplier += prev.Multiplier;
+		ThisTurn += prev.ThisTurn;
+	}
+
+	public void Add(StatContainer prev)
+	{
+		Current += prev.StatCurrent;
+		Current_Soft = (float)Current;
+		//Min += prev.Min;
+		
+		Max_Soft += prev.StatCurrent;
+		Max = (int)Max_Soft;
+
+		Gain 	+= prev.StatGain;
+		Leech += prev.StatLeech;
+		Regen += prev.StatRegen;
+
+		Multiplier += prev.ResMultiplier;
+		ThisTurn += prev.ThisTurn;
+	}
+
+	public void Reset()
+	{
+		Current = 0;
+		ThisTurn = 0;
+		Multiplier = 1.0F;
+		Min = 0;
+		Max = 10;
+		Max_Soft = 10.0F;
+		Gain = 0;
+		Leech = 0;
+		Regen = 0;
+	}
+
+	public void Complete()
+	{
+		ThisTurn += Regen;
+
+		Max_Soft += Gain;
+		Max = (int) Max_Soft;
+
+		int Max_actual = Max == 0 ? 99999 : Max;
+		Current_Soft = Mathf.Clamp(Current_Soft + ThisTurn * (1.0F + Multiplier),
+									Min, Max_actual);
+
+		Current = (int)Current_Soft;
+
+		ThisTurn = 0;
+	}
+
+	public int Level_Current = 0, Level_Required = 0;
+	public float Level_Multiplier = 0.0F;
+	public int Level(int input)
+	{
+		int total = 0;
+		Level_Current += input;
+		if(Level_Required == 0) Level_Required = 10;
+		while(Level_Current >= Level_Required)
+		{
+			Level_Current = (int)Mathf.Clamp(Level_Current - Level_Required,
+										0, Mathf.Infinity);
+			Level_Required = (int)(Level_Required * (1.0F + Level_Multiplier));
+			Current_Soft += 1.0F;
+			Current = (int) Current_Soft;
+			total ++;
+		}
+		return total;
+	}
+
+	public void Add(int num)
+	{
+		ThisTurn += num;
+	}
+
+	public void Set(int num)
+	{
+		Max_Soft = num;
+		Max = (int)Max_Soft;
+		Current = num;
+	}
+}
+
+[System.Serializable]
 public class TileStat
 {
 	public string Name;
@@ -1535,22 +1684,71 @@ public class TileStat
 	public int Heal        = 0;
 	public int Armour      = 0;
 	
-	public int Hits        = 0;
-	public int HitsMax     = 0;
-	public int Attack      = 0;
-	public int Spell 	   = 0;
-	public int Movement    = 0;
+	public int Hits
+	{
+		get{return _Hits.Current;}
+		set{_Hits.Current = value;}
+	}
+
+	public int HitsMax
+	{
+		get{return _Hits.Max;}
+		set{_Hits.Max = value;}
+	}
 	
-	public int Lifetime    = 0;
-	public int Deathtime   = 0;
+	public int Attack
+	{
+		get{return _Attack.Current;}
+		set{_Attack.Current = value;}
+	}
+
+	public int Spell
+	{
+		get{return _Spell.Current;}
+		set{_Spell.Current = value;}
+	}
+
+	public int Movement
+	{
+		get{return _Movement.Current;}
+		set{_Movement.Current = value;}
+	}
+
+	public int Lifetime
+	{
+		get{return _Lifetime.Current;}
+		set{_Lifetime.Current = value;}
+	}
+
+	public int Deathtime
+	{
+		get{return _Lifetime.Max;}
+		set{_Lifetime.Max = value;}
+	}
+
+	public StatCon _Lifetime;
 	
 	public int AttackPower = 0;
 	public int SpellPower  = 0;
+	public int TurnDamage = 0;
 	
 	public bool isNew       = true;
-	public bool isFrozen    = false;
-	public bool isBroken    = false;
 	public bool isAlerted   = false;
+
+	public StatCon _Hits;
+	public StatCon 	_Movement,
+					_Attack,
+					_Spell;
+					
+	public StatCon 	 _Strength,
+					 _Dexterity,
+					 _Charisma,
+					 _Wisdom,
+					 _Luck;
+
+
+
+
 	public Team _Team = Team.None;
 	
 	public bool isAlly
@@ -1559,10 +1757,6 @@ public class TileStat
 	}
 	public bool isEnemy{get{return _Team == Team.Enemy;}}
 
-	public int  AllyAttackType = 0;
-
-	public int DOT = 0;
-	public int TurnDamage = 0;
 	public ShiftType Shift;
 
 	public void Add(TileStat t, bool _override = true)
@@ -1574,33 +1768,31 @@ public class TileStat
 		Heal        += t.Heal;
 		Armour      += t.Armour;
 		
-		Hits        += t.Hits;
-		HitsMax 	+= t.HitsMax;
-		Attack      += t.Attack;
-		Spell       += t.Spell;
-		Movement    += t.Movement;
-		Lifetime    += t.Lifetime;
-		Deathtime   += t.Deathtime;
+		_Hits.Add(t._Hits);
+		_Attack.Add(t._Attack);
+		_Spell.Add(t._Spell);
+		_Movement.Add(t._Movement);
+
+		_Lifetime.Add(t._Lifetime);
 		
 		AttackPower += t.AttackPower;
 		SpellPower  += t.SpellPower;
 
-		DOT         += t.DOT;
 		TurnDamage  += t.TurnDamage;
 
 		if(_override)
 		{
-			isFrozen = t.isFrozen;
-			isBroken = t.isBroken;
+			//isFrozen = t.isFrozen;
+			//isBroken = t.isBroken;
 			isAlerted = t.isAlerted;
 			_Team = t._Team;
-			AllyAttackType = t.AllyAttackType;
+		
 			isNew = t.isNew;
 		}
 		else
 		{
-			if(t.isFrozen) isFrozen    = true;
-			if(t.isBroken) isBroken    = true;
+			//if(t.isFrozen) isFrozen    = true;
+			//if(t.isBroken) isBroken    = true;
 			if(t._Team != Team.None) _Team = t._Team;
 			//if(!t.isAlerted) isAlerted = false;
 		}
@@ -1613,29 +1805,27 @@ public class TileStat
 		{
 			Value     = t.Value;
 
-			Hits      = t.Hits;
-			HitsMax  = t.HitsMax;
+			_Hits      = new StatCon(t._Hits);
 
 			Resource  = t.Resource;
 			Heal 	  = t.Heal;
 			Armour 	  = t.Armour;
 			
-			Attack    = t.Attack;
-			Spell     = t.Spell;
-			Movement  = t.Movement;
-			Lifetime  = t.Lifetime;
-			Deathtime = t.Deathtime;
+			_Attack    = new StatCon(t._Attack);
+			_Spell     = new StatCon(t._Spell);
+			_Movement  = new StatCon(t._Movement);
+			_Lifetime = new StatCon(t._Lifetime);
 
 			AttackPower = t.AttackPower;
 			SpellPower  = t.SpellPower;
 			
-			DOT 	  = t.DOT;
+			
 			TurnDamage = t.TurnDamage;
-			isFrozen = t.isFrozen;
-			isBroken = t.isBroken;
+			//isFrozen = t.isFrozen;
+			//isBroken = t.isBroken;
 			isAlerted = t.isAlerted;
 			_Team = t._Team;
-			AllyAttackType = t.AllyAttackType;
+		
 			isNew = t.isNew;
 			Shift = t.Shift;
 		}
@@ -1645,6 +1835,7 @@ public class TileStat
 	{
 		return new int [] {(int) (Resource * Value), (int)(Heal + (Heal > 0 ? (Value*2):0)), (int)(Armour + (Armour > 0 ? (Value*2):0))};
 	}
+
 }
 
 [System.Serializable]

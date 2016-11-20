@@ -383,15 +383,27 @@ public class UIManager : MonoBehaviour {
 	}
 
 	public UIObjtk ZoneObj;
+	
 	public void SetZoneObj(bool active)
 	{
 		if(GameManager.Zone.TargetBoss == null) return;
 		ZoneObj.SetTween(0, active);
-		ZoneObj.Txt[0].text = GameManager.Zone.TargetBoss.Name;
-		ZoneObj[0].Txt[0].text = GameManager.Zone.TargetBoss.Mission;
-		ZoneObj[0].Img[1].fillAmount = GameManager.Zone.TargetBoss.MissionRatio;
+
+		if(active)
+		{
+			ZoneObj.ClearActions();
+			ZoneObj.AddAction(UIAction.MouseUp, () =>
+			{
+				ShowBossUI();
+				//SetZoneObj(true, true);
+			});
+		}
+
+		ShowBossUI(true);
+		
 		GameManager.Zone.TargetBoss.SetImgtk(ZoneObj.Imgtk[0], ZoneObj.Imgtk[1]);
 	}
+
 
 	public void SetTooltipObj(bool active)
 	{
@@ -410,6 +422,25 @@ public class UIManager : MonoBehaviour {
 		return initial;
 	}
 
+	public bool BossUI_current = false;
+	public bool ShowBossUI(bool? active = null)
+	{
+		bool actual = active ?? !BossUI_current;
+		BossUI_current = actual;
+		(ZoneObj[0] as UIObjTweener).SetTween(0, BossUI_current);
+		(ZoneObj[1] as UIObjTweener).SetTween(0, !BossUI_current);
+
+		ZoneObj[0].Txt[0].text = GameManager.Zone.TargetBoss.Mission;
+		ZoneObj[0].Txt[1].text = "";
+		ZoneObj[0].Img[1].fillAmount = GameManager.Zone.TargetBoss.MissionRatio;
+
+		ZoneObj[1].Txt[0].text = GameManager.Zone.TargetBoss.Description;
+		ZoneObj[1].Txt[1].text = GameManager.Zone.TargetBoss.Name;
+		ZoneObj[1].Img[1].fillAmount = 0.0F;
+
+		return actual;
+	}
+
 	public IEnumerator Reset()
 	{
 		loaded = false;
@@ -426,7 +457,10 @@ public class UIManager : MonoBehaviour {
 
 	public IEnumerator LoadGameUI()
 	{
-		while(!Player.loaded) yield return null;
+		while(!Player.loaded) 
+		{
+			yield return null;
+		}
 
 		SetLoadScreen(true);
 		Objects.TopGear.DivisionActions.Clear();
@@ -466,7 +500,7 @@ public class UIManager : MonoBehaviour {
 		});
 
 		loaded  = true;
-
+		print("UI DONE");
 		yield return null;
 	}
 

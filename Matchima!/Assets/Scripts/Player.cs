@@ -33,7 +33,6 @@ public class Player : MonoBehaviour {
 		}
 	}
 
-
 	public bool CompleteMatch = true;
 	public int Turns = 0;
 	public int BestCombo = 0;
@@ -162,19 +161,19 @@ public class Player : MonoBehaviour {
 	void Update () {
 		StatTemp = Stats;
 
-		if (PlayerControl.instance.TimeWithoutInput > 20.0F)
+		/*if (PlayerControl.instance.TimeWithoutInput > 20.0F)
 		{
 			idle_time -= Time.deltaTime;
 			if (idle_time <= 0.0F)
 			{
 				idle_time = Random.Range(7.5F, 15.0F);
-				int randa = Random.Range(0, 4);
+				int randa = Random.Range(0, Classes.Length);
 				bool info = Random.value > 0.5F;
 				if (Classes[randa] != null)
 					StartCoroutine(UIManager.instance.Quote((info ? Classes[randa].Quotes.Info : Classes[randa].Quotes.Idle)));
 			}
 		}
-		else if (PlayerControl.instance.TimeWithoutInput == 0.0F) idle_time = 0.0F;
+		else if (PlayerControl.instance.TimeWithoutInput == 0.0F) idle_time = 0.0F;*/
 
 	}
 #endregion
@@ -649,22 +648,9 @@ public class Player : MonoBehaviour {
 				yield return null;
 			}
 		}
-
-		/*for(int i = 0; i < Classes.Length; i++)
-		{
-			if(Classes[i] !=null)
-			{
-
-				//yield return null;
-			}
-		}*/
 		ResetStats();
 		Options.Setup();
 		Stats._Health = Stats._HealthMax;
-		//print("HP " + Stats._Health + ":" + Stats._HealthMax);
-		//yield return new WaitForSeconds(0.1F);
-
-
 		loaded = true;
 
 		yield return null;

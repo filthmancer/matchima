@@ -17,6 +17,8 @@ public class Boss : WaveUnit {
 			return (float)_Mission.Current / (float)_Mission.TargetNum;
 		}
 	}
+
+	//public string Description;
 	[SerializeField]
 	private MissionContainer _Mission;
 
@@ -50,10 +52,13 @@ public class Boss : WaveUnit {
 	}
 	private bool _entered;
 	private bool mission_completed;
+
+	public List<Tile> BossTiles;
 	public void OnArrive()
 	{
 		_entered = true;
 		SpawnTileInfo [] list = ArrivalTiles;
+		BossTiles = new List<Tile>();
 		for(int i = 0; i < list.Length; i++)
 		{
 			if(list[i].SpawnStyle != WaveTileSpawn.OnArrive) continue;//yield break;
@@ -64,7 +69,8 @@ public class Boss : WaveUnit {
 
 			for(int x = 0; x < final_num; x++)
 			{
-				CreateTileFromSpawnInfo(list[i], replaces[x]);
+				CreateBossTile(list[i], replaces[x]);
+				
 				//if(final_num > 1) yield return new WaitForSeconds(Time.deltaTime * 5);
 			}
 		}
@@ -161,6 +167,7 @@ public class Boss : WaveUnit {
 	{
 		//yield return StartCoroutine(base.BeforeTurn());
 		if(!Active || Ended) yield break;
+		yield break;
 		//if(HitByPresence) AddPoints(-Player.Stats.Presence);
 	//Spawn per round
 
@@ -231,6 +238,23 @@ public class Boss : WaveUnit {
 				}
 			}
 		}
+
+		if(Arrived)
+		{
+			bool beaten = true;
+			if(BossTiles.Count > 0)
+			{
+				for(int i = 0; i < BossTiles.Count; i++)
+				{
+					if(!BossTiles[i].Destroyed) beaten = false;
+				}
+			}
+
+			if(beaten)
+			{
+				GameManager.instance.DefeatedBoss();
+			}
+		}
 		yield return null;
 	}
 
@@ -251,6 +275,30 @@ public class Boss : WaveUnit {
 					effect.GetArgs(Effects[e].Duration, Effects[e].Args);
 					newtile.AddEffect(Effects[e]);
 				}
+			});
+	}
+
+	void CreateBossTile(SpawnTileInfo s, Tile targ)
+	{
+		List<TileEffectInfo> Effects = new List<TileEffectInfo>();//Parent.GetEffects();
+		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.instance.ZoneObj.transform, Effect.Spell);
+		MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
+		mp.SetTarget(targ.transform.position);
+		mp.SetPath(30, 0.2F);
+		mp.SetTileMethod(targ, (Tile t) => 
+			{
+				Tile newtile = TileMaster.instance.ReplaceTile(t, TileMaster.Types[s._Type], s._Genus, s.Scale, s.Value);
+				newtile.GetParams(s.Params);
+				for(int e = 0; e < Effects.Count; e++)
+				{
+					TileEffect effect = (TileEffect) Instantiate(GameData.instance.GetTileEffectByName(Effects[e].Name));
+					effect.GetArgs(Effects[e].Duration, Effects[e].Args);
+					newtile.AddEffect(Effects[e]);
+				}
+
+				BossTiles.Add(newtile);
+				newtile.InitStats._Team = Team.Enemy;
+				newtile.CheckStats();
 			});
 	}
 }

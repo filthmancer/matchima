@@ -56,7 +56,7 @@ public class Guard : Enemy {
 		{
 			if(!child.CanAttack()) effects = false;
 		}
-		return effects && !Stats.isNew && !Stats.isFrozen && Stats.isAlerted && !AttackedThisTurn;
+		return effects && !Stats.isNew && Stats.isAlerted && !AttackedThisTurn;
 	}
 
 

@@ -151,7 +151,7 @@ public class Firestorm : Powerup {
 		{
 			if(to_collect[i].Type.isEnemy)
 			{
-				to_collect[i].InitStats.Hits -= Damage;
+				to_collect[i].InitStats._Hits.Add(-Damage);
 			}
 			if(to_collect[i].IsType("", "Chicken"))
 			{

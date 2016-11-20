@@ -27,7 +27,9 @@ public class UIMenu : UIObj {
 
 	public TextMeshProUGUI ResumeGameInfo;
 	public tk2dSpriteAnimator LogoAnimation;
-	public UIObjTweener GoButton, TwoButton, ThreeButton;
+	public UIObjTweener GoButton;
+
+	
 
 	public string [] DiffText;
 
@@ -163,22 +165,17 @@ public class UIMenu : UIObj {
 		GoButton.ClearActions();
 		GoButton.AddAction(UIAction.MouseUp, () =>
 		{
-			StartGame(GameMode.Quick,1);
+			StartGame(GameMode.Quick);
 			});
 
-		TwoButton.SetTween(0, true);
-		TwoButton.ClearActions();
-		TwoButton.AddAction(UIAction.MouseUp, () =>
+		for(int i =0 ; i < ClassSlots.Length; i++)
 		{
-			StartGame(GameMode.Quick, 2);
-			});
+			ClassSlots[i].AddAction(UIAction.MouseUp, (string[] s)=>{SetClassUI(s[0]);}, "" +i);
+		}
+		
+		GenerateClassObj();
+		SetClassUI("100");
 
-		ThreeButton.SetTween(0, true);
-		ThreeButton.ClearActions();
-		ThreeButton.AddAction(UIAction.MouseUp, () =>
-		{
-			StartGame(GameMode.Quick,3);
-			});
 		//UIManager.Objects.BotGear[1].Img[0].enabled = false;
 
 		/*if(PlayerPrefs.GetInt("Resume") == 1) 
@@ -429,13 +426,13 @@ public class UIMenu : UIObj {
 			{
 				UIManager.Objects.TopGear.MoveToDivision(1);
 				ReadClasses("PrevClass_");
-				SetClassUI();
+				//SetClassUI();
 			}
 			else if(PlayerPrefs.GetInt("SavedClass") == 1)
 			{
 				UIManager.Objects.TopGear.MoveToDivision(2);
 				ReadClasses("SavedClass_");
-				SetClassUI();
+				//SetClassUI();
 
 			}
 			else UIManager.Objects.TopGear.MoveToDivision(0);
@@ -470,6 +467,71 @@ public class UIMenu : UIObj {
 			SetTargetSlot(x);
 		}
 	}
+
+	public UIObjTweener [] ClassSlots;
+	
+	public string [] ClassSlots_names;
+	public int CS_target = 100;
+
+	public void SetClassUI(string t)
+	{
+		int num = GameData.StringToInt(t);
+		bool cannot_fill = false;
+		if(ClassSlots_names == null||ClassSlots_names.Length == 0) ClassSlots_names = new string [ClassSlots.Length];
+		for(int i = 0; i < ClassSlots.Length;i++)
+		{
+			
+			if(num > i && (ClassSlots_names[i] == string.Empty || ClassSlots_names[i] == null))
+			{
+				//ClassSlots[i].SetTween(0, false);
+				num = i;
+				//cannot_fill = true;
+				
+			}
+			else
+			{
+				ClassSlots[i].SetTween(0, true);
+				ClassSlots[i].Img[0].color = Color.blue;
+				ClassSlots[i].Txt[0].text = ClassSlots_names[i];
+			}
+		}
+
+		if(num == 100 || CS_target >= ClassSlots.Length) return;
+		CS_target = num;
+		ClassSlots[CS_target].Img[0].color = Color.green;
+		ClassSlots[CS_target].Txt[0].text = "CHOOSE";
+	}
+
+	public void SetClass(string name)
+	{
+		if(CS_target == 100) CS_target  = 0;
+		ClassSlots_names[CS_target] = name;
+		SetClassUI(""+CS_target+1);
+	}
+
+	public UIObj ClassObj_Parent;
+	public UIObjTweener ClassObj_Prefab;
+	public UIObjTweener [] ClassObjs;
+	public void GenerateClassObj()
+	{
+		int total = GameData.instance.Classes.Length;
+		ClassObjs = new UIObjTweener[total];
+		ClassObj_Parent.DestroyChildren();
+		for(int i = 0; i < total; i++)
+		{
+			ClassObjs[i] = (UIObjTweener) Instantiate(ClassObj_Prefab);
+			ClassObj_Parent.AddChild(ClassObjs[i]);
+			ClassObjs[i].transform.SetParent(ClassObj_Parent.transform);
+			ClassObjs[i].transform.localScale = Vector3.one;
+			ClassObjs[i].Txt[0].text = GameData.instance.Classes[i].Name;
+			ClassObjs[i].AddAction(UIAction.MouseUp, (string[] s) =>
+			{
+				SetClass(s[0]);
+				}, GameData.instance.Classes[i].Name);
+		}
+	}
+
+
 #endregion
 	
 	private void GetHeroMenu_Info(int i)
@@ -524,11 +586,11 @@ public class UIMenu : UIObj {
 		{
 			Player.instance._Classes[i] = GameData.instance.GetClass(names[i]);
 		}
-		SetClassUI();
+		//SetClassUI();
 	}
 
 
-	public void StartGame(GameMode g, int pnum= 4)
+	public void StartGame(GameMode g)//, int pnum= 4)
 	{
 		GameManager.instance.Mode = g;
 		switch(GameManager.instance.Mode)
@@ -562,9 +624,23 @@ public class UIMenu : UIObj {
 			break;
 			case GameMode.Quick:
 
-			for(int i = 0; i < pnum; i++)
+
+
+			List<string> fc = new List<string>();
+			fc.AddRange(ClassSlots_names);
+			for(int i = 0; i < fc.Count; i++)
 			{
-				Player.instance._Classes[i] = GameData.instance.GetClass("");
+				if(fc[i] == null || fc[i] == string.Empty)
+
+				{
+					fc.RemoveAt(i);
+					i--;
+				}
+			}
+			Player.instance._Classes = new Class[fc.Count];
+			for(int i = 0; i < fc.Count; i++)
+			{
+				Player.instance._Classes[i] = GameData.instance.GetClass(fc[i]);
 			}
 			
 			//Player.instance._Classes[1] = GameData.instance.GetClass("Rogue");
@@ -584,9 +660,9 @@ public class UIMenu : UIObj {
 			break;
 		}
 
-		GoButton.SetTween(0, false);
-		TwoButton.SetTween(0, false);
-		ThreeButton.SetTween(0, false);
+		//GoButton.SetTween(0, false);
+		//TwoButton.SetTween(0, false);
+		//ThreeButton.SetTween(0, false);
 		/*(UIManager.Objects.MiddleGear["resume"] as UIObjTweener).SetTween(0,false);
 
 		UIManager.Objects.MiddleGear[0].SetActive(false);
@@ -722,7 +798,7 @@ public class UIMenu : UIObj {
 			(UIManager.Objects.BotGear as UIGear).SetTween(3, !Player.instance.GetUnlock("charselect"));
 
 			ReadClasses("PrevClass_");
-			SetClassUI();
+			//SetClassUI();
 			break;
 
 			case 3:  // QUICK CRAWL
@@ -756,7 +832,7 @@ public class UIMenu : UIObj {
 			
 			(UIManager.Objects.BotGear as UIGear).SetTween(3, !Player.instance.GetUnlock("charselect"));
 			ReadClasses("PrevClass_");
-			SetClassUI();
+			//SetClassUI();
 
 			break;
 		}
@@ -778,24 +854,6 @@ public class UIMenu : UIObj {
 		
 	}
 
-	public void SetClassUI()
-	{
-		for(int n = 0; n < UIManager.CrewButtons.Length; n++)
-		{
-			if(Player.instance._Classes[n] != null)
-			{
-				//UIManager.CrewButtons.GetClass(n)._Sprite.sprite = Player.instance._Classes[n].Icon;
-				//UIManager.CrewButtons.GetClass(n)._Sprite.enabled = true;
-				//UIManager.CrewButtons.GetClass(n)._SpriteMask.enabled = false;
-			}
-			else 
-			{
-				//UIManager.CrewButtons.GetClass(n)._Sprite.enabled = false;
-				//UIManager.CrewButtons.GetClass(n)._SpriteMask.enabled = true;
-				//UIManager.CrewButtons.GetClass(n)._SpriteMask.sprite = NoHeroInSlot;
-			}
-		}
-	}
 
 	public void SetTargetSlot(int i)
 	{

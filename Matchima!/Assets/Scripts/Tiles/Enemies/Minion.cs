@@ -21,9 +21,9 @@ public class Minion : Enemy {
 		atkfactor   *= MinionATKAdded + factor / 15;
 
 		
-		InitStats.HitsMax        = (int)(hpfactor) * InitStats.Value;
-		InitStats.Hits = InitStats.HitsMax;
-		InitStats.Attack      = (int)(atkfactor) * InitStats.Value;
+		InitStats._Hits.Set((int)(hpfactor) * InitStats.Value);
+		//InitStats.Hits = InitStats._Hits.Max;
+		InitStats._Attack.Set((int)(atkfactor) * InitStats.Value);
 		CheckStats();
 		SetSprite();
 

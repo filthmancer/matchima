@@ -39,16 +39,7 @@ public class TileMaster : MonoBehaviour {
 	{
 		get
 		{
-			List<Tile> final = new List<Tile>();
-			for(int x = 0; x < Grid.Size[0]; x++)
-			{
-				for(int y = 0; y < Grid.Size[1]; y++)
-				{
-					if(Tiles[x,y] == null) continue;
-					if(Tiles[x,y].Controllable) final.Add(Tiles[x,y]);
-				}
-			}
-			return final.ToArray();
+			return Grid.Controllers;
 		}
 	}
 
@@ -108,6 +99,32 @@ public class TileMaster : MonoBehaviour {
 		return Tiles[0,0];
 	}
 
+	public static Tile RandomTileOfGenus(params GENUS [] genus)
+	{
+		int max_check = (int)((float)(Grid.Size[0] * Grid.Size[1]) * 0.8F);
+		for(int i = 0; i < genus.Length; i++)
+		{
+			int x = Random.Range(0, Grid.Size[0]);
+			int y = Random.Range(0, Grid.Size[1]);
+
+			int check = 0;
+			bool found = true;
+			while(Tiles[x,y] == null || Tiles[x,y].Genus != genus[i])
+			{
+				x = Random.Range(0, Grid.Size[0]);
+				y = Random.Range(0, Grid.Size[1]);
+				check++;
+				if(check > max_check) 
+				{
+					found = false;
+					break;
+				}
+			}
+			if(found) return Tiles[x,y];
+		}
+		return null;//Tiles[0,0];
+	}
+
 	private static float YScale
 	{
 		get {
@@ -156,7 +173,7 @@ public class TileMaster : MonoBehaviour {
 					}
 				}
 			}
-			if(Tiles[0,0] != null && Tiles[0,0].CanAttack() && !Tiles[0,0].Stats.isAlly)
+			if(Tiles[0,0] != null && Tiles[0,0].Stats.isEnemy)
 			{
 				final.Add(Tiles[0,0]);
 			}
@@ -189,21 +206,18 @@ public class TileMaster : MonoBehaviour {
 	}
 
 
-	public static bool EnemiesAttacking()
+	public static bool TilesAttacking()
 	{
 		for (int x = 0; x < Tiles.GetLength(0); x++)
 		{
 			for (int y = 0; y < Tiles.GetLength(1); y++)
 			{
 				if (Tiles[x, y] == null || Tiles[x,y].Destroyed) continue;
-				if (Tiles[x, y].Stats.isEnemy || Tiles[x,y].Stats.isAlly) 
-				{
 					if(Tiles[x,y].isAttacking) 
 					{
-						Debug.LogWarning("ENEMIES ATTACKING: " + x + "-" + y);
+						Debug.LogWarning("ATTACKING: " + x + "-" + y);
 						return true;
 					}
-				}
 			}
 		}
 		return false;
@@ -529,6 +543,10 @@ public class TileMaster : MonoBehaviour {
 		else //Create random grid
 		{
 			MapSize = MapSize_Default;
+			if(populate)
+			{
+				MapSize += Utility.RandomVector2(2,3) + Utility.RandomVector2(-1, 0);
+			}
 
 			bool evenX = MapSize[0] % 2 == 0;
 			bool evenY = MapSize[1] % 2 == 0;
@@ -550,13 +568,12 @@ public class TileMaster : MonoBehaviour {
 
 			string [] randtypes = new string []
 			{
-				"grunt",
 				"cross",
 				"health",
-				"minion",
 				"bomb",
 				"arcane",
-				"chest"
+				"chest",
+				"health"
 			};
 
 			for(int i = 0; i < Random.Range(3, 8); i++)
@@ -566,6 +583,22 @@ public class TileMaster : MonoBehaviour {
 				int r = Random.Range(0, randtypes.Length);
 				final[x,y].Info = new TileInfo(Types[randtypes[r]], GENUS.RAND);
 			}
+
+			string [] randenemies = new string []
+			{
+				"grunt",
+				"minion",
+				"blob"
+			};
+
+			for(int i = 0; i < Random.Range(2, 6); i++)
+			{
+				int x = Random.Range(0, final.Grid.Length);
+				int y = Random.Range(1, final.Grid[0].Length);
+				int r = Random.Range(0, randenemies.Length);
+				final[x,y].Info = new TileInfo(Types[randenemies[r]], GENUS.RAND);
+			}
+
 		}
 
 		for (int xx = 0; xx < final.Size[0]; xx++)
@@ -675,11 +708,14 @@ public class TileMaster : MonoBehaviour {
 		yield return null;
 	}
 
-	public Tile nextstairs;
-	public IEnumerator MoveToRoom(Vector2 direction, GridInfo r = null)
+	public Stairs [] stairs;
+	public List<GridInfo> oldrooms = new List<GridInfo>();
+
+	public IEnumerator MoveToRoom(IntVector direction, GridInfo r = null)
 	{
 		GameManager.instance.paused = true;
 		Vector3 pos = Vector3.zero;
+		GridInfo old = Grid;
 		if(Grid != null)
 		{
 			pos = Grid.Position;
@@ -690,27 +726,74 @@ public class TileMaster : MonoBehaviour {
 	
 		Grid = newroom;
 		GridTest = Grid;
-
-		//yield return new WaitForSeconds(0.2F);
 		
 		yield return StartCoroutine(CameraUtility.instance.MoveToRoom(newroom));
 
 		yield return new WaitForSeconds(0.4F);
 
-		yield return StartCoroutine(CreateTravelTiles());
-
-		nextstairs = ReplaceTile(3,Grid.Size[1]-1, Types["stairs"], GENUS.RAND); //ReplaceTile(Tiles[3,Grid.Size[1]-1], Types["stairs"], GENUS.RAND);
+		int stairsnum = Random.value > 0.8F ? 3 : Random.value > 0.6F ? 2 : 1;
+		List<Vector2> positions = new List<Vector2>();
+		positions.Add(new Vector2(0.5F, 1));
+		positions.Add(new Vector2(1, 0.5F));
+		//positions.Add(new Vector2(0.5F, 0));
+		positions.Add(new Vector2(0, 0.5F));
 		
-		for(int i = 0; i < Player.ClassTiles.Length; i++)
+		stairs = new Stairs[stairsnum];
+		for(int i = 0; i < stairsnum; i++)
 		{
-			yield return StartCoroutine(Player.ClassTiles[i].MoveToPoint(i,0, true, 100.0F));
+			int snum = Random.Range(0, positions.Count);
+			Vector2 spos = positions[snum];
+			stairs[i] = ReplaceTile((int)(spos.x * Grid.Size[0]), (int)(spos.y * Grid.Size[1]), Types["stairs"], GENUS.OMG) as Stairs;
+			if(stairs[i] == null) continue;
+			IntVector realdir = new IntVector(	(spos.x > 0 ? (spos.x > 0.5F ? 1 : 0) : -1),
+												(spos.y > 0 ? (spos.y > 0.5F ? 1 : 0) : -1));
+			stairs[i].SetDirection(realdir);
+			positions.RemoveAt(snum);
 		}
-		yield return new WaitForSeconds(0.2F);
-		nextstairs.ChangeGenus(GENUS.OMG);
+
+		//Center point of the entry side
+		IntVector enter_side = new IntVector(Grid.Size[0]/2-(Grid.Size[0]/2*direction.x), Grid.Size[1]/2 - (Grid.Size[1]/2*direction.y));
+		//Vector to add to entry position for each character
+		IntVector entry_velocity = new IntVector((direction.x == 0 ? 1:0), (direction.y == 0 ? 1 : 0));
+
+		if(old != null) 
+		{
+			for(int i = 0; i < old.Controllers.Length; i++)
+			{
+				old.Controllers[i].gameObject.SetActive(true);
+				int side = (i % 2 == 0) ? -1 : 1;
+				side *= 1 + (i/2);
+				yield return StartCoroutine(old.Controllers[i].MoveToPoint( enter_side.x + (entry_velocity.x*side),
+																		enter_side.y + (entry_velocity.y*side), true, 100.0F));
+				yield return new WaitForSeconds(GameData.GameSpeed(0.05F));
+			}
+			yield return new WaitForSeconds(0.3F);
+			old.SetActive(false);
+			oldrooms.Add(old);
+		}
 
 		GameManager.instance.paused = false;
 		PlayerControl.instance.SetController(null);
 
+	}
+
+	public IEnumerator MoveToLevel()
+	{
+		for(int i = 0; i < oldrooms.Count; i++)
+		{
+			Destroy(oldrooms[i].gameObject);
+
+		}
+
+		oldrooms.Clear();
+
+		for(int i = 0; i < Player.ClassTiles.Length; i++)
+		{
+			Player.ClassTiles[i].transform.SetParent(this.transform);
+		}
+		Destroy(Grid.gameObject);
+		
+		yield return StartCoroutine(MoveToRoom(new IntVector(0,0), null));
 	}
 
 	private Tile CreateTile(int x, int y, Vector2 velocity, TileInfo t, int scale = 1, int value = 0)
@@ -824,6 +907,7 @@ public class TileMaster : MonoBehaviour {
 		{
 			for (int yy = 0; yy < newscale; yy++)
 			{
+				if(Grid[x+xx,y+yy].Empty)continue;
 				if (Grid[x + xx, y + yy]._Tile != null)
 				{
 					tempval +=  override_old ? 0 : Grid[x + xx, y + yy]._Tile.Stats.Value - 1;
@@ -834,6 +918,7 @@ public class TileMaster : MonoBehaviour {
 		}
 
 		newtile = CreateTile(x, y, Vector2.zero, sp, g, false, newscale, addvalue);
+		if(newtile == null) return null;
 		//Juice.instance.JuiceIt(Juice.instance.LandFromAbove, newtile.transform, 0.6F, 0.4F);
 		EffectManager.instance.PlayEffect(newtile.transform, Effect.Replace, GameData.instance.GetGENUSColour(newtile.Genus));
 		newtile.InitStats.Value += tempval;
@@ -1059,7 +1144,8 @@ public class TileMaster : MonoBehaviour {
 			}
 		}
 
-		if(EnemiesOnScreen == 0 && nextstairs.Genus == GENUS.OMG) nextstairs.ChangeGenus(GENUS.RAND);
+		for(int i =0; i < stairs.Length; i++)
+			if(EnemiesOnScreen == 0 && stairs[i].Genus == GENUS.OMG) stairs[i].ChangeGenus(GENUS.RAND);
 
 		spawn_stack = new float [Grid.Size[0]];
 		for (int x = 0; x < Grid.Size[0]; x++)
@@ -1108,7 +1194,7 @@ public class TileMaster : MonoBehaviour {
 			Tile [] omegas = GetTiles("", GENUS.OMG);
 			for(int i = 0; i < omegas.Length; i++)
 			{
-				omegas[i].InitStats.Attack += omegas[i].Stats.Value / 2;
+				omegas[i].InitStats._Attack.Add(omegas[i].Stats.Value / 2);
 				omegas[i].CheckStats();
 				omegas[i].Animate("Attack", 0.05F);
 				omegas[i].AttackPlayer();
@@ -1136,7 +1222,6 @@ public class TileMaster : MonoBehaviour {
 
 	public void SetAllTileStates(TileState s, bool _override = false)
 	{
-
 		for (int xx = 0; xx < Grid.Size[0]; xx++)
 		{
 			for (int yy = 0; yy < Grid.Size[1]; yy++)
@@ -1409,9 +1494,7 @@ public class TileMaster : MonoBehaviour {
 		for(int i = 0; i < TravelTiles.Count; i++)
 		{
 			if(i > Grid.Size[0]-1) continue;
-			Tile target = Tiles[i,0];
-			//TileMaster.instance.ReplaceTile(target, TravelTiles[i].Species, TravelTiles[i].Genus,TravelTiles[i].Scale, TravelTiles[i].Value);
-			CastQuickTile(powerup.transform, target, TravelTiles[i]);
+			CastQuickTile(powerup.transform, i, 1, TravelTiles[i]);
 			
 			yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
 		}
@@ -1420,12 +1503,12 @@ public class TileMaster : MonoBehaviour {
 		Destroy(powerup);
 	}
 
-	private void CastQuickTile(Transform trans, Tile target, Tile trav)
+	private void CastQuickTile(Transform trans, int x, int y, Tile trav)
 	{
 		/*GameData.instance.ActionCaster(trans, target, () => {
 					TileMaster.instance.ReplaceTile(target, t.Species, t.Genus,t.Scale, t.Value);
 				});*/
-		trav.MoveToTile(target, true, 100.0F);
+		StartCoroutine(trav.MoveToPoint(x,y, true, 100.0F));
 	}
 
 	private class TileQuickInfo
