@@ -26,7 +26,7 @@ public class Barbarian : Class {
 	public override void GetTile(Tile t)
 	{
 		_Tile = t;
-		//_Tile.AddEffect("Magnetic", -1, "enemy");
+		_Tile.AddEffect("Magnetic", -1, "", "enemy", "2");
 	}
 
 	public override Upgrade [] Boons

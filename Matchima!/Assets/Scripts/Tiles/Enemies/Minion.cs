@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Minion : Enemy {
 
@@ -35,40 +36,31 @@ public class Minion : Enemy {
 		}
 	}
 
-	
-	private float MinionSpawnChance = 0.15F;
-		/*public override IEnumerator AfterTurnRoutine()
-		{
-			yield return StartCoroutine(base.AfterTurnRoutine());
-			if(Random.value > MinionSpawnChance) yield break;
 
-			while(!TileMaster.AllLanded) yield return null;
-			if(isMatching || Genus == GENUS.OMG) yield break;
-		//MINIONS summon other minions on isolated resource tiles
-			for(int xx = 0; xx < TileMaster.Grid.Size[0]; xx++)
-			{
-				for(int yy = 0; yy < TileMaster.Grid.Size[1]; yy++)
-				{
-					if(TileMaster.Tiles[xx,yy].IsType("resource") && TileMaster.Tiles[xx,yy].Isolated)
-					{
-						CreateMinion(TileMaster.Tiles[xx,yy]);
-						yield break;
-					}
-				}
-			}
-			yield break;
-			
-		}*/
+	public override IEnumerator AttackRoutine()
+	{
+		Tile [] column = TileMaster.GetColumn(x);
+		Tile [] row = TileMaster.GetRow(y);
 
-		private void CreateMinion(Tile t)
+		List<Tile> targ = new List<Tile>();
+		if(column!= null) 
+			for(int i = 0; i < column.Length; i++) {
+				if(column[i] == null) continue;
+				if(column[i].IsType("hero")) targ.Add(column[i]);}
+		if(row != null)
+			for(int i = 0; i < row.Length; i++) {
+				if(row[i] == null) continue;
+				if(row[i].IsType("hero")) targ.Add(row[i]);}
+
+		if(targ.Count > 0)
 		{
+			Tile targ_final = targ[Random.Range(0, targ.Count)];
 			SetState(TileState.Selected);
-			t.SetState(TileState.Selected);
-			GameData.instance.ActionCaster(this.transform,t, ()=>
-			{
-				TileMaster.instance.ReplaceTile( t, TileMaster.Types["minion"], Genus);
-			});
-			
+			OnAttack();
+			yield return StartCoroutine(Animate("Attack", 0.05F));
+			AttackTile(targ_final);
 		}
+		yield return null;
+	}
 }
 

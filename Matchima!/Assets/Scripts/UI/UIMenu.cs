@@ -496,7 +496,7 @@ public class UIMenu : UIObj {
 			}
 		}
 
-		if(num == 100 || CS_target >= ClassSlots.Length) return;
+		if(num == 100 || num >= ClassSlots.Length) return;
 		CS_target = num;
 		ClassSlots[CS_target].Img[0].color = Color.green;
 		ClassSlots[CS_target].Txt[0].text = "CHOOSE";

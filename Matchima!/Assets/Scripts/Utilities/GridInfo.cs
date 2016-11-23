@@ -427,6 +427,16 @@ public class GridColumn
 	{
 		Points = new GridPoint[s];
 	}
+
+	public Tile [] GetTiles()
+	{
+		Tile [] final = new Tile[Points.Length];
+		for(int i = 0; i < Length; i++)
+		{
+			final[i] = Points[i]._Tile;
+		}
+		return final;
+	}
 }
 
 [System.Serializable]

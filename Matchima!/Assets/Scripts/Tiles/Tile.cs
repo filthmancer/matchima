@@ -11,12 +11,7 @@ public class Tile : MonoBehaviour {
 	public virtual StCon _Name {
 		get{
 			string valpref = Stats.Value > 1 ? "+" + Stats.Value : "";
-			string effectpref = "";
-			for(int i = 0; i < Effects.Count; i++)
-			{
-				if(Effects[i].Duration == -1) effectpref += " " + Effects[i].Description[0].Value;
-			}
-			return new StCon(valpref + effectpref + " " + Info._TypeName, GameData.Colour(Genus), true, 60);}
+			return new StCon(valpref + " " + Info._TypeName, GameData.Colour(Genus), true, 60);}
 	}
 	
 	public int x{get{return Point.Base[0];}}
@@ -59,7 +54,7 @@ public class Tile : MonoBehaviour {
 			List<StCon> final = new List<StCon>();
 			foreach(TileEffect child in Effects)
 			{
-				if(child.Duration != -1) final.AddRange(child.Description);
+				final.AddRange(child.Description);
 			}
 			return final.ToArray();
 		}
@@ -410,6 +405,7 @@ public class Tile : MonoBehaviour {
 			{
 				if(Input.GetMouseButton(0) || Input.GetKey(KeyCode.Space)) 
 				{
+
 					SetState(TileState.Selected);
 				}
 			}
@@ -417,7 +413,7 @@ public class Tile : MonoBehaviour {
 			{
 				SetState(TileState.Locked);
 			}
-			else  
+			else  if(!IsState(TileState.Idle))
 			{
 				SetState(TileState.Idle);
 			}
@@ -595,6 +591,21 @@ public class Tile : MonoBehaviour {
 		return state == _state;
 	}
 
+	private List<string> Flags = new List<string>();
+	public bool HasFlag(string s)
+	{
+		for(int i = 0; i < Flags.Count; i++)
+		{
+			if(string.Equals(Flags[i], s)) return true;
+		}
+		return false;
+	}
+
+	public void AddFlag(string s)
+	{
+		Flags.Add(s);
+	}
+
 	public void OnAlert()
 	{
 		AudioManager.instance.QueueAlert(this);
@@ -744,6 +755,11 @@ public class Tile : MonoBehaviour {
 				Params._render.transform.localPosition = Params._render_defaultpos;
 				Params._render.transform.localScale = Params._render_defaultscale;
 			}
+		}
+		else if(!isFalling) 
+		{
+			_collider.enabled = true;
+			return;
 		}
 
 		_collider.enabled = true;
@@ -999,6 +1015,7 @@ public class Tile : MonoBehaviour {
 		state_override = false;
 		originalMatch = false;
 		AttackedThisTurn = false;
+		Flags.Clear();
 		//attacking = false;
 		if(idle) SetState(TileState.Idle);
 	}
@@ -1166,6 +1183,20 @@ public class Tile : MonoBehaviour {
 		mini.DontDestroy = false;
 	}
 
+	public virtual IEnumerator AttackRoutine()
+	{
+		Tile [] targ = Point.GetNeighbours(false, "hero");
+		if(targ.Length > 0)
+		{
+			Tile targ_final = targ[UnityEngine.Random.Range(0, targ.Length)];
+			SetState(TileState.Selected);
+			OnAttack();
+			yield return StartCoroutine(Animate("Attack", 0.05F));
+			AttackTile(targ_final);
+		}
+		yield return null;
+	}
+
 
 	public virtual void SetValue(int val)
 	{
@@ -1208,11 +1239,14 @@ public class Tile : MonoBehaviour {
 	{
 		//float ratio = (float)Stats.Hits / (float)Stats.HitsMax;
 		Stats = new TileStat(InitStats);
+
 		for(int i = 0; i < Effects.Count; i++)
 		{
 			if(Effects[i] == null) Effects.RemoveAt(i);
 			else Stats.Add(Effects[i].CheckStats(), false);
 		}
+
+		Stats.CheckIncreases();
 
 		//Stats.Hits = Mathf.Clamp((int)(Stats.HitsMax * ratio), 0, Stats.HitsMax);
 
@@ -1404,7 +1438,7 @@ public class Tile : MonoBehaviour {
 			return _movecomp;
 		}
 	}
-	public IEnumerator MoveToTile(Tile t, bool overtake, float speed = 6.0F, float arc = 0.0F)
+	public IEnumerator MoveToTile(Tile t, bool overtake, float speed = 15.0F, float arc = 0.0F)
 	{
 		bool complete = false;
 		Vector3 newpoint = t.Point.targetPos;
@@ -1575,6 +1609,11 @@ public class StatCon
 			Regen = prev.Regen;
 
 			Multiplier = prev.Multiplier;
+
+			Level_Required = prev.Level_Required;
+			Level_Current = prev.Level_Current;
+			Level_Multiplier = prev.Level_Multiplier;
+			Level_Increase = prev.Level_Increase;
 		}
 	}
 
@@ -1592,6 +1631,11 @@ public class StatCon
 
 		Multiplier += prev.Multiplier;
 		ThisTurn += prev.ThisTurn;
+
+		Level_Required += prev.Level_Required;
+		Level_Current += prev.Level_Current;
+		Level_Multiplier += prev.Level_Multiplier;
+		Level_Increase += prev.Level_Increase;
 	}
 
 	public void Add(StatContainer prev)
@@ -1642,6 +1686,7 @@ public class StatCon
 
 	public int Level_Current = 0, Level_Required = 0;
 	public float Level_Multiplier = 0.0F;
+	public float Level_Increase = 0.0F;
 	public int Level(int input)
 	{
 		int total = 0;
@@ -1652,7 +1697,7 @@ public class StatCon
 			Level_Current = (int)Mathf.Clamp(Level_Current - Level_Required,
 										0, Mathf.Infinity);
 			Level_Required = (int)(Level_Required * (1.0F + Level_Multiplier));
-			Current_Soft += 1.0F;
+			Current_Soft += Level_Increase;
 			Current = (int) Current_Soft;
 			total ++;
 		}
@@ -1669,6 +1714,14 @@ public class StatCon
 		Max_Soft = num;
 		Max = (int)Max_Soft;
 		Current = num;
+	}
+
+	public void Increase(int num)
+	{
+		if(num == 0) return;
+		float ratio = (float) Current/(float) Max;
+		Set(Max + num);
+		Current = (int)(Max * ratio);
 	}
 }
 
@@ -1744,7 +1797,37 @@ public class TileStat
 					 _Dexterity,
 					 _Charisma,
 					 _Wisdom,
-					 _Luck;
+					 _Luck,
+					 _Chaos;
+
+	public int Length
+	{
+		get{
+			return 6;
+		}
+	}
+	public StatCon this[int value]
+	{
+		get{
+			switch(value)
+			{
+				case 0:
+				return _Strength;
+				case 1:
+				return _Dexterity;
+				case 2:
+				return _Wisdom;
+				case 3:
+				return _Charisma;
+				case 4:
+				return _Luck;
+				case 5:
+				return _Chaos;
+			}
+			return null;
+		}
+
+	}
 
 
 
@@ -1816,6 +1899,13 @@ public class TileStat
 			_Movement  = new StatCon(t._Movement);
 			_Lifetime = new StatCon(t._Lifetime);
 
+			_Dexterity = new StatCon(t._Dexterity);
+			_Strength = new StatCon(t._Strength);
+			_Charisma = new StatCon(t._Charisma);
+			_Wisdom = new StatCon(t._Wisdom);
+			_Luck = new StatCon(t._Luck);
+			_Chaos = new StatCon(t._Chaos);
+
 			AttackPower = t.AttackPower;
 			SpellPower  = t.SpellPower;
 			
@@ -1829,6 +1919,14 @@ public class TileStat
 			isNew = t.isNew;
 			Shift = t.Shift;
 		}
+	}
+
+	public void CheckIncreases()
+	{
+		_Attack.Increase(_Dexterity.Current/3);
+		_Spell.Increase(_Wisdom.Current/3);
+		_Movement.Increase(_Charisma.Current/3);
+		_Hits.Increase(_Strength.Current*2);
 	}
 
 	public int [] GetValues()

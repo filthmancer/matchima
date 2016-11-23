@@ -1101,13 +1101,19 @@ public class GameManager : MonoBehaviour {
 		Player.instance.CompleteMatch = true;
 		EnemyTurn = true;
 		TileMaster.instance.SetFillGrid(false);
+		TileMaster.instance.SetAllTileStates(TileState.Locked);
+		foreach(Tile child in PlayerControl.instance.selectedTiles)
+		{
+			child.SetState(TileState.Selected);
+		}
+
 		UIManager.instance.current_class = null;
 		//UIManager.instance.SetCrewButtons(false);
-		UIManager.instance.ShowGearTooltip(false);
+		//UIManager.instance.ShowGearTooltip(false);
 		bool showcontrol = UIManager.instance.ShowControllerUI(false);
-		UIManager.Objects.BotGear.SetToState(0);
-		UIManager.Objects.TopGear.SetToState(0);
-		UIManager.instance.MoveTopGear(0);
+		//UIManager.Objects.BotGear.SetToState(0);
+		//UIManager.Objects.TopGear.SetToState(0);
+		//UIManager.instance.MoveTopGear(0);
 
 		//Debug.Log("BEFORE MATCH");
 		yield return StartCoroutine(BeforeMatchRoutine());
@@ -1262,7 +1268,6 @@ public class GameManager : MonoBehaviour {
 					if(tile.Stats.isEnemy)
 					{
 						column.Add(tile);
-						
 					}
 					
 				}
@@ -1272,16 +1277,7 @@ public class GameManager : MonoBehaviour {
 			{
 				if(column[i] == null || !column[i].gameObject.activeSelf || column[i].Destroyed) continue;
 
-				Tile [] targ = column[i].Point.GetNeighbours(false, "hero");
-				if(targ.Length > 0)
-				{
-					Tile targ_final = targ[Random.Range(0, targ.Length)];
-					column[i].SetState(TileState.Selected);
-					column[i].OnAttack();
-					total_damage += column[i].GetAttack();
-					yield return StartCoroutine(column[i].Animate("Attack", 0.05F));
-					column[i].AttackTile(targ_final);
-				}
+				yield return StartCoroutine(column[i].AttackRoutine());
 				
 				
 			}

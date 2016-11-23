@@ -63,8 +63,8 @@ public class Arcane : Tile {
 			while(to_collect.Count < TilesCollected)
 			{
 				if(enemies.Count == 0) enemies.AddRange(TileMaster.Enemies);
-
-				Tile c = enemies[UnityEngine.Random.Range(0, enemies.Count)];
+				if(enemies.Count == 0) break;
+				Tile c = enemies[UnityEngine.Random.Range(0, enemies.Count-1)];
 				enemies.Remove(c);
 				to_collect.Add(c);	
 				PlayAudio("cast");
@@ -94,7 +94,11 @@ public class Arcane : Tile {
 		int x = TileMaster.Tiles.GetLength(0);
 		int y = TileMaster.Tiles.GetLength(1);
 		
-		if(to_collect.Count >= TilesCollected) yield break;
+		if(to_collect.Count >= TilesCollected)
+		{
+			yield return StartCoroutine(base.BeforeMatch(Controller));
+			yield break;
+		} 
 
 
 		for(int xx = 0; xx < x; xx ++)

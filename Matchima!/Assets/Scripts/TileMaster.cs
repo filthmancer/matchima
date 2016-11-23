@@ -53,6 +53,26 @@ public class TileMaster : MonoBehaviour {
 		}
 	}
 
+	public static Tile [] GetColumn(int x)
+	{
+		Tile [] final = new Tile[Grid.Size[0]];
+		for(int i = 0; i < Grid.Size[0]; i++)
+		{
+			final[i] = Grid[x,i]._Tile;
+		}
+		return final;
+	}
+
+	public static Tile [] GetRow(int y)
+	{
+		Tile [] final = new Tile[Grid.Size[1]];
+		for(int i = 0; i < Grid.Size[1]; i++)
+		{
+			final[i] = Grid[i,y]._Tile;
+		}
+		return final;
+	}
+
 	public static Tile RandomResTile
 	{
 		get{
@@ -71,6 +91,26 @@ public class TileMaster : MonoBehaviour {
 			}
 			return Tiles[x,y];
 		}
+	}
+
+	public static Tile [] TilesOfType(params string [] types)
+	{
+		List<Tile> final = new List<Tile>();
+		for(int i = 0; i < types.Length; i++)
+		{
+			for(int x =0 ;x < Grid.Size[0]; x++)
+			{
+				for(int y =0; y < Grid.Size[1];y++)
+				{
+					if(Tiles[x,y] != null)
+					{
+						if(Tiles[x,y].IsType(types[i])) final.Add(Tiles[x,y]);
+					}
+				}
+			}
+		}
+
+		return final.ToArray();
 	}
 
 	public static Tile RandomTileOfType(params string [] types)
@@ -96,7 +136,7 @@ public class TileMaster : MonoBehaviour {
 			}
 			if(found) return Tiles[x,y];
 		}
-		return Tiles[0,0];
+		return null;//Tiles[0,0];
 	}
 
 	public static Tile RandomTileOfGenus(params GENUS [] genus)
@@ -389,11 +429,12 @@ public class TileMaster : MonoBehaviour {
 
 	public Tile GetTile(int x, int y)
 	{
-		if (Tiles.GetLength(0) > x && x >= 0)
+		if (Grid.Size[0] > x && x >= 0)
 		{
-			if (Tiles.GetLength(1) > y && y >= 0)
+			if (Grid.Size[1] > y && y >= 0)
 			{
-				return Tiles[x, y];
+				if(!Grid[x,y].Empty)
+					return Tiles[x, y];
 			}
 		}
 		return null;
@@ -407,6 +448,7 @@ public class TileMaster : MonoBehaviour {
 			for(int y = 0; y < Grid.Size[1]; y++)
 			{
 				Tile t = Tiles[x,y];
+				if(Tiles[x,y]== null) continue;
 				bool is_spec = (species == string.Empty) || t.IsType(species);
 				bool is_gen = (g == GENUS.NONE) || t.Genus == g;
 				if(is_spec && is_gen && !final.Contains(t)) final.Add(t);
@@ -1143,6 +1185,8 @@ public class TileMaster : MonoBehaviour {
 				//else if(fill_from_none[xx, yy]) ReplaceTile(xx,yy);
 			}
 		}
+
+		//yield return new WaitForSeconds(Time.deltaTime * 20);
 
 		for(int i =0; i < stairs.Length; i++)
 			if(EnemiesOnScreen == 0 && stairs[i].Genus == GENUS.OMG) stairs[i].ChangeGenus(GENUS.RAND);

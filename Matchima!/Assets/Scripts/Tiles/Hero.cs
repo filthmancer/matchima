@@ -13,12 +13,7 @@ public class Hero : Tile {
 	public override StCon _Name {
 		get{
 			string valpref = Stats.Value > 1 ? "+" + Stats.Value : "";
-			string effectpref = "";
-			for(int i = 0; i < Effects.Count; i++)
-			{
-				if(Effects[i].Duration == -1) effectpref += " " + Effects[i].Description[0].Value;
-			}
-			return new StCon(valpref + effectpref + " " + _Class.Name, GameData.Colour(Genus), true, 60);}
+			return new StCon(valpref + " " + _Class.Name, GameData.Colour(Genus), true, 60);}
 	}
 
 	protected override TileUpgrade [] BaseUpgrades
@@ -95,7 +90,17 @@ public class Hero : Tile {
 		if(_Class != null)
 		{
 			_Class.AddToMeter(m);
-			_Class.AddToStat(g, m);
+			AddToStat(g, m);
+		}
+	}
+
+	public void AddToStat(GENUS g, int res)
+	{
+		int lvl = InitStats[(int)g].Level(res);
+		CheckStats();
+		if(lvl > 0) 
+		{
+			MiniAlertUI a = UIManager.instance.MiniAlert(transform.position, GameData.Stat(g) + "+" + lvl, 40, GameData.Colour(g), 0.85F,0.04F);
 		}
 	}
 }

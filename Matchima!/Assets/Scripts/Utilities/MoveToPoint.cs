@@ -132,7 +132,7 @@ public class MoveToPoint : MonoBehaviour {
 		Target_Tile = null;
 		Target_Int = new int [0];
 		Target = null;
-		Steps = new List<MoveStep>();
+		Steps.Clear(); //= new List<MoveStep>();
 		Steps_curr = 0;
 	}
 
