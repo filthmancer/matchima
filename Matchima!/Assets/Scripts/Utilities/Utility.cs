@@ -94,6 +94,12 @@ public class IntVector
 		y = a;
 	}
 
+	public IntVector(Vector2 v)
+	{
+		x = (int) v.x;
+		y = (int) v.y;
+	}
+
 	public string ToString() {return x + ":" + y;}
 
 	public static IntVector operator + (IntVector a, IntVector b)
@@ -135,5 +141,44 @@ public class IntVector
 	{
 		x = (int)((float)x*m);
 		y = (int)((float)y*m);
+	}
+}
+
+[System.Serializable]
+public class ToggleContainer
+{
+	public bool Active;
+	public string Name;
+	public ToggleContainer(string n, bool a)
+	{
+		Name = n;
+		Active = a;
+	}
+}
+
+[System.Serializable]
+public class ToggleList
+{
+	public ToggleContainer [] Togg;
+	public ToggleContainer this[string n]
+	{
+		get{
+			for(int i = 0; i < Togg.Length; i++){
+				if(string.Equals(Togg[i].Name, n)) 
+					return Togg[i];
+			}
+			return null;
+		}
+	}
+	public ToggleContainer this[int i] {get{return Togg[i];}}
+	public int Length{get{return Togg.Length;}}
+
+	public ToggleList(params string [] s)
+	{
+		Togg = new ToggleContainer[s.Length];
+		for(int i =0 ; i < Togg.Length; i++)
+		{
+			Togg[i] = new ToggleContainer(s[i], false);
+		}
 	}
 }

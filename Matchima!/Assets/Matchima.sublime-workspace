@@ -4,6 +4,22 @@
 		"selected_items":
 		[
 			[
+				"Shift",
+				"KeyCode.LeftShift"
+			],
+			[
+				"ROom",
+				"RoomInfluence"
+			],
+			[
+				"CurrentPOint",
+				"CurrentPoint"
+			],
+			[
+				"Ser",
+				"SerializedProperty"
+			],
+			[
 				"Tooltip",
 				"Tooltip_DescObj"
 			],
@@ -475,31 +491,23 @@
 			"file": "Scripts/GameManager.cs",
 			"settings":
 			{
-				"buffer_size": 49715,
+				"buffer_size": 50793,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "Scripts/TileMaster.cs",
+			"file": "Editor/RoomEditor.cs",
 			"settings":
 			{
-				"buffer_size": 52234,
-				"line_ending": "Windows"
+				"buffer_size": 10940,
+				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "Scripts/Tiles/Enemies/Enemy.cs",
+			"file": "Scripts/Utilities/GridInfo.cs",
 			"settings":
 			{
-				"buffer_size": 10364,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "Scripts/Player.cs",
-			"settings":
-			{
-				"buffer_size": 24501,
+				"buffer_size": 18106,
 				"line_ending": "Windows"
 			}
 		},
@@ -507,23 +515,79 @@
 			"file": "Scripts/Tiles/Tile.cs",
 			"settings":
 			{
-				"buffer_size": 43726,
+				"buffer_size": 50577,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "Scripts/UIManager.cs",
+			"file": "Scripts/TileMaster.cs",
 			"settings":
 			{
-				"buffer_size": 69154,
+				"buffer_size": 60278,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "Scripts/Utilities/MoveToPoint.cs",
+			"file": "Scripts/Tiles/Neutral/Stairs.cs",
 			"settings":
 			{
-				"buffer_size": 4162,
+				"buffer_size": 2840,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Scripts/Tiles/GridPoint.cs",
+			"settings":
+			{
+				"buffer_size": 1477,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "Scripts/Tiles/Spells/Lightning.cs",
+			"settings":
+			{
+				"buffer_size": 5376,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Scripts/Utilities/CameraUtility.cs",
+			"settings":
+			{
+				"buffer_size": 4629,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Scripts/Tiles/Enemies/Minion.cs",
+			"settings":
+			{
+				"buffer_size": 1694,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Scripts/Tiles/Enemies/Enemy.cs",
+			"settings":
+			{
+				"buffer_size": 10400,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Scripts/Tiles/Hero.cs",
+			"settings":
+			{
+				"buffer_size": 2500,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "Scripts/TileTypes.cs",
+			"settings":
+			{
+				"buffer_size": 18256,
 				"line_ending": "Windows"
 			}
 		}
@@ -568,22 +632,30 @@
 	},
 	"file_history":
 	[
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Arcane.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Tile.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Bomb.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Cross.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/GameData.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/TileTypes.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Class.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Harp.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Tile.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/Utility.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Lightning.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/MoveToPoint.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/GridPoint.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Lens.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Editor/StatConEditor.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/CameraUtility.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/UIManager.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Player.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Enemy.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Arcane.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Bomb.cs",
+		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Cross.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Flame.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Neutral/ItemTile.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Neutral/Stairs.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/BlackHole.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Force.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Lens.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Lightning.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Vacuum.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Enemy.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/UIManager.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/GameManager.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/TileMaster.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/WaveUnit.cs",
@@ -594,11 +666,9 @@
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Stat.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/PlayerControl.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIObj.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/GameData.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Neutral/Attack.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/NewUI/CrewMenuUIObj.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIMenu.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Player.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIClassButton.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/ClassAbilityUI.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIScoreWindowNew.cs",
@@ -625,11 +695,9 @@
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Powerups/Powerup.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/ClassSlotsUI.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIObjtk.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/MoveToPoint.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/EffectManager.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/GridInfo.cs",
 		"/A/Projects/matchima/Matchima!/Assets/TK2DROOT/tk2d/Code/Sprites/tk2dBaseSprite.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/TileTypes.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/MoverTile.cs",
 		"/A/Projects/greatgrand/Assets/Scripts/UIObj.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Spells/Chicken.cs",
@@ -668,7 +736,6 @@
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/Wave/WaveTileEndOnTileDestroy.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/UI/UIObjTweener.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Roaming.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Utilities/CameraUtility.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Units/StoryModeZone_A.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/Spawning.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Blob.cs",
@@ -692,10 +759,7 @@
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Status/TileEffect.cs",
 		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Grunt.cs",
 		"/A/Projects/deepspacefive/Deep Space Five/Assets/PlayerControl.cs",
-		"/C/Users/MaxerJ/AppData/Roaming/Sublime Text 2/Packages/Zen Tabs/ZenTabs.sublime-settings",
-		"/A/Projects/matchima/Matchima!/Assets/Scripts/Tiles/Enemies/Minion.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Advanced Save System/Scripts/Save Variables/AdvancedSaveSystem.cs",
-		"/A/Projects/matchima/Matchima!/Assets/Advanced Save System/Scripts/ExampleScripts/ASS_MoveObject.cs"
+		"/C/Users/MaxerJ/AppData/Roaming/Sublime Text 2/Packages/Zen Tabs/ZenTabs.sublime-settings"
 	],
 	"find":
 	{
@@ -734,6 +798,108 @@
 		"case_sensitive": true,
 		"find_history":
 		[
+			"OnGUI",
+			"Position",
+			"GenerateGrid2",
+			"Difficulty",
+			"LeftShift",
+			"CurrentPoint",
+			"Empty",
+			"CheckForMatches",
+			"AfterTurn",
+			"GenerateGrid2",
+			"TargetInfo",
+			"CreateRoom",
+			"MoveToRoom",
+			"TileInfo(",
+			"GenerateGrid2",
+			"CreateTile",
+			"SetInfo",
+			"				Grid[xx][yy].SetInfo(info.Grid[xx][yy]);\n",
+			"GridInfo",
+			"GenerateGrid2",
+			"MoveToRoom",
+			"ss",
+			"150",
+			"250",
+			"RoomInfo",
+			"250",
+			"0.5F",
+			"CheckInfo",
+			"CreatePoint",
+			"Size",
+			"CreatePoint",
+			"Destroy",
+			"100",
+			".0F",
+			"TilePoints",
+			"pointParent",
+			"tileParent",
+			"pointParent",
+			"tileParent",
+			"x",
+			"CreatePoint",
+			"Grid",
+			"TilePoints",
+			"columns",
+			".GetLength(0)",
+			".GetLength(1)",
+			"newpoints",
+			"target",
+			"EndVertical",
+			"BeginVertical",
+			"Horizontal",
+			"CreatePoint",
+			", position);",
+			"CreatePoint(xx,yy",
+			" CreatePoint(xx,yy",
+			"].position",
+			"new GridPoint(new int[]{x,y}, position);",
+			"new GridPoint(new int[] {xx,yy},_point.transform.position);",
+			"].position",
+			"CreatePoint",
+			"size",
+			"CurrentPoint.StartSpawns[i]",
+			"HasStartSpawns",
+			"Transform",
+			"e.",
+			"current",
+			"grid",
+			"TargetInfo",
+			"FindProperty",
+			"GetProperty",
+			"Info.Column",
+			"xx",
+			"tileParent",
+			"column",
+			"Column",
+			"Size = new",
+			"Size",
+			"Size = new IntVector(inf.Size);",
+			"Column = new GameObject[Size.x];",
+			"Grid[xx] = new GridColumn",
+			"Column[xx]",
+			"Posit",
+			"TargetInfo",
+			"GUILayout.Width(200)",
+			"Info",
+			"Color",
+			"STR",
+			"Types",
+			"Toggles",
+			"i",
+			"yy",
+			"xx",
+			"GridInfo",
+			"i",
+			"Selection.activeGameObject.name",
+			"TileMaster.instance != null ? TileMaster.instance.tileBuffer",
+			"tileBufferX",
+			"master = this;",
+			"TileMaster master ",
+			"float bufferX = TileMaster.instance.tileBufferX;\n		float bufferY = TileMaster.instance.tileBufferY;",
+			"TileMaster.instance",
+			"GridParent.transform.SetParent(TileMaster.instance.transform);",
 			"mp",
 			"MoveToPoint mp ",
 			"ClearAndDestroy",
@@ -759,109 +925,7 @@
 			"PowerDown",
 			"ReplaceTile",
 			"EnterZone",
-			"Turn(",
-			"MoveInc",
-			"Stat_MoveInc",
-			"InitStats",
-			"Move",
-			"AddTilesToSelected",
-			"MatchCount",
-			"Stat_AtkInc",
-			"Stat_MoveInc",
-			"Stat_AtkInc",
-			"desc",
-			"TargetTile",
-			"Tooltip_Parent[5]",
-			"Tooltip_DescParent",
-			"TargetTile",
-			"SetLoadScreen",
-			" WaveTimer",
-			"hero",
-			"Canvas",
-			"MiniAlert(",
-			"MiniAlertUI",
-			"StartGame",
-			"GameMode",
-			"StartGame",
-			"NewGameActivate",
-			"LogoAnimation",
-			"Turn(",
-			"CreateControllerUI",
-			"active",
-			"ShowControllerUI",
-			"ShowCrew",
-			"MeterLoop",
-			"Complete",
-			"ManaThisTurn",
-			"ShowClass(false);",
-			"ShowClass(true);",
-			"UIManager.CrewButtons.GetClass",
-			"UIManager.CrewButtons",
-			" UIManager.CrewButtons.GetClass",
-			"GetClass[",
-			"GetClass",
-			"UIManager.CrewButtons.GetClass",
-			"UIManager.CrewButtons",
-			"UIManager.CrewButtons.GetClass(3)",
-			"UIManager.CrewButtons",
-			"UIManager.CrewButtons[Index].ShowClass(false);",
-			"UIManager.CrewButtons[Index].ShowClass(true);",
-			"GetClass(Index)",
-			"{\n",
-			"GetClass(",
-			"ShowCrewButtons",
-			"CrewButtons",
-			"ClassButtons",
-			"UIManager.ClassButtons[(int)_Unit.Genus]",
-			"UIManager.ClassButtons[0]",
-			"UIManager.ClassButtons[(int)Parent.Genus]",
-			"UIManager.CrewButton[Parent.Index]",
-			"UIManager.ClassButtons[Parent.Index]",
-			"UIManager.ClassButtons.GetClass(Parent.Index)",
-			"UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(true);",
-			"UIManager.ClassButtons.GetClass(Parent.Index).ShowClass(false);",
-			"ClassButtons.GetClass(Parent.Index)",
-			"ClassButtons",
-			"ShowClassButtons",
-			"ClassButtons",
-			"CrewMenuUIObj",
-			"_ClassButtons",
-			"ClassButtons",
-			"CrewButton",
-			"OnPointerUp",
-			"isPressed",
-			"CollectThysel",
-			"CollectThyself",
-			"MoveToPoint",
-			"UIObjtk",
-			"control[i]",
-			"target",
-			"_class",
-			"cobj",
-			"UIObj",
-			"AddToMeter",
-			"DestroyTile",
-			"DestroyThyself",
-			"MatchRoutine",
-			"DontDestroy",
-			"t.",
-			"ComboFactor_RepeatedCombos == 1",
-			"PlayAudio",
-			"BeforeMatchRoutine",
-			"BeforeMatch",
-			"MatchRoutine",
-			"Controller_Genus",
-			"SetMatchingTile",
-			"Controller",
-			"AddTilesToSelected",
-			"SecondLastSelected",
-			"LastSelected",
-			"_EnterZone",
-			"StartGame",
-			"UIManager",
-			"Tooltip_Target",
-			"Tooltip_Parent",
-			"UIObj"
+			"Turn("
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -934,7 +998,7 @@
 	"groups":
 	[
 		{
-			"selected": 4,
+			"selected": 12,
 			"sheets":
 			[
 				{
@@ -942,15 +1006,15 @@
 					"file": "Scripts/GameManager.cs",
 					"settings":
 					{
-						"buffer_size": 49715,
+						"buffer_size": 50793,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								35138,
-								35138
+								25091,
+								25091
 							]
 						],
 						"settings":
@@ -1007,25 +1071,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 23034.0,
+						"translation.y": 16014.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "Scripts/TileMaster.cs",
+					"file": "Editor/RoomEditor.cs",
 					"settings":
 					{
-						"buffer_size": 52234,
+						"buffer_size": 10940,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								10858,
-								10858
+								7130,
+								7130
 							]
 						],
 						"settings":
@@ -1082,25 +1146,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 8022.0,
+						"translation.y": 3954.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 2,
-					"file": "Scripts/Tiles/Enemies/Enemy.cs",
+					"file": "Scripts/Utilities/GridInfo.cs",
 					"settings":
 					{
-						"buffer_size": 10364,
+						"buffer_size": 18106,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5440,
-								5440
+								13258,
+								13258
 							]
 						],
 						"settings":
@@ -1157,25 +1221,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 3648.0,
+						"translation.y": 802.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 3,
-					"file": "Scripts/Player.cs",
+					"file": "Scripts/Tiles/Tile.cs",
 					"settings":
 					{
-						"buffer_size": 24501,
+						"buffer_size": 50577,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								15292,
-								15292
+								39590,
+								39590
 							]
 						],
 						"settings":
@@ -1232,25 +1296,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 12018.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 4,
-					"file": "Scripts/Tiles/Tile.cs",
+					"file": "Scripts/TileMaster.cs",
 					"settings":
 					{
-						"buffer_size": 43726,
+						"buffer_size": 60278,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								35633,
-								35633
+								13872,
+								13872
 							]
 						],
 						"settings":
@@ -1307,100 +1371,25 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 25099.0,
+						"translation.y": 10254.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
 				},
 				{
 					"buffer": 5,
-					"file": "Scripts/UIManager.cs",
+					"file": "Scripts/Tiles/Neutral/Stairs.cs",
 					"settings":
 					{
-						"buffer_size": 69154,
+						"buffer_size": 2840,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								11546,
-								11546
-							]
-						],
-						"settings":
-						{
-							"BracketHighlighterBusy": false,
-							"bh_regions":
-							[
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_c_define",
-								"bh_c_define_center",
-								"bh_c_define_open",
-								"bh_c_define_close",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close"
-							],
-							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 6672.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 6,
-					"file": "Scripts/Utilities/MoveToPoint.cs",
-					"settings":
-					{
-						"buffer_size": 4162,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								2065,
-								2065
+								2444,
+								2444
 							]
 						],
 						"settings":
@@ -1461,6 +1450,531 @@
 						"zoom_level": 1.0
 					},
 					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "Scripts/Tiles/GridPoint.cs",
+					"settings":
+					{
+						"buffer_size": 1477,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								603,
+								603
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close"
+							],
+							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 54.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "Scripts/Tiles/Spells/Lightning.cs",
+					"settings":
+					{
+						"buffer_size": 5376,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3765,
+								3765
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close"
+							],
+							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1674.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "Scripts/Utilities/CameraUtility.cs",
+					"settings":
+					{
+						"buffer_size": 4629,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1974,
+								1974
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close"
+							],
+							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1188.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "Scripts/Tiles/Enemies/Minion.cs",
+					"settings":
+					{
+						"buffer_size": 1694,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								142,
+								142
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close"
+							],
+							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 10,
+					"file": "Scripts/Tiles/Enemies/Enemy.cs",
+					"settings":
+					{
+						"buffer_size": 10400,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3526,
+								3526
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close"
+							],
+							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1740.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 11,
+					"file": "Scripts/Tiles/Hero.cs",
+					"settings":
+					{
+						"buffer_size": 2500,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2270,
+								2270
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close"
+							],
+							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1350.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 12,
+					"file": "Scripts/TileTypes.cs",
+					"settings":
+					{
+						"buffer_size": 18256,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								15116,
+								15116
+							]
+						],
+						"settings":
+						{
+							"BracketHighlighterBusy": false,
+							"bh_regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_c_define",
+								"bh_c_define_center",
+								"bh_c_define_open",
+								"bh_c_define_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close"
+							],
+							"syntax": "Packages/Unity3D/UnityC#.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 12247.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
 				}
 			]
 		}
@@ -1514,6 +2028,42 @@
 		"height": 0.0,
 		"selected_items":
 		[
+			[
+				"tilet",
+				"Mains/TileTypes.cs"
+			],
+			[
+				"hero",
+				"Tiles/Hero.cs"
+			],
+			[
+				"enemy",
+				"Tiles/Enemies/Enemy.cs"
+			],
+			[
+				"camera",
+				"Utilities/CameraUtility.cs"
+			],
+			[
+				"lightning",
+				"Tiles/Spells/Lightning.cs"
+			],
+			[
+				"gridpo",
+				"Tiles/GridPoint.cs"
+			],
+			[
+				"harp",
+				"Tiles/Spells/Harp.cs"
+			],
+			[
+				"stairs",
+				"Tiles/Neutral/Stairs.cs"
+			],
+			[
+				"gri",
+				"Utilities/GridInfo.cs"
+			],
 			[
 				"tile",
 				"Tiles/Tile.cs"

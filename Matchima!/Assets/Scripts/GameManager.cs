@@ -341,6 +341,7 @@ public class GameManager : MonoBehaviour {
 #endregion
 
 #region Start Conditions
+public GridInfo TestRoom;
 	public IEnumerator LoadGame(bool resume, bool show_starter = false)
 	{
 		print("LOADING");
@@ -962,13 +963,16 @@ public class GameManager : MonoBehaviour {
 		else yield return StartCoroutine(_GetWave());*/
 
 		yield return new WaitForSeconds(0.4F);
-
+		int c = 0;
 		for(int i = 0; i < Player.Classes.Length; i++)
 		{
+			while(TileMaster.Tiles[c,0] == null) c++;
+
 			if(Player.Classes[i] != null)
 			{
-				Tile t = TileMaster.instance.ReplaceTile(TileMaster.Tiles[i,0], TileMaster.Types["hero"], GENUS.ALL,1, 50);
+				Tile t = TileMaster.instance.ReplaceTile(TileMaster.Tiles[c,0], TileMaster.Types["hero"], GENUS.ALL,1, 50);
 				(t as Hero).SetClass(Player.Classes[i]);
+				c++;
 			}
 		}
 		

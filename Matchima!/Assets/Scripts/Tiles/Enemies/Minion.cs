@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class Minion : Enemy {
 
 	private int MinionHPAdded = 1;
-	private int MinionATKAdded = 4;
+	private int MinionATKAdded = 2;
 
 	protected sealed override void SetupEnemy()
 	{

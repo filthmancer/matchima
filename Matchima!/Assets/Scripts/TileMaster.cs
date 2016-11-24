@@ -8,6 +8,9 @@ public class TileMaster : MonoBehaviour {
 	public static GenusTypes Genus;
 	[SerializeField] private GenusTypes _GenusTypes;
 
+	public static float TileBuffer_X = 0.53F,
+						TileBuffer_Y = 0.53F;
+
 	public static GridInfo Grid;
 	public static GridInfo Room
 	{
@@ -269,6 +272,7 @@ public class TileMaster : MonoBehaviour {
 	public float tileBufferX = 0.2F, tileBufferY = 0.2F;
 	public float YOffset = 1.0F;
 
+	public GridPoint GridPointObj;
 	public GameObject ResMiniTile;
 
 	[HideInInspector]
@@ -496,8 +500,8 @@ public class TileMaster : MonoBehaviour {
 
 			SetOrtho();
 
-			CameraUtility.SetTargetPos(Vector3.Lerp( Grid[0, 0].position,
-			                           Grid[Grid.Size[0] - 1, Grid.Size[1] - 1].position,
+			CameraUtility.SetTargetPos(Vector3.Lerp( Grid[0, 0].Pos,
+			                           Grid[Grid.Size[0] - 1, Grid.Size[1] - 1].Pos,
 			                           0.5F));
 
 			spawn_stack = new float [Grid.Size[0]];
@@ -541,8 +545,8 @@ public class TileMaster : MonoBehaviour {
 			GridTest = Grid;
 			SetOrtho();
 			SetFillGrid(true);
-			CameraUtility.SetTargetPos(Vector3.Lerp( Grid[0, 0].position,
-			                           Grid[Grid.Size[0] - 1, Grid.Size[1] - 1].position,
+			CameraUtility.SetTargetPos(Vector3.Lerp( Grid[0, 0].Pos,
+			                           Grid[Grid.Size[0] - 1, Grid.Size[1] - 1].Pos,
 			                           0.5F));
 
 			for (int xx = 0; xx < Grid.Size[0]; xx++)
@@ -647,7 +651,15 @@ public class TileMaster : MonoBehaviour {
 		{
 			for (int yy = 0; yy < final.Size[1]; yy++)
 			{
-				if (final[xx, yy].Info != null) CreateTile(final, xx, yy, Vector2.zero, final[xx, yy].Info);
+				//if (final[xx, yy].Info != null) CreateTile(final, xx, yy, Vector2.zero, final[xx, yy].Info);
+				//else 
+				if(final[xx,yy].HasStartSpawns()) 
+				{
+					string type = final[xx,yy].StartSpawns[0]._Type;
+					GENUS genus = final[xx,yy].StartSpawns[0]._Genus;
+					int val = final[xx,yy].StartSpawns[0].Value;
+					CreateTile(final, xx,yy, Vector2.zero, TileMaster.Types[type], genus, false, 1, val);
+				}
 				else CreateTile(final, xx,yy, Vector2.zero);
 			}
 		}
@@ -686,8 +698,8 @@ public class TileMaster : MonoBehaviour {
 
 		MapSize = final;
 		SetOrtho();
-		CameraUtility.SetTargetPos(Vector3.Lerp(Grid[0, 0].position,
-		                                        Grid[Grid.Size[0] - 1, Grid.Size[1] - 1].position,
+		CameraUtility.SetTargetPos(Vector3.Lerp(Grid[0, 0].Pos,
+		                                        Grid[Grid.Size[0] - 1, Grid.Size[1] - 1].Pos,
 		                                        0.5F));
 
 		spawn_stack = new float [Grid.Size[0]];
@@ -713,8 +725,8 @@ public class TileMaster : MonoBehaviour {
 
 		SetOrtho();
 
-		CameraUtility.SetTargetPos(Vector3.Lerp(Grid[0, 0].position,
-		                                        Grid[Grid.Size[0] - 1, Grid.Size[1] - 1].position,
+		CameraUtility.SetTargetPos(Vector3.Lerp(Grid[0, 0].Pos,
+		                                        Grid[Grid.Size[0] - 1, Grid.Size[1] - 1].Pos,
 		                                        0.5F));
 
 		spawn_stack = new float [Grid.Size[0]];
@@ -736,8 +748,8 @@ public class TileMaster : MonoBehaviour {
 
 		SetOrtho();
 
-		CameraUtility.SetTargetPos(Vector3.Lerp( Grid[0, 0].position,
-		                           Grid[Grid.Size[0] - 1, Grid.Size[1] - 1].position,
+		CameraUtility.SetTargetPos(Vector3.Lerp( Grid[0, 0].Pos,
+		                           Grid[Grid.Size[0] - 1, Grid.Size[1] - 1].Pos,
 		                           0.5F));
 
 		spawn_stack = new float [Grid.Size[0]];
@@ -753,18 +765,24 @@ public class TileMaster : MonoBehaviour {
 	public Stairs [] stairs;
 	public List<GridInfo> oldrooms = new List<GridInfo>();
 
-	public IEnumerator MoveToRoom(IntVector direction, GridInfo r = null)
+	public IEnumerator MoveToRoom(IntVector direction, GridInfo r = null, GENUS inc = GENUS.NONE)
 	{
 		GameManager.instance.paused = true;
+		GameManager.Difficulty += Mathf.Exp(GameManager.instance.Difficulty_Growth);
 		Vector3 pos = Vector3.zero;
 		GridInfo old = Grid;
+
 		if(Grid != null)
 		{
 			pos = Grid.Position;
 			pos += new Vector3(direction.x * Grid.Size[0]*3, direction.y * Grid.Size[1]*3, 0);
 		}
+		
+		if(r == null) r = GameData.instance.GetRandomRoom();
 
-		GridInfo newroom = GenerateGrid2(pos, r, true);
+		r.SetInfluence(inc);
+
+		GridInfo newroom = GenerateGrid2(pos, r);
 	
 		Grid = newroom;
 		GridTest = Grid;
@@ -851,9 +869,10 @@ public class TileMaster : MonoBehaviour {
 		//	if(Tiles[x,y] != null) return null;
 		//}
 		//????
-
 		if(t == null) return null;
 		if(g != null && !g[x,y].ToFill()) return null;
+		if(g[x,y].GenusOverride != GENUS.NONE) t.ChangeGenus(g[x,y].GenusOverride);
+		if(g.RoomInfluence != GENUS.NONE && g[x,y].RoomInfluencedGenus) t.ChangeGenus(g.RoomInfluence);
 
 		if (t.Inner == null) t.Inner = t._Type.Atlas;
 		if (t.Outer == null) t.Outer = TileMaster.Genus.Frames.GetSpriteIdByName(t._GenusName);
@@ -864,7 +883,6 @@ public class TileMaster : MonoBehaviour {
 		new_tile.transform.position = new Vector3(nx, ny, 0);
 		new_tile.name = "Tile | " + x + ":" + y;
 
-		new_tile.transform.parent = g.Column[x].transform;
 		for (int xx = 0; xx < scale; xx++)
 		{
 			for (int yy = 0; yy < scale; yy++)
@@ -1203,7 +1221,7 @@ public class TileMaster : MonoBehaviour {
 		CheckForEmptys();
 		if (!FillGrid) yield break;
 
-		CheckForMatches();
+		//CheckForMatches();
 		/*if(HeroMatches.Count < Player.Classes.Length)
 		{
 			for(int i = 0; i < Player.Classes.Length; i++)

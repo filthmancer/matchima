@@ -74,7 +74,7 @@ public class CameraUtility : MonoBehaviour {
 		//Vector3.Lerp(Cam.transform.position, TargetPos, Time.deltaTime*2);
 	}
 
-	float max_intensity = 1.5F;
+	float max_intensity = 0.7F;
 	public void ScreenShake(float intensity, float time)
 	{
 		if(isShaking)
@@ -160,7 +160,7 @@ public class CameraUtility : MonoBehaviour {
 		yield return new WaitForSeconds(Time.deltaTime * 5);
 
 		TargetRoom = r;
-		TargetPos = r.Position;
+		TargetPos = r.CamPosition;
 		TargetPos.z = -18.8F;
 		TargetPos.y += yOffset * r.Size[1];
 

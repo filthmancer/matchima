@@ -638,7 +638,6 @@ public class TileInfo
 		Outer = t.Outer;
 		Rarity = t.Rarity;
 		Shift = t.Shift;
-		Empty = t.Empty;
 		FinalChance = t.FinalChance;
 		FinalValue = t.FinalValue;
 		FinalEffects = t.FinalEffects;
@@ -648,7 +647,6 @@ public class TileInfo
 	{
 		get
 		{
-			if(Empty) return 0;
 			int v = UnityEngine.Random.Range(FinalValue.x, FinalValue.y);
 			if(v <= 0) v = 1;
 			return v;
@@ -658,7 +656,6 @@ public class TileInfo
 
 	public bool IsType(string g, string t)
 	{
-		if(Empty) return false;
 		bool genus = false;
 		bool type = false;
 
@@ -671,7 +668,6 @@ public class TileInfo
 
 	public void ChangeGenus(GENUS g)
 	{
-		if(Empty) return;
 		if(g == GENUS.RAND)
 		{
 			g = (GENUS) UnityEngine.Random.Range(0,3);
@@ -683,7 +679,7 @@ public class TileInfo
 }
 
 [System.Serializable]
-public class TileShortInfo
+public class TileShortInfo 
 {
 	public string _Type;
 
@@ -709,8 +705,30 @@ public class TileShortInfo
 
 	public int Scale = 1;
 	public List<TileEffectInfo> FinalEffects;
-
 	public string [] Params;
+
+	public TileShortInfo()
+	{
+		_Type = "Type";
+		_Genus = GENUS.RAND;
+		_Value = new IntVector(1,1);
+	 	Params = new string[0];
+	}
+
+	/*public void OnGUI()
+	{
+		EditorGUILayout.BeginHorizontal();
+		GUILayout.Label("Start ", GUILayout.Width(70));
+		_Type = EditorGUILayout.TextField("", _Type, GUILayout.Width(150));
+		_Genus = (GENUS) EditorGUILayout.EnumPopup(_Genus, GUILayout.Width(100));
+
+		Vector2 value = _Value.ToVector2;
+		GUILayout.Label("Value:", GUILayout.Width(70));
+		value = EditorGUILayout.Vector2Field("", value, GUILayout.Width(200));
+		_Value = new IntVector(value);
+
+		EditorGUILayout.EndHorizontal();
+	}*/
 }
 
 

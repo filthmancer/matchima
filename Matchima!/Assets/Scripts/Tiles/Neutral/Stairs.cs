@@ -77,7 +77,7 @@ public class Stairs : Tile {
 		Player.instance.CompleteMatch = false;
 		GameManager.OverrideMatch = true;
 
-		if(!ToNextLevel) yield return StartCoroutine(TileMaster.instance.MoveToRoom(Direction));
+		if(!ToNextLevel) yield return StartCoroutine(TileMaster.instance.MoveToRoom(Direction, null, Genus));
 		else yield return StartCoroutine(TileMaster.instance.MoveToLevel());
 		
 		yield return new WaitForSeconds(GameData.GameSpeed(0.5F));

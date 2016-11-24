@@ -7,7 +7,9 @@ public class Lightning : Tile {
 	private int final_damage
 	{
 		get{
-			return  8 + (int)(2.0F * Stats.Value) + (int) PlayerControl.instance.Controller.Stats.Spell;
+			int final = 8 + (int)(2.0F * Stats.Value);
+			if(PlayerControl.instance.Controller!=null) final += (int) PlayerControl.instance.Controller.Stats.Spell;
+			return  final;
 		}
 	}
 

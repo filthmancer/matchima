@@ -54,6 +54,7 @@ public class GameData : MonoBehaviour {
 	public Zone [] Zones;
 	public bool ModeUnlocked_Endless, ModeUnlocked_Quick, ModeUnlocked_Deep;
 
+	public GridInfo [] Rooms;
 	public GameObject WaveParent;
 	public GameObject AbilityParent;
 	public GameObject TileEffectParent;
@@ -673,6 +674,7 @@ public class GameData : MonoBehaviour {
 		ModeUnlocked_Quick = Player.instance.GetUnlock("quickmode");
 		ModeUnlocked_Endless = Player.instance.GetUnlock("endlessmode");
 		ModeUnlocked_Deep = Player.instance.GetUnlock("deepmode");
+
 	}
 	
 	public void LoadAbilities()
@@ -929,6 +931,10 @@ public class GameData : MonoBehaviour {
 			yield return null;
 		}
 
+		UnityEngine.Object [] rooms = Resources.LoadAll("rooms", typeof(GridInfo));
+		Rooms = new GridInfo[rooms.Length];
+		for(int i = 0; i < rooms.Length; i++) Rooms[i] = rooms[i] as GridInfo;
+
 		TileEffectParent.SetActive(false);
 
 		yield return null;
@@ -979,6 +985,12 @@ public class GameData : MonoBehaviour {
 	{
 
 		yield return null;
+	}
+
+	public GridInfo GetRandomRoom()
+	{
+		int r = UnityEngine.Random.Range(0, Rooms.Length);
+		return Rooms[r];
 	}
 #endregion
 

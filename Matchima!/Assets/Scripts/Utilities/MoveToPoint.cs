@@ -66,6 +66,7 @@ public class MoveToPoint : MonoBehaviour {
 
 			if(Vector3.Distance(transform.position,Point) < threshold + (Speed * Time.deltaTime)) 
 			{
+				transform.position = Point;
 				if(!wait_for_delay)
 				{
 					delay = Steps[Steps_curr].time;

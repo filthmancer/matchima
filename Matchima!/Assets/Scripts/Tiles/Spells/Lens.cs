@@ -7,7 +7,7 @@ public class Lens : Tile {
 	{
 		get{
 			CheckStats();
-			return 2.0F + (Stats.Value * 0.2F);
+			return 1.2F + (Stats.Value * 0.1F);
 		}
 	}
 
@@ -26,7 +26,7 @@ public class Lens : Tile {
 		for(int xx = 0; xx < TileMaster.Grid.Size[0]; xx++)
 		{
 			Tile targ = TileMaster.Tiles[xx, this.y];
-			if(targ == this) continue;
+			if(targ == this || targ == null) continue;
 			int val = (int) ((float)targ.Stats.Value * Multiplier) - targ.Stats.Value;
 				targ.AddValue(val);
 				GameObject part = EffectManager.instance.PlayEffect(targ.transform, "collect", GameData.instance.GetGENUSColour(targ.Genus));

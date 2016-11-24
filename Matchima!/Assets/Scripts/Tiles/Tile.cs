@@ -216,7 +216,7 @@ public class Tile : MonoBehaviour {
 
 		Point = new TilePointContainer(g, x,y,_Scale, this);
 		_Transform = this.transform;
-		_Transform.SetParent(g.Column[x].transform);
+		_Transform.SetParent(g[x].Obj.transform);
 		if(!Info.ShiftOverride) InitStats.Shift = Player.Stats.Shift;
 		else InitStats.Shift = Info.Shift;
 		transform.name = Info.Name + " | " + Point.Base[0] + ":" + Point.Base[1];
@@ -227,7 +227,7 @@ public class Tile : MonoBehaviour {
 	{
 		Point = new TilePointContainer(g, x,y,scale, this);
 		_Transform = this.transform;
-		_Transform.SetParent(g.Column[x].transform);
+		_Transform.SetParent(g[x].Obj.transform);
 		Info = new TileInfo(inf);
 
 		if(Params != null)
@@ -1511,7 +1511,7 @@ public class Tile : MonoBehaviour {
 
 	public void MoveToGridPoint(int x, int y, float arc = 0.0F)
 	{
-		Vector3 newpoint = TileMaster.Grid[x,y].position;
+		Vector3 newpoint = TileMaster.Grid[x,y].Pos;
 		UnlockedFromGrid = true;
 
 		MoveComp.Clear();
@@ -1612,13 +1612,14 @@ public class StatCon
 
 			Level_Required = prev.Level_Required;
 			Level_Current = prev.Level_Current;
-			Level_Multiplier = prev.Level_Multiplier;
-			Level_Increase = prev.Level_Increase;
+			Level_Multiplier = 0.05F; //prev.Level_Multiplier;
+			Level_Increase = 1.0F; //prev.Level_Increase;
 		}
 	}
 
 	public void Add(StatCon prev)
 	{
+		if(prev == null) return;
 		Current += prev.Current;
 		Current_Soft += prev.Current_Soft;
 		Min += prev.Min;
@@ -1697,6 +1698,8 @@ public class StatCon
 			Level_Current = (int)Mathf.Clamp(Level_Current - Level_Required,
 										0, Mathf.Infinity);
 			Level_Required = (int)(Level_Required * (1.0F + Level_Multiplier));
+			Max_Soft += Level_Increase;
+			Max = (int) Max_Soft;
 			Current_Soft += Level_Increase;
 			Current = (int) Current_Soft;
 			total ++;
