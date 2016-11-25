@@ -8,94 +8,383 @@ public class RoomEditor : EditorWindow {
 	[MenuItem("Tools/Room Editor")]
 	static void Init()
 	{
-		RoomEditor window = (RoomEditor)EditorWindow.GetWindow(typeof(RoomEditor));
+		window = (RoomEditor)EditorWindow.GetWindow(typeof(RoomEditor));
 		window.Show();
 	}
 
 	int tab = 0;
+	static RoomEditor window;
+	public Camera m_Cam;
+	private Rect sceneRect, editorRect;
+	private GameData Data;
 
-	void OnGUI()
+	void OnGUI()	
 	{
-		//if(GUI.changed) CheckInfo();
+		if(Data == null)
+		{
+			Data = GameObject.Find("GameManager").GetComponent<GameData>();
+		}
+		if(TargetRoom == null)
+		{
+			ClearPoints();
+			for (int i = 0; i < Selection.objects.Length; i++)
+			{
+				GridInfo inf = (Selection.objects[i] as GameObject).GetComponent<GridInfo>();
+				if(inf != null)
+				{
+					TargetRoom = inf;
+					break;
+				}
+			}
+		}
+		if(m_Cam == null)
+		{
+			m_Cam = GameObject.Find("Room Editor Cam").GetComponent<Camera>();//new GameObject("Room Editor Cam").AddComponent<Camera>();
+			m_Cam.hideFlags = HideFlags.None;
+			//m_Cam.GetComponent("FlareLayer").enabled = false;
+		} 
+		
+
+		if(Event.current.type == EventType.Repaint)
+		{
+			if(window == null) window = (RoomEditor)EditorWindow.GetWindow(typeof(RoomEditor));
+			else editorRect = window.position;
+		}
+
+		EditorGUILayout.BeginVertical();
+			EditorGUILayout.BeginHorizontal();
+				GUILayout.Label("Room Editor", EditorStyles.boldLabel);	
+			EditorGUILayout.EndHorizontal();
+			EditorGUILayout.Space();
+			tab = GUILayout.Toolbar(tab, new string[] {"Basic", "Influences", "Tile"});
+		EditorGUILayout.EndVertical();
 
 		EditorGUILayout.BeginHorizontal();
-		GUILayout.Label("Room Editor", EditorStyles.boldLabel);
+			EditorGUILayout.BeginVertical(GUILayout.MaxWidth(editorRect.width/2));
+			TabMenu(tab);
+			EditorGUILayout.EndVertical();
 
+			GUILayout.FlexibleSpace();
+			EditorGUILayout.BeginVertical(GUILayout.MaxWidth(editorRect.width/2));
+			VisualMenu();
+			EditorGUILayout.EndVertical();
 		EditorGUILayout.EndHorizontal();
-		EditorGUILayout.Space();
+		
+		if(CurrentPoint != null) tab = 2;
+	}
 
-		tab = GUILayout.Toolbar(tab, new string[] {"Basic", "Ignores"});
-
-		//if(TargetInfo == null) return;
-
-		if(tab == 0)
+	void TabMenu(int t)
+	{
+		int indent = EditorGUI.indentLevel;
+		if(t == 0)
 		{
-			EditorGUILayout.BeginHorizontal();
-			TargetInfo.Name = EditorGUILayout.TextField("Room Name: ", TargetInfo.Name, GUILayout.Width(400));
-			GUILayout.Label("Room Index: " + TargetInfo.Index);
-			EditorGUILayout.EndHorizontal();
-			EditorGUILayout.BeginHorizontal();
-
-			IntVector size = new IntVector(TargetInfo.Size);
-			GUILayout.Label("Size:", GUILayout.Width(70));
-			size.x = EditorGUILayout.IntSlider(size.x, 0, 20, GUILayout.Width(200));
-			size.y = EditorGUILayout.IntSlider(size.y, 0, 20, GUILayout.Width(200));
-			if(size.x != TargetInfo.Size.x || size.y != TargetInfo.Size.y)
+			ClearPoints();
+			if(TargetRoom == null)
 			{
-				TargetInfo.Size = new IntVector(size);
+				EditorGUILayout.BeginHorizontal(GUILayout.MaxWidth(editorRect.width/2));
+					TargetInfo.Name = EditorGUILayout.TextField("Name: ", TargetInfo.Name);
+					GUILayout.Label("Index: " + TargetInfo.Index);
+				EditorGUILayout.EndHorizontal();
+				
+				EditorGUILayout.BeginHorizontal(GUILayout.MaxWidth(editorRect.width/2));
+					IntVector size = new IntVector(TargetInfo.Size);
+					GUILayout.Label("Size:", GUILayout.Width(50));
+					size.x = EditorGUILayout.IntSlider(size.x, 0, 20);
+					size.y = EditorGUILayout.IntSlider(size.y, 0, 20);
+					if(size.x != TargetInfo.Size.x || size.y != TargetInfo.Size.y)
+					{
+						TargetInfo.Size = new IntVector(size);
+					}
+				EditorGUILayout.EndHorizontal();
+				EditorGUILayout.Space();
 			}
-
+			else 
+			{
+				EditorGUILayout.BeginHorizontal(GUILayout.MaxWidth(editorRect.width/2));
+					TargetRoom.Info.Name = EditorGUILayout.TextField("Name: ", TargetRoom.Info.Name);
+					GUILayout.Label("Index: " + TargetRoom.Info.Index);
+				EditorGUILayout.EndHorizontal();
+				
+				EditorGUILayout.BeginHorizontal(GUILayout.MaxWidth(editorRect.width/2));
+					IntVector size = new IntVector(TargetRoom.Info.Size);
+					GUILayout.Label("Size:", GUILayout.Width(50));
+					size.x = EditorGUILayout.IntSlider(size.x, 0, 20);
+					size.y = EditorGUILayout.IntSlider(size.y, 0, 20);
+					if(size.x != TargetRoom.Info.Size.x || size.y != TargetRoom.Info.Size.y)
+					{
+						
+						TargetRoom.ChangeGridSizeTo(size);
+					}
+				EditorGUILayout.EndHorizontal();
+				EditorGUILayout.Space();
+			}
+			
+		}
+		else if(t == 1)
+		{
+			ClearPoints();
+			EditorGUILayout.BeginHorizontal(GUILayout.MaxWidth(editorRect.width/2));
+				for(int i = 0; i < TargetInfo.GenusToIgnore.Length; i++)
+				{
+					TargetInfo.GenusToIgnore[i].Active = EditorGUILayout.ToggleLeft(TargetInfo.GenusToIgnore[i].Name, TargetInfo.GenusToIgnore[i].Active, 	GUILayout.	Width(50));
+				}
 			EditorGUILayout.EndHorizontal();
 		}
-		else if(tab == 1)
+		else if(t == 2 && TargetRoom != null)
 		{
-			EditorGUILayout.BeginHorizontal();
-			for(int i = 0; i < TargetInfo.GenusToIgnore.Length; i++)
-			{
-				TargetInfo.GenusToIgnore[i].Active = EditorGUILayout.ToggleLeft(TargetInfo.GenusToIgnore[i].Name, TargetInfo.GenusToIgnore[i].Active, GUILayout.Width(50));
-			}
+			if(CurrentPoint == null) CurrentPoint = PrevPoint;
+			if(CurrentPoint == null) CurrentPoint = TargetRoom[0,0];
+
+			EditorGUILayout.BeginHorizontal(GUILayout.MaxWidth(editorRect.width/2));
+			GUILayout.Label("Point " + (CurrentPoint != null ? CurrentPoint.num.x + ":" + CurrentPoint.num.y : ""), EditorStyles.boldLabel, GUILayout.Width(60));
+			GUILayout.Label("Pos " + CurrentPoint.Pos.x + "x." + CurrentPoint.Pos.y + "y", EditorStyles.boldLabel, GUILayout.Width(100));
+			GUILayout.Label("Tile ", EditorStyles.boldLabel,  GUILayout.Width(60));
+			EditorGUILayout.ObjectField(CurrentPoint._Tile, typeof(Tile), true, GUILayout.Width(100));
 			EditorGUILayout.EndHorizontal();
-			EditorGUILayout.BeginHorizontal();
+
+			EditorGUILayout.Space();
+
+			Rect r = EditorGUILayout.BeginHorizontal(GUILayout.MaxWidth(editorRect.width/2));
+
+				EditorGUILayout.BeginVertical(GUILayout.MaxWidth(editorRect.width/2));
+					bool empty = EditorGUILayout.ToggleLeft("Empty", CurrentPoint.Empty, GUILayout.Width(100));
+					bool infgenus =  EditorGUILayout.ToggleLeft("Room Inf. Genus", CurrentPoint.RoomInfluencedGenus, GUILayout.Width(100));
+					GUILayout.Label("Genus Override", GUILayout.Width(100));
+					GENUS overgenus = (GENUS) EditorGUILayout.EnumPopup(CurrentPoint.GenusOverride, GUILayout.Width(100));
+					if(SelectedPoints.Count > 0)
+					{
+						for(int i = 0; i < SelectedPoints.Count; i++)
+						{
+							SelectedPoints[i].Empty = empty;
+							SelectedPoints[i].RoomInfluencedGenus = infgenus;
+							SelectedPoints[i].GenusOverride = overgenus;
+						}
+					}
+					
+				EditorGUILayout.EndVertical();
+
+				EditorGUILayout.Space();
+
+			EditorGUILayout.EndHorizontal();
+
+			EditorGUILayout.BeginHorizontal(GUILayout.MaxWidth(editorRect.width/2));
+
+				int startspawns = CurrentPoint.HasStartSpawns() ? CurrentPoint.StartSpawns.Length : 0;
+				GUILayout.Label("Start Spawns", GUILayout.Width(100));
+				newspawns = EditorGUILayout.IntField(newspawns, GUILayout.Width(150));
+				if(startspawns != newspawns && newspawns >= 0)
+				{
+					for(int s = 0; s < SelectedPoints.Count; s++)
+					{
+						TileShortInfo [] old = (SelectedPoints[s].HasStartSpawns() ? SelectedPoints[s].StartSpawns : null);
+						
+						SelectedPoints[s].StartSpawns = new TileShortInfo[newspawns];
+						for(int i = 0 ; i < newspawns; i++)
+						{
+							if(old != null && old.Length > i) SelectedPoints[s].StartSpawns[i] = old[i];
+							else SelectedPoints[s].StartSpawns[i] = new TileShortInfo();
+						}
+					}
+					
+				}
 			
 			EditorGUILayout.EndHorizontal();
+
+				if(CurrentPoint.HasStartSpawns())
+				{
+					EditorGUI.indentLevel = 0;
+					
+					for(int i = 0; i < CurrentPoint.StartSpawns.Length; i++)
+					{
+						TileShortInfo ss = CurrentPoint.StartSpawns[i];
+						if(ss.OnGUI())
+						{
+							for(int x = 0; x < SelectedPoints.Count; x++)
+							{
+								if(SelectedPoints[x] == CurrentPoint) continue;
+								SelectedPoints[x].StartSpawns[i] = new TileShortInfo(ss);
+							}
+						}
+
+						
+					}
+				}
+			EditorGUI.indentLevel = indent;	
+
+
+			EditorGUILayout.Space();
+			
 		}
-		
 
 		GUILayout.FlexibleSpace();
-		
 		GUILayout.Label("Room Options", EditorStyles.boldLabel);
 		EditorGUILayout.BeginHorizontal();
 
 		GUI.color = Color.Lerp(Color.green, Color.white, 0.5F);
-		if(GUILayout.Button("Create", GUILayout.Width(170), GUILayout.Height(40)))
+		if(GUILayout.Button("Create", GUILayout.Height(40)))
 		{
 			CreateRoom();
 		}
-		GUI.color = Color.Lerp(Color.blue, Color.white, 0.5F);
-		if(GUILayout.Button("Test", GUILayout.Width(170), GUILayout.Height(40)))
-		{
-			TestRoom();
-		}
-		GUI.color = Color.Lerp(Color.yellow, Color.white, 0.5F);
-		if(GUILayout.Button("Save", GUILayout.Width(170), GUILayout.Height(40)))
+		if(GUILayout.Button("Save", GUILayout.Height(40)))
 		{
 			SaveRoom();
 		}
+		GUI.color = Color.Lerp(Color.blue, Color.white, 0.5F);
+		if(GUILayout.Button("Test", GUILayout.Height(40)))
+		{
+			TestRoom();
+		}
+		if(GUILayout.Button("Play", GUILayout.Height(40)))
+		{
+			PlayRoom();
+		}
+		
 		GUI.color = Color.Lerp(Color.red, Color.white, 0.5F);
-		if(GUILayout.Button("Delete", GUILayout.Width(170), GUILayout.Height(40)))
+		if(GUILayout.Button("Delete", GUILayout.Height(40)))
 		{
 			DestroyRoom();
 		}
 		GUI.color = Color.white;
 		EditorGUILayout.EndHorizontal();
+		EditorGUILayout.Space();
 	}
 
+	void VisualMenu()
+	{
+		float ratio_height = editorRect.height- 150;
+		float ratio_width = (ratio_height/16) * 9;
+
+		Rect r = EditorGUILayout.BeginHorizontal(GUILayout.Height(ratio_height));
+		float offset_x = r.x + 10;
+		float offset_y = r.y;
+
+		if(m_Cam != null)
+		{
+			float screensize = 0.4F + ratio_height / 5000;
+			Rect screen = new Rect(offset_x, offset_y, ratio_width, ratio_height);
+
+				if(Event.current.type == EventType.Repaint)
+				{
+					sceneRect = screen;
+					//m_Cam.pixelRect = sceneRect;
+					//m_Cam.Render();
+					Handles.SetCamera(m_Cam);
+				}
+				
+				bool targeted = false;
+				int tx = 0, ty = 0;
+				if(TargetRoom != null)
+				{
+					Handles.DrawCamera(sceneRect, m_Cam, DrawCameraMode.Normal);
+					for(int x = 0; x < TargetRoom.Size[0]; x++)
+					{
+						for(int y = 0; y < TargetRoom.Size[1]; y++)
+						{
+
+							GridPoint t = TargetRoom[x,y];
+							Vector3 gridpoint = t.Pos;
+							Color targ = Color.Lerp(Color.grey, Color.black, 0.4F);
+
+							if(t == CurrentPoint || SelectedPoints.Contains(t)) targ = Color.white;
+							else if(t.Empty) targ =  Color.Lerp(Color.black, Color.white, 0.05F);
+							else if(t.GenusOverride != GENUS.NONE) 
+							{
+								targ = Data.GetGENUSColour(t.GenusOverride);
+							}
+							//else if(t.HasStartSpawns()) targ = Color.Lerp(Color.red, Color.white, 0.2F);
+
+							float finalhitsize = screensize;
+							float finalsize = screensize;
+							Handles.color = targ;
+							Handles.DrawCapFunction f = Handles.DotCap;
+							if(t.HasStartSpawns()) f = Handles.CircleCap;
+							else if(t.RoomInfluencedGenus)
+							{
+								f = Handles.ArrowCap;
+								finalsize *= 5;
+							} 
+
+							if(Handles.Button(gridpoint, Quaternion.identity, finalsize, finalhitsize, f))
+							{
+								targeted = true;
+								tx = x;
+								ty = y;
+								break;
+							}
+						}
+					}
+
+					if(targeted)
+					{
+						targeted = false;
+
+						if(SelectedPoints.Contains(TargetRoom[tx,ty]))
+						{
+							SelectedPoints.Remove(TargetRoom[tx,ty]);
+							if(CurrentPoint == TargetRoom[tx,ty])
+							{
+								if(SelectedPoints.Count > 0) 
+								{
+									CurrentPoint = SelectedPoints[SelectedPoints.Count-1];
+									newspawns = CurrentPoint.HasStartSpawns() ? CurrentPoint.StartSpawns.Length : 0;
+								}
+								else CurrentPoint = null;
+							}
+						} 
+						else 
+						{
+							if(!group_select) SelectedPoints.Clear();
+
+							AddPoint(TargetRoom[tx,ty]);
+						}
+
+						Repaint();
+					}	
+
+					Event e = Event.current;
+					switch (e.type)
+					 {
+					     case EventType.keyDown:
+					     {
+					         if (Event.current.keyCode == (KeyCode.Q))
+					         {
+					         	bool setempty = !CurrentPoint.Empty;
+					            for(int i = 0; i < SelectedPoints.Count; i++)
+					            {
+					            	SelectedPoints[i].Empty = setempty;
+					            }
+					         }
+					         else if(Event.current.keyCode == (KeyCode.LeftControl)) group_select = true;
+					         break;
+					     }
+					     case EventType.keyUp:
+					     if(Event.current.keyCode == (KeyCode.LeftControl)) group_select = false;
+					     break;
+					 }
+				}				
+		}
+
+
+		EditorGUILayout.EndHorizontal();
+		GUI.backgroundColor = Color.white;
+	}
+
+	void AddPoint(GridPoint g)
+	{
+		CurrentPoint = g;
+		SelectedPoints.Add(g);
+		newspawns = CurrentPoint.HasStartSpawns() ? CurrentPoint.StartSpawns.Length : 0;
+	}
 
 	GameObject RoomObj;
+	GameObject GridObj;
 	void OnEnable()
 	{
-		RoomObj = (GameObject) Resources.Load("RoomObj");
+		if(RoomObj == null) RoomObj = (GameObject) Resources.Load("RoomObj");
+		if(GridObj == null) GridObj = (GameObject) Resources.Load("GridPointObj");
 		if(TargetInfo == null) TargetInfo = new RoomInfo();
+		hideFlags = HideFlags.HideAndDontSave;
+		
 	}
 
 	GridInfo TargetRoom;
@@ -106,23 +395,26 @@ public class RoomEditor : EditorWindow {
 		CheckInfo();
 		//if(TargetInfo == null) TargetInfo = new RoomInfo();
 		TargetRoom = Instantiate(RoomObj).GetComponent<GridInfo>();
+		TargetRoom.GridPointObj = GridObj.GetComponent<GridPoint>();
 		TargetRoom.Setup(TargetInfo);
 		TargetInfo = new RoomInfo();
 		TargetInfo.Size = new IntVector(6,6);
-		TargetRoom.transform.position = new Vector3(26, 0,0);
+		TargetRoom.transform.position = m_Cam.transform.position + m_Cam.transform.forward;
 
 		GameObject [] select = new GameObject[1];
 		select[0] = TargetRoom.transform.gameObject;
 		Selection.objects = select;
 	}
 
-	public void TestRoom()
+	public void PlayRoom()
 	{
-
+		Data.TestRoom = TargetRoom;
+		TargetRoom.SetActive(false);
+		Debug.Log(Data.TestRoom);
+		EditorApplication.ExecuteMenuItem("Edit/Play");
 	}
 
-
-	public void SaveRoom()
+	public void TestRoom()
 	{
 
 	}
@@ -135,11 +427,42 @@ public class RoomEditor : EditorWindow {
 
 	public void CheckInfo()
 	{
-
 		if(TargetRoom != null && TargetInfo != null)
 		{
 			TargetRoom.CompareInfo(TargetInfo);
 		}
+	}
+
+	int newspawns = 0;
+	bool lockinspector;
+	bool group_select = false;
+	IntVector size;
+	
+	private GridPoint CurrentPoint;
+	private GridPoint PrevPoint;
+	
+	private List<GridPoint> SelectedPoints = new List<GridPoint>();
+
+	public void SaveRoom()
+	{
+		CreatePrefab(TargetRoom);
+	}
+
+	static void CreatePrefab (GridInfo r)
+	{
+		GameObject obj = r.transform.gameObject;
+		string name = r.Info.Name;
+	
+		Object prefab = EditorUtility.CreateEmptyPrefab("Assets/Resources/rooms/" + name + ".prefab");
+		EditorUtility.ReplacePrefab(obj, prefab);
+		AssetDatabase.Refresh();
+	}
+
+	public void ClearPoints()
+	{
+		PrevPoint = CurrentPoint;
+		CurrentPoint = null;
+		SelectedPoints.Clear();
 	}
 }
 
@@ -187,124 +510,30 @@ public class GridInfoEditor : Editor
 		SerializedProperty inf = serializedObject.FindProperty("Info");
 		EditorGUILayout.PropertyField(inf, true);
 
-		GUI.color = Color.grey;
-		Rect cr = EditorGUILayout.BeginVertical(EditorStyles.helpBox, GUILayout.Height(200));
-		GUI.color = Color.white;
-
-		EditorGUILayout.BeginHorizontal();
-		GUILayout.Label("Target Point - " + (CurrentPoint != null ? CurrentPoint.num.x + ":" + CurrentPoint.num.y : ""), EditorStyles.boldLabel, GUILayout.Width(150));
-
-		if(CurrentPoint != null) 
-		{
-			EditorGUILayout.Vector3Field("", CurrentPoint.Pos, GUILayout.Width(200));
-			EditorGUILayout.EndHorizontal();
-
-			EditorGUILayout.Space();
-
-			EditorGUILayout.BeginHorizontal();
-			CurrentPoint.Empty = EditorGUILayout.ToggleLeft("Empty", CurrentPoint.Empty, GUILayout.Width(100));
-			CurrentPoint.RoomInfluencedGenus = EditorGUILayout.ToggleLeft("Room Inf. Genus", CurrentPoint.RoomInfluencedGenus, GUILayout.Width(100));
-			GUILayout.Label("Genus Override", GUILayout.Width(100));
-			CurrentPoint.GenusOverride = (GENUS) EditorGUILayout.EnumPopup(CurrentPoint.GenusOverride, GUILayout.Width(100));
-			EditorGUILayout.EndHorizontal();
-
-			EditorGUILayout.Space();
-
-			EditorGUILayout.BeginHorizontal();
-			GUILayout.Label("Tile: ", GUILayout.Width(100));
-			EditorGUILayout.ObjectField(CurrentPoint._Tile, typeof(Tile), true, GUILayout.Width(150));
-			EditorGUILayout.EndHorizontal();
-
-			EditorGUILayout.Space();
-			EditorGUILayout.BeginHorizontal();
-			int startspawns = CurrentPoint.HasStartSpawns() ? CurrentPoint.StartSpawns.Length : 0;
-			GUILayout.Label("Start Spawns", GUILayout.Width(100));
-			newspawns = EditorGUILayout.IntField(newspawns, GUILayout.Width(150));
-			if(startspawns != newspawns && newspawns >= 0)
-			{
-				TileShortInfo [] old = CurrentPoint.StartSpawns;
-
-				CurrentPoint.StartSpawns = new TileShortInfo[newspawns];
-				for(int i = 0 ; i < newspawns; i++)
-				{
-					if(old != null && old.Length > i) CurrentPoint.StartSpawns[i] = old[i];
-					else CurrentPoint.StartSpawns[i] = new TileShortInfo();
-				}
-				return;
-			}
-			EditorGUILayout.EndHorizontal();
-
-			if(CurrentPoint.HasStartSpawns())
-			{
-				EditorGUI.indentLevel = indent + 2;
-				
-				for(int i = 0; i < CurrentPoint.StartSpawns.Length; i++)
-				{
-					TileShortInfo ss = CurrentPoint.StartSpawns[0];
-					
-					//ss.OnGUI();
-
-					/*EditorGUILayout.BeginHorizontal();
-					GUILayout.Label("Start ", GUILayout.Width(70));
-					ss._Type = EditorGUILayout.TextField("", ss._Type, GUILayout.Width(150));
-					ss._Genus = (GENUS) EditorGUILayout.EnumPopup(ss._Genus, GUILayout.Width(100));
-
-					Vector2 value = ss._Value.ToVector2;
-					GUILayout.Label("Value:", GUILayout.Width(70));
-					value = EditorGUILayout.Vector2Field("", value, GUILayout.Width(200));
-					ss._Value = new IntVector(value);
-
-					EditorGUILayout.EndHorizontal();*/
-				}
-			}
-			EditorGUI.indentLevel = indent;	
-		}
-		else EditorGUILayout.EndHorizontal();
-		
-		EditorGUILayout.EndVertical();
-
 		serializedObject.ApplyModifiedProperties();
 
 		GUILayout.FlexibleSpace();
-		EditorGUILayout.BeginHorizontal();
-		GUI.color = Color.Lerp(Color.blue, Color.white, 0.5F);
-		if(GUILayout.Button("Test", GUILayout.Width(170), GUILayout.Height(40)))
-		{
-			TestRoom();
-		}
-		GUI.color = Color.Lerp(Color.yellow, Color.white, 0.5F);
-		if(GUILayout.Button("Save", GUILayout.Width(170), GUILayout.Height(40)))
-		{
-			SaveRoom();
-		}
-		EditorGUILayout.EndHorizontal();
 
-
-		if(GUI.changed)
-		{
-			for(int i = 0; i < SelectedPoints.Count; i++)
-			{
-				SelectedPoints[i].SetInfo(CurrentPoint);
-			}
-		}
 	//	DrawDefaultInspector();
 	}
 
 	GridPoint CurrentPoint;
 	//SerializedObject CurrentPoint_Obj;
-	public void OnSceneGUI()
+	/*public void OnSceneGUI()
 	{
 		GridInfo grid = target as GridInfo;
 		Transform trans = grid.transform;
-
 		if(grid == null) return;
+
 		int tx = 0, ty = 0;
 		bool targeted = false;
+
 		for(int x = 0; x < grid.Size[0]; x++)
 		{
 			for(int y = 0; y < grid.Size[1]; y++)
 			{
 				Vector3 gridpoint = grid[x,y].Pos;
+
 				Color targ = Color.Lerp(Color.blue, Color.white, 0.2F);
 				if(grid[x,y] == CurrentPoint || SelectedPoints.Contains(grid[x,y])) targ =  Color.Lerp(Color.green, Color.white, 0.2F);
 				else if(grid[x,y].Empty) targ =  Color.Lerp(Color.black, Color.white, 0.05F);
@@ -372,7 +601,7 @@ public class GridInfoEditor : Editor
 		hideFlags = HideFlags.HideAndDontSave;
 	}
 
-	public void TestRoom()
+	public void PlayRoom()
 	{
 
 	}
@@ -390,6 +619,6 @@ public class GridInfoEditor : Editor
 		Object prefab = EditorUtility.CreateEmptyPrefab("Assets/Resources/rooms/" + name + ".prefab");
 		EditorUtility.ReplacePrefab(obj, prefab);
 		AssetDatabase.Refresh();
-	}
+	}*/
 }
 

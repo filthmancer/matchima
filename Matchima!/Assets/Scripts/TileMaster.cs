@@ -578,11 +578,6 @@ public class TileMaster : MonoBehaviour {
 		if (level != null) //If loading a GridInfo file
 		{
 			MapSize = new Vector2(level.Size[0],  level.Size[1]);
-
-			bool evenX = MapSize[0] % 2 == 0;
-			bool evenY = MapSize[1] % 2 == 0;
-			float tileBufferX_offset = (float)(evenX ? (1.0F + tileBufferX) / 2 : 0);
-			float tileBufferY_offset = (float)(evenY ? (1.0F + tileBufferY) / 2 : 0);
 			final = (GridInfo) Instantiate(RoomObj);//new GridInfo(offset);
 			final.Setup(offset, level);
 		}
@@ -594,14 +589,10 @@ public class TileMaster : MonoBehaviour {
 				MapSize += Utility.RandomVector2(2,3) + Utility.RandomVector2(-1, 0);
 			}
 
-			bool evenX = MapSize[0] % 2 == 0;
-			bool evenY = MapSize[1] % 2 == 0;
-			float tileBufferX_offset = (float)(evenX ? (1.0F + tileBufferX) / 2 : 0);
-			float tileBufferY_offset = (float)(evenY ? (1.0F + tileBufferY) / 2 : 0);
-
 			final = (GridInfo) Instantiate(RoomObj);//new GridInfo(offset);
 			final.Setup(offset, MapSize);
 		}
+
 
 		if(populate)
 		{
@@ -651,8 +642,6 @@ public class TileMaster : MonoBehaviour {
 		{
 			for (int yy = 0; yy < final.Size[1]; yy++)
 			{
-				//if (final[xx, yy].Info != null) CreateTile(final, xx, yy, Vector2.zero, final[xx, yy].Info);
-				//else 
 				if(final[xx,yy].HasStartSpawns()) 
 				{
 					string type = final[xx,yy].StartSpawns[0]._Type;
@@ -808,6 +797,7 @@ public class TileMaster : MonoBehaviour {
 			IntVector realdir = new IntVector(	(spos.x > 0 ? (spos.x > 0.5F ? 1 : 0) : -1),
 												(spos.y > 0 ? (spos.y > 0.5F ? 1 : 0) : -1));
 			stairs[i].SetDirection(realdir);
+			stairs[i].ChangeGenus(GENUS.OMG);
 			positions.RemoveAt(snum);
 		}
 

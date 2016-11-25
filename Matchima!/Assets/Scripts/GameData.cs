@@ -48,6 +48,8 @@ public class GameData : MonoBehaviour {
 	public static Wave [] _Waves;
 	public static Ability [] _Abilities;
 	public static Status [] _Status;
+
+
 	public ItemInfo [] _Icons;
 
 	public ZoneMapContainer StoryModeMap, EndlessModeMap, DeepModeMap;
@@ -55,6 +57,8 @@ public class GameData : MonoBehaviour {
 	public bool ModeUnlocked_Endless, ModeUnlocked_Quick, ModeUnlocked_Deep;
 
 	public GridInfo [] Rooms;
+	public GridInfo TestRoom;
+
 	public GameObject WaveParent;
 	public GameObject AbilityParent;
 	public GameObject TileEffectParent;

@@ -308,7 +308,7 @@ public class PlayerControl : MonoBehaviour {
 			{
 				tooltip_current = 0.0F;
 				tooltip_showing = false;
-				UIManager.instance.ShowGearTooltip(false);
+				//UIManager.instance.ShowGearTooltip(false);
 				focusTile.Reset(true);
 				ResetSelected();
 			}

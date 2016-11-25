@@ -102,6 +102,9 @@ public class UIManager : MonoBehaviour {
 		if(MeterTimer <= 0.0F) CashMeterPoints();
 		else if(IsShowingMeters && StartedMeter) MeterTimer -= Time.deltaTime;
 
+		if(Tooltip_timer > 0.0F) Tooltip_timer -= Time.deltaTime;
+		else HideTargetTile();
+
 		if(Time.time > update_interval_current)
 		{
 			update_interval_current = Time.time + (Time.deltaTime * update_interval_amount);
@@ -258,26 +261,44 @@ public class UIManager : MonoBehaviour {
 		obj.Imgtk[0].SetSprite(TileMaster.Genus.Frames, outer_def);
 	}
 	
-	
+	private float Tooltip_timer = 0.0F;
+	private float Tooltip_timer_hero = 2.2F, Tooltip_timer_normal = 1.4F;
+	private bool Tooltip_timer_active;
+	void StartTargetTileTimer(bool hero)
+	{
+		Tooltip_timer = hero ? Tooltip_timer_hero : Tooltip_timer_normal;
+		Tooltip_timer_active = true;
+	}
+
+	void HideTargetTile()
+	{
+		if(!Tooltip_timer_active) return;
+		Tooltip_timer_active = false;
+		Tooltip_Target = null;
+		Tooltip_Parent.Imgtk[0].transform.gameObject.SetActive(false);
+		Tooltip_Parent.Imgtk[1].SetSprite(TileMaster.Genus.Frames, "Omega");
+		Tooltip_Parent.Imgtk[2].color = GameData.Colour(GENUS.OMG);
+		for(int i = 0; i < Tooltip_Parent.Length; i++) Tooltip_Parent[i].SetActive(false);
+	}
 	public Tile Tooltip_Target;
 	public UIObjtk Tooltip_Parent;
 	public UIObj Tooltip_DescObj;
 	public void TargetTile(Tile t = null)
 	{
-		if(Tooltip_Target == t && t != null) return;
+		if(Tooltip_Target == t && t != null) 
+		{
+			StartTargetTileTimer(Tooltip_Target is Hero);
+			return;
+		}
+
 		Tooltip_Target = t;
 
 		if(Tooltip_Target == null)
 		{
-			Tooltip_Parent.Imgtk[0].transform.gameObject.SetActive(false);//SetSprite(Tooltip_Target.Inner, Tooltip_Target.Info._GenusName);
-			Tooltip_Parent.Imgtk[1].SetSprite(TileMaster.Genus.Frames, "Omega");
-			Tooltip_Parent.Imgtk[2].color = GameData.Colour(GENUS.OMG);
-			for(int i = 0; i < Tooltip_Parent.Length; i++) Tooltip_Parent[i].SetActive(false);
 			return;
 		}
 
 		ShowControllerUI(false);
-
 		Tooltip_Target.CheckStats();
 
 	//Set the sprites of the tile
@@ -357,7 +378,9 @@ public class UIManager : MonoBehaviour {
 	public void CreateControllerUI()
 	{
 		Tooltip_Parent.ClearActions();
-		Tooltip_Parent.AddAction(UIAction.MouseUp, ()=>{ShowControllerUI();});
+		Tooltip_Parent.AddAction(UIAction.MouseUp, ()=>{
+			if(!CheckTargetTile()) ShowControllerUI();
+			});
 		if(Controller_Parent.Length != 0)
 		{
 			Controller_Parent.DestroyChildren();
@@ -410,13 +433,24 @@ public class UIManager : MonoBehaviour {
 		Tooltip_Parent.SetTween(0, active);
 	}
 
+	public bool CheckTargetTile()
+	{
+		if(Tooltip_Target is Hero) 
+		{
+			if((Tooltip_Target as Hero).CastSpell())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 	public bool ShowControllerUI(bool? active = null)
 	{
 		bool initial = Controller_Parent.GetTween(0);
 		Controller_Parent.SetTween(0, active);
 		bool actual = active ?? !initial;
-		
-		if(actual) TargetTile(null);
+
+		if(actual) HideTargetTile();
 		//(CrewButton as UIObjtk).Imgtk[2].gameObject.SetActive(!actual);
 		//(CrewButton as UIObjtk).Imgtk[1].gameObject.SetActive(actual);
 		return initial;
@@ -906,7 +940,7 @@ public class UIManager : MonoBehaviour {
 	{
 		if(!active) 
 		{
-			TargetTile();
+			HideTargetTile();
 			return;
 		}
 			uitarget = null;

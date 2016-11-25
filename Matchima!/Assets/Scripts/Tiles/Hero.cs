@@ -56,6 +56,16 @@ public class Hero : Tile {
 		SetSprite();
 	}
 
+	public bool CastSpell()
+	{
+		if(_Class.MeterLvl > 0)
+		{
+			StartCoroutine(_Class.UseManaPower());
+			return true;
+		}
+		return false;
+	}
+
 	public override void SetSprite()
 	{
 		if(_Class == null) return;
@@ -101,6 +111,56 @@ public class Hero : Tile {
 		if(lvl > 0) 
 		{
 			MiniAlertUI a = UIManager.instance.MiniAlert(transform.position, GameData.Stat(g) + "+" + lvl, 40, GameData.Colour(g), 0.85F,0.04F);
+		}
+	}
+
+	public override IEnumerator TakeTurnDamage()
+	{
+		CheckStats();
+		int fullhit = 0;
+
+		fullhit += Stats.TurnDamage;
+
+		InitStats.TurnDamage = 0;
+		InitStats._Hits.Current -= fullhit;
+		CheckStats();
+
+		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+		Player.instance.OnTileMatch(this);
+		if(Stats._Hits.Current <= 0)
+		{
+			StartDeathTimer();
+			PlayAudio("death");
+		}
+	}
+
+	public override IEnumerator AfterTurnRoutine()
+	{
+		CheckDeathTimer();
+		if(isKilled) yield break;
+		yield return StartCoroutine(base.AfterTurnRoutine());
+	}
+
+
+	GENUS Death_PreGenus;
+	int Death_Time = 0;
+	bool isKilled = false;
+
+	public void StartDeathTimer()
+	{
+		Death_Time = 3;
+		isKilled = true;
+		Death_PreGenus = Genus;
+		ChangeGenus(GENUS.OMG);
+	}
+
+	public void CheckDeathTimer()
+	{
+		if(Death_Time > 0) Death_Time--;
+		if(Death_Time <= 0 && isKilled)
+		{
+			isKilled = false;
+			ChangeGenus(Death_PreGenus);
 		}
 	}
 }

@@ -142,6 +142,7 @@ public class GameManager : MonoBehaviour {
 #region Generics/Cheats
 	void OnApplicationQuit()
 		{
+			GameData.instance.TestRoom = null;
 			//GameData.instance.Save();
 			//PlayerPrefs.SetInt("PlayerLevel", Player.Level.Level);
 			//PlayerPrefs.SetInt("PlayerXP", Player.Level.XP_Current);
@@ -156,6 +157,7 @@ public class GameManager : MonoBehaviour {
 	
 		void OnApplicationPause()
 		{
+			GameData.instance.TestRoom = null;
 			//GameData.instance.Save();
 			//PlayerPrefs.SetInt("PlayerLevel", Player.Level.Level);
 			//PlayerPrefs.SetInt("PlayerXP", Player.Level.XP_Current);
@@ -185,7 +187,6 @@ public class GameManager : MonoBehaviour {
 		// Use this for initialization
 		void Start () {
 			QualitySettings.vSyncCount = 0;
-			
 			if(!Application.isMobilePlatform)
 			{
 				Screen.SetResolution(525,830, false);
@@ -208,6 +209,7 @@ public class GameManager : MonoBehaviour {
 	
 			inStartMenu = true;
 			TuteActive = false;	
+			print(GameData.instance.TestRoom);
 			StartCoroutine(GameData.instance.LoadInitialData());
 		}
 		
@@ -391,8 +393,7 @@ public GridInfo TestRoom;
 		}
 
 		UIManager.instance.LoadText.gameObject.SetActive(false);
-
-		yield return StartCoroutine(TileMaster.instance.MoveToRoom(new IntVector(0,0)));
+		yield return StartCoroutine(TileMaster.instance.MoveToRoom(new IntVector(0,0), GameData.instance.TestRoom));
 		gameStart = true;
 		
 		Resources.UnloadUnusedAssets();
@@ -972,6 +973,7 @@ public GridInfo TestRoom;
 			{
 				Tile t = TileMaster.instance.ReplaceTile(TileMaster.Tiles[c,0], TileMaster.Types["hero"], GENUS.ALL,1, 50);
 				(t as Hero).SetClass(Player.Classes[i]);
+				t.ChangeGenus(GENUS.ALL);
 				c++;
 			}
 		}

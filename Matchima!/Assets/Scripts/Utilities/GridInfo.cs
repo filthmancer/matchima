@@ -87,7 +87,7 @@ public class GridInfo : MonoBehaviour{
 		}
 		GridParent = this.gameObject;
 		GridParent.transform.name = inf.Name;
-
+		//GridParent.transform.position = Info.Position;
 		GridParent.transform.SetParent(inf.Parent);
 		//Points = new GridPoint[Size.x,  Size.y];
 		TilePoints = new GameObject[Size.x];
@@ -97,21 +97,24 @@ public class GridInfo : MonoBehaviour{
 
 		if(pointParent == null) pointParent = new GameObject("Points");
 		pointParent.transform.parent = GridParent.transform;
-		pointParent.transform.position = Info.Position;
+		pointParent.transform.localPosition = Info.Position + new Vector3(bufferX, bufferY, 0);
 		if(tileParent == null) tileParent = new GameObject("Tiles");
 		tileParent.transform.parent = GridParent.transform;
-		tileParent.transform.position = Info.Position;
+		tileParent.transform.localPosition = Info.Position + new Vector3(bufferX, bufferY, 0);
 
 		Grid = new GridColumn[Size.x];
+
+		float x_offset = (-Size.x * (1.0F+bufferX))/2.0F;
 		for(int xx = 0; xx < Size.x;xx++)
 		{
 			GameObject column = new GameObject("Point Column " + xx);
-			column.transform.position += new Vector3(xx * (1+bufferX), 0,0);
 			column.transform.parent = pointParent.transform;
-
+			column.transform.localPosition = new Vector3(x_offset + xx * (1+bufferX), 0,0);
+			
 			TilePoints[xx] = new GameObject("Tile Column " + xx);
-			TilePoints[xx].transform.position += new Vector3(xx * (1+bufferX), 0,0);
 			TilePoints[xx].transform.parent =  tileParent.transform;
+			TilePoints[xx].transform.localPosition = new Vector3(x_offset + xx * (1+bufferX), 0,0);
+			
 
 			Grid[xx] = new GridColumn(Size.y, column);
 			for(int yy = 0; yy < Size.y;yy++)
@@ -223,36 +226,43 @@ public class GridInfo : MonoBehaviour{
 		}
 
 		GridParent = this.gameObject;
-		GridParent.transform.name = "Room";
+		Info = new RoomInfo(info.Info);
+		
+		GridParent.transform.name = Info.Name;
 		if(TileMaster.instance != null) GridPointObj = TileMaster.instance.GridPointObj;
 		Transform master = TileMaster.instance.transform;
 		if(master == null) master = GameObject.Find("TileMaster").transform;
 		if(master == null) master = this.transform;
-
-
 		GridParent.transform.SetParent(master.transform);
+		
+
+		GridParent.transform.position = Offset;
 
 		Info.Size = new IntVector(info.Size); //new int [2] {(int)_size.x, (int)_size.y};
 		//Points = new GridPoint[Size.x,  Size.y];
 		TilePoints = new GameObject[Size.x];
 
 		float bufferX = TileMaster.TileBuffer_X;
-				float bufferY = TileMaster.TileBuffer_Y;
+		float bufferY = TileMaster.TileBuffer_Y;
 
 		if(pointParent == null) pointParent = new GameObject("Points");
 		pointParent.transform.parent = GridParent.transform;
+		pointParent.transform.localPosition = new Vector3(0, 0, 0);
 		if(tileParent == null) tileParent = new GameObject("Tiles");
 		tileParent.transform.parent = GridParent.transform;
+		tileParent.transform.localPosition = Info.Position + new Vector3(0, 0, 0);
+
 		Grid = new GridColumn[Size.x];
+		float x_offset = (-Size.x * (1.0F+bufferX))/2.0F;
 		for(int xx = 0; xx < Size.x;xx++)
 		{
-			GameObject column = new GameObject("Column " + xx);
-			column.transform.position += new Vector3(xx * (1+bufferX), 0,0);
-			column.transform.parent = tileParent.transform;
-
-			TilePoints[xx] = new GameObject("Column " + xx);
-			TilePoints[xx].transform.position += new Vector3(xx * (1+bufferX), 0,0);
-			TilePoints[xx].transform.parent =  pointParent.transform;
+			GameObject column = new GameObject("Point Column " + xx);
+			column.transform.parent = pointParent.transform;
+			column.transform.localPosition = new Vector3(x_offset + xx * (1+bufferX), 0,0);
+			
+			TilePoints[xx] = new GameObject("Tile Column " + xx);
+			TilePoints[xx].transform.parent =  tileParent.transform;
+			TilePoints[xx].transform.localPosition = new Vector3(x_offset + xx * (1+bufferX), 0,0);
 
 			Grid[xx] = new GridColumn(Size.y, column);
 			for(int yy = 0; yy < Size.y;yy++)
@@ -263,6 +273,7 @@ public class GridInfo : MonoBehaviour{
 		}
 	}
 
+	bool add_to_left = false;
 	public void ChangeGridSizeTo(IntVector _size)
 	{
 		if(_size.x == 0 || _size.y == 0) return;
@@ -274,25 +285,32 @@ public class GridInfo : MonoBehaviour{
 		
 		GridColumn [] newcolumns = new GridColumn[_size.x];
 		GameObject [] newtiles = new GameObject[_size.x];
+
+		float x_offset = (-_size.x * (1.0F+bufferX))/2.0F;
+
 		for(int c = 0; c < newcolumns.Length; c++)
 		{
-			if(Grid.Length > c) 
+			if(c < Grid.Length) 
 			{
 				newcolumns[c] = new GridColumn(_size.y, Grid[c].Obj);
 				newcolumns[c].Obj.transform.SetParent(pointParent.transform);
+				newcolumns[c].Obj.transform.localPosition = new Vector3(x_offset + c * (1+bufferX), 0,0);
+				newcolumns[c].Obj.transform.name = "Point Column " + c;
 				newtiles[c] = TilePoints[c];
 				newtiles[c].transform.SetParent(tileParent.transform);
+				newtiles[c].transform.localPosition = new Vector3(x_offset + c * (1+bufferX), 0,0);
+				newtiles[c].transform.name = "Tile Column " + c;
 			}
 			else
 			{
 				GameObject col = new GameObject("Point Column " + c);
-				col.transform.position += new Vector3(c * (1+bufferX), 0,0);
 				col.transform.SetParent(pointParent.transform);
+				col.transform.localPosition = new Vector3(x_offset + c * (1+bufferX), 0,0);
 				newcolumns[c] = new GridColumn(_size.y, col);
 
 				GameObject t = new GameObject("Tile Column " + c);
-				t.transform.position += new Vector3(c * (1+bufferX), 0,0);
 				t.transform.SetParent(tileParent.transform);
+				t.transform.localPosition = new Vector3(x_offset + c * (1+bufferX), 0,0);
 				newtiles[c] = t;
 			} 
 		}
@@ -300,18 +318,21 @@ public class GridInfo : MonoBehaviour{
 		for(int x = 0; x < newcolumns.Length; x++)
 		{
 			for(int y = 0; y < newcolumns[0].Length; y++){
-
-				if(Grid.Length > x && Grid[0].Length > y)
+				if(x < Grid.Length && Grid[0].Length > y)
 				{
 					newcolumns[x][y] = this[x,y];
 				}
 				else 
 				{
-
 					newcolumns[x][y] = CreatePoint(x,y, _size);
 				}
 
+				float posx = -_size.x/2 * (1+bufferX) + (x*(1+bufferX));
+				float posy = -_size.y/2 * (1+bufferY) + (y*(1+bufferY));
+				Vector3 position = new Vector3(0.0F,  posy + bufferY, 0);
+
 				newcolumns[x][y].transform.SetParent(newcolumns[x].Obj.transform);
+				newcolumns[x][y].transform.localPosition = position;
 			}
 		}
 
@@ -472,14 +493,14 @@ public class GridInfo : MonoBehaviour{
 		float bufferX = TileMaster.TileBuffer_X;
 		float bufferY = TileMaster.TileBuffer_Y;
 
-		float posx =  (1+bufferX) + (x*(1+bufferX));//((float)-s.x/2 *
-		float posy =  (1+bufferY) + (y*(1+bufferY));//((float)-s.y/2 *
+		float posx = -s.x/2 * (1+bufferX) + (x*(1+bufferX));//((float)-s.x/2 *
+		float posy = -s.y/2 * (1+bufferY) + (y*(1+bufferY));//((float)-s.y/2 *
 		
-		Vector3 position = Offset + new Vector3(posx + bufferX,  posy + bufferY, 0);
+		Vector3 position = new Vector3(0.0F,  posy + bufferY, 0);
 
 		GridPoint p = (GridPoint) Instantiate(GridPointObj);
-		p.transform.position = position;
 		if(Grid.Length > x) p.transform.parent = Grid[x].Obj.transform;
+		p.transform.localPosition = position;
 		p.Setup(x,y);
 		return p;
 	}

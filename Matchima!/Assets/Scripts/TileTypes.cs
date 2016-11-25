@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-//using UnityEditor;
+using UnityEditor;
 using System;
 
 public enum GENUS 
@@ -715,20 +715,36 @@ public class TileShortInfo
 	 	Params = new string[0];
 	}
 
-	/*public void OnGUI()
+	public TileShortInfo(TileShortInfo t)
 	{
-		EditorGUILayout.BeginHorizontal();
-		GUILayout.Label("Start ", GUILayout.Width(70));
-		_Type = EditorGUILayout.TextField("", _Type, GUILayout.Width(150));
-		_Genus = (GENUS) EditorGUILayout.EnumPopup(_Genus, GUILayout.Width(100));
+		_Type = t._Type;
+		_Genus = t._Genus;
+		_Value = new IntVector(t._Value);
+		Params = t.Params;
+	}
 
-		Vector2 value = _Value.ToVector2;
-		GUILayout.Label("Value:", GUILayout.Width(70));
-		value = EditorGUILayout.Vector2Field("", value, GUILayout.Width(200));
-		_Value = new IntVector(value);
+	public bool OnGUI()
+	{
+		bool change = false;
+		EditorGUILayout.BeginHorizontal();
+		string t = EditorGUILayout.TextField("", _Type, GUILayout.Width(100));
+		if(t != _Type) change = true;
+		_Type = t;
+
+		GENUS g = (GENUS) EditorGUILayout.EnumPopup(_Genus, GUILayout.Width(90));
+		if(g != _Genus) change = true;
+		_Genus = g;
+
+		GUILayout.Label("Value:", GUILayout.Width(40));
+		IntVector v = new IntVector(_Value);
+		v.x = EditorGUILayout.IntField("", v.x, GUILayout.Width(70));
+		v.y = EditorGUILayout.IntField("", v.y, GUILayout.Width(70));
+		if(v.x != _Value.x || v.y != _Value.y) change = true;
+		_Value = new IntVector(v);
 
 		EditorGUILayout.EndHorizontal();
-	}*/
+		return change;
+	}
 }
 
 

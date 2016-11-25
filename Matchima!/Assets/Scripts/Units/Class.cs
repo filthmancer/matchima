@@ -671,12 +671,11 @@ public class Class : Unit {
 		if(UsingManaPower) yield break;
 		UsingManaPower = true;
 
-
 		UIManager.instance.ScreenAlert.SetTween(0,true);
 		int lvl = Mathf.Clamp(MeterLvl, 0, 2);
 		yield return StartCoroutine(PowerupSpell.Activate(lvl));
 		yield return StartCoroutine(PowerDown());
-		yield return StartCoroutine(LevelUp(lvl));
+		//yield return StartCoroutine(LevelUp(lvl));
 
 		GameManager.instance.paused = false;
 		UIManager.instance.ScreenAlert.SetTween(0,false);
