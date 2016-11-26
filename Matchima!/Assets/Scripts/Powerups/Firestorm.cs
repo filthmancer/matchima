@@ -52,7 +52,7 @@ public class Firestorm : Powerup {
 		}
 
 
-		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.up*0.5F, "Tap to cast\nfirestorm!", 100, GameData.Colour(Parent.Genus), 0.8F, 0.25F);
+		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MainUI.transform.position + Vector3.up*0.5F, "Tap to cast\nfirestorm!", 100, GameData.Colour(Parent.Genus), 0.8F, 0.25F);
 		m.DestroyOnEnd = false;
 		while(!Input.GetMouseButtonDown(0))
 		{
@@ -103,7 +103,7 @@ public class Firestorm : Powerup {
 		obj.Img[0].enabled= true;
 		obj.Img[1].enabled= false;
 		RectTransform rect = obj.GetComponent<RectTransform>();
-		obj.transform.SetParent(UIManager.Objects.MiddleGear.transform);
+		obj.transform.SetParent(UIManager.Objects.MainUI.transform);
 		obj.transform.localScale = Vector3.one;
 		rect.sizeDelta = Vector2.one;
 		rect.anchoredPosition = Vector2.zero;

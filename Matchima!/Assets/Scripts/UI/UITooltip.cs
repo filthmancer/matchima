@@ -362,7 +362,7 @@ public class UITooltip : MonoBehaviour {
        // Damage.transform.position = Vector3.Lerp(Damage.transform.position, dpos, Time.deltaTime * 15);
        	// Determine which corner of the screen is closest to the mouse position
 		
-       //if(GameManager.instance.isPaused || Player.Stats.isKilled || GameManager.instance.EnemyTurn || GameManager.instance.WaveAlert || UIManager.InMenu) 
+       //if(GameManager.instance.isPaused || Player.Stats.isKilled || GameManager.instance.BotTeamTurn || GameManager.instance.WaveAlert || UIManager.InMenu) 
        //{
        //	Damage.Txt[0].text = "";
        //	Damage.SetActive(false);

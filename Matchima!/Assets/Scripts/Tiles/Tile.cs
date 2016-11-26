@@ -291,7 +291,7 @@ public class Tile : MonoBehaviour {
 		SetSprite();
 		ClearActions();
 
-		if(GameManager.instance.EnemyTurn) SetState(TileState.Locked);
+		if(GameManager.instance.BotTeamTurn) SetState(TileState.Locked);
 		else SetState(TileState.Idle);
 	}
 
@@ -359,7 +359,7 @@ public class Tile : MonoBehaviour {
 		
 		if(!IsState(TileState.Selected))
 		{
-			if(GameManager.instance.EnemyTurn) return;
+			if(GameManager.instance.BotTeamTurn) return;
 			bool hascontrol = PlayerControl.instance.Controller != null;
 			bool controlgenus = IsGenus(PlayerControl.instance.Controller_Genus);
 			if(PlayerControl.instance.focusTile == this)
@@ -885,6 +885,7 @@ public class Tile : MonoBehaviour {
 	}
 
 	public virtual bool CanAttack() {return !AttackedThisTurn && Stats.Attack > 0;}
+	public virtual bool CanBeAttacked() {return Genus != GENUS.OMG;}
 	public virtual int GetAttack() {return Mathf.Max(Stats.Attack, 0);}
 	public virtual int GetHealth() {return Mathf.Max(Stats._Hits.Current,0);}
 	public virtual void Stun(int Stun){}
@@ -1185,10 +1186,17 @@ public class Tile : MonoBehaviour {
 
 	public virtual IEnumerator AttackRoutine()
 	{
-		Tile [] targ = Point.GetNeighbours(false, "hero");
-		if(targ.Length > 0)
+		List<Tile> targ = new List<Tile>();
+		targ.AddRange(Point.GetNeighbours(false, "hero"));
+
+		for(int i = 0; i < targ.Count; i++) 
 		{
-			Tile targ_final = targ[UnityEngine.Random.Range(0, targ.Length)];
+			if(!targ[i].CanBeAttacked()) targ.RemoveAt(i);
+		}
+
+		if(targ.Count > 0)
+		{
+			Tile targ_final = targ[UnityEngine.Random.Range(0, targ.Count)];
 			SetState(TileState.Selected);
 			OnAttack();
 			yield return StartCoroutine(Animate("Attack", 0.05F));
@@ -1612,8 +1620,8 @@ public class StatCon
 
 			Level_Required = prev.Level_Required;
 			Level_Current = prev.Level_Current;
-			Level_Multiplier = 0.05F; //prev.Level_Multiplier;
-			Level_Increase = 1.0F; //prev.Level_Increase;
+			Level_Multiplier = prev.Level_Multiplier;
+			Level_Increase = prev.Level_Increase;
 		}
 	}
 
@@ -1692,12 +1700,18 @@ public class StatCon
 	{
 		int total = 0;
 		Level_Current += input;
-		if(Level_Required == 0) Level_Required = 10;
+		if(Level_Required == 0) 
+		{
+			Level_Required = 10;
+			Level_Increase = 1.0F;
+			Level_Multiplier = 0.09F;
+		}
 		while(Level_Current >= Level_Required)
 		{
 			Level_Current = (int)Mathf.Clamp(Level_Current - Level_Required,
 										0, Mathf.Infinity);
 			Level_Required = (int)(Level_Required * (1.0F + Level_Multiplier));
+			Debug.Log(Level_Increase);
 			Max_Soft += Level_Increase;
 			Max = (int) Max_Soft;
 			Current_Soft += Level_Increase;

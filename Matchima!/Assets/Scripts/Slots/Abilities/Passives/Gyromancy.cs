@@ -22,7 +22,7 @@ public class Gyromancy : Ability {
 	public override void Update()
 	{
 
-		if(GameManager.instance.EnemyTurn || TileMaster.AllLanded) return;
+		if(GameManager.instance.BotTeamTurn || TileMaster.AllLanded) return;
 		if(Application.isMobilePlatform) 
 		{
 			Vector3 acc = Input.acceleration;

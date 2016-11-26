@@ -94,7 +94,7 @@ public class GameManager : MonoBehaviour {
 
 	public bool gameStart = false;
 	public bool paused = false;
-	public bool EnemyTurn = false;
+	public bool BotTeamTurn = false;
 
 	public long RoundTokens = 0;
 
@@ -121,7 +121,7 @@ public class GameManager : MonoBehaviour {
 
 	
 	public WaveGroup DefaultWaves;
-	private float EnemyTurnTime = 0.0F;
+	private float BotTeamTurnTime = 0.0F;
 
 
 	public bool _ResumeGame;
@@ -229,14 +229,14 @@ public class GameManager : MonoBehaviour {
 			CurrentZoneMap = ZoneMap;
 			
 	
-			if(EnemyTurn)
+			if(BotTeamTurn)
 			{
-				if(EnemyTurnTime > 50) 
+				if(BotTeamTurnTime > 50) 
 				{
-					EnemyTurnTime = 0.0F;
-					EnemyTurn = false;
+					BotTeamTurnTime = 0.0F;
+					BotTeamTurn = false;
 				}
-				else EnemyTurnTime += Time.deltaTime;
+				else BotTeamTurnTime += Time.deltaTime;
 			}
 	
 	
@@ -947,6 +947,8 @@ public GridInfo TestRoom;
 		CurrentZone = (Zone) Instantiate(z);
 		CurrentZone.gameObject.name = z.gameObject.name;
 		CurrentZone.transform.parent = this.transform;
+
+		
 		
 		if(CurrentWave != null) 
 		{
@@ -955,13 +957,8 @@ public GridInfo TestRoom;
 		}
 
 		yield return StartCoroutine(CurrentZone.Enter());
-		UIManager.instance.SetZoneObj(true);
-		UIManager.instance.SetTooltipObj(true);
 
 		CurrentZone.SetCurrent(wavenum);
-		
-		/*if(name != string.Empty) yield return StartCoroutine(_GetWave(CurrentZone.GetWaveByName(name)));
-		else yield return StartCoroutine(_GetWave());*/
 
 		yield return new WaitForSeconds(0.4F);
 		int c = 0;
@@ -977,10 +974,11 @@ public GridInfo TestRoom;
 				c++;
 			}
 		}
-		
-		UIManager.instance.CreateControllerUI();
-		UIManager.instance.ShowControllerUI(true);
-		
+
+		UIManager.instance.CreateControllerUI(UIManager.ObjectsT.TopCrew);
+		UIManager.instance.CreateZoneUI(UIManager.ObjectsT.BotCrew);
+
+		UIManager.instance.HideTargetTile(true);
 	}
 
 
@@ -1105,7 +1103,7 @@ public GridInfo TestRoom;
 
 	/* PLAYER TURN *///////////////////////////////////////////////////
 		Player.instance.CompleteMatch = true;
-		EnemyTurn = true;
+		BotTeamTurn = true;
 		TileMaster.instance.SetFillGrid(false);
 		TileMaster.instance.SetAllTileStates(TileState.Locked);
 		foreach(Tile child in PlayerControl.instance.selectedTiles)
@@ -1130,7 +1128,7 @@ public GridInfo TestRoom;
 		}
 		else 
 		{
-			EnemyTurn = false;
+			BotTeamTurn = false;
 			yield break;
 		}
 		//Debug.Log("MATCH");
@@ -1144,11 +1142,13 @@ public GridInfo TestRoom;
 		//Debug.Log("BEFORE TURN");
 	/* ENEMY TURN *////////////////////////////////////////////////////
 		if(Zone) yield return StartCoroutine(Zone.BeforeTurn());
-		yield return StartCoroutine(ControllerTurnRoutine());
+
+
+		yield return StartCoroutine(TopTeamRoutine());
 
 		if(Player.instance.Turns % (int)Player.Stats.AttackRate == 0 && TileMaster.instance.EnemiesOnScreen > 0)
 		{
-			yield return StartCoroutine(EnemyTurnRoutine());
+			yield return StartCoroutine(BotTeamRoutine());
 		}
 
 		//Debug.Log("TURN");
@@ -1170,7 +1170,8 @@ public GridInfo TestRoom;
 		
 		TileMaster.instance.ResetTiles(true);
 		UIManager.instance.ResetTopGear();
-		UIManager.instance.CreateControllerUI();
+		UIManager.instance.CreateControllerUI(UIManager.ObjectsT.TopCrew);
+		UIManager.instance.CreateZoneUI(UIManager.ObjectsT.BotCrew);
 		if(showcontrol) UIManager.instance.ShowControllerUI(true);
 		paused = false;
 
@@ -1190,7 +1191,7 @@ public GridInfo TestRoom;
 	}
 
 
-	IEnumerator ControllerTurnRoutine()
+	IEnumerator TopTeamRoutine()
 	{
 		//print("Start controller Move");
 		List<Tile> allied_attackers = new List<Tile>();
@@ -1247,7 +1248,7 @@ public GridInfo TestRoom;
 		//print("End controller Move");
 	}
 
-	IEnumerator EnemyTurnRoutine()
+	IEnumerator BotTeamRoutine()
 	{
 		float per_column = 0.06F;
 		List<Tile> total_attackers = new List<Tile>();
@@ -1333,7 +1334,7 @@ public GridInfo TestRoom;
 			{
 				if (newTiles[i] == null || GameManager.OverrideMatch) continue;
 				if(initial_match) yield return StartCoroutine(mover.MoveToPoint(newTiles[i].x, newTiles[i].y, false, 10.0F + 0.5F * i));
-
+				UIManager.instance.TargetTile(newTiles[i]);
 				yield return StartCoroutine(newTiles[i].BeforeMatch(mover));
 				
 			}
@@ -1461,7 +1462,7 @@ public GridInfo TestRoom;
 
 		////CameraUtility.SetTurnOffset(false);
 
-		EnemyTurn = false;
+		BotTeamTurn = false;
 		ComboSize = 0;
 		yield return null;
 	}

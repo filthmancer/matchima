@@ -35,11 +35,11 @@ public class Lullaby : Powerup {
 		rect.anchoredPosition = Vector2.zero;
 
 		UIObj n = CreateNote(0);
-		n.transform.position = UIManager.Objects.MiddleGear.transform.position + Vector3.down;
+		n.transform.position = UIManager.Objects.MainUI.transform.position + Vector3.down;
 		n.transform.localScale *= 2.0F;
 		n.GetComponent<MoveToPoint>().enabled = false;
 
-		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.up/2, "Tap the notes\nto play!", 100, GameData.Colour(Parent.Genus), 0.8F, 0.25F);
+		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MainUI.transform.position + Vector3.up/2, "Tap the notes\nto play!", 100, GameData.Colour(Parent.Genus), 0.8F, 0.25F);
 		m.DestroyOnEnd = false;
 		while(!Input.GetMouseButton(0)) yield return null;
 
@@ -73,7 +73,7 @@ public class Lullaby : Powerup {
 
 		sleep_duration = Mathf.Clamp(notes_hit/ sleep_ratio, 1, 100);
 
-		MiniAlertUI alert  = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.up * 2.0F,
+		MiniAlertUI alert  = UIManager.instance.MiniAlert(UIManager.Objects.MainUI.transform.position + Vector3.up * 2.0F,
 			sleep_duration + " Turn Sleep!", 120, GameData.Colour(Parent.Genus), 1.2F, 0.2F);
 		alert.AddJuice(Juice.instance.BounceB, 0.1F);
 		yield return new WaitForSeconds(GameData.GameSpeed(0.7F));
@@ -134,7 +134,7 @@ public class Lullaby : Powerup {
 	public void Sleep(Tile target, int duration)
 	{
 		Transform par;
-		if(Parent) par = UIManager.CrewButtons[Parent.Index].transform;
+		if(Parent) par = Parent._Tile.transform;
 		else if(ParentOverride) par = ParentOverride;
 		else par = UIManager.instance.Health.transform;
 
@@ -156,7 +156,7 @@ public class Lullaby : Powerup {
 	void CharmAndValue(Tile target, int duration, int hpinc = 1, int atkinc = 3)
 	{
 		Transform par = UIManager.instance.Health.transform;
-		if(Parent != null) par = UIManager.CrewButtons[Parent.Index].transform;
+		if(Parent != null) par = Parent._Tile.transform;
 
 		target.SetState(TileState.Selected, true);
 		GameObject initpart = EffectManager.instance.PlayEffect(par, "spell");

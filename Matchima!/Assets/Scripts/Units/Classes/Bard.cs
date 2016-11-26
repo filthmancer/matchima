@@ -52,6 +52,12 @@ public class Bard : Class {
 		}
 	}
 
+	public override void GetTile(Tile t)
+	{
+		_Tile = t;
+		//_Tile.AddEffect("Magnetic", -1, "", "enemy", "1");
+	}
+
 	public override Upgrade [] Curses
 	{
 		get

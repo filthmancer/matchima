@@ -68,11 +68,12 @@ public class Powerup : MonoBehaviour {
 		if(s) s.GetComponent<DestroyTimer>().Timer = 5.0F;
 		float step_time = Time.deltaTime * 45;
 		float total_time = step_time * 3;
-		MiniAlertUI a = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.up*4.5F, 
+		print(UIManager.Objects.MainUI.transform.position + Vector3.up*4F);
+		MiniAlertUI a = UIManager.instance.MiniAlert(UIManager.Objects.MainUI.transform.position + Vector3.up*4.5F, 
 			Parent.Name + " Casts", 110, GameData.Colour(Parent.Genus), step_time*2, 0.2F);
 		a.AddJuice(Juice.instance.BounceB, 0.1F);
 		yield return StartCoroutine(GameData.DeltaWait(0.7F));
-		MiniAlertUI b = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.up * 2.0F, Name, 155, GameData.Colour(Parent.Genus), step_time, 0.2F);
+		MiniAlertUI b = UIManager.instance.MiniAlert(UIManager.Objects.MainUI.transform.position + Vector3.up * 2.0F, Name, 155, GameData.Colour(Parent.Genus), step_time, 0.2F);
 		b.AddJuice(Juice.instance.BounceB, 0.1F);
 		yield return StartCoroutine(GameData.DeltaWait(0.95F));
 		//MiniAlertUI c  = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.down * 1.0F,

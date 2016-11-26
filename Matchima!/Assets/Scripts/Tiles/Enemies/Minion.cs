@@ -46,11 +46,19 @@ public class Minion : Enemy {
 		if(column!= null) 
 			for(int i = 0; i < column.Length; i++) {
 				if(column[i] == null) continue;
-				if(column[i].IsType("hero")) targ.Add(column[i]);}
+				if(column[i].IsType("hero"))
+				{
+					if(column[i].CanBeAttacked()) targ.Add(column[i]);
+				} 
+			}
 		if(row != null)
 			for(int i = 0; i < row.Length; i++) {
 				if(row[i] == null) continue;
-				if(row[i].IsType("hero")) targ.Add(row[i]);}
+				if(row[i].IsType("hero"))
+				{
+					if(column[i].CanBeAttacked()) targ.Add(row[i]);
+				} 
+			}
 
 		if(targ.Count > 0)
 		{

@@ -261,7 +261,7 @@ public class Boss : WaveUnit {
 	void CreateTileFromSpawnInfo(SpawnTileInfo s, Tile targ)
 	{
 		List<TileEffectInfo> Effects = new List<TileEffectInfo>();//Parent.GetEffects();
-		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.instance.ZoneObj.transform, Effect.Spell);
+		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ObjectsT.BotCrew.transform, Effect.Spell);
 		MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
 		mp.SetTarget(targ.transform.position);
 		mp.SetPath(30, 0.2F);
@@ -281,7 +281,7 @@ public class Boss : WaveUnit {
 	void CreateBossTile(SpawnTileInfo s, Tile targ)
 	{
 		List<TileEffectInfo> Effects = new List<TileEffectInfo>();//Parent.GetEffects();
-		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.instance.ZoneObj.transform, Effect.Spell);
+		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.ObjectsT.BotCrew.transform, Effect.Spell);
 		MoveToPoint mp = initpart.GetComponent<MoveToPoint>();
 		mp.SetTarget(targ.transform.position);
 		mp.SetPath(30, 0.2F);

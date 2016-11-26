@@ -48,6 +48,7 @@ public class Hero : Tile {
 		InitStats._Charisma.Add(_Class.Stats._Charisma);
 		InitStats._Wisdom.Add(_Class.Stats._Wisdom);
 
+
 		CheckStats();
 
 		Stats._Team = Team.Ally;
@@ -55,15 +56,15 @@ public class Hero : Tile {
 		Stats.Hits = Stats._Hits.Max;
 		SetSprite();
 	}
-
+	public override bool CanBeAttacked() {return !isKilled && Genus != GENUS.OMG;}
 	public bool CastSpell()
 	{
-		if(_Class.MeterLvl > 0)
-		{
+		//if(_Class.MeterLvl > 0)
+		//{
 			StartCoroutine(_Class.UseManaPower());
 			return true;
-		}
-		return false;
+		//}
+		//return false;
 	}
 
 	public override void SetSprite()

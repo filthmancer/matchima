@@ -13,7 +13,7 @@ public class ThrowKnives : Powerup {
 
 	public int [] KnivesThrown = new int []
 	{
-		5, 8, 9
+		4, 6, 7
 	};
 
 	public int [] KnifeDamage = new int[]
@@ -54,11 +54,10 @@ public class ThrowKnives : Powerup {
 
 		Destroy(CatcherObjActual.gameObject);
 
-		UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, 
+		UIManager.instance.MiniAlert(UIManager.Objects.MainUI.transform.position, 
 		"+" + CatchNum + " Knives!", 120, GameData.Colour(Parent.Genus), 0.6F, 0.25F);
 		yield return StartCoroutine(GameData.DeltaWait(0.6F));
 
-		
 		UIManager.instance.ScreenAlert.SetTween(0,false);
 		
 		if(TileMaster.Enemies.Length == 0 || CatchNum == 0)
@@ -101,13 +100,13 @@ public class ThrowKnives : Powerup {
 	{
 		CatcherObjActual = (UIObj) Instantiate(CatcherObj);
 		RectTransform rect = CatcherObjActual.GetComponent<RectTransform>();
-		CatcherObjActual.transform.SetParent(UIManager.Objects.MiddleGear.transform);
+		CatcherObjActual.transform.SetParent(UIManager.Objects.MainUI.transform);
 		CatcherObjActual.transform.localScale = Vector3.one * 2.1F;
 		rect.sizeDelta = Vector2.one;
 		rect.anchoredPosition = Vector2.zero;
 		
 
-		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "Drag the hand\n to catch knives!", 100, GameData.Colour(Parent.Genus), 0.8F, 0.25F);
+		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MainUI.transform.position, "Drag the hand\n to catch knives!", 100, GameData.Colour(Parent.Genus), 0.8F, 0.25F);
 		m.DestroyOnEnd = false;
 		while(!Input.GetMouseButton(0)) yield return null;
 		m.PoolDestroy();
@@ -131,7 +130,7 @@ public class ThrowKnives : Powerup {
 	UIObj CreateKnife()
 	{
 		UIObj knife = CreateMinigameObj(0);
-		knife.transform.position = UIManager.Objects.BotGear.transform.position;
+		knife.transform.position = UIManager.Objects.MainUI.transform.position + Vector3.down * 4;
 		knife.transform.position += Vector3.right * (Random.value - Random.value);
 		knife.transform.localScale = Vector3.one * 0.5F;
 		AudioManager.instance.PlayClipOn(this.transform, "Powerup", "KnifeThrow");
@@ -164,7 +163,7 @@ public class ThrowKnives : Powerup {
 		Color classcol = Color.white;
 		if(Parent) 
 		{
-			par = UIManager.CrewButtons[Parent.Index].transform;
+			par = Parent._Tile.transform;
 			classcol = GameData.Colour(Parent.Genus);
 		}
 		else if(ParentOverride) par = ParentOverride;

@@ -134,6 +134,7 @@ public class RoomEditor : EditorWindow {
 		{
 			if(CurrentPoint == null) CurrentPoint = PrevPoint;
 			if(CurrentPoint == null) CurrentPoint = TargetRoom[0,0];
+			if(CurrentPoint == null) return;
 
 			EditorGUILayout.BeginHorizontal(GUILayout.MaxWidth(editorRect.width/2));
 			GUILayout.Label("Point " + (CurrentPoint != null ? CurrentPoint.num.x + ":" + CurrentPoint.num.y : ""), EditorStyles.boldLabel, GUILayout.Width(60));
@@ -266,7 +267,7 @@ public class RoomEditor : EditorWindow {
 				if(Event.current.type == EventType.Repaint)
 				{
 					sceneRect = screen;
-					//m_Cam.pixelRect = sceneRect;
+					m_Cam.pixelRect = sceneRect;
 					//m_Cam.Render();
 					Handles.SetCamera(m_Cam);
 				}

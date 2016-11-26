@@ -86,82 +86,23 @@ public class Mimic : Enemy {
 		
 	}
 
-	public override bool Match(int resource)
+	public virtual IEnumerator BeforeMatch(Tile Controller)
 	{
+		if(this == null) yield break;//return false;
+		if(Controllable) yield break; //return ControlMatch(0);
+
 		if(!revealed)
 		{
 			Reveal();
-
-			if(originalMatch)
-			{
-				UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), "MIMIC!", 95, GameData.Colour(Genus), 0.8F,0.15F);
-				Vector3 pos = transform.position + (GameData.RandomVector*1.4F);
-				/*MoveToPoint mini = TileMaster.instance.CreateMiniTile(transform.position, UIManager.instance.Health.transform, Info.Outer);
-				mini.SetPath(0.3F, 0.5F, 0.0F, 0.08F);
-				mini.SetMethod(() =>{
-						Player.Stats.Hit(GetAttack()*2);
-					}
-				);*/
-				AttackPlayer();
-				StartCoroutine(Animate("Attack", 0.05F));
-				AttackedThisTurn = true;
-				Player.Stats.CompleteHealth();
-				
-			}
-			isMatching = false;
-			return true;
+			UIManager.instance.MiniAlert(TileMaster.Grid.GetPoint(Point.Base), "MIMIC!", 95, GameData.Colour(Genus), 0.8F,0.15F);
+			Vector3 pos = transform.position + (GameData.RandomVector*1.4F);
+			AttackTile(Controller);
+			StartCoroutine(Animate("Attack", 0.05F));
+			AttackedThisTurn = true;
 		}
 		else
 		{
-			CheckStats();
-			int fullhit = 0;
-			if(originalMatch) 
-			{
-				fullhit += resource;
-			}
-			fullhit += Stats.TurnDamage;
-			InitStats.TurnDamage = 0;
-
-			InitStats.Hits -= fullhit;
-			CheckStats();
-
-			Player.instance.OnTileMatch(this);
-			if(Stats.Hits <= 0)
-			{
-				isMatching = true;
-				Player.Stats.PrevTurnKills ++;			
-				CollectThyself(true);
-
-				if(GameData.ChestsFromEnemies)
-				{
-					float item_chance = (float)Stats.Value/32.0F;
-					if(Stats.Value > 10) item_chance += 0.4F;
-					if(Random.value < 0.9F)//item_chance) 
-					{
-						for(int reward = 0; reward < Point.Scale; reward++)
-						{
-							int x = Random.Range(Point.BaseX, Point.BaseX + Point.Scale);
-							int y = Random.Range(Point.BaseY, Point.BaseY + Point.Scale);
-	
-							TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["chest"], Genus);
-							TileMaster.Tiles[x,y].AddValue(Stats.Value);
-						}
-					}
-					else
-					{
-						TileMaster.instance.ReplaceTile(x,y, TileMaster.Types["mimic"], Genus);
-						TileMaster.Tiles[x,y].AddValue(Stats.Value);
-					}
-				}
-				return true;
-			}
-			else 
-			{
-				isMatching = false;
-				CollectThyself(false);
-				EffectManager.instance.PlayEffect(this.transform,Effect.Attack);
-			}
-			return false;
+			yield return StartCoroutine(base.BeforeMatch(Controller));
 		}
 	}
 

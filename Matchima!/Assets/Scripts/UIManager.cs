@@ -11,6 +11,7 @@ public class UIManager : MonoBehaviour {
 	public static Canvas Canvas;
 	public static bool loaded = false;
 	public static UIObjects Objects;
+	public static UIObjects2 ObjectsT;
 	public static UIMenu Menu;
 
 	public static int? LevelChoice = null;
@@ -39,7 +40,7 @@ public class UIManager : MonoBehaviour {
 	//public static ClassSlotsUI CrewButtons{get{return UIManager.instance._CrewButtons;}}
 
 	public CrewMenuUIObj [] _CrewButtons;
-	public static CrewMenuUIObj [] CrewButtons{get{return UIManager.instance._CrewButtons;}}
+	public static CrewMenuUIObj [] CrewButtons{get{return ObjectsT._CrewButtons;}}
 
 	public static UIObj [] WaveButtons{get{return Objects.TopGear[1][0].Child;}}
 	public ItemUI ItemUI;
@@ -76,20 +77,15 @@ public class UIManager : MonoBehaviour {
 	void Awake()
 	{
 		instance = this;
+		ObjectsT = this.GetComponent<UIObjects2>();
 		Objects = this.GetComponent<UIObjects>();
 		Canvas = this.transform.GetChild(1).GetComponent<Canvas>();
 		Menu = Objects.MenuUI.GetComponent<UIMenu>();
-		Objects.MiddleGear.SetActive(true);
+	//	Objects.MiddleGear.SetActive(true);
 	}
 
 	void Start () {
 		Objects.MainUI.SetActive(false);	
-		//for(int i = 0; i < CrewButtons.Length; i++)
-		//{
-		//	CrewButtons.GetClass(i)._Frame.SetSprite(TileMaster.Genus.Frames, i);
-		//	CrewButtons.GetClass(i)._FrameMask.SetSprite(TileMaster.Genus.Frames, i);
-		//}
-		
 	}
 
 	float update_interval_current = 0.0F;
@@ -270,19 +266,21 @@ public class UIManager : MonoBehaviour {
 		Tooltip_timer_active = true;
 	}
 
-	void HideTargetTile()
+	public void HideTargetTile(bool _override= false)
 	{
-		if(!Tooltip_timer_active) return;
+		if(!Tooltip_timer_active && !_override) return;
 		Tooltip_timer_active = false;
 		Tooltip_Target = null;
-		Tooltip_Parent.Imgtk[0].transform.gameObject.SetActive(false);
-		Tooltip_Parent.Imgtk[1].SetSprite(TileMaster.Genus.Frames, "Omega");
-		Tooltip_Parent.Imgtk[2].color = GameData.Colour(GENUS.OMG);
-		for(int i = 0; i < Tooltip_Parent.Length; i++) Tooltip_Parent[i].SetActive(false);
+		TargetCrew = ObjectsT.TopCrew;//(GameManager.instance.BotTeamTurn ? ObjectsT.BotCrew : ObjectsT.TopCrew) as UIObjtk;
+
+		TargetCrew.Imgtk[0].transform.gameObject.SetActive(false);
+		TargetCrew.Imgtk[1].SetSprite(TileMaster.Genus.Frames, "Omega");
+		TargetCrew.Imgtk[2].color = GameData.Colour(GENUS.OMG);
+		for(int i = 0; i < TargetCrew.Length; i++) TargetCrew[i].SetActive(false);
 	}
 	public Tile Tooltip_Target;
-	public UIObjtk Tooltip_Parent;
-	public UIObj Tooltip_DescObj;
+	UIObjtk TargetCrew;
+
 	public void TargetTile(Tile t = null)
 	{
 		if(Tooltip_Target == t && t != null) 
@@ -300,66 +298,68 @@ public class UIManager : MonoBehaviour {
 
 		ShowControllerUI(false);
 		Tooltip_Target.CheckStats();
+		TargetCrew = ObjectsT.TopCrew;
+		//TargetCrew = (GameManager.instance.BotTeamTurn ? ObjectsT.BotCrew : ObjectsT.TopCrew) as UIObjtk;
 
 	//Set the sprites of the tile
-		Tooltip_Parent.Imgtk[0].transform.gameObject.SetActive(true);
+		TargetCrew.Imgtk[0].transform.gameObject.SetActive(true);
 
 		string render = Tooltip_Target.GenusName;
 		tk2dSpriteDefinition id = Tooltip_Target.Inner.GetSpriteDefinition(render);
 		if(id == null) render = "Alpha";
-		Tooltip_Parent.Imgtk[0].SetSprite(Tooltip_Target.Inner, render);
-		Tooltip_Parent.Imgtk[0].scale = (Tooltip_Target is Hero) ? new Vector3(-3.4F, 3.4F, 1.0F) : Vector3.one * 19.0F;
-		Tooltip_Parent.Imgtk[1].SetSprite(TileMaster.Genus.Frames, Tooltip_Target.Info.Outer);
-		Tooltip_Parent.Imgtk[2].color = GameData.Colour(Tooltip_Target.Genus);
+		TargetCrew.Imgtk[0].SetSprite(Tooltip_Target.Inner, render);
+		TargetCrew.Imgtk[0].scale = (Tooltip_Target is Hero) ? new Vector3(-3.4F, 3.4F, 1.0F) : Vector3.one * 19.0F;
+		TargetCrew.Imgtk[1].SetSprite(TileMaster.Genus.Frames, Tooltip_Target.Info.Outer);
+		TargetCrew.Imgtk[2].color = GameData.Colour(Tooltip_Target.Genus);
 	//Set the text info
 
-		Tooltip_Parent[0].SetActive(true);
-		Tooltip_Parent[0].Txt[0].text = t._Name.Value;
-		Tooltip_Parent[0].Txt[0].color = t._Name.Colour;
+		TargetCrew[0].SetActive(true);
+		TargetCrew[0].Txt[0].text = t._Name.Value;
+		TargetCrew[0].Txt[0].color = t._Name.Colour;
 
 		if(t.Stats.Hits > 1)
 		{
-			Tooltip_Parent[1].SetActive(true);
-			Tooltip_Parent[1].Txt[0].text = t.Stats.Hits + "/" +t.Stats.HitsMax;
+			TargetCrew[1].SetActive(true);
+			TargetCrew[1].Txt[0].text = t.Stats.Hits + "/" +t.Stats.HitsMax;
 		}
-		else Tooltip_Parent[1].SetActive(false);
+		else TargetCrew[1].SetActive(false);
 
 		if(t.Stats.Attack != 0)
 		{
-			Tooltip_Parent[2].SetActive(true);
-			Tooltip_Parent[2].Txt[0].text = "" + t.Stats.Attack;
+			TargetCrew[2].SetActive(true);
+			TargetCrew[2].Txt[0].text = "" + t.Stats.Attack;
 		}
-		else Tooltip_Parent[2].SetActive(false);
+		else TargetCrew[2].SetActive(false);
 
 		if(t.Stats.Spell != 0)
 		{
-			Tooltip_Parent[3].SetActive(true);
-			Tooltip_Parent[3].Txt[0].text = "" + t.Stats.Spell;
+			TargetCrew[3].SetActive(true);
+			TargetCrew[3].Txt[0].text = "" + t.Stats.Spell;
 		}
-		else Tooltip_Parent[3].SetActive(false);
+		else TargetCrew[3].SetActive(false);
 
 		if(t.Stats.Movement != 0)
 		{
-			Tooltip_Parent[4].SetActive(true);
-			Tooltip_Parent[4].Txt[0].text = "" + t.Stats.Movement;
+			TargetCrew[4].SetActive(true);
+			TargetCrew[4].Txt[0].text = "" + t.Stats.Movement;
 		}
-		else Tooltip_Parent[4].SetActive(false);
+		else TargetCrew[4].SetActive(false);
 
-		Tooltip_Parent[5].DestroyChildren();
+		TargetCrew[5].DestroyChildren();
 		if(t.FullDescription.Length != 0)
 		{
-			Tooltip_Parent[5].SetActive(true);
+			TargetCrew[5].SetActive(true);
 			UIObj prev = null;
 			for(int i = 0; i < t.FullDescription.Length; i++)
 			{
 				StCon d = t.FullDescription[i];
 				//if(d.NewLine || prev == null)
 				//{
-					prev = (UIObj) Instantiate(Tooltip_DescObj);
+					prev = (UIObj) Instantiate(ObjectsT.TooltipObj);
 				//}
 
-				Tooltip_Parent[5].AddChild(prev);
-				prev.transform.SetParent(Tooltip_Parent[5].transform);
+				TargetCrew[5].AddChild(prev);
+				prev.transform.SetParent(TargetCrew[5].transform);
 				prev.transform.localScale = new Vector3(-1,1,1);
 
 				
@@ -369,16 +369,15 @@ public class UIManager : MonoBehaviour {
 				prev.Img[1].color = Color.grey;
 			}
 		}
-		
 	}
 
-	public UIObjTweener Controller_Parent;
-	public CrewMenuUIObj Controller_Obj;
-	public UIObj CrewButton;
-	public void CreateControllerUI()
+	public void CreateControllerUI(UIObjtk TeamObj)
 	{
-		Tooltip_Parent.ClearActions();
-		Tooltip_Parent.AddAction(UIAction.MouseUp, ()=>{
+		//TargetCrew = (TeamObj["tooltip"]) as UIObjtk;
+		UIObjTweener Controller_Parent = (TeamObj["crew"]) as UIObjTweener;
+		
+		TeamObj.ClearActions();
+		TeamObj.AddAction(UIAction.MouseUp, ()=>{
 			if(!CheckTargetTile()) ShowControllerUI();
 			});
 		if(Controller_Parent.Length != 0)
@@ -390,7 +389,7 @@ public class UIManager : MonoBehaviour {
 		List<CrewMenuUIObj> controlobjs = new List<CrewMenuUIObj>();
 		for(int i = 0; i < control.Length; i++)
 		{
-			CrewMenuUIObj cobj = (CrewMenuUIObj) Instantiate(Controller_Obj);
+			CrewMenuUIObj cobj = Instantiate(ObjectsT.CrewObj).GetComponent<CrewMenuUIObj>();
 			cobj.transform.SetParent(Controller_Parent.transform);
 			cobj.transform.localScale = Vector3.one;
 			cobj.transform.position = Vector3.zero;
@@ -400,37 +399,24 @@ public class UIManager : MonoBehaviour {
 			controlobjs.Add(cobj);
 		}
 
-		_CrewButtons = controlobjs.ToArray();
-		Controller_Parent.AddChild(controlobjs.ToArray());
-		
+		ObjectsT._CrewButtons = controlobjs.ToArray();
+		Controller_Parent.AddChild(controlobjs.ToArray());	
+
+		TeamObj.SetTween(0, true);	
 	}
 
-	public UIObjtk ZoneObj;
-	
-	public void SetZoneObj(bool active)
+	public void CreateZoneUI(UIObjtk TeamObj)
 	{
 		if(GameManager.Zone.TargetBoss == null) return;
-		ZoneObj.SetTween(0, active);
-
-		if(active)
-		{
-			ZoneObj.ClearActions();
-			ZoneObj.AddAction(UIAction.MouseUp, () =>
-			{
-				ShowBossUI();
-				//SetZoneObj(true, true);
-			});
-		}
-
-		ShowBossUI(true);
 		
-		GameManager.Zone.TargetBoss.SetImgtk(ZoneObj.Imgtk[0], ZoneObj.Imgtk[1]);
-	}
-
-
-	public void SetTooltipObj(bool active)
-	{
-		Tooltip_Parent.SetTween(0, active);
+		TeamObj.ClearActions();
+		TeamObj.AddAction(UIAction.MouseUp, ()=>
+		{
+			ShowBossUI(TeamObj);
+		});
+		ShowBossUI(TeamObj, true);
+		GameManager.Zone.TargetBoss.SetImgtk(TeamObj.Imgtk[0], TeamObj.Imgtk[1]);
+		TeamObj.SetTween(0, true);
 	}
 
 	public bool CheckTargetTile()
@@ -444,33 +430,33 @@ public class UIManager : MonoBehaviour {
 		}
 		return false;
 	}
+
 	public bool ShowControllerUI(bool? active = null)
 	{
+		UIObjTweener Controller_Parent = ObjectsT.TopCrew["crew"] as UIObjTweener;//(GameManager.instance.BotTeamTurn ? ObjectsT.BotCrew["crew"] : ObjectsT.TopCrew["crew"]) as UIObjTweener;
 		bool initial = Controller_Parent.GetTween(0);
 		Controller_Parent.SetTween(0, active);
 		bool actual = active ?? !initial;
 
 		if(actual) HideTargetTile();
-		//(CrewButton as UIObjtk).Imgtk[2].gameObject.SetActive(!actual);
-		//(CrewButton as UIObjtk).Imgtk[1].gameObject.SetActive(actual);
 		return initial;
 	}
 
 	public bool BossUI_current = false;
-	public bool ShowBossUI(bool? active = null)
+	public bool ShowBossUI(UIObj TeamObj, bool? active = null)
 	{
 		bool actual = active ?? !BossUI_current;
 		BossUI_current = actual;
-		(ZoneObj[0] as UIObjTweener).SetTween(0, BossUI_current);
-		(ZoneObj[1] as UIObjTweener).SetTween(0, !BossUI_current);
+		(TeamObj[0] as UIObjTweener).SetTween(0, BossUI_current);
+		(TeamObj[1] as UIObjTweener).SetTween(0, !BossUI_current);
 
-		ZoneObj[0].Txt[0].text = GameManager.Zone.TargetBoss.Mission;
-		ZoneObj[0].Txt[1].text = "";
-		ZoneObj[0].Img[1].fillAmount = GameManager.Zone.TargetBoss.MissionRatio;
+		TeamObj[0].Txt[0].text = GameManager.Zone.TargetBoss.Mission;
+		TeamObj[0].Txt[1].text = "";
+		TeamObj[0].Img[1].fillAmount = GameManager.Zone.TargetBoss.MissionRatio;
 
-		ZoneObj[1].Txt[0].text = GameManager.Zone.TargetBoss.Description;
-		ZoneObj[1].Txt[1].text = GameManager.Zone.TargetBoss.Name;
-		ZoneObj[1].Img[1].fillAmount = 0.0F;
+		TeamObj[1].Txt[0].text = GameManager.Zone.TargetBoss.Description;
+		TeamObj[1].Txt[1].text = GameManager.Zone.TargetBoss.Name;
+		TeamObj[1].Img[1].fillAmount = 0.0F;
 
 		return actual;
 	}

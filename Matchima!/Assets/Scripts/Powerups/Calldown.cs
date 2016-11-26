@@ -151,7 +151,7 @@ int[] fireballs = new int[]
 	IEnumerator CreateFireball(Tile targ, int final_radius, int num)
 	{
 		GameObject missile = Instantiate(FireballParticle);
-		missile.transform.position = UIManager.Objects.TopGear.transform.position + Vector3.left;
+		missile.transform.position = UIManager.Objects.MainUI.transform.position + Vector3.left;
 		missile.GetComponent<ParticleSystem>().startSize = 2.1F;
 		missile.GetComponent<ParticleSystem>().startColor = Color.red;
 		MoveToPoint mp = missile.GetComponent<MoveToPoint>();

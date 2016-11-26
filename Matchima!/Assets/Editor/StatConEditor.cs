@@ -21,6 +21,7 @@ public class StatConEditor : PropertyDrawer {
 		SerializedProperty Level_Current = property.FindPropertyRelative("Level_Current");
 		SerializedProperty Level_Required = property.FindPropertyRelative("Level_Required");
 		SerializedProperty Level_Multiplier = property.FindPropertyRelative("Level_Multiplier");
+		SerializedProperty Level_Increase = property.FindPropertyRelative("Level_Increase");
 
 
 
@@ -175,6 +176,15 @@ public class StatConEditor : PropertyDrawer {
 			field.x -= value_offset;
 			field.width = value_width;
 			EditorGUI.PropertyField (field, Level_Multiplier, GUIContent.none);
+
+			EditorGUI.indentLevel = title_indent;
+			field.x += value_width;
+			field.width = title_width;
+			field = EditorGUI.PrefixLabel(field, new GUIContent("Lvl Inc."));
+			EditorGUI.indentLevel = value_indent;
+			field.x -= value_offset;
+			field.width = value_width;
+			EditorGUI.PropertyField (field, Level_Increase, GUIContent.none);
 
 
 		}

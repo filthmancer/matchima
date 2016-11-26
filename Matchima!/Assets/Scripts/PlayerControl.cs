@@ -81,7 +81,7 @@ public class PlayerControl : MonoBehaviour {
 	void Update () {
 		CheckTouch();
 		if(GameManager.instance.isPaused) return;
-		if(GameManager.instance.EnemyTurn) return;
+		if(GameManager.instance.BotTeamTurn) return;
 
 		if(TimeSinceLastMatch < 30.0F) TimeSinceLastMatch += Time.deltaTime;
 		if(TimeWithoutInput < 30.0F) TimeWithoutInput += Time.deltaTime;
@@ -107,7 +107,7 @@ public class PlayerControl : MonoBehaviour {
 
 		if(!canMatch) return;
 
-		if(focusTile != null && !GameManager.instance.EnemyTurn && !UIManager.InMenu && selectedTiles.Count > 0)
+		if(focusTile != null && !GameManager.instance.BotTeamTurn && !UIManager.InMenu && selectedTiles.Count > 0)
 		{
 			for(int x = 0; x < InnerLine.Length; x++)
 			{

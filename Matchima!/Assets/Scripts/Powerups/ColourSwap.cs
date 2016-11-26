@@ -40,7 +40,7 @@ public class ColourSwap : Powerup {
 
 		for(int i = 0; i < CardChoices.Count; i++)
 		{
-			tpoints[i] = UIManager.Objects.MiddleGear.transform.position + Vector3.down + Vector3.right;
+			tpoints[i] = UIManager.Objects.MainUI.transform.position + Vector3.down + Vector3.right;
 			tpoints[i] += Vector3.Lerp(Vector3.left * (CardChoices.Count), Vector3.right*CardChoices.Count, (float)i/(float)choicetotal) * CameraUtility.OrthoFactor;
 
 			ColCards[i] = (UIObjtk) CreateMinigameObj(0);
@@ -124,7 +124,7 @@ public class ColourSwap : Powerup {
 		}
 		
 
-		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "Pick the\ntarget colour!", 140, GameData.Colour(Parent.Genus), 0.8F, 0.25F);
+		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MainUI.transform.position, "Pick the\ntarget colour!", 140, GameData.Colour(Parent.Genus), 0.8F, 0.25F);
 		m.DestroyOnEnd = false;
 		while(!choice_set)
 		{
@@ -161,7 +161,7 @@ public class ColourSwap : Powerup {
 		GENUS final = CardChoices[choice_selected];
 		string title = fail ? "FAIL!" : GameData.ResourceLong(final) + "!";
 
-		UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, title, 180, GameData.Colour(final), 0.8F, 0.35F);
+		UIManager.instance.MiniAlert(UIManager.Objects.MainUI.transform.position, title, 180, GameData.Colour(final), 0.8F, 0.35F);
 		isRevealing  = true;
 		curr_rot = 0;
 		spritechanged = false;

@@ -26,7 +26,7 @@ public class Heal : Powerup {
 
 		float final_ratio = 0.0F;
 		UIObj MGame = (UIObj)Instantiate(MinigameObj[0]);
-		MGame.transform.SetParent(UIManager.Objects.MiddleGear.transform);
+		MGame.transform.SetParent(UIManager.Objects.MainUI.transform);
 		MGame.transform.localScale = Vector3.one;
 		MGame.GetComponent<RectTransform>().sizeDelta = Vector2.one;
 		MGame.GetComponent<RectTransform>().anchoredPosition = Vector2.zero;
@@ -41,7 +41,7 @@ public class Heal : Powerup {
 		});
 
 
-		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position+ Vector3.up*1.8F, "Keep tapping the\nheart to fill it!", 100, GameData.Colour(Parent.Genus), 0.8F, 0.25F);
+		MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MainUI.transform.position+ Vector3.up*1.8F, "Keep tapping the\nheart to fill it!", 100, GameData.Colour(Parent.Genus), 0.8F, 0.25F);
 		m.DestroyOnEnd = false;
 		while(!Input.GetMouseButton(0)) yield return null;
 		m.PoolDestroy();
@@ -63,29 +63,28 @@ public class Heal : Powerup {
 
 		yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
 		int final = (int) ((float)HealTotal * final_ratio);
-		MiniAlertUI finalert  = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position + Vector3.up * 3.0F,
+		MiniAlertUI finalert  = UIManager.instance.MiniAlert(UIManager.Objects.MainUI.transform.position + Vector3.up * 3.0F,
 			final + "% Heal!", 130, GameData.Colour(Parent.Genus), 0.65F, 0.2F);
 		finalert.AddJuice(Juice.instance.BounceB, 0.1F);
-		yield return new WaitForSeconds(0.5F);
-		
-		GameObject initpart = EffectManager.instance.PlayEffect(UIManager.Objects.MiddleGear.transform, "spell");
-		initpart.GetComponent<MoveToPoint>().enabled = true;
-		initpart.GetComponent<MoveToPoint>().SetTarget(UIManager.instance.Health.transform.position);
-		initpart.GetComponent<MoveToPoint>().SetPath(25.0F, 0.2F);
-		yield return new WaitForSeconds(0.7F);
-
-		//GameObject part = Instantiate(Particle);
-		//part.transform.position = UIManager.instance.Health.transform.position;
-		//yield return new WaitForSeconds(part_time);
-
-		
-
-		Player.Stats.Heal(final, true);
-		Player.Stats.CompleteHealth();
-
-		//UIManager.CrewButtons[Parent.Index].ShowClass(false);
+		yield return new WaitForSeconds(GameData.GameSpeed(0.3F));
 		UIManager.instance.ScreenAlert.SetTween(0,false);
+		yield return new WaitForSeconds(GameData.GameSpeed(0.2F));
+		for(int i = 0; i < Player.ClassTiles.Length; i++)
+		{
+			CastHeal(Player.ClassTiles[i], final);
+			yield return null;
+		}
+		
 		GameManager.instance.paused = false;
 		yield return null;
 	}
+	
+	void CastHeal(Tile t, int final)
+	{
+		GameObject cast = GameData.instance.ActionCaster(Parent._Tile.transform, t, ()=>
+		{
+			t.AddHealth(GENUS.ALL, final);
+		});
+	}
+
 }

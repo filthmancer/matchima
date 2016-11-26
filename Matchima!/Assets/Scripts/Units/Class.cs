@@ -672,7 +672,7 @@ public class Class : Unit {
 		UsingManaPower = true;
 
 		UIManager.instance.ScreenAlert.SetTween(0,true);
-		int lvl = Mathf.Clamp(MeterLvl, 0, 2);
+		int lvl = Mathf.Clamp(MeterLvl, 1, 3);
 		yield return StartCoroutine(PowerupSpell.Activate(lvl));
 		yield return StartCoroutine(PowerDown());
 		//yield return StartCoroutine(LevelUp(lvl));

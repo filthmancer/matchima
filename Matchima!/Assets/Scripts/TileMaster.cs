@@ -883,7 +883,7 @@ public class TileMaster : MonoBehaviour {
 
 		g[x, y]._Tile.Setup(g, x, y, scale, t, value);
 
-		if (GameManager.instance.EnemyTurn) g[x, y]._Tile.SetState(TileState.Locked);
+		if (GameManager.instance.BotTeamTurn) g[x, y]._Tile.SetState(TileState.Locked);
 		else g[x, y]._Tile.SetState(TileState.Idle);
 
 
@@ -1033,16 +1033,21 @@ public class TileMaster : MonoBehaviour {
 	public void NewGrid(SPECIES sp = null, GENUS g = GENUS.NONE, bool no_enemies = false)
 	{
 		if (Grid == null) return;
+
+		List<Tile> old_con = new List<Tile>();
+		old_con.AddRange(TileMaster.Controllers);
 		for (int x = 0; x < Grid.Size[0]; x++)
 		{
 			for (int y = 0; y < Grid.Size[1]; y++)
 			{
 				if (Tiles.GetLength(0) > x && Tiles.GetLength(1) > y && Tiles[x, y] != null)
 				{
-					Tiles[x, y].DestroyThyself(); // true);
-					//Destroy(Tiles[x,y].gameObject);
-					Grid[x, y]._Tile = null;
-					CreateTile(x, y, Vector2.up, sp, g, no_enemies);
+					if(!old_con.Contains(Tiles[x,y]))
+					{
+						Tiles[x, y].DestroyThyself();
+						Grid[x, y]._Tile = null;
+						CreateTile(x, y, Vector2.zero, sp, g, no_enemies);
+					}
 				}
 			}
 		}
@@ -1188,7 +1193,11 @@ public class TileMaster : MonoBehaviour {
 
 					Tiles[xx, yy].AfterTurn();
 					if (Tiles[xx, yy].HasAfterTurnEffect())
-						yield return StartCoroutine(Tiles[xx, yy].AfterTurnRoutine());
+					{
+						UIManager.instance.TargetTile(Tiles[xx,yy]);
+						yield return StartCoroutine(Tiles[xx, yy].AfterTurnRoutine());	
+					}
+						
 				}
 				//else if(fill_from_none[xx, yy]) ReplaceTile(xx,yy);
 			}
@@ -1239,7 +1248,7 @@ public class TileMaster : MonoBehaviour {
 		}*/
 		if (!CheckForMatches())
 		{
-			MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.Objects.MiddleGear.transform.position, "NO MATCHES!", 140, GameData.Colour(GENUS.OMG),
+			MiniAlertUI m = UIManager.instance.MiniAlert(UIManager.ObjectsT._Main.transform.position, "NO MATCHES!", 140, GameData.Colour(GENUS.OMG),
 														GameData.GameSpeed(0.85F), 0.1F, true);
 			yield return new WaitForSeconds(GameData.GameSpeed(0.9F));
 
@@ -1249,7 +1258,7 @@ public class TileMaster : MonoBehaviour {
 				omegas[i].InitStats._Attack.Add(omegas[i].Stats.Value / 2);
 				omegas[i].CheckStats();
 				omegas[i].Animate("Attack", 0.05F);
-				omegas[i].AttackPlayer();
+				omegas[i].AttackTile(Player.ClassTiles[0]);
 			}
 			NewGrid();
 		}

@@ -94,6 +94,7 @@ public class MoveToPoint : MonoBehaviour {
 				ClearAndDestroy();
 			}
 			else if(!NoDestroy) Destroy(this);//GetComponent<ObjectPoolerReference>().Unspawn();
+			else Clear();
 			//ClearAndDestroy();
 		}
 	}

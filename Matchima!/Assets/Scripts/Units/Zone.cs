@@ -334,14 +334,20 @@ public class Zone : MonoBehaviour {
 	public void OnTileCollect(Tile t)
 	{
 
-		if(TargetBoss) TargetBoss.CheckMission(t);
-		UIManager.instance.SetZoneObj(true);
+		if(TargetBoss) 
+		{
+			TargetBoss.CheckMission(t);
+			UIManager.instance.ShowBossUI(UIManager.ObjectsT.BotCrew, true);
+		}
 	}
 
 	public void OnTileDestroy(Tile t)
 	{
-		if(TargetBoss) TargetBoss.CheckMission(t);
-		UIManager.instance.SetZoneObj(true);
+		if(TargetBoss) 
+		{
+			TargetBoss.CheckMission(t);
+			UIManager.instance.ShowBossUI(UIManager.ObjectsT.BotCrew, true);
+		}
 	}
 
 }
