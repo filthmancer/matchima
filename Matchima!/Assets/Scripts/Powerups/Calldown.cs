@@ -133,7 +133,7 @@ int[] fireballs = new int[]
 		}
 
 		PlayerControl.instance.AddTilesToSelected(to_collect.ToArray());
-		yield return StartCoroutine(GameManager.instance.BeforeMatchRoutine());
+		yield return StartCoroutine(GameManager.instance.BeforeMatchRoutine(Parent._Tile));
 		yield return null;
 		yield return StartCoroutine(GameManager.instance.MatchRoutine(PlayerControl.instance.finalTiles.ToArray()));
 		yield return StartCoroutine(Player.instance.AfterMatch());

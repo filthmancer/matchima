@@ -82,7 +82,7 @@ public class Firestorm : Powerup {
 			Destroy(MGame[i].gameObject);
 		}
 		TileMaster.instance.SetFillGrid(false);
-		yield return StartCoroutine(GameManager.instance.BeforeMatchRoutine());
+		yield return StartCoroutine(GameManager.instance.BeforeMatchRoutine(Parent._Tile));
 		yield return null;
 		yield return StartCoroutine(GameManager.instance.MatchRoutine(PlayerControl.instance.finalTiles.ToArray()));
 		yield return StartCoroutine(Player.instance.AfterMatch());

@@ -377,9 +377,13 @@ public class Tile : MonoBehaviour {
 							}
 							if(lastselected == null || (lastselected != this && TileMaster.instance.AreNeighbours(lastselected, this, out diff)))
 							{	
-								SetState(TileState.Selected);
-								PlayerControl.instance.AddTilesToSelected(this);
-								PlayAudio("touch");
+								
+								if(PlayerControl.instance.AddTilesToSelected(this))
+								{
+									SetState(TileState.Selected);
+									PlayAudio("touch");
+								}
+								
 							}
 							else SetState(TileState.Idle);	
 						}

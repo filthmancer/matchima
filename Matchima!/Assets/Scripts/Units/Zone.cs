@@ -322,13 +322,20 @@ public class Zone : MonoBehaviour {
 		//StCon [] floor = new StCon[]{new StCon("Entered")};
 		//StCon [] title = new StCon[]{new StCon(Name, WallTint * 1.5F, false, 110)};
 		//yield return StartCoroutine(UIManager.instance.Alert(0.9F, floor, title));
-		Boss t = Bosses[Random.Range(0, Bosses.Length)];
-		TargetBoss = (Boss) Instantiate(t);
-		TargetBoss.Setup();
+		
+		SetBoss();
 
 		yield return StartCoroutine(OnStart());
 
 		//UIManager.instance.
+	}
+
+	public void SetBoss()
+	{
+		if(TargetBoss != null) Destroy(TargetBoss.gameObject);
+		Boss t = Bosses[Random.Range(0, Bosses.Length)];
+		TargetBoss = (Boss) Instantiate(t);
+		TargetBoss.Setup();
 	}
 
 	public void OnTileCollect(Tile t)

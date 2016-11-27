@@ -58,14 +58,15 @@ public class Hero : Tile {
 		SetSprite();
 	}
 	public override bool CanBeAttacked() {return !isKilled && Genus != GENUS.OMG;}
+	public bool CanCastSpell(){return _Class.MeterLvl > 0;}
 	public bool CastSpell()
 	{
-		//if(_Class.MeterLvl > 0)
-		//{
+		if(_Class.MeterLvl > 0)
+		{
 			StartCoroutine(_Class.UseManaPower());
 			return true;
-		//}
-		//return false;
+		}
+		return false;
 	}
 
 	public override void SetSprite()

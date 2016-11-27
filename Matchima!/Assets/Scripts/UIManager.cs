@@ -369,6 +369,17 @@ public class UIManager : MonoBehaviour {
 				prev.Img[1].color = Color.grey;
 			}
 		}
+		Hero h = t as Hero;
+		if(h != null && h.CanCastSpell())
+		{
+			TargetCrew[7].SetActive(true);
+			TargetCrew[7].ClearActions();
+			TargetCrew[7].AddAction(UIAction.MouseUp, ()=>
+			{
+				h.CastSpell();
+			});
+		}
+		else TargetCrew[7].SetActive(false);
 	}
 
 	public void CreateControllerUI(UIObjtk TeamObj)
@@ -380,6 +391,7 @@ public class UIManager : MonoBehaviour {
 		TeamObj.AddAction(UIAction.MouseUp, ()=>{
 			if(!CheckTargetTile()) ShowControllerUI();
 			});
+
 		if(Controller_Parent.Length != 0)
 		{
 			Controller_Parent.DestroyChildren();
@@ -1570,8 +1582,9 @@ public class UIManager : MonoBehaviour {
 		Title.Txt[0].text = title;//"Defeat " + boss.Name;
 		if(desc != string.Empty) Desc.Txt[0].text = desc;//boss.Mission;
 
-		//(ObjectsT.BotCrew[0] as UIObjTweener).SetTween(0, false);
-		//(ObjectsT.BotCrew[1] as UIObjTweener).SetTween(0, false);
+		ObjectsT.BotCrew.Txt[0].text = "";//GameManager.Zone.TargetBoss.Name;
+		(ObjectsT.BotCrew[0] as UIObjTweener).SetTween(0, false);
+		(ObjectsT.BotCrew[1] as UIObjTweener).SetTween(0, false);
 		yield return StartCoroutine(GameData.DeltaWait(GameData.GameSpeed(0.1F)));
 
 		ObjectsT.BotCrew.SetTween(0, true);

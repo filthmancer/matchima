@@ -891,14 +891,21 @@ public GridInfo TestRoom;
 
 	public IEnumerator ArrivedBoss()
 	{
-		yield return StartCoroutine(UIManager.instance.BossAlert(CurrentZone.TargetBoss, CurrentZone.TargetBoss.Name + " Arrived"));
+		yield return StartCoroutine(UIManager.instance.BossAlert(CurrentZone.TargetBoss, CurrentZone.TargetBoss.Name + " Arrives"));
 	}
 
 	public IEnumerator DefeatedBoss()
 	{
 		yield return StartCoroutine(UIManager.instance.BossAlert(CurrentZone.TargetBoss, CurrentZone.TargetBoss.Name + " Defeated"));
-		Stairs s = TileMaster.instance.ReplaceTile(TileMaster.RandomResTile, TileMaster.Types["stairs"], GENUS.RAND) as Stairs;
-		s.Doorway = false;
+
+		yield return StartCoroutine(CurrentZone.Enter());
+
+		UIManager.instance.CreateZoneUI(UIManager.ObjectsT.BotCrew);
+		yield return StartCoroutine(UIManager.instance.BossAlert(CurrentZone.TargetBoss, "Defeat " + CurrentZone.TargetBoss.Name, CurrentZone.TargetBoss.Mission));
+
+
+		//Stairs s = TileMaster.instance.ReplaceTile(TileMaster.RandomResTile, TileMaster.Types["stairs"], GENUS.RAND) as Stairs;
+		//s.Doorway = false;
 		yield return null;
 	}
 	
@@ -1121,10 +1128,10 @@ public GridInfo TestRoom;
 		Player.instance.CompleteMatch = true;
 	
 		TileMaster.instance.SetFillGrid(false);
-		TileMaster.instance.SetAllTileStates(TileState.Locked);
+		TileMaster.instance.SetAllTileStates(TileState.Locked, true);
 		foreach(Tile child in PlayerControl.instance.selectedTiles)
 		{
-			child.SetState(TileState.Selected);
+			child.SetState(TileState.Selected, true);
 		}
 
 		UIManager.instance.current_class = null;
@@ -1300,11 +1307,11 @@ public GridInfo TestRoom;
 
 	public static bool OverrideMatch;
 #region Match Loops, Routines, Bonuses
-	public IEnumerator BeforeMatchRoutine()
+	public IEnumerator BeforeMatchRoutine(Tile mover = null)
 	{
 		List<Tile> newTiles = new List<Tile>();
 
-		Tile mover = PlayerControl.instance.Controller;
+		if(mover == null) mover = PlayerControl.instance.Controller;
 		int [] startpoint = new int[]{mover.x, mover.y};
 		int [] endpoint;
 		mover.Params.transform.position += Vector3.forward * -1.5F;

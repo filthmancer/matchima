@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using TMPro;
 
 public enum SwipeDir{
 	Up,Down,Left,Right
@@ -109,6 +110,7 @@ public class PlayerControl : MonoBehaviour {
 
 		if(focusTile != null && !GameManager.instance.BotTeamTurn && !UIManager.InMenu && selectedTiles.Count > 0)
 		{
+
 			for(int x = 0; x < InnerLine.Length; x++)
 			{
 				List<Vector3> finalpoints = new List<Vector3>();
@@ -212,7 +214,18 @@ public class PlayerControl : MonoBehaviour {
 					selectedTiles[i].SetDamageWarning(finaldamage[i]);
 				}
 			}
+
+			Controller.CheckStats();
+
+			int move_left = Controller.Stats.Movement - selectedTiles.Count;
+			MovementText.transform.position = Controller.transform.position + Vector3.up * 0.15F;
+			MovementText.text = "" + move_left;
 		}
+		else 
+		{
+			MovementText.text = "";
+		}
+
 	}
 
 	public void SetMatchingTile(Tile t)
@@ -240,9 +253,6 @@ public class PlayerControl : MonoBehaviour {
 		}
 	}
 
-
-
-
 	public void SwapSlots()
 	{
 		UISlotButton Held = HeldButton as UISlotButton;
@@ -267,10 +277,6 @@ public class PlayerControl : MonoBehaviour {
 			a.Drag = DragType.Hold;
 		}
 		
-		//if(a != null) a.Drag = DragType.None;
-		//if(b != null) b.Drag = DragType.None;
-		//if(b== null && HeldButton.Parent == null) Destroy(HeldButton.gameObject);
-		//if(a== null && SwapButton.Parent == null) Destroy(SwapButton.gameObject);
 		HoldingSlot = false;
 		HeldButton = null;
 		SwapButton = null;
@@ -381,11 +387,6 @@ public class PlayerControl : MonoBehaviour {
 		int point = 0;
 		bool move_back = false;
 
-		/*if(Controller != null && t == Controller && LastSelected() != Controller)
-		{
-			AddTilesToSelected(t);
-			return;
-		}*/
 		for(int i = 0; i < selectedTiles.Count-1; i++)
 		{
 			if(selectedTiles[i] == t)
@@ -415,6 +416,15 @@ public class PlayerControl : MonoBehaviour {
 			{
 				if(child.Genus != GENUS.ALL && child.Genus != Controller.Genus) Controller_Genus = child.Genus;
 			}
+
+			if(Controller != null)
+			{
+				Controller.CheckStats();
+
+				int move_left = Controller.Stats.Movement - selectedTiles.Count;
+				MovementText.transform.position = Controller.transform.position + Vector3.up * 0.15F;
+				MovementText.text = "" + move_left;
+			} 
 			//SetMatchingTile(selectedTiles[point]);
 
 			for(int i = 0; i < selectedTiles.Count; i++)
@@ -449,7 +459,6 @@ public class PlayerControl : MonoBehaviour {
 
 		bool match = true;
 		if(selectedTiles == null || selectedTiles.Count < Player.RequiredMatchNumber) match = false;
-
 	
 		if(selectedTiles!= null && selectedTiles.Count > 0)
 		{
@@ -466,6 +475,7 @@ public class PlayerControl : MonoBehaviour {
 
 		if(match)
 		{
+			MovementText.text = "";
 			//AudioManager.instance.PlayClip(this.transform, AudioManager.instance.Tiles_Default, "complete_1");
 			int [] damage = Player.instance.GetAttackValues(selectedTiles.ToArray());
 			for(int i = 0; i < selectedTiles.Count; i++)
@@ -518,8 +528,8 @@ public class PlayerControl : MonoBehaviour {
 		return false;
 	}
 
-
-	public void AddTilesToSelected(params Tile [] _newtiles)
+	public TextMeshProUGUI MovementText;
+	public bool AddTilesToSelected(params Tile [] _newtiles)
 	{
 		for(int i = 0; i < _newtiles.Length; i++)
 		{
@@ -527,9 +537,13 @@ public class PlayerControl : MonoBehaviour {
 			if(Controller != null)
 			{
 				Controller.CheckStats();
-				if(selectedTiles.Count > Controller.Stats.Movement) return;
+
+				int move_left = Controller.Stats.Movement - selectedTiles.Count;
+				if(move_left < 0) return false;
+				MovementText.transform.position = Controller.transform.position + Vector3.up * 0.15F;
+				MovementText.text = "" + move_left;
 			} 
-			//if(_newtiles[i] == Controller && LastSelected() == Controller) continue;
+
 			bool add = true;
 			foreach(Tile tile in selectedTiles)
 			{
@@ -546,6 +560,8 @@ public class PlayerControl : MonoBehaviour {
 			}
 			selectedTiles.Add(_newtiles[i]);
 		}
+
+		return true;
 	}
 
 	public void AddTilesToFinal(params Tile [] _newtiles)
