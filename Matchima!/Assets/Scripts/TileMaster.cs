@@ -742,6 +742,8 @@ public class TileMaster : MonoBehaviour {
 		if(oldroom != null) oldroom_controllers.AddRange(oldroom.Controllers);
 		Vector3 direction = Vector3.zero;
 
+
+
 		switch(entry)
 		{
 			case EntryPoint.North:
@@ -751,10 +753,10 @@ public class TileMaster : MonoBehaviour {
 			direction = new Vector3(0, -1,0);
 			break;
 			case EntryPoint.East:
-			direction = new Vector3(-1,0,0);
+			direction = new Vector3(1,0,0);
 			break;
 			case EntryPoint.West:
-			direction = new Vector3(1,0,0);
+			direction = new Vector3(-1,0,0);
 			break;
 		}
 
@@ -796,10 +798,12 @@ public class TileMaster : MonoBehaviour {
 			}
 			yield return new WaitForSeconds(0.3F);
 		}
+
+		if(oldroom != null) Destroy(oldroom.gameObject);
 		if(oldroom != null) 
 		{
-			oldroom.SetActive(false);
-			oldrooms.Add(oldroom);
+			//oldroom.SetActive(false);
+			//oldrooms.Add(oldroom);
 		}
 
 		yield return new WaitForSeconds(0.3F);
