@@ -204,7 +204,7 @@ public class Enemy : Tile {
 		AudioManager.instance.PlayClipOn(this.transform, "Player", "Attack");
 		MoveToPoint part = EffectManager.instance.PlayEffect(_Transform, Effect.Attack).GetComponent<MoveToPoint>();
 
-		Vector3 pos = TileMaster.Grid.GetPoint(Point.Point(0)) + Vector3.down * 0.3F;
+		Vector3 pos = TileMaster.Grid.GetPoint(Point.Point(0));
 		MiniAlertUI hit = UIManager.instance.DamageAlert(pos, InitStats.TurnDamage);
 
 		CameraUtility.instance.ScreenShake(0.22F + 0.02F * InitStats.TurnDamage,  GameData.GameSpeed(0.06F));

@@ -414,9 +414,9 @@ public class UIManager : MonoBehaviour {
 		{
 			ShowBossUI(TeamObj);
 		});
-		ShowBossUI(TeamObj, true);
+		
 		GameManager.Zone.TargetBoss.SetImgtk(TeamObj.Imgtk[0], TeamObj.Imgtk[1]);
-		TeamObj.SetTween(0, true);
+		//TeamObj.SetTween(0, true);
 	}
 
 	public bool CheckTargetTile()
@@ -449,13 +449,11 @@ public class UIManager : MonoBehaviour {
 		BossUI_current = actual;
 		(TeamObj[0] as UIObjTweener).SetTween(0, BossUI_current);
 		(TeamObj[1] as UIObjTweener).SetTween(0, !BossUI_current);
-
+		TeamObj.Txt[0].text = GameManager.Zone.TargetBoss.Name;
 		TeamObj[0].Txt[0].text = GameManager.Zone.TargetBoss.Mission;
-		TeamObj[0].Txt[1].text = "";
 		TeamObj[0].Img[1].fillAmount = GameManager.Zone.TargetBoss.MissionRatio;
 
 		TeamObj[1].Txt[0].text = GameManager.Zone.TargetBoss.Description;
-		TeamObj[1].Txt[1].text = GameManager.Zone.TargetBoss.Name;
 		TeamObj[1].Img[1].fillAmount = 0.0F;
 
 		return actual;
@@ -1561,6 +1559,47 @@ public class UIManager : MonoBehaviour {
 		yield break;
 	}
 
+	public IEnumerator BossAlert(Boss boss, string title, string desc = "")
+	{
+		UIObjTweener Title = ObjectsT._Fader[0] as UIObjTweener;
+		UIObjTweener Desc = ObjectsT._Fader[1] as UIObjTweener;
+
+		ObjectsT._Fader.SetTween(0, true);
+		GameManager.instance.paused = true;
+
+		Title.Txt[0].text = title;//"Defeat " + boss.Name;
+		if(desc != string.Empty) Desc.Txt[0].text = desc;//boss.Mission;
+
+		//(ObjectsT.BotCrew[0] as UIObjTweener).SetTween(0, false);
+		//(ObjectsT.BotCrew[1] as UIObjTweener).SetTween(0, false);
+		yield return StartCoroutine(GameData.DeltaWait(GameData.GameSpeed(0.1F)));
+
+		ObjectsT.BotCrew.SetTween(0, true);
+		ObjectsT.BotCrew.SetTween(1, true);
+
+		yield return StartCoroutine(GameData.DeltaWait(GameData.GameSpeed(0.25F)));
+		Title.SetTween(0, true);
+
+		if(desc != string.Empty)
+		{
+			yield return StartCoroutine(GameData.DeltaWait(GameData.GameSpeed(0.45F)));
+			Desc.SetTween(0, true);
+		}
+	
+		yield return StartCoroutine(GameData.DeltaWait(GameData.GameSpeed(1.05F)));
+
+		Title.SetTween(0, false);
+		if(desc != string.Empty) Desc.SetTween(0, false);
+		ObjectsT.BotCrew.SetTween(1, false);
+
+		ObjectsT._Fader.SetTween(0, false);
+
+		yield return StartCoroutine(GameData.DeltaWait(GameData.GameSpeed(0.15F)));
+		GameManager.instance.paused = false;
+		ShowBossUI(UIManager.ObjectsT.BotCrew, true);
+		yield return null;
+	}
+
 	public UIObj [] GenerateUIObjFromStCon(Transform TopParent, params StCon [] title)
 	{
 		List<UIObj> final = new List<UIObj>();
@@ -2319,16 +2358,16 @@ public class UIManager : MonoBehaviour {
 	{
 		float init_rotation = UnityEngine.Random.Range(-3,3);
 		float info_time = 0.5F;
-		float info_start_size = Mathf.Clamp(240 + (damage*2), 240, 350);
-		float info_movespeed = 0.25F;
-		float info_finalscale = 0.65F;
+		float info_start_size = Mathf.Clamp(270 + (damage*2), 270, 350);
+		float info_movespeed = 0.35F;
+		float info_finalscale = 0.45F;
 
 		MiniAlertUI fin = MiniAlert(pos, "" + damage, info_start_size, Color.white, info_time, 0.6F);
 		fin.SetToDamageIndicator();
 		fin.GetComponent<HorizontalLayoutGroup>().padding = new RectOffset(-50, 20, 10, 10);
 		fin.transform.rotation = Quaternion.Euler(0,0,init_rotation);
 		fin.transform.localScale *= info_finalscale;
-		fin.SetVelocity(Utility.RandomVectorInclusive(0.4F) + (Vector3.up*0.6F));
+		fin.SetVelocity(Utility.RandomVectorInclusive(0.4F) + (Vector3.up*0.9F));
 		fin.Gravity = true;
 		fin.AddJuice(Juice.instance.BounceB, info_time/0.8F);
 		return fin;

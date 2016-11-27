@@ -788,7 +788,7 @@ public class TileMaster : MonoBehaviour {
 		List<Vector2> positions = new List<Vector2>();
 		positions.Add(new Vector2(0.5F, 1));
 		positions.Add(new Vector2(1, 0.5F));
-		//positions.Add(new Vector2(0.5F, 0));
+		positions.Add(new Vector2(0.5F, 0));
 		positions.Add(new Vector2(0, 0.5F));
 		
 		stairs = new Stairs[stairsnum];
@@ -805,11 +805,12 @@ public class TileMaster : MonoBehaviour {
 			positions.RemoveAt(snum);
 		}
 
+		newroom.Exits = stairs;
+
 		//Center point of the entry side
 		IntVector enter_side = new IntVector(Grid.Size[0]/2-(Grid.Size[0]/2*direction.x), Grid.Size[1]/2 - (Grid.Size[1]/2*direction.y));
 		//Vector to add to entry position for each character
 		IntVector entry_velocity = new IntVector((direction.x == 0 ? 1:0), (direction.y == 0 ? 1 : 0));
-
 		if(old != null) 
 		{
 			for(int i = 0; i < old.Controllers.Length; i++)
@@ -817,7 +818,7 @@ public class TileMaster : MonoBehaviour {
 				old.Controllers[i].gameObject.SetActive(true);
 				int side = (i % 2 == 0) ? -1 : 1;
 				side *= 1 + (i/2);
-				yield return StartCoroutine(old.Controllers[i].MoveToPoint( enter_side.x + (entry_velocity.x*side),
+				yield return StartCoroutine(old.Controllers[i].MoveToGrid(newroom, enter_side.x + (entry_velocity.x*side),
 																		enter_side.y + (entry_velocity.y*side), true, 100.0F));
 				yield return new WaitForSeconds(GameData.GameSpeed(0.05F));
 			}
@@ -959,9 +960,10 @@ public class TileMaster : MonoBehaviour {
 
 		for (int xx = 0; xx < newscale; xx++)
 		{
+			if(Grid[x+xx, y].Empty) x--;
 			for (int yy = 0; yy < newscale; yy++)
 			{
-				if(Grid[x+xx,y+yy].Empty)continue;
+				if(Grid[x+xx,y+yy].Empty)y--;
 				if (Grid[x + xx, y + yy]._Tile != null)
 				{
 					tempval +=  override_old ? 0 : Grid[x + xx, y + yy]._Tile.Stats.Value - 1;
@@ -1039,7 +1041,8 @@ public class TileMaster : MonoBehaviour {
 		if (Grid == null) return;
 
 		List<Tile> old_con = new List<Tile>();
-		old_con.AddRange(TileMaster.Controllers);
+		old_con.AddRange(Controllers);
+		old_con.AddRange(Grid.Exits);
 		for (int x = 0; x < Grid.Size[0]; x++)
 		{
 			for (int y = 0; y < Grid.Size[1]; y++)
@@ -1259,6 +1262,7 @@ public class TileMaster : MonoBehaviour {
 			Tile [] omegas = GetTiles("", GENUS.OMG);
 			for(int i = 0; i < omegas.Length; i++)
 			{
+				if(omegas[i].IsType("stairs")) continue;
 				omegas[i].InitStats._Attack.Add(omegas[i].Stats.Value / 2);
 				omegas[i].CheckStats();
 				omegas[i].Animate("Attack", 0.05F);

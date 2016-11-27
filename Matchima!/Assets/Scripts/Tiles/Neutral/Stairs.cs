@@ -6,6 +6,7 @@ public class Stairs : Tile {
 
 	public int ZoneIndex = 0;
 	public bool TravelDown = true;
+	public bool Doorway = false;
 	private int IndexFinal
 	{
 		get
@@ -33,7 +34,7 @@ public class Stairs : Tile {
 		base.Setup(g, x,y,scale,inf, value_inc);
 		ZoneIndex = Random.Range(0,4);
 		InitStats.Hits = 1;
-		ToNextLevel = false;
+		Doorway = false;
 	}
 
 	public List<Tile> TakeTiles;
@@ -77,7 +78,7 @@ public class Stairs : Tile {
 		Player.instance.CompleteMatch = false;
 		GameManager.OverrideMatch = true;
 
-		if(!ToNextLevel) yield return StartCoroutine(TileMaster.instance.MoveToRoom(Direction, null, Genus));
+		if(Doorway) yield return StartCoroutine(TileMaster.instance.MoveToRoom(Direction, null, Genus));
 		else yield return StartCoroutine(TileMaster.instance.MoveToLevel());
 		
 		yield return new WaitForSeconds(GameData.GameSpeed(0.5F));
@@ -93,8 +94,5 @@ public class Stairs : Tile {
 	public void SetDirection(IntVector n)
 	{
 		Direction = n;
-		//print(Direction.ToString());
 	}
-
-	public bool ToNextLevel = false;
 }

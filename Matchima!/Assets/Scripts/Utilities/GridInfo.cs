@@ -13,7 +13,7 @@ public class GridInfo : MonoBehaviour{
 
 	public GENUS RoomInfluence = GENUS.NONE;
 
-	public bool [] Entries = new bool[4];
+	public Stairs [] Exits;
 
 	public GridPoint this [int x, int y]
 	{

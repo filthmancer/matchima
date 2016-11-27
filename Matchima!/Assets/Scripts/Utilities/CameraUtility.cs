@@ -51,11 +51,14 @@ public class CameraUtility : MonoBehaviour {
 	float currentIntensity;
 	float currentTime;
 
+	public float XScale = 1.4F, YScale = 1.15F;
 	void Update()
 	{
-		if(!IgnoreTargetOrtho)
+		if(!IgnoreTargetOrtho && TargetRoom != null)
 		{
-			//print(TargetOrtho);
+			float ortho = Mathf.Max(TargetRoom.Size[0] * XScale, TargetRoom.Size[1] * YScale);
+			TargetOrtho = Mathf.Clamp(ortho, 7, Mathf.Infinity);
+
 			Cam.CameraSettings.orthographicSize = Mathf.Lerp(Cam.CameraSettings.orthographicSize, TargetOrtho, Time.deltaTime * 8);
 			TrackCam.CameraSettings.orthographicSize = Mathf.Lerp(TrackCam.CameraSettings.orthographicSize, TargetOrtho, Time.deltaTime * 8);
 			UICam.HostCamera.orthographicSize = Mathf.Lerp(UICam.HostCamera.orthographicSize, TargetOrtho, Time.deltaTime * 8);
@@ -173,7 +176,7 @@ public class CameraUtility : MonoBehaviour {
 
 		Cam.transform.position = TargetPos;
 		
-		float ortho = Mathf.Max(r.Size[0] * 1.4F, r.Size[1] * 1.15F);
+		float ortho = Mathf.Max(r.Size[0] * XScale, r.Size[1] * YScale);
 		TargetOrtho = Mathf.Clamp(ortho, 7, Mathf.Infinity);
 		IgnoreTargetOrtho = false;
 		yield return null;

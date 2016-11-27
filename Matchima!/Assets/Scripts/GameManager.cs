@@ -335,7 +335,6 @@ public class GameManager : MonoBehaviour {
 				break;
 				case 9: //S
 				Stairs s =	TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["stairs"], GENUS.ALL,1, 1) as Stairs;
-				s.ToNextLevel = true;
 				//TileMaster.instance.Ripple(TileMaster.Grid.Tiles[3,3]);
 				break;
 			}
@@ -892,10 +891,17 @@ public GridInfo TestRoom;
 		//else Victory();
 	}
 
-	public void DefeatedBoss()
+	public IEnumerator ArrivedBoss()
 	{
+		yield return StartCoroutine(UIManager.instance.BossAlert(CurrentZone.TargetBoss, CurrentZone.TargetBoss.Name + " Arrived"));
+	}
+
+	public IEnumerator DefeatedBoss()
+	{
+		yield return StartCoroutine(UIManager.instance.BossAlert(CurrentZone.TargetBoss, CurrentZone.TargetBoss.Name + " Defeated"));
 		Stairs s = TileMaster.instance.ReplaceTile(TileMaster.RandomResTile, TileMaster.Types["stairs"], GENUS.RAND) as Stairs;
-		s.ToNextLevel = true;
+		s.Doorway = false;
+		yield return null;
 	}
 	
 	public void EnterZone(Zone z = null, string name = null)
@@ -947,8 +953,6 @@ public GridInfo TestRoom;
 		CurrentZone = (Zone) Instantiate(z);
 		CurrentZone.gameObject.name = z.gameObject.name;
 		CurrentZone.transform.parent = this.transform;
-
-		
 		
 		if(CurrentWave != null) 
 		{
@@ -960,7 +964,9 @@ public GridInfo TestRoom;
 
 		CurrentZone.SetCurrent(wavenum);
 
-		yield return new WaitForSeconds(0.4F);
+		UIManager.instance.CreateZoneUI(UIManager.ObjectsT.BotCrew);
+		yield return StartCoroutine(UIManager.instance.BossAlert(CurrentZone.TargetBoss, "Defeat " + CurrentZone.TargetBoss.Name, CurrentZone.TargetBoss.Mission));
+
 		int c = 0;
 		for(int i = 0; i < Player.Classes.Length; i++)
 		{
@@ -976,9 +982,12 @@ public GridInfo TestRoom;
 		}
 
 		UIManager.instance.CreateControllerUI(UIManager.ObjectsT.TopCrew);
-		UIManager.instance.CreateZoneUI(UIManager.ObjectsT.BotCrew);
+		
 
 		UIManager.instance.HideTargetTile(true);
+
+		
+
 	}
 
 

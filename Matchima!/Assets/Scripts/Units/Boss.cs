@@ -32,6 +32,7 @@ public class Boss : WaveUnit {
 	public void CheckMission(Tile t)
 	{
 		mission_completed = _Mission.Check(t);
+		print(mission_completed);
 	}
 
 	[SerializeField]
@@ -54,15 +55,17 @@ public class Boss : WaveUnit {
 	private bool mission_completed;
 
 	public List<Tile> BossTiles;
-	public void OnArrive()
+	public IEnumerator OnArrive()
 	{
+		yield return StartCoroutine(GameManager.instance.ArrivedBoss());
+		GameManager.instance.paused = true;
 		_entered = true;
 		SpawnTileInfo [] list = ArrivalTiles;
 		BossTiles = new List<Tile>();
 		for(int i = 0; i < list.Length; i++)
 		{
-			if(list[i].SpawnStyle != WaveTileSpawn.OnArrive) continue;//yield break;
-			//GameManager.instance.paused = true;
+			if(list[i].SpawnStyle != WaveTileSpawn.OnArrive) yield break;
+			
 
 			int final_num = (int) list[i].SpawnValue;
 			Tile [] replaces = GetTilesToReplace(final_num, "resource", "enemy", "health");
@@ -71,7 +74,7 @@ public class Boss : WaveUnit {
 			{
 				CreateBossTile(list[i], replaces[x]);
 				
-				//if(final_num > 1) yield return new WaitForSeconds(Time.deltaTime * 5);
+				if(final_num > 1) yield return new WaitForSeconds(Time.deltaTime * 5);
 			}
 		}
 	}
@@ -252,7 +255,7 @@ public class Boss : WaveUnit {
 
 			if(beaten)
 			{
-				GameManager.instance.DefeatedBoss();
+				StartCoroutine(GameManager.instance.DefeatedBoss());
 			}
 		}
 		yield return null;

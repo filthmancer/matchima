@@ -469,46 +469,9 @@ public class Tile : MonoBehaviour {
 			return;
 		}
 
-		/*Ray velRay = new Ray(_Transform.position, velocity);
-		RaycastHit hit;
+		float finalspeed = speed - gravity;
+		speed = Mathf.Clamp(finalspeed, speed_max_falling, speed_max_rising);
 
-		if(Physics.Raycast(_Transform.position, -velocity, out hit, (speed + collide_radius) * Time.deltaTime * 80))
-		{
-			Tile hit_tile = hit._Transform.gameObject.GetComponent<Tile>();
-
-			if(hit_tile != null)
-			{
-				Vector3 clamppos = _Transform.position;
-				if(Stats.Shift == ShiftType.Down && hit_tile.Point.Base[1] < Point.Base[1]) 
-				{
-					clamppos.y = Mathf.Clamp(clamppos.y, hit_tile._Transform.position.y + collide_radius * 2, 100);
-				}
-				else if(Stats.Shift == ShiftType.Up && hit_tile.Point.Base[1] > Point.Base[1])
-				{
-					clamppos.y = Mathf.Clamp(clamppos.y, -100, hit_tile._Transform.position.y - collide_radius * 2);
-				}
-				if(Stats.Shift == ShiftType.Left && hit_tile.Point.Base[0] < Point.Base[0]) 
-				{
-					clamppos.x = Mathf.Clamp(clamppos.x, hit_tile._Transform.position.x + collide_radius * 2, 100);
-				}
-				else if(Stats.Shift == ShiftType.Right && hit_tile.Point.Base[0] > Point.Base[0])
-				{
-					clamppos.x = Mathf.Clamp(clamppos.x, -100, hit_tile._Transform.position.x - collide_radius * 2);
-				}
-				speed = hit_tile.speed;
-
-			}
-			else 
-			{
-				float finalspeed = speed - gravity;
-				speed = Mathf.Clamp(finalspeed, speed_max_falling, speed_max_rising);
-			}
-		}
-		else
-		{*/
-			float finalspeed = speed - gravity;
-			speed = Mathf.Clamp(finalspeed, speed_max_falling, speed_max_rising);
-		//}
 		if(!GameManager.inStartMenu && TileMaster.Grid != null)
 		{
 			if(Stats.Shift == ShiftType.Down && _Transform.position.y <= Point.targetPos.y - (speed*Time.deltaTime)) 
@@ -706,16 +669,12 @@ public class Tile : MonoBehaviour {
 		if(Stats._Hits.Current <= 0)
 		{
 			isMatching = true;
-			//Player.Stats.PrevTurnKills ++;	
-			//Stats.Value *= resource;
-					
 			CollectThyself(true);
 
 			PlayAudio("death");
 		}
 		else 
 		{
-			//CollectThyself(false);
 			isMatching = false;
 		}
 	}
@@ -756,11 +715,11 @@ public class Tile : MonoBehaviour {
 		}
 		else if(!isFalling) 
 		{
-			_collider.enabled = true;
+			if(!_collider.enabled)_collider.enabled = true;
 			return;
 		}
 
-		_collider.enabled = true;
+		if(!_collider.enabled) _collider.enabled = true;
 		isFalling = false;
 		if(!IsState(TileState.Selected) && !IsState(TileState.Locked))  {
 			SetState(TileState.Idle);
@@ -1143,7 +1102,7 @@ public class Tile : MonoBehaviour {
 		attacking = true;
 		t.SetState(TileState.Selected);
 
-		float init_size = UnityEngine.Random.Range(190,210);
+		float init_size = UnityEngine.Random.Range(170,180);
 		float init_rotation = UnityEngine.Random.Range(-7,7);
 
 		float info_time = 0.43F;
@@ -1172,7 +1131,7 @@ public class Tile : MonoBehaviour {
 				{
 					t.InitStats.TurnDamage += GetAttack();
 					t.PlayAudio("hit");
-					EffectManager.instance.PlayEffect(t.transform,Effect.Attack);
+					EffectManager.instance.PlayEffect(t.transform, Effect.Attack);
 					StartCoroutine(t.TakeTurnDamage());
 					//UIManager.instance.CashMeterPoints();
 					GameData.Log(this +  " dealt " + GetAttack() + "damage to " + t);
@@ -1502,6 +1461,43 @@ public class Tile : MonoBehaviour {
 				TileMaster.Grid[x,y]._Tile = null;
 				TileMaster.Grid[_x, _y]._Tile = this;
 				Setup(TileMaster.Grid, _x, _y);
+				transform.position = new Vector3(Point.targetPos.x, Point.targetPos.y, transform.position.z);
+				SetSprite();
+			}
+			
+		});
+
+		while(!complete) 
+		{
+			yield return null;
+		}
+		
+	}
+
+	public IEnumerator MoveToGrid(GridInfo g, int _x, int _y, bool overtake, float speed = 6.0F, float arc = 0.0F)
+	{
+		//print("MOVING" + TileMaster.Grid[_x,_y]._Tile + ":" + this);
+		bool complete = false;
+		Vector3 newpoint = g[_x,_y].Pos;
+		UnlockedFromGrid = true;
+
+		MoveComp.Clear();
+		MoveComp.SetTarget(newpoint);
+		MoveComp.SetPath(speed, arc);
+		MoveComp.SetThreshold(0.1F);
+		MoveComp.DontDestroy = true;
+		MoveComp.NoDestroy = true;
+
+
+		MoveComp.SetMethod(() => {
+			complete = true;
+			
+			if(overtake)
+			{
+				UnlockedFromGrid = false;
+				g[x,y]._Tile = null;
+				g[_x, _y]._Tile = this;
+				Setup(g, _x, _y);
 				transform.position = new Vector3(Point.targetPos.x, Point.targetPos.y, transform.position.z);
 				SetSprite();
 			}

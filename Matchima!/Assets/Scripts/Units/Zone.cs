@@ -266,6 +266,7 @@ public class Zone : MonoBehaviour {
 
 	public IEnumerator AfterTurn()
 	{
+		print(TargetBoss.Arrived + ":" + TargetBoss.Entered);
 		if(TargetBoss.Arrived && !TargetBoss.Entered)
 		{
 			yield return StartCoroutine(OnArrive());
@@ -281,7 +282,7 @@ public class Zone : MonoBehaviour {
 
 	public IEnumerator OnArrive()
 	{
-		TargetBoss.OnArrive();
+		yield return StartCoroutine(TargetBoss.OnArrive());
 		yield return null;
 	}
 
