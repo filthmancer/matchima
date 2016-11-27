@@ -334,6 +334,8 @@ public class Tile : MonoBehaviour {
 		{
 			Velocity();
 		}
+
+
 		
 		if(PlayerControl.instance.TimeWithoutInput < 1.0F) looseupdate_frame_check = looseupdate_frames;
 		if((looseupdate_frame_check++) >= looseupdate_frames)
@@ -354,7 +356,6 @@ public class Tile : MonoBehaviour {
 			if(!isMatching) transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one * targetScale, Time.deltaTime * 5);
 			Params._shiny.enabled = IsState(TileState.Selected);
 		}
-		
 		if(!IsState(TileState.Selected))
 		{
 			if(GameManager.instance.BotTeamTurn) return;
@@ -403,7 +404,6 @@ public class Tile : MonoBehaviour {
 			{
 				if(Input.GetMouseButton(0) || Input.GetKey(KeyCode.Space)) 
 				{
-
 					SetState(TileState.Selected);
 				}
 			}
@@ -1705,7 +1705,6 @@ public class StatCon
 			Level_Current = (int)Mathf.Clamp(Level_Current - Level_Required,
 										0, Mathf.Infinity);
 			Level_Required = (int)(Level_Required * (1.0F + Level_Multiplier));
-			Debug.Log(Level_Increase);
 			Max_Soft += Level_Increase;
 			Max = (int) Max_Soft;
 			Current_Soft += Level_Increase;

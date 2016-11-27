@@ -24,11 +24,12 @@ public class RoomEditor : EditorWindow {
 		{
 			Data = GameObject.Find("GameManager").GetComponent<GameData>();
 		}
-		if(TargetRoom == null)
+		if(TargetRoom == null && Selection.objects.Length > 0)
 		{
 			ClearPoints();
 			for (int i = 0; i < Selection.objects.Length; i++)
 			{
+				if(!Selection.objects[i] is GameObject) continue;
 				GridInfo inf = (Selection.objects[i] as GameObject).GetComponent<GridInfo>();
 				if(inf != null)
 				{
@@ -150,8 +151,14 @@ public class RoomEditor : EditorWindow {
 				EditorGUILayout.BeginVertical(GUILayout.MaxWidth(editorRect.width/2));
 					bool empty = EditorGUILayout.ToggleLeft("Empty", CurrentPoint.Empty, GUILayout.Width(100));
 					bool infgenus =  EditorGUILayout.ToggleLeft("Room Inf. Genus", CurrentPoint.RoomInfluencedGenus, GUILayout.Width(100));
+					EditorGUILayout.BeginHorizontal();
 					GUILayout.Label("Genus Override", GUILayout.Width(100));
 					GENUS overgenus = (GENUS) EditorGUILayout.EnumPopup(CurrentPoint.GenusOverride, GUILayout.Width(100));
+					GUILayout.Label("Entry Point", GUILayout.Width(100));
+					EntryPoint entry = (EntryPoint) EditorGUILayout.EnumPopup(CurrentPoint.Entry, GUILayout.Width(100));
+					bool door =  EditorGUILayout.ToggleLeft("Door", CurrentPoint.Doorway, GUILayout.Width(100));
+					EditorGUILayout.EndHorizontal();
+
 					if(SelectedPoints.Count > 0)
 					{
 						for(int i = 0; i < SelectedPoints.Count; i++)
@@ -159,6 +166,8 @@ public class RoomEditor : EditorWindow {
 							SelectedPoints[i].Empty = empty;
 							SelectedPoints[i].RoomInfluencedGenus = infgenus;
 							SelectedPoints[i].GenusOverride = overgenus;
+							SelectedPoints[i].Entry = entry;
+							SelectedPoints[i].Doorway = door;
 						}
 					}
 					
@@ -267,15 +276,16 @@ public class RoomEditor : EditorWindow {
 				if(Event.current.type == EventType.Repaint)
 				{
 					sceneRect = screen;
-					m_Cam.pixelRect = sceneRect;
+					//m_Cam.pixelRect = sceneRect;
 					//m_Cam.Render();
-					Handles.SetCamera(m_Cam);
+					
 				}
 				
 				bool targeted = false;
 				int tx = 0, ty = 0;
 				if(TargetRoom != null)
 				{
+					Handles.SetCamera(m_Cam);
 					Handles.DrawCamera(sceneRect, m_Cam, DrawCameraMode.Normal);
 					for(int x = 0; x < TargetRoom.Size[0]; x++)
 					{
@@ -294,18 +304,39 @@ public class RoomEditor : EditorWindow {
 							}
 							//else if(t.HasStartSpawns()) targ = Color.Lerp(Color.red, Color.white, 0.2F);
 
+							Vector3 rotation = Vector3.zero;
 							float finalhitsize = screensize;
 							float finalsize = screensize;
 							Handles.color = targ;
 							Handles.DrawCapFunction f = Handles.DotCap;
 							if(t.HasStartSpawns()) f = Handles.CircleCap;
-							else if(t.RoomInfluencedGenus)
+							else if(t.Doorway)
 							{
 								f = Handles.ArrowCap;
 								finalsize *= 5;
 							} 
+							else if(t.Entry != EntryPoint.None)
+							{
+								f = Handles.ConeCap;
+								finalsize *= 2;
+								switch(t.Entry)
+								{
+									case EntryPoint.North:
+									rotation.x = 90;
+									break;
+									case EntryPoint.South:
+									rotation.x = 270;
+									break;
+									case EntryPoint.East:
+									rotation.y = 270;
+									break;
+									case EntryPoint.West:
+									rotation.y = 90;
+									break;
+								}
+							}
 
-							if(Handles.Button(gridpoint, Quaternion.identity, finalsize, finalhitsize, f))
+							if(Handles.Button(gridpoint, Quaternion.Euler(rotation), finalsize, finalhitsize, f))
 							{
 								targeted = true;
 								tx = x;
@@ -454,7 +485,8 @@ public class RoomEditor : EditorWindow {
 		GameObject obj = r.transform.gameObject;
 		string name = r.Info.Name;
 	
-		Object prefab = EditorUtility.CreateEmptyPrefab("Assets/Resources/rooms/" + name + ".prefab");
+		Object prefab = Resources.Load("rooms/" + name);
+		if(prefab == null) prefab = 	EditorUtility.CreateEmptyPrefab("Assets/Resources/rooms/" + name + ".prefab");
 		EditorUtility.ReplacePrefab(obj, prefab);
 		AssetDatabase.Refresh();
 	}

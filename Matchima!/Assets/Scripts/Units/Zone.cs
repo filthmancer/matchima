@@ -266,12 +266,11 @@ public class Zone : MonoBehaviour {
 
 	public IEnumerator AfterTurn()
 	{
-		print(TargetBoss.Arrived + ":" + TargetBoss.Entered);
 		if(TargetBoss.Arrived && !TargetBoss.Entered)
 		{
 			yield return StartCoroutine(OnArrive());
 		}
-		yield return StartCoroutine(TargetBoss.AfterTurn());
+		else yield return StartCoroutine(TargetBoss.AfterTurn());
 	}
 
 	public IEnumerator OnEnd()

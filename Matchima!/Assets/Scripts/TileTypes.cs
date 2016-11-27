@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using System;
 
 public enum GENUS 
@@ -723,6 +725,7 @@ public class TileShortInfo
 		Params = t.Params;
 	}
 
+	#if UNITY_EDITOR
 	public bool OnGUI()
 	{
 		bool change = false;
@@ -745,6 +748,7 @@ public class TileShortInfo
 		EditorGUILayout.EndHorizontal();
 		return change;
 	}
+	#endif
 }
 
 

@@ -70,7 +70,7 @@ public class Stairs : Tile {
 			yield return new WaitForSeconds(GameData.GameSpeed(0.08F));
 		}
 
-		yield return new WaitForSeconds(GameData.GameSpeed(0.3F));
+		yield return new WaitForSeconds(GameData.GameSpeed(0.4F));
 
 		TileMaster.instance.AddTravelTiles(TakeTiles.ToArray());
 		PlayerControl.instance.selectedTiles.Clear();
@@ -78,21 +78,17 @@ public class Stairs : Tile {
 		Player.instance.CompleteMatch = false;
 		GameManager.OverrideMatch = true;
 
-		if(Doorway) yield return StartCoroutine(TileMaster.instance.MoveToRoom(Direction, null, Genus));
+		yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
+		if(Doorway) yield return StartCoroutine(TileMaster.instance.MoveToRoom(Entry, null, Genus));
 		else yield return StartCoroutine(TileMaster.instance.MoveToLevel());
 		
-		yield return new WaitForSeconds(GameData.GameSpeed(0.5F));
-		Destroy(powerup);
-
-		//GameManager.instance.AdvanceZoneMap(IndexFinal);
-		
-		yield return null;
 	}
 
 
-	IntVector Direction;
-	public void SetDirection(IntVector n)
+	EntryPoint Entry;
+	public void SetDirection(EntryPoint n)
 	{
-		Direction = n;
+		Entry = n;
+		Doorway = true;
 	}
 }

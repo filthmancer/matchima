@@ -31,18 +31,16 @@ public class Boss : WaveUnit {
 
 	public void CheckMission(Tile t)
 	{
+		if(mission_completed) return;
 		mission_completed = _Mission.Check(t);
-		print(mission_completed);
 	}
 
 	[SerializeField]
 	public SpawnTileInfo [] DormantTiles;
 	[SerializeField]
 	public SpawnTileInfo [] ArrivalTiles;
-
 	public SpawnTileInfo [] EndTiles;
 
-	
 	public bool Arrived
 	{
 		get{return mission_completed;}
@@ -51,6 +49,7 @@ public class Boss : WaveUnit {
 	{
 		get{return _entered;}
 	}
+	public bool Defeated;
 	private bool _entered;
 	private bool mission_completed;
 
@@ -59,7 +58,7 @@ public class Boss : WaveUnit {
 	{
 		yield return StartCoroutine(GameManager.instance.ArrivedBoss());
 		GameManager.instance.paused = true;
-		_entered = true;
+		
 		SpawnTileInfo [] list = ArrivalTiles;
 		BossTiles = new List<Tile>();
 		for(int i = 0; i < list.Length; i++)
@@ -77,6 +76,8 @@ public class Boss : WaveUnit {
 				if(final_num > 1) yield return new WaitForSeconds(Time.deltaTime * 5);
 			}
 		}
+
+		_entered = true;
 	}
 
 	public override IEnumerator OnStart()
@@ -242,7 +243,7 @@ public class Boss : WaveUnit {
 			}
 		}
 
-		if(Arrived)
+		if(Arrived && Entered && !Defeated)
 		{
 			bool beaten = true;
 			if(BossTiles.Count > 0)
@@ -255,6 +256,7 @@ public class Boss : WaveUnit {
 
 			if(beaten)
 			{
+				Defeated = true;
 				StartCoroutine(GameManager.instance.DefeatedBoss());
 			}
 		}
@@ -373,6 +375,6 @@ public class MissionContainer
 		{
 			Current ++;
 		}
-		return (Current == TargetNum);
+		return (Current >= TargetNum);
 	}
 }

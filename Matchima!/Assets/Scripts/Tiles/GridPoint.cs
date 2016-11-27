@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+public enum EntryPoint
+{
+	North, East, West, South, None
+}
 
 public class GridPoint : MonoBehaviour
 {
@@ -16,6 +20,8 @@ public class GridPoint : MonoBehaviour
 	public bool Empty;
 	public bool RoomInfluencedGenus;
 	public GENUS GenusOverride;
+	public EntryPoint Entry = EntryPoint.None;
+	public bool Doorway;
 
 	public bool ToFill()
 	{
@@ -38,6 +44,8 @@ public class GridPoint : MonoBehaviour
 		GenusOverride = g.GenusOverride;
 		StartSpawns = g.StartSpawns;
 		ConstantSpawns = g.ConstantSpawns;
+		Entry = g.Entry;
+		Doorway = g.Doorway;
 	}
 
 	public bool HasStartSpawns(){return StartSpawns != null && StartSpawns.Length > 0;}
@@ -55,6 +63,8 @@ public class GridPoint : MonoBehaviour
 		GenusOverride = GENUS.NONE;
 		StartSpawns = new TileShortInfo[0];
 		ConstantSpawns = new TileShortInfo[0];
+		Entry = old.Entry;
+		Doorway = old.Doorway;
 	}
 
 	public void Setup(int x, int y)

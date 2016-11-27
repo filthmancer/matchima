@@ -22,6 +22,14 @@ public class Farmer : Class {
 		base.StartClass();
 	}
 
+
+	public override void GetTile(Tile t)
+	{
+		_Tile = t;
+		_Tile.AddEffect("Maturing", -1, "1", "1");
+	}
+
+
 	public override Upgrade [] Boons
 	{
 		get{

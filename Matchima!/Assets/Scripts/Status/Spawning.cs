@@ -8,19 +8,20 @@ public class Spawning : TileEffect {
 	{ 
 		get{
 			return new StCon [] {
-				new StCon("Spawning", GameData.Colour(_Tile.Genus), false),
-				new StCon(DurationString)
+				new StCon("Spawning", GameData.Colour(_Tile.Genus), false)
 			};
 		}
 	}
 	public string Genus, Species;
 	public float AddedValueRatio = 0.2F;
+	public int SpawnPerTurn = 1;
 	public override void GetArgs(int _duration, params string [] args)
 	{
 		base.GetArgs(_duration, args);
 		Genus = args[0];
 		Species = args[1];
-		AddedValueRatio = GameData.StringToFloat(args[2]);
+		SpawnPerTurn = GameData.StringToInt(args[2]);
+		AddedValueRatio = GameData.StringToFloat(args[3]);
 	}
 
 	bool setupturn = false;
@@ -49,18 +50,22 @@ public class Spawning : TileEffect {
 			{
 				if(!child.isMatching && 
 					child.Point.Scale == _Tile.Point.Scale &&
-					!child.IsType(final_species)
+					!child.IsType(final_species) && !child.Controllable && !child.IsGenus(GENUS.OMG)
 				) 
 				final.Add(child);
 			}
 
 			int added_value = (int) ((float)_Tile.Stats.Value * AddedValueRatio);
-			for(int i = 0; i < final.Count; i++)
+			for(int i = 0; i < SpawnPerTurn; i++)
 			{
+				if(final.Count <= 0) continue;
+
 				if(Genus == "Random") final_genus =  GameData.ResourceLong((GENUS)Random.Range(0,4));
 				else if(Genus == "RandomAll") final_genus =  GameData.ResourceLong((GENUS)Random.Range(0,7));
 				
-				Tile t = TileMaster.instance.ReplaceTile(final[i], TileMaster.Types[final_species], TileMaster.Genus[final_genus], 1, 
+				int targ_num = Random.Range(0, final.Count);
+				Tile targ = final[targ_num];
+				Tile t = TileMaster.instance.ReplaceTile(targ, TileMaster.Types[final_species], TileMaster.Genus[final_genus], 1, 
 												added_value);
 
 				foreach(TileEffect child in _Tile.Effects)
@@ -70,6 +75,7 @@ public class Spawning : TileEffect {
 					TileEffect neweff = (TileEffect) Instantiate(child);
 					t.AddEffect(neweff);
 				}
+				final.RemoveAt(targ_num);
 				yield return new WaitForSeconds(Time.deltaTime*2);
 			}
 		}

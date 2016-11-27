@@ -593,51 +593,6 @@ public class TileMaster : MonoBehaviour {
 			final.Setup(offset, MapSize);
 		}
 
-
-		if(populate)
-		{
-			for(int i = 0; i < Random.Range(0,5);i++)
-			{
-				int x = Random.Range(0, final.Grid.Length-1);
-				int y = Random.Range(1, final.Grid[0].Length-1);
-				final[x,y].Empty = true;
-			}
-
-			string [] randtypes = new string []
-			{
-				"cross",
-				"health",
-				"bomb",
-				"arcane",
-				"chest",
-				"health"
-			};
-
-			for(int i = 0; i < Random.Range(3, 8); i++)
-			{
-				int x = Random.Range(0, final.Grid.Length);
-				int y = Random.Range(1, final.Grid[0].Length);
-				int r = Random.Range(0, randtypes.Length);
-				final[x,y].Info = new TileInfo(Types[randtypes[r]], GENUS.RAND);
-			}
-
-			string [] randenemies = new string []
-			{
-				"grunt",
-				"minion",
-				"blob"
-			};
-
-			for(int i = 0; i < Random.Range(2, 6); i++)
-			{
-				int x = Random.Range(0, final.Grid.Length);
-				int y = Random.Range(1, final.Grid[0].Length);
-				int r = Random.Range(0, randenemies.Length);
-				final[x,y].Info = new TileInfo(Types[randenemies[r]], GENUS.RAND);
-			}
-
-		}
-
 		for (int xx = 0; xx < final.Size[0]; xx++)
 		{
 			for (int yy = 0; yy < final.Size[1]; yy++)
@@ -648,6 +603,13 @@ public class TileMaster : MonoBehaviour {
 					GENUS genus = final[xx,yy].StartSpawns[0]._Genus;
 					int val = final[xx,yy].StartSpawns[0].Value;
 					CreateTile(final, xx,yy, Vector2.zero, TileMaster.Types[type], genus, false, 1, val);
+				}
+				else if(final[xx,yy].Doorway)
+				{
+					Tile t = CreateTile(final, xx,yy, Vector2.zero, TileMaster.Types["stairs"], GENUS.OMG);
+					t.ChangeGenus(GENUS.OMG);
+					(t as Stairs).SetDirection(final[xx,yy].Entry);
+					final.Exits.Add(t);
 				}
 				else CreateTile(final, xx,yy, Vector2.zero);
 			}
@@ -754,12 +716,47 @@ public class TileMaster : MonoBehaviour {
 	public Stairs [] stairs;
 	public List<GridInfo> oldrooms = new List<GridInfo>();
 
-	public IEnumerator MoveToRoom(IntVector direction, GridInfo r = null, GENUS inc = GENUS.NONE)
+	EntryPoint OppositeEntry(EntryPoint e)
 	{
-		GameManager.instance.paused = true;
+		switch(e)
+		{
+			case EntryPoint.North:
+			return EntryPoint.South;
+			case EntryPoint.South:
+			return EntryPoint.North;
+			case EntryPoint.East:
+			return EntryPoint.West;
+			case EntryPoint.West:
+			return EntryPoint.East;
+		}
+		return EntryPoint.None;
+	}
+	public IEnumerator MoveToRoom(EntryPoint entry, GridInfo r = null, GENUS inc = GENUS.NONE)
+	{
+		//GameManager.instance.paused = true;
 		GameManager.Difficulty += Mathf.Exp(GameManager.instance.Difficulty_Growth);
 		Vector3 pos = Vector3.zero;
-		GridInfo old = Grid;
+		GridInfo oldroom = Grid;
+
+		List<Tile> oldroom_controllers = new List<Tile>();
+		if(oldroom != null) oldroom_controllers.AddRange(oldroom.Controllers);
+		Vector3 direction = Vector3.zero;
+
+		switch(entry)
+		{
+			case EntryPoint.North:
+			direction = new Vector3(0, 1,0);
+			break;
+			case EntryPoint.South:
+			direction = new Vector3(0, -1,0);
+			break;
+			case EntryPoint.East:
+			direction = new Vector3(-1,0,0);
+			break;
+			case EntryPoint.West:
+			direction = new Vector3(1,0,0);
+			break;
+		}
 
 		if(Grid != null)
 		{
@@ -768,66 +765,46 @@ public class TileMaster : MonoBehaviour {
 		}
 		
 		if(r == null) r = GameData.instance.GetRandomRoom();
-
 		r.SetInfluence(inc);
 
 		GridInfo newroom = GenerateGrid2(pos, r);
 
 		pos += new Vector3(direction.x * newroom.RoomRadius, direction.y * newroom.RoomRadius, 0);
-
 		newroom.SetPosition(pos);
-	
 		Grid = newroom;
 		GridTest = Grid;
-		
+
 		yield return StartCoroutine(CameraUtility.instance.MoveToRoom(newroom));
-
-		yield return new WaitForSeconds(0.4F);
-
-		int stairsnum = Random.value > 0.8F ? 3 : Random.value > 0.6F ? 2 : 1;
-		List<Vector2> positions = new List<Vector2>();
-		positions.Add(new Vector2(0.5F, 1));
-		positions.Add(new Vector2(1, 0.5F));
-		positions.Add(new Vector2(0.5F, 0));
-		positions.Add(new Vector2(0, 0.5F));
+		yield return new WaitForSeconds(0.2F);
 		
-		stairs = new Stairs[stairsnum];
-		for(int i = 0; i < stairsnum; i++)
-		{
-			int snum = Random.Range(0, positions.Count);
-			Vector2 spos = positions[snum];
-			stairs[i] = ReplaceTile((int)(spos.x * Grid.Size[0]), (int)(spos.y * Grid.Size[1]), Types["stairs"], GENUS.OMG) as Stairs;
-			if(stairs[i] == null) continue;
-			IntVector realdir = new IntVector(	(spos.x > 0 ? (spos.x > 0.5F ? 1 : 0) : -1),
-												(spos.y > 0 ? (spos.y > 0.5F ? 1 : 0) : -1));
-			stairs[i].SetDirection(realdir);
-			stairs[i].ChangeGenus(GENUS.OMG);
-			positions.RemoveAt(snum);
-		}
-
-		newroom.Exits = stairs;
-
 		//Center point of the entry side
-		IntVector enter_side = new IntVector(Grid.Size[0]/2-(Grid.Size[0]/2*direction.x), Grid.Size[1]/2 - (Grid.Size[1]/2*direction.y));
+		//IntVector enter_side = new IntVector(Grid.Size[0]/2-(Grid.Size[0]/2*direction.x), Grid.Size[1]/2 - (Grid.Size[1]/2*direction.y));
 		//Vector to add to entry position for each character
-		IntVector entry_velocity = new IntVector((direction.x == 0 ? 1:0), (direction.y == 0 ? 1 : 0));
-		if(old != null) 
+		//IntVector entry_velocity = new IntVector((direction.x == 0 ? 1:0), (direction.y == 0 ? 1 : 0));
+
+		if(oldroom_controllers.Count > 0)
 		{
-			for(int i = 0; i < old.Controllers.Length; i++)
+			GridPoint [] enterpoints = newroom.EntryPoints(entry);
+			for(int i = 0; i < oldroom_controllers.Count; i++)
 			{
-				old.Controllers[i].gameObject.SetActive(true);
-				int side = (i % 2 == 0) ? -1 : 1;
-				side *= 1 + (i/2);
-				yield return StartCoroutine(old.Controllers[i].MoveToGrid(newroom, enter_side.x + (entry_velocity.x*side),
-																		enter_side.y + (entry_velocity.y*side), true, 100.0F));
+				if(oldroom_controllers[i] == null) continue;
+				oldroom_controllers[i].gameObject.SetActive(true);
+				print(oldroom_controllers + ":" + newroom + ":" + enterpoints);
+				yield return StartCoroutine(oldroom_controllers[i].MoveToGrid(newroom, enterpoints[i].num.x,
+																		enterpoints[i].num.y, true, 100.0F));
 				yield return new WaitForSeconds(GameData.GameSpeed(0.05F));
 			}
 			yield return new WaitForSeconds(0.3F);
-			old.SetActive(false);
-			oldrooms.Add(old);
+		}
+		if(oldroom != null) 
+		{
+			oldroom.SetActive(false);
+			oldrooms.Add(oldroom);
 		}
 
-		GameManager.instance.paused = false;
+		yield return new WaitForSeconds(0.3F);
+	
+		//GameManager.instance.paused = false;
 		PlayerControl.instance.SetController(null);
 
 	}
@@ -848,7 +825,7 @@ public class TileMaster : MonoBehaviour {
 		}
 		Destroy(Grid.gameObject);
 		
-		yield return StartCoroutine(MoveToRoom(new IntVector(0,0), null));
+		yield return StartCoroutine(MoveToRoom(EntryPoint.None, null));
 	}
 
 	private Tile CreateTile(int x, int y, Vector2 velocity, TileInfo t, int scale = 1, int value = 0)
@@ -1101,7 +1078,7 @@ public class TileMaster : MonoBehaviour {
 			}
 		}
 		yield return StartCoroutine(BeforeTurn());
-		yield return StartCoroutine(AfterTurn());
+		yield return StartCoroutine(AfterTurn(null));
 	}
 
 	private bool EnemyTute = false;
@@ -1134,7 +1111,7 @@ public class TileMaster : MonoBehaviour {
 		yield break;
 	}
 
-	public IEnumerator AfterTurn()
+	public IEnumerator AfterTurn(Tile controller)
 	{
 		if (Player.Stats.isKilled) yield break;
 		for (int xx = 0; xx < Grid.Size[0]; xx++)
@@ -1199,7 +1176,7 @@ public class TileMaster : MonoBehaviour {
 					}
 
 					Tiles[xx, yy].AfterTurn();
-					if (Tiles[xx, yy].HasAfterTurnEffect())
+					if (Tiles[xx, yy].HasAfterTurnEffect() && Tiles[xx,yy] != controller && !Tiles[xx,yy].AttackedThisTurn)
 					{
 						UIManager.instance.TargetTile(Tiles[xx,yy]);
 						yield return StartCoroutine(Tiles[xx, yy].AfterTurnRoutine());	
@@ -1212,8 +1189,8 @@ public class TileMaster : MonoBehaviour {
 
 		//yield return new WaitForSeconds(Time.deltaTime * 20);
 
-		for(int i =0; i < stairs.Length; i++)
-			if(EnemiesOnScreen == 0 && stairs[i].Genus == GENUS.OMG) stairs[i].ChangeGenus(GENUS.RAND);
+		for(int i =0; i < Grid.Exits.Count; i++)
+			if(EnemiesOnScreen == 0 && !Grid.Exits[i].Destroyed && Grid.Exits[i].Genus == GENUS.OMG) Grid.Exits[i].ChangeGenus(GENUS.RAND);
 
 		spawn_stack = new float [Grid.Size[0]];
 		for (int x = 0; x < Grid.Size[0]; x++)

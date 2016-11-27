@@ -33,6 +33,7 @@ public class Hero : Tile {
 	public void SetClass(Class c)
 	{
 		_Class = c;
+		if(_Class == null) return;
 		_Class.GetTile(this);
 
 		_Class.Reset();

@@ -13,7 +13,34 @@ public class GridInfo : MonoBehaviour{
 
 	public GENUS RoomInfluence = GENUS.NONE;
 
-	public Stairs [] Exits;
+	public List<Tile> Exits = new List<Tile>();
+
+	public GridPoint [] EntryPoints(EntryPoint e)
+	{
+		if(e == EntryPoint.None) return null;
+		List<GridPoint> final = new List<GridPoint>();
+		for(int x = 0; x < Size[0]; x++)
+		{
+			for(int y = 0; y < Size[1]; y++)
+			{
+				if(this[x,y].Entry == e && !this[x,y].Doorway) final.Add(this[x,y]);
+			}
+		}
+		return final.ToArray();
+	}
+
+	public GridPoint [] DoorsAndStairs()
+	{
+		List<GridPoint> final = new List<GridPoint>();
+		for(int x = 0; x < Size[0]; x++)
+		{
+			for(int y = 0; y < Size[1]; y++)
+			{
+				if(this[x,y].Doorway) final.Add(this[x,y]);
+			}
+		}
+		return final.ToArray();
+	}
 
 	public GridPoint this [int x, int y]
 	{

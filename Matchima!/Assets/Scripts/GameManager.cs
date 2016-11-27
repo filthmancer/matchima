@@ -209,7 +209,6 @@ public class GameManager : MonoBehaviour {
 	
 			inStartMenu = true;
 			TuteActive = false;	
-			print(GameData.instance.TestRoom);
 			StartCoroutine(GameData.instance.LoadInitialData());
 		}
 		
@@ -291,10 +290,8 @@ public class GameManager : MonoBehaviour {
 				case 2: //X
 				//EscapeZone();
 				//Wave.AddPoints(150);
-				StartCoroutine(TileMaster.instance.MoveToRoom(new IntVector(1, 0)));
 				break;
 				case 3: //c
-				StartCoroutine(TileMaster.instance.MoveToRoom(new IntVector(0, 1)));
 				//Tile t = TileMaster.instance.ReplaceTile(PlayerControl.instance.focusTile, TileMaster.Types["hero"], GENUS.STR,1, 1);
 				//(t as Hero).SetClass(Player.Classes[0]);
 				//Player.instance.ResetLevel();
@@ -392,7 +389,8 @@ public GridInfo TestRoom;
 		}
 
 		UIManager.instance.LoadText.gameObject.SetActive(false);
-		yield return StartCoroutine(TileMaster.instance.MoveToRoom(new IntVector(0,0), GameData.instance.TestRoom));
+		if(TestRoom != null)  yield return StartCoroutine(TileMaster.instance.MoveToRoom(EntryPoint.None, TestRoom));
+		else yield return StartCoroutine(TileMaster.instance.MoveToRoom(EntryPoint.None, GameData.instance.TestRoom));
 		gameStart = true;
 		
 		Resources.UnloadUnusedAssets();
@@ -968,13 +966,22 @@ public GridInfo TestRoom;
 		yield return StartCoroutine(UIManager.instance.BossAlert(CurrentZone.TargetBoss, "Defeat " + CurrentZone.TargetBoss.Name, CurrentZone.TargetBoss.Mission));
 
 		int c = 0;
+		int y = 0;
 		for(int i = 0; i < Player.Classes.Length; i++)
 		{
-			while(TileMaster.Tiles[c,0] == null) c++;
+			while(TileMaster.Grid[c,y].Empty || TileMaster.Tiles[c,y] == null) 
+			{
+				if(c < TileMaster.Grid.Size[0]) c++;
+				else 
+				{
+					c = 0;
+					y++;
+				}
+			}
 
 			if(Player.Classes[i] != null)
 			{
-				Tile t = TileMaster.instance.ReplaceTile(TileMaster.Tiles[c,0], TileMaster.Types["hero"], GENUS.ALL,1, 50);
+				Tile t = TileMaster.instance.ReplaceTile(TileMaster.Tiles[c,y], TileMaster.Types["hero"], GENUS.ALL,1, 50);
 				(t as Hero).SetClass(Player.Classes[i]);
 				t.ChangeGenus(GENUS.ALL);
 				c++;
@@ -1112,7 +1119,7 @@ public GridInfo TestRoom;
 
 	/* PLAYER TURN *///////////////////////////////////////////////////
 		Player.instance.CompleteMatch = true;
-		BotTeamTurn = true;
+	
 		TileMaster.instance.SetFillGrid(false);
 		TileMaster.instance.SetAllTileStates(TileState.Locked);
 		foreach(Tile child in PlayerControl.instance.selectedTiles)
@@ -1121,55 +1128,46 @@ public GridInfo TestRoom;
 		}
 
 		UIManager.instance.current_class = null;
-		//UIManager.instance.SetCrewButtons(false);
-		//UIManager.instance.ShowGearTooltip(false);
+
 		bool showcontrol = UIManager.instance.ShowControllerUI(false);
-		//UIManager.Objects.BotGear.SetToState(0);
-		//UIManager.Objects.TopGear.SetToState(0);
-		//UIManager.instance.MoveTopGear(0);
+
 
 		//Debug.Log("BEFORE MATCH");
 		yield return StartCoroutine(BeforeMatchRoutine());
 		
-		if(Player.instance.CompleteMatch) 
+		if(Player.instance.CompleteMatch && !OverrideMatch) 
 		{
-			//yield return StartCoroutine(MatchRoutine(PlayerControl.instance.finalTiles.ToArray()));
+			BotTeamTurn = true;
+				//Debug.Log("MATCH");
+				yield return StartCoroutine(Player.instance.AfterMatch());
+				yield return StartCoroutine(Player.instance.EndTurn());
+				//Debug.Log("AFTER MATCH");
+
+				//UIManager.Objects.BotGear.SetTween(3, false);
+				
+				yield return StartCoroutine(TileMaster.instance.BeforeTurn());
+				//Debug.Log("BEFORE TURN");
+			/* ENEMY TURN *////////////////////////////////////////////////////
+				if(Zone) yield return StartCoroutine(Zone.BeforeTurn());
+
+
+				yield return StartCoroutine(TopTeamRoutine());
+
+				if(Player.instance.Turns % (int)Player.Stats.AttackRate == 0 && TileMaster.instance.EnemiesOnScreen > 0)
+				{
+					yield return StartCoroutine(BotTeamRoutine());
+				}
+				
+				while(TileMaster.TilesAttacking()) yield return null;
+				TileMaster.instance.ResetTiles(true);
+
+				yield return StartCoroutine(TileMaster.instance.AfterTurn(PlayerControl.instance.Controller));
+
+				//Debug.Log("AFTER TURN");
+
+				BotTeamTurn = false;
 		}
-		else 
-		{
-			BotTeamTurn = false;
-			yield break;
-		}
-		//Debug.Log("MATCH");
-		yield return StartCoroutine(Player.instance.AfterMatch());
-		yield return StartCoroutine(Player.instance.EndTurn());
-		//Debug.Log("AFTER MATCH");
-
-		//UIManager.Objects.BotGear.SetTween(3, false);
 		
-		yield return StartCoroutine(TileMaster.instance.BeforeTurn());
-		//Debug.Log("BEFORE TURN");
-	/* ENEMY TURN *////////////////////////////////////////////////////
-		if(Zone) yield return StartCoroutine(Zone.BeforeTurn());
-
-
-		yield return StartCoroutine(TopTeamRoutine());
-
-		if(Player.instance.Turns % (int)Player.Stats.AttackRate == 0 && TileMaster.instance.EnemiesOnScreen > 0)
-		{
-			yield return StartCoroutine(BotTeamRoutine());
-		}
-
-		//Debug.Log("TURN");
-		
-		while(TileMaster.TilesAttacking()) yield return null;
-		TileMaster.instance.ResetTiles(true);
-		//UIManager.instance.CashMeterPoints();
-		//yield return new WaitForSeconds(GameData.GameSpeed(0.1F));
-		
-		yield return StartCoroutine(TileMaster.instance.AfterTurn());
-
-		//Debug.Log("AFTER TURN");
 		yield return StartCoroutine(CompleteTurnRoutine());
 		yield return StartCoroutine(Player.instance.CheckHealth());	
 		if(Zone) yield return StartCoroutine(Zone.AfterTurn());
@@ -1183,19 +1181,7 @@ public GridInfo TestRoom;
 		UIManager.instance.CreateZoneUI(UIManager.ObjectsT.BotCrew);
 		if(showcontrol) UIManager.instance.ShowControllerUI(true);
 		paused = false;
-
-
-		/*for(int i = 0; i < Random.Range(0, 3); i++)
-		{
-			Tile t = TileMaster.RandomResTile;
-			UIManager.instance.CastParticle(UIManager.instance.ZoneObj.transform, t, (Tile targ) =>
-				{
-					TileMaster.instance.ReplaceTile(targ, TileMaster.Types["grunt"], GENUS.RAND);
-					});
-
-			
-			yield return new WaitForSeconds(0.1F);
-		}*/
+		
 		yield return null;
 	}
 
