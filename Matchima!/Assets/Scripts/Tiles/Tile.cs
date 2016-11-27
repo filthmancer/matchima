@@ -340,8 +340,6 @@ public class Tile : MonoBehaviour {
 		{
 			looseupdate_frame_check = 0;
 
-			
-
 			transform.name = Info.Name + " | " + Point.Base[0] + ":" + Point.Base[1];
 			if(Params._render != null) Params._render.color = Color.Lerp(Params._render.color, targetColor, 0.6F);
 			if(Params._border != null) Params._border.color = Color.Lerp(Params._border.color, targetColor, 0.6F);

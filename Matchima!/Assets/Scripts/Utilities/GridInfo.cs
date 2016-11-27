@@ -44,6 +44,15 @@ public class GridInfo : MonoBehaviour{
 			Grid[x] = value;
 		}
 	}
+
+	public float RoomRadius
+	{
+		get{
+			int largest = (int) Mathf.Max(Size[0], Size[1]);
+			float buffer = TileMaster.TileBuffer_X * largest;
+			return largest + buffer;
+		}
+	}
 	
 	
 
@@ -218,7 +227,7 @@ public class GridInfo : MonoBehaviour{
 
 	public void Setup(Vector2 offset, GridInfo info)
 	{
-		Offset = new Vector3(offset.x, offset.y, 0);
+		
 		setup = true;
 		if(GridParent != null)
 		{
@@ -227,6 +236,7 @@ public class GridInfo : MonoBehaviour{
 
 		GridParent = this.gameObject;
 		Info = new RoomInfo(info.Info);
+		Info.Position = new Vector3(offset.x, offset.y, 0);
 		
 		GridParent.transform.name = Info.Name;
 		if(TileMaster.instance != null) GridPointObj = TileMaster.instance.GridPointObj;
@@ -478,6 +488,21 @@ public class GridInfo : MonoBehaviour{
 			for(int y = 0; y < Grid[0].Length; y++)
 			{
 				Grid[x][y].SetInfo(g[x,y].Info);
+			}
+		}
+	}
+
+	public void SetPosition(Vector3 pos)
+	{
+		GridParent.transform.position = pos;
+		Info.Position = pos;
+
+		for(int x = 0; x < Grid.Length; x++)
+		{
+			for(int y = 0; y < Grid[0].Length; y++)
+			{
+				if(Grid[x][y] != null  && Grid[x][y]._Tile != null)
+					Grid[x][y]._Tile.Point.SetPoints();
 			}
 		}
 	}

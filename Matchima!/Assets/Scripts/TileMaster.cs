@@ -764,7 +764,7 @@ public class TileMaster : MonoBehaviour {
 		if(Grid != null)
 		{
 			pos = Grid.Position;
-			pos += new Vector3(direction.x * Grid.Size[0]*3, direction.y * Grid.Size[1]*3, 0);
+			pos += new Vector3(direction.x * Grid.RoomRadius, direction.y * Grid.RoomRadius, 0);
 		}
 		
 		if(r == null) r = GameData.instance.GetRandomRoom();
@@ -772,6 +772,10 @@ public class TileMaster : MonoBehaviour {
 		r.SetInfluence(inc);
 
 		GridInfo newroom = GenerateGrid2(pos, r);
+
+		pos += new Vector3(direction.x * newroom.RoomRadius, direction.y * newroom.RoomRadius, 0);
+
+		newroom.SetPosition(pos);
 	
 		Grid = newroom;
 		GridTest = Grid;
